@@ -1,7 +1,7 @@
-# browser_protocol
+# browser-protocol
 
-[![Crates.io](https://img.shields.io/crates/v/browser_protocol.svg)](https://crates.io/crates/browser_protocol)
-[![Documentation](https://docs.rs/browser_protocol/badge.svg)](https://docs.rs/browser_protocol)
+[![Crates.io](https://img.shields.io/crates/v/browser-protocol.svg)](https://crates.io/crates/browser-protocol)
+[![Documentation](https://docs.rs/browser-protocol/badge.svg)](https://docs.rs/browser-protocol)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A high-performance, fully type-safe Rust client for the **Chrome DevTools Protocol (CDP)**, automatically generated from the official protocol definitions.
@@ -20,7 +20,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-browser_protocol = "0.1.0"
+browser-protocol = "0.1.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 ```
@@ -28,8 +28,8 @@ serde_json = "1.0"
 ## 🛠 Usage Example
 
 ```rust
-use browser_protocol::dom::GetDocumentParams;
-use browser_protocol::page::NavigateParams;
+use browser-protocol::dom::GetDocumentParams;
+use browser-protocol::page::NavigateParams;
 
 fn main() {
     // Example: Create a navigation command
