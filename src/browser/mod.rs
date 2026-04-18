@@ -1,7 +1,6 @@
 //! The Browser domain defines methods and events for browser managing.
 
 use serde::{Serialize, Deserialize};
-use serde_json::Value as JsonValue;
 
 
 pub type BrowserContextID = String;

@@ -3,7 +3,6 @@
 //! reported through Debugger domain, similarly to regular breakpoints being hit.
 
 use serde::{Serialize, Deserialize};
-use serde_json::Value as JsonValue;
 
 /// Sets breakpoint on particular native event.
 

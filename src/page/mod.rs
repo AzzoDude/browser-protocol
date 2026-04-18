@@ -1,7 +1,6 @@
 //! Actions and events related to the inspected page belong to the page domain.
 
 use serde::{Serialize, Deserialize};
-use serde_json::Value as JsonValue;
 
 /// Unique frame identifier.
 

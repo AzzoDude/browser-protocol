@@ -1,5 +1,4 @@
 use serde::{Serialize, Deserialize};
-use serde_json::Value as JsonValue;
 
 /// An internal certificate ID value.
 

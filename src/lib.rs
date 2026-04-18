@@ -1,3 +1,7 @@
+#![allow(non_snake_case)]
+#![allow(unused_imports)]
+#![allow(dead_code)]
+
 pub mod runtime;
 pub mod debugger;
 pub mod heap_profiler;

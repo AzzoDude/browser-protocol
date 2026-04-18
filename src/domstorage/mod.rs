@@ -1,7 +1,6 @@
 //! Query and modify DOM storage.
 
 use serde::{Serialize, Deserialize};
-use serde_json::Value as JsonValue;
 
 
 pub type SerializedStorageKey = String;

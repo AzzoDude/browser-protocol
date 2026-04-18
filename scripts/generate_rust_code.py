@@ -137,7 +137,6 @@ def generate_cdp_modules(project_name: str):
             stub_dir = os.path.join(src_dir, stub)
             os.makedirs(stub_dir, exist_ok=True)
             with open(os.path.join(stub_dir, "mod.rs"), "w", encoding="utf-8") as f:
-                f.write(f"use serde::{{Serialize, Deserialize}};\n")
                 f.write("pub type RemoteObjectId = String;\npub type RemoteObject = serde_json::Value;\n")
                 f.write("pub type ScriptId = String;\npub type StackTrace = serde_json::Value;\n")
                 f.write("pub type UniqueDebuggerId = String;\npub type SearchMatch = serde_json::Value;\n")
@@ -151,63 +150,72 @@ def generate_cdp_modules(project_name: str):
         domain_dir = os.path.join(src_dir, d_name.lower())
         os.makedirs(domain_dir, exist_ok=True)
         
-        mod_code = []
-        if "description" in domain: mod_code.append(format_rustdoc(domain['description'], 0, True))
-        # Use alias for Value to fix E0255/E0117
-        mod_code.extend(["use serde::{Serialize, Deserialize};", "use serde_json::Value as JsonValue;", ""])
+        inner_docs = []
+        mod_body = []
+        if "description" in domain: inner_docs.append(format_rustdoc(domain['description'], 0, True))
 
         for t in domain.get("types", []):
-            mod_code.append(format_rustdoc(t.get("description"), 0))
+            mod_body.append(format_rustdoc(t.get("description"), 0))
             t_id = t.get("id")
             # Rename struct Value to ProtocolValue to avoid conflict
             safe_t_id = f"Protocol{t_id}" if t_id == "Value" else t_id
 
             if "enum" in t:
-                mod_code.append("#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]")
-                mod_code.append(f"pub enum {safe_t_id} {{")
+                mod_body.append("#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]")
+                mod_body.append(f"pub enum {safe_t_id} {{")
                 for i, e in enumerate(t["enum"]):
                     var = to_camel_case(e)
                     if var == "Self": var = "SelfValue"
-                    if i == 0: mod_code.append("    #[default]")
-                    mod_code.append(f"    {var},")
-                mod_code.append("}\n")
+                    if i == 0: mod_body.append("    #[default]")
+                    mod_body.append(f"    {var},")
+                mod_body.append("}\n")
             elif t.get("type") == "object" and "properties" in t:
-                mod_code.append("#[derive(Debug, Clone, Serialize, Deserialize, Default)]")
-                mod_code.append('#[serde(rename_all = "camelCase")]')
-                mod_code.append(f"pub struct {safe_t_id} {{")
+                mod_body.append("#[derive(Debug, Clone, Serialize, Deserialize, Default)]")
+                mod_body.append('#[serde(rename_all = "camelCase")]')
+                mod_body.append(f"pub struct {safe_t_id} {{")
                 for p in t["properties"]:
-                    mod_code.append(format_rustdoc(p.get("description"), 4))
+                    mod_body.append(format_rustdoc(p.get("description"), 4))
                     p_name = p["name"]
                     r_type = get_rust_type(p, t_id).replace("serde_json::Value", "JsonValue")
-                    if "Option<" in r_type: mod_code.append('    #[serde(skip_serializing_if = "Option::is_none")]')
+                    if "Option<" in r_type: mod_body.append('    #[serde(skip_serializing_if = "Option::is_none")]')
                     if p_name in ["type", "override", "match", "return"]:
-                        mod_code.append(f'    #[serde(rename = "{p_name}")]')
+                        mod_body.append(f'    #[serde(rename = "{p_name}")]')
                         p_name = f"{p_name}_"
-                    mod_code.append(f"    pub {p_name}: {r_type},")
-                mod_code.append("}\n")
+                    mod_body.append(f"    pub {p_name}: {r_type},")
+                mod_body.append("}\n")
             else:
                 r_type = get_rust_type(t, t_id).replace("serde_json::Value", "JsonValue")
-                mod_code.append(f"pub type {safe_t_id} = {r_type};\n")
+                mod_body.append(f"pub type {safe_t_id} = {r_type};\n")
 
         for cmd in domain.get("commands", []):
             c_name = to_camel_case(cmd.get("name"))
             for suffix, key in [("Params", "parameters"), ("Returns", "returns")]:
                 props = cmd.get(key, [])
                 if props:
-                    mod_code.append(format_rustdoc(cmd.get("description"), 0))
-                    mod_code.append("#[derive(Debug, Clone, Serialize, Deserialize, Default)]")
-                    mod_code.append('#[serde(rename_all = "camelCase")]')
-                    mod_code.append(f"pub struct {c_name}{suffix} {{")
+                    mod_body.append(format_rustdoc(cmd.get("description"), 0))
+                    mod_body.append("#[derive(Debug, Clone, Serialize, Deserialize, Default)]")
+                    mod_body.append('#[serde(rename_all = "camelCase")]')
+                    mod_body.append(f"pub struct {c_name}{suffix} {{")
                     for p in props:
-                        mod_code.append(format_rustdoc(p.get("description"), 4))
+                        mod_body.append(format_rustdoc(p.get("description"), 4))
                         p_name = p["name"]
                         r_type = get_rust_type(p).replace("serde_json::Value", "JsonValue")
-                        if "Option<" in r_type: mod_code.append('    #[serde(skip_serializing_if = "Option::is_none")]')
+                        if "Option<" in r_type: mod_body.append('    #[serde(skip_serializing_if = "Option::is_none")]')
                         if p_name in ["type", "override", "match", "return"]:
-                            mod_code.append(f'    #[serde(rename = "{p_name}")]')
+                            mod_body.append(f'    #[serde(rename = "{p_name}")]')
                             p_name = f"{p_name}_"
-                        mod_code.append(f"    pub {p_name}: {r_type},")
-                    mod_code.append("}\n")
+                        mod_body.append(f"    pub {p_name}: {r_type},")
+                    mod_body.append("}\n")
+
+        body_text = "\n".join(mod_body)
+        mod_code = inner_docs[:]
+        if "Serialize" in body_text or "Deserialize" in body_text:
+            mod_code.append("use serde::{Serialize, Deserialize};")
+        if "JsonValue" in body_text:
+            mod_code.append("use serde_json::Value as JsonValue;")
+        if len(mod_code) > len(inner_docs):
+            mod_code.append("")
+        mod_code.extend(mod_body)
 
         with open(os.path.join(domain_dir, "mod.rs"), "w", encoding="utf-8") as f:
             f.write("\n".join(mod_code))

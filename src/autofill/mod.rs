@@ -1,7 +1,6 @@
 //! Defines commands and events for Autofill.
 
 use serde::{Serialize, Deserialize};
-use serde_json::Value as JsonValue;
 
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]

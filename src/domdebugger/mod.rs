@@ -2,7 +2,6 @@
 //! execution will stop on these operations as if there was a regular breakpoint set.
 
 use serde::{Serialize, Deserialize};
-use serde_json::Value as JsonValue;
 
 /// DOM breakpoint type.
 

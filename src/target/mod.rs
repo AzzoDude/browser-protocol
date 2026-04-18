@@ -1,7 +1,6 @@
 //! Supports additional targets discovery and allows to attach to them.
 
 use serde::{Serialize, Deserialize};
-use serde_json::Value as JsonValue;
 
 
 pub type TargetID = String;

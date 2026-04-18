@@ -2,7 +2,6 @@
 //! API.
 
 use serde::{Serialize, Deserialize};
-use serde_json::Value as JsonValue;
 
 
 pub type AuthenticatorId = String;

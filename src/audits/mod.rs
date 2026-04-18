@@ -1,7 +1,6 @@
 //! Audits domain allows investigation of page violations and possible improvements.
 
 use serde::{Serialize, Deserialize};
-use serde_json::Value as JsonValue;
 
 /// Information about a cookie that is affected by an inspector issue.
 

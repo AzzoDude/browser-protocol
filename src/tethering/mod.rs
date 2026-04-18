@@ -1,7 +1,6 @@
 //! The Tethering domain defines methods and events for browser port binding.
 
 use serde::{Serialize, Deserialize};
-use serde_json::Value as JsonValue;
 
 /// Request browser port binding.
 

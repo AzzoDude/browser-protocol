@@ -1,7 +1,6 @@
 //! Provides access to log entries.
 
 use serde::{Serialize, Deserialize};
-use serde_json::Value as JsonValue;
 
 /// Log entry.
 

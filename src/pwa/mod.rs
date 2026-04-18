@@ -1,7 +1,6 @@
 //! This domain allows interacting with the browser to control PWAs.
 
 use serde::{Serialize, Deserialize};
-use serde_json::Value as JsonValue;
 
 /// The following types are the replica of
 /// <https://crsrc.org/c/chrome/browser/web_applications/proto/web_app_os_integration_state.proto;drc=9910d3be894c8f142c977ba1023f30a656bc13fc;l=67>

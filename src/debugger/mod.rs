@@ -1,4 +1,3 @@
-use serde::{Serialize, Deserialize};
 pub type RemoteObjectId = String;
 pub type RemoteObject = serde_json::Value;
 pub type ScriptId = String;

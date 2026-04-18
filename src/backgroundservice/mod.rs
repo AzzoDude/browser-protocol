@@ -1,7 +1,6 @@
 //! Defines events for background web platform features.
 
 use serde::{Serialize, Deserialize};
-use serde_json::Value as JsonValue;
 
 /// The Background Service that will be associated with the commands/events.
 /// Every Background Service operates independently, but they share the same

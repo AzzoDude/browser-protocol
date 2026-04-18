@@ -1,7 +1,6 @@
 //! This domain exposes the current state of the CrashReportContext API.
 
 use serde::{Serialize, Deserialize};
-use serde_json::Value as JsonValue;
 
 /// Key-value pair in CrashReportContext.
 

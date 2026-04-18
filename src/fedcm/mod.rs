@@ -1,7 +1,6 @@
 //! This domain allows interacting with the FedCM dialog.
 
 use serde::{Serialize, Deserialize};
-use serde_json::Value as JsonValue;
 
 /// Whether this is a sign-up or sign-in action for this account, i.e.
 /// whether this account has ever been used to sign in to this RP before.

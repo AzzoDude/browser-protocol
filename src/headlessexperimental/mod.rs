@@ -1,7 +1,6 @@
 //! This domain provides experimental commands only supported in headless mode.
 
 use serde::{Serialize, Deserialize};
-use serde_json::Value as JsonValue;
 
 /// Encoding options for a screenshot.
 

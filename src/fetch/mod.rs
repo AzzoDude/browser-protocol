@@ -1,7 +1,6 @@
 //! A domain for letting clients substitute browser's network layer with client code.
 
 use serde::{Serialize, Deserialize};
-use serde_json::Value as JsonValue;
 
 /// Unique request identifier.
 /// Note that this does not identify individual HTTP requests that are part of

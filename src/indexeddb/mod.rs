@@ -1,5 +1,4 @@
 use serde::{Serialize, Deserialize};
-use serde_json::Value as JsonValue;
 
 /// Database with an array of object stores.
 

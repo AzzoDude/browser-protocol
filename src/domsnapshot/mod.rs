@@ -1,7 +1,6 @@
 //! This domain facilitates obtaining document snapshots with DOM, layout, and style information.
 
 use serde::{Serialize, Deserialize};
-use serde_json::Value as JsonValue;
 
 /// A Node in the DOM tree.
 
