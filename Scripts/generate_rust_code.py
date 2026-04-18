@@ -6,6 +6,7 @@ import sys
 import argparse
 import json
 import re
+import urllib.request
 
 dependencies_rs: dict[str, str] = {
     "tokio": "full",
@@ -103,8 +104,19 @@ def get_rust_type(prop, current_struct_name=None):
 
 def generate_cdp_modules(project_name: str):
     json_path = "browser_protocol.json"
-    if not os.path.exists(json_path):
-        json_path = os.path.join("..", "browser_protocol.json")
+    parent_json = os.path.join("..", "browser_protocol.json")
+    
+    if not os.path.exists(json_path) and not os.path.exists(parent_json):
+        url = "https://raw.githubusercontent.com/ChromeDevTools/devtools-protocol/refs/heads/master/json/browser_protocol.json"
+        print(f"Downloading latest protocol from {url}...")
+        try:
+            urllib.request.urlretrieve(url, parent_json)
+            json_path = parent_json
+        except Exception as e:
+            print(f"Failed to download protocol: {e}")
+            return
+    elif os.path.exists(parent_json):
+        json_path = parent_json
         
     with open(json_path, "r", encoding="utf-8") as f:
         schema = json.load(f)
