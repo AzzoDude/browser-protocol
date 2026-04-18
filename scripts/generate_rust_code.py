@@ -141,11 +141,13 @@ def generate_cdp_modules(project_name: str):
                 f.write("pub type ScriptId = String;\npub type StackTrace = serde_json::Value;\n")
                 f.write("pub type UniqueDebuggerId = String;\npub type SearchMatch = serde_json::Value;\n")
                 f.write("pub type ExecutionContextId = i64;\npub type Timestamp = f64;\n")
+            lib_rs_content.append(f'#[cfg(feature = "{stub}")]')
             lib_rs_content.append(f"pub mod {stub};")
 
     for domain in schema.get("domains", []):
         d_name = domain.get("domain")
         if d_name.lower() in ["webmcp"]: continue
+        lib_rs_content.append(f'#[cfg(feature = "{d_name.lower()}")]')
         lib_rs_content.append(f"pub mod {d_name.lower()};")
         domain_dir = os.path.join(src_dir, d_name.lower())
         os.makedirs(domain_dir, exist_ok=True)
@@ -243,28 +245,90 @@ def add_dependencies(project_name, deps):
 def update_cargo_metadata(project_name):
     project_path = ".."
     path = os.path.join(project_path, "Cargo.toml")
-    with open(path, "r", encoding="utf-8") as f: lines = f.readlines()
+    with open(path, "r", encoding="utf-8") as f:
+        content = f.read()
     
-    new_lines = []
-    if not any("authors =" in l for l in lines):
-        for line in lines:
-            new_lines.append(line)
-            if line.strip() == "[package]":
-                new_lines.append(f'authors = ["AzzoDude"]\n')
-                new_lines.append(f'description = "Generated Rust types and commands for the Chrome DevTools Protocol ({project_name})"\n')
-                new_lines.append(f'license = "MIT"\n')
-                new_lines.append(f'repository = "https://github.com/AzzoDude/{project_name}"\n')
-                new_lines.append(f'readme = "README.md"\n')
-                new_lines.append(f'keywords = ["cdp", "browser", "automation", "protocol"]\n')
-                new_lines.append(f'categories = ["development-tools", "web-programming"]\n')
-    else:
-        new_lines = lines
-            
-    # Add profile release optimizations (existing logic)
-    if not any("[profile.release]" in l for l in lines):
-        new_lines.append('\n[profile.release]\nopt-level = 3\nlto = "fat"\ncodegen-units = 1\npanic = "abort"\nstrip = true\n')
+    metadata = {
+        "authors": '["AzzoDude"]',
+        "description": f'"Generated Rust types and commands for the Chrome DevTools Protocol ({project_name})"',
+        "license": '"MIT"',
+        "repository": f'"https://github.com/AzzoDude/{project_name}"',
+        "readme": '"README.md"',
+        "keywords": '["cdp", "browser", "automation", "protocol"]',
+        "categories": '["development-tools", "web-programming"]',
+        "version": '"0.1.1"'
+    }
 
-    with open(path, "w", encoding="utf-8") as f: f.writelines(new_lines)
+    lines = content.splitlines()
+    new_lines = []
+    
+    in_package = False
+    added_metadata = set()
+    
+    for line in lines:
+        if line.strip() == "[package]":
+            in_package = True
+            new_lines.append(line)
+            continue
+        
+        if in_package:
+            if line.startswith("[") or line.strip() == "":
+                # End of package section or empty line, add missing metadata
+                for key, value in metadata.items():
+                    if key not in added_metadata:
+                        new_lines.append(f"{key} = {value}")
+                in_package = False
+            else:
+                key_part = line.split("=")[0].strip()
+                if key_part in metadata:
+                    if key_part == "version":
+                        new_lines.append(f'version = "0.1.1"')
+                        added_metadata.add(key_part)
+                        continue
+                    added_metadata.add(key_part)
+        
+        new_lines.append(line)
+
+    if in_package:
+        for key, value in metadata.items():
+            if key not in added_metadata:
+                new_lines.append(f"{key} = {value}")
+
+    # Feature generation logic
+    json_path = os.path.join("..", "browser_protocol.json")
+    if os.path.exists(json_path):
+        with open(json_path, "r", encoding="utf-8") as f:
+            schema = json.load(f)
+        domains = [d.get("domain").lower() for d in schema.get("domains", [])]
+        stubs = ["runtime", "debugger", "heap_profiler", "profiler"]
+        all_features = sorted(list(set(domains + stubs)))
+        
+        # Remove existing [features] if it exists to regenerate
+        processed_lines = []
+        skip = False
+        for l in new_lines:
+            if l.strip() == "[features]": skip = True
+            elif skip and l.startswith("["): skip = False
+            if not skip: processed_lines.append(l)
+        new_lines = processed_lines
+
+        new_lines.append("\n[features]")
+        new_lines.append('default = ["full"]')
+        full_deps = ", ".join([f'"{f}"' for f in all_features])
+        new_lines.append(f'full = [{full_deps}]')
+        for f in all_features:
+            new_lines.append(f'{f} = []')
+
+    if not any("[profile.release]" in l for l in new_lines):
+        new_lines.append('\n[profile.release]')
+        new_lines.append('opt-level = 3')
+        new_lines.append('lto = "fat"')
+        new_lines.append('codegen-units = 1')
+        new_lines.append('panic = "abort"')
+        new_lines.append('strip = true')
+
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("\n".join(new_lines) + "\n")
 
 def generate_readme(project_name):
     project_path = ".."
@@ -291,7 +355,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-{project_name} = "0.1.0"
+{project_name} = {{ version = "0.1.1", features = ["full"] }}
 serde = {{ version = "1.0", features = ["derive"] }}
 serde_json = "1.0"
 ```
@@ -332,7 +396,7 @@ def generate_gitignore(project_name):
 
 ### Rust ###
 debug/
-target/
+/target/
 Cargo.lock
 **/*.rs.bk
 *.pdb
