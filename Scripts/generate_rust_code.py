@@ -221,16 +221,19 @@ def update_cargo_metadata(project_name):
     with open(path, "r", encoding="utf-8") as f: lines = f.readlines()
     
     new_lines = []
-    for line in lines:
-        new_lines.append(line)
-        if line.strip() == "[package]":
-            new_lines.append(f'authors = ["AzzoDude"]\n')
-            new_lines.append(f'description = "Generated Rust types and commands for the Chrome DevTools Protocol ({project_name})"\n')
-            new_lines.append(f'license = "MIT"\n')
-            new_lines.append(f'repository = "https://github.com/AzzoDude/{project_name}"\n')
-            new_lines.append(f'readme = "README.md"\n')
-            new_lines.append(f'keywords = ["cdp", "browser", "automation", "protocol"]\n')
-            new_lines.append(f'categories = ["development-tools", "web-programming"]\n')
+    if not any("authors =" in l for l in lines):
+        for line in lines:
+            new_lines.append(line)
+            if line.strip() == "[package]":
+                new_lines.append(f'authors = ["AzzoDude"]\n')
+                new_lines.append(f'description = "Generated Rust types and commands for the Chrome DevTools Protocol ({project_name})"\n')
+                new_lines.append(f'license = "MIT"\n')
+                new_lines.append(f'repository = "https://github.com/AzzoDude/{project_name}"\n')
+                new_lines.append(f'readme = "README.md"\n')
+                new_lines.append(f'keywords = ["cdp", "browser", "automation", "protocol"]\n')
+                new_lines.append(f'categories = ["development-tools", "web-programming"]\n')
+    else:
+        new_lines = lines
             
     # Add profile release optimizations (existing logic)
     if not any("[profile.release]" in l for l in lines):
