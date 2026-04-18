@@ -123,7 +123,12 @@ def generate_cdp_modules(project_name: str):
 
     project_path = ".."
     src_dir = os.path.join(project_path, "src")
-    lib_rs_content = []
+    lib_rs_content = [
+        "#![allow(non_snake_case)]",
+        "#![allow(unused_imports)]",
+        "#![allow(dead_code)]",
+        ""
+    ]
 
     # STUBS with added UniqueDebuggerId
     all_domains = [d.get("domain").lower() for d in schema.get("domains", [])]
