@@ -1,7 +1,8 @@
+use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
+
 //! DOM debugging allows setting breakpoints on particular DOM operations and events. JavaScript
 //! execution will stop on these operations as if there was a regular breakpoint set.
-
-use serde::{Serialize, Deserialize};
 
 /// DOM breakpoint type.
 
@@ -93,6 +94,13 @@ pub struct GetEventListenersReturns {
     pub listeners: Vec<EventListener>,
 }
 
+impl GetEventListenersParams { pub const METHOD: &'static str = "DOMDebugger.getEventListeners"; }
+
+impl crate::CdpCommand for GetEventListenersParams {
+    const METHOD: &'static str = "DOMDebugger.getEventListeners";
+    type Response = GetEventListenersReturns;
+}
+
 /// Removes DOM breakpoint that was set using 'setDOMBreakpoint'.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -105,6 +113,13 @@ pub struct RemoveDOMBreakpointParams {
 
     #[serde(rename = "type")]
     pub type_: DOMBreakpointType,
+}
+
+impl RemoveDOMBreakpointParams { pub const METHOD: &'static str = "DOMDebugger.removeDOMBreakpoint"; }
+
+impl crate::CdpCommand for RemoveDOMBreakpointParams {
+    const METHOD: &'static str = "DOMDebugger.removeDOMBreakpoint";
+    type Response = crate::EmptyReturns;
 }
 
 /// Removes breakpoint on particular DOM event.
@@ -121,6 +136,13 @@ pub struct RemoveEventListenerBreakpointParams {
     pub targetName: Option<String>,
 }
 
+impl RemoveEventListenerBreakpointParams { pub const METHOD: &'static str = "DOMDebugger.removeEventListenerBreakpoint"; }
+
+impl crate::CdpCommand for RemoveEventListenerBreakpointParams {
+    const METHOD: &'static str = "DOMDebugger.removeEventListenerBreakpoint";
+    type Response = crate::EmptyReturns;
+}
+
 /// Removes breakpoint on particular native event.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -129,6 +151,13 @@ pub struct RemoveInstrumentationBreakpointParams {
     /// Instrumentation name to stop on.
 
     pub eventName: String,
+}
+
+impl RemoveInstrumentationBreakpointParams { pub const METHOD: &'static str = "DOMDebugger.removeInstrumentationBreakpoint"; }
+
+impl crate::CdpCommand for RemoveInstrumentationBreakpointParams {
+    const METHOD: &'static str = "DOMDebugger.removeInstrumentationBreakpoint";
+    type Response = crate::EmptyReturns;
 }
 
 /// Removes breakpoint from XMLHttpRequest.
@@ -141,6 +170,13 @@ pub struct RemoveXHRBreakpointParams {
     pub url: String,
 }
 
+impl RemoveXHRBreakpointParams { pub const METHOD: &'static str = "DOMDebugger.removeXHRBreakpoint"; }
+
+impl crate::CdpCommand for RemoveXHRBreakpointParams {
+    const METHOD: &'static str = "DOMDebugger.removeXHRBreakpoint";
+    type Response = crate::EmptyReturns;
+}
+
 /// Sets breakpoint on particular CSP violations.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -149,6 +185,13 @@ pub struct SetBreakOnCSPViolationParams {
     /// CSP Violations to stop upon.
 
     pub violationTypes: Vec<CSPViolationType>,
+}
+
+impl SetBreakOnCSPViolationParams { pub const METHOD: &'static str = "DOMDebugger.setBreakOnCSPViolation"; }
+
+impl crate::CdpCommand for SetBreakOnCSPViolationParams {
+    const METHOD: &'static str = "DOMDebugger.setBreakOnCSPViolation";
+    type Response = crate::EmptyReturns;
 }
 
 /// Sets breakpoint on particular operation with DOM.
@@ -163,6 +206,13 @@ pub struct SetDOMBreakpointParams {
 
     #[serde(rename = "type")]
     pub type_: DOMBreakpointType,
+}
+
+impl SetDOMBreakpointParams { pub const METHOD: &'static str = "DOMDebugger.setDOMBreakpoint"; }
+
+impl crate::CdpCommand for SetDOMBreakpointParams {
+    const METHOD: &'static str = "DOMDebugger.setDOMBreakpoint";
+    type Response = crate::EmptyReturns;
 }
 
 /// Sets breakpoint on particular DOM event.
@@ -180,6 +230,13 @@ pub struct SetEventListenerBreakpointParams {
     pub targetName: Option<String>,
 }
 
+impl SetEventListenerBreakpointParams { pub const METHOD: &'static str = "DOMDebugger.setEventListenerBreakpoint"; }
+
+impl crate::CdpCommand for SetEventListenerBreakpointParams {
+    const METHOD: &'static str = "DOMDebugger.setEventListenerBreakpoint";
+    type Response = crate::EmptyReturns;
+}
+
 /// Sets breakpoint on particular native event.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -190,6 +247,13 @@ pub struct SetInstrumentationBreakpointParams {
     pub eventName: String,
 }
 
+impl SetInstrumentationBreakpointParams { pub const METHOD: &'static str = "DOMDebugger.setInstrumentationBreakpoint"; }
+
+impl crate::CdpCommand for SetInstrumentationBreakpointParams {
+    const METHOD: &'static str = "DOMDebugger.setInstrumentationBreakpoint";
+    type Response = crate::EmptyReturns;
+}
+
 /// Sets breakpoint on XMLHttpRequest.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -198,4 +262,11 @@ pub struct SetXHRBreakpointParams {
     /// Resource URL substring. All XHRs having this substring in the URL will get stopped upon.
 
     pub url: String,
+}
+
+impl SetXHRBreakpointParams { pub const METHOD: &'static str = "DOMDebugger.setXHRBreakpoint"; }
+
+impl crate::CdpCommand for SetXHRBreakpointParams {
+    const METHOD: &'static str = "DOMDebugger.setXHRBreakpoint";
+    type Response = crate::EmptyReturns;
 }

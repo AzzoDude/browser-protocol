@@ -1,6 +1,7 @@
-//! The Browser domain defines methods and events for browser managing.
-
 use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
+
+//! The Browser domain defines methods and events for browser managing.
 
 
 pub type BrowserContextID = String;
@@ -101,13 +102,13 @@ pub enum PermissionSetting {
 }
 
 /// Definition of PermissionDescriptor defined in the Permissions API:
-/// <https://w3c.github.io/permissions/#dom-permissiondescriptor.>
+/// https://w3c.github.io/permissions/#dom-permissiondescriptor.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct PermissionDescriptor {
     /// Name of permission.
-    /// See <https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/permissions/permission_descriptor.idl> for valid permission names.
+    /// See https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/permissions/permission_descriptor.idl for valid permission names.
 
     pub name: String,
     /// For "midi" permission, may also specify sysex control.
@@ -213,6 +214,13 @@ pub struct SetPermissionParams {
     pub browserContextId: Option<BrowserContextID>,
 }
 
+impl SetPermissionParams { pub const METHOD: &'static str = "Browser.setPermission"; }
+
+impl crate::CdpCommand for SetPermissionParams {
+    const METHOD: &'static str = "Browser.setPermission";
+    type Response = crate::EmptyReturns;
+}
+
 /// Grant specific permissions to the given origin and reject all others. Deprecated. Use
 /// setPermission instead.
 
@@ -231,6 +239,13 @@ pub struct GrantPermissionsParams {
     pub browserContextId: Option<BrowserContextID>,
 }
 
+impl GrantPermissionsParams { pub const METHOD: &'static str = "Browser.grantPermissions"; }
+
+impl crate::CdpCommand for GrantPermissionsParams {
+    const METHOD: &'static str = "Browser.grantPermissions";
+    type Response = crate::EmptyReturns;
+}
+
 /// Reset all permission management for all origins.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -240,6 +255,13 @@ pub struct ResetPermissionsParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub browserContextId: Option<BrowserContextID>,
+}
+
+impl ResetPermissionsParams { pub const METHOD: &'static str = "Browser.resetPermissions"; }
+
+impl crate::CdpCommand for ResetPermissionsParams {
+    const METHOD: &'static str = "Browser.resetPermissions";
+    type Response = crate::EmptyReturns;
 }
 
 /// Set the behavior when downloading a file.
@@ -267,6 +289,13 @@ pub struct SetDownloadBehaviorParams {
     pub eventsEnabled: Option<bool>,
 }
 
+impl SetDownloadBehaviorParams { pub const METHOD: &'static str = "Browser.setDownloadBehavior"; }
+
+impl crate::CdpCommand for SetDownloadBehaviorParams {
+    const METHOD: &'static str = "Browser.setDownloadBehavior";
+    type Response = crate::EmptyReturns;
+}
+
 /// Cancel a download if in progress
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -279,6 +308,43 @@ pub struct CancelDownloadParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub browserContextId: Option<BrowserContextID>,
+}
+
+impl CancelDownloadParams { pub const METHOD: &'static str = "Browser.cancelDownload"; }
+
+impl crate::CdpCommand for CancelDownloadParams {
+    const METHOD: &'static str = "Browser.cancelDownload";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct CloseParams {}
+
+impl CloseParams { pub const METHOD: &'static str = "Browser.close"; }
+
+impl crate::CdpCommand for CloseParams {
+    const METHOD: &'static str = "Browser.close";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct CrashParams {}
+
+impl CrashParams { pub const METHOD: &'static str = "Browser.crash"; }
+
+impl crate::CdpCommand for CrashParams {
+    const METHOD: &'static str = "Browser.crash";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct CrashGpuProcessParams {}
+
+impl CrashGpuProcessParams { pub const METHOD: &'static str = "Browser.crashGpuProcess"; }
+
+impl crate::CdpCommand for CrashGpuProcessParams {
+    const METHOD: &'static str = "Browser.crashGpuProcess";
+    type Response = crate::EmptyReturns;
 }
 
 /// Returns version information.
@@ -303,6 +369,16 @@ pub struct GetVersionReturns {
     pub jsVersion: String,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GetVersionParams {}
+
+impl GetVersionParams { pub const METHOD: &'static str = "Browser.getVersion"; }
+
+impl crate::CdpCommand for GetVersionParams {
+    const METHOD: &'static str = "Browser.getVersion";
+    type Response = GetVersionReturns;
+}
+
 /// Returns the command line switches for the browser process if, and only if
 /// --enable-automation is on the commandline.
 
@@ -312,6 +388,16 @@ pub struct GetBrowserCommandLineReturns {
     /// Commandline parameters
 
     pub arguments: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GetBrowserCommandLineParams {}
+
+impl GetBrowserCommandLineParams { pub const METHOD: &'static str = "Browser.getBrowserCommandLine"; }
+
+impl crate::CdpCommand for GetBrowserCommandLineParams {
+    const METHOD: &'static str = "Browser.getBrowserCommandLine";
+    type Response = GetBrowserCommandLineReturns;
 }
 
 /// Get Chrome histograms.
@@ -341,6 +427,13 @@ pub struct GetHistogramsReturns {
     pub histograms: Vec<Histogram>,
 }
 
+impl GetHistogramsParams { pub const METHOD: &'static str = "Browser.getHistograms"; }
+
+impl crate::CdpCommand for GetHistogramsParams {
+    const METHOD: &'static str = "Browser.getHistograms";
+    type Response = GetHistogramsReturns;
+}
+
 /// Get a Chrome histogram by name.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -365,6 +458,13 @@ pub struct GetHistogramReturns {
     pub histogram: Histogram,
 }
 
+impl GetHistogramParams { pub const METHOD: &'static str = "Browser.getHistogram"; }
+
+impl crate::CdpCommand for GetHistogramParams {
+    const METHOD: &'static str = "Browser.getHistogram";
+    type Response = GetHistogramReturns;
+}
+
 /// Get position and size of the browser window.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -384,6 +484,13 @@ pub struct GetWindowBoundsReturns {
     /// position and size are returned.
 
     pub bounds: Bounds,
+}
+
+impl GetWindowBoundsParams { pub const METHOD: &'static str = "Browser.getWindowBounds"; }
+
+impl crate::CdpCommand for GetWindowBoundsParams {
+    const METHOD: &'static str = "Browser.getWindowBounds";
+    type Response = GetWindowBoundsReturns;
 }
 
 /// Get the browser window that contains the devtools target.
@@ -411,6 +518,13 @@ pub struct GetWindowForTargetReturns {
     pub bounds: Bounds,
 }
 
+impl GetWindowForTargetParams { pub const METHOD: &'static str = "Browser.getWindowForTarget"; }
+
+impl crate::CdpCommand for GetWindowForTargetParams {
+    const METHOD: &'static str = "Browser.getWindowForTarget";
+    type Response = GetWindowForTargetReturns;
+}
+
 /// Set position and/or size of the browser window.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -423,6 +537,13 @@ pub struct SetWindowBoundsParams {
     /// with 'left', 'top', 'width' or 'height'. Leaves unspecified fields unchanged.
 
     pub bounds: Bounds,
+}
+
+impl SetWindowBoundsParams { pub const METHOD: &'static str = "Browser.setWindowBounds"; }
+
+impl crate::CdpCommand for SetWindowBoundsParams {
+    const METHOD: &'static str = "Browser.setWindowBounds";
+    type Response = crate::EmptyReturns;
 }
 
 /// Set size of the browser contents resizing browser window as necessary.
@@ -445,6 +566,13 @@ pub struct SetContentsSizeParams {
     pub height: Option<i64>,
 }
 
+impl SetContentsSizeParams { pub const METHOD: &'static str = "Browser.setContentsSize"; }
+
+impl crate::CdpCommand for SetContentsSizeParams {
+    const METHOD: &'static str = "Browser.setContentsSize";
+    type Response = crate::EmptyReturns;
+}
+
 /// Set dock tile details, platform-specific.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -459,6 +587,13 @@ pub struct SetDockTileParams {
     pub image: Option<String>,
 }
 
+impl SetDockTileParams { pub const METHOD: &'static str = "Browser.setDockTile"; }
+
+impl crate::CdpCommand for SetDockTileParams {
+    const METHOD: &'static str = "Browser.setDockTile";
+    type Response = crate::EmptyReturns;
+}
+
 /// Invoke custom browser commands used by telemetry.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -466,6 +601,13 @@ pub struct SetDockTileParams {
 pub struct ExecuteBrowserCommandParams {
 
     pub commandId: BrowserCommandId,
+}
+
+impl ExecuteBrowserCommandParams { pub const METHOD: &'static str = "Browser.executeBrowserCommand"; }
+
+impl crate::CdpCommand for ExecuteBrowserCommandParams {
+    const METHOD: &'static str = "Browser.executeBrowserCommand";
+    type Response = crate::EmptyReturns;
 }
 
 /// Allows a site to use privacy sandbox features that require enrollment
@@ -476,6 +618,13 @@ pub struct ExecuteBrowserCommandParams {
 pub struct AddPrivacySandboxEnrollmentOverrideParams {
 
     pub url: String,
+}
+
+impl AddPrivacySandboxEnrollmentOverrideParams { pub const METHOD: &'static str = "Browser.addPrivacySandboxEnrollmentOverride"; }
+
+impl crate::CdpCommand for AddPrivacySandboxEnrollmentOverrideParams {
+    const METHOD: &'static str = "Browser.addPrivacySandboxEnrollmentOverride";
+    type Response = crate::EmptyReturns;
 }
 
 /// Configures encryption keys used with a given privacy sandbox API to talk
@@ -497,4 +646,11 @@ pub struct AddPrivacySandboxCoordinatorKeyConfigParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub browserContextId: Option<BrowserContextID>,
+}
+
+impl AddPrivacySandboxCoordinatorKeyConfigParams { pub const METHOD: &'static str = "Browser.addPrivacySandboxCoordinatorKeyConfig"; }
+
+impl crate::CdpCommand for AddPrivacySandboxCoordinatorKeyConfigParams {
+    const METHOD: &'static str = "Browser.addPrivacySandboxCoordinatorKeyConfig";
+    type Response = crate::EmptyReturns;
 }

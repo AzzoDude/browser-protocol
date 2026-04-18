@@ -1,12 +1,12 @@
+use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
+
 //! This domain exposes CSS read/write operations. All CSS objects (stylesheets, rules, and styles)
 //! have an associated 'id' used in subsequent operations on the related object. Each object type has
 //! a specific 'id' structure, and those are not interchangeable between objects of different kinds.
 //! CSS objects can be loaded using the 'get*ForNode()' calls (which accept a DOM node id). A client
 //! can also keep track of stylesheets via the 'styleSheetAdded'/'styleSheetRemoved' events and
-//! subsequently load the required stylesheet contents using the 'getStyleSheet\[Text\]()' methods.
-
-use serde::{Serialize, Deserialize};
-use serde_json::Value as JsonValue;
+//! subsequently load the required stylesheet contents using the 'getStyleSheet[Text]()' methods.
 
 /// Stylesheet type: "injected" for stylesheets injected via extension, "user-agent" for user-agent
 /// stylesheets, "inspector" for stylesheets created by the inspector (i.e. those holding the "via
@@ -123,7 +123,7 @@ pub struct ProtocolValue {
 }
 
 /// Specificity:
-/// <https://drafts.csswg.org/selectors/#specificity-rules>
+/// https://drafts.csswg.org/selectors/#specificity-rules
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -196,7 +196,7 @@ pub struct CSSStyleSheetHeader {
     pub isInline: bool,
     /// Whether this stylesheet is mutable. Inline stylesheets become mutable
     /// after they have been modified via CSSOM API.
-    /// '\<link\>' element's stylesheets become mutable only if DevTools modifies them.
+    /// '<link>' element's stylesheets become mutable only if DevTools modifies them.
     /// Constructed stylesheets (new CSSStyleSheet()) are mutable immediately after creation.
 
     pub isMutable: bool,
@@ -722,7 +722,7 @@ pub struct FontVariationAxis {
     pub defaultValue: f64,
 }
 
-/// Properties of a web font: <https://www.w3.org/TR/2008/REC-CSS2-20080411/fonts.html#font-descriptions>
+/// Properties of a web font: https://www.w3.org/TR/2008/REC-CSS2-20080411/fonts.html#font-descriptions
 /// and additional information such as platformFontFamily and fontVariationAxes.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1040,6 +1040,13 @@ pub struct AddRuleReturns {
     pub rule: CSSRule,
 }
 
+impl AddRuleParams { pub const METHOD: &'static str = "CSS.addRule"; }
+
+impl crate::CdpCommand for AddRuleParams {
+    const METHOD: &'static str = "CSS.addRule";
+    type Response = AddRuleReturns;
+}
+
 /// Returns all class names from specified stylesheet.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1057,6 +1064,13 @@ pub struct CollectClassNamesReturns {
     /// Class name list.
 
     pub classNames: Vec<String>,
+}
+
+impl CollectClassNamesParams { pub const METHOD: &'static str = "CSS.collectClassNames"; }
+
+impl crate::CdpCommand for CollectClassNamesParams {
+    const METHOD: &'static str = "CSS.collectClassNames";
+    type Response = CollectClassNamesReturns;
 }
 
 /// Creates a new special "via-inspector" stylesheet in the frame with given 'frameId'.
@@ -1086,6 +1100,33 @@ pub struct CreateStyleSheetReturns {
     pub styleSheetId: crate::dom::StyleSheetId,
 }
 
+impl CreateStyleSheetParams { pub const METHOD: &'static str = "CSS.createStyleSheet"; }
+
+impl crate::CdpCommand for CreateStyleSheetParams {
+    const METHOD: &'static str = "CSS.createStyleSheet";
+    type Response = CreateStyleSheetReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct DisableParams {}
+
+impl DisableParams { pub const METHOD: &'static str = "CSS.disable"; }
+
+impl crate::CdpCommand for DisableParams {
+    const METHOD: &'static str = "CSS.disable";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct EnableParams {}
+
+impl EnableParams { pub const METHOD: &'static str = "CSS.enable"; }
+
+impl crate::CdpCommand for EnableParams {
+    const METHOD: &'static str = "CSS.enable";
+    type Response = crate::EmptyReturns;
+}
+
 /// Ensures that the given node will have specified pseudo-classes whenever its style is computed by
 /// the browser.
 
@@ -1100,6 +1141,13 @@ pub struct ForcePseudoStateParams {
     pub forcedPseudoClasses: Vec<String>,
 }
 
+impl ForcePseudoStateParams { pub const METHOD: &'static str = "CSS.forcePseudoState"; }
+
+impl crate::CdpCommand for ForcePseudoStateParams {
+    const METHOD: &'static str = "CSS.forcePseudoState";
+    type Response = crate::EmptyReturns;
+}
+
 /// Ensures that the given node is in its starting-style state.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1111,6 +1159,13 @@ pub struct ForceStartingStyleParams {
     /// Boolean indicating if this is on or off.
 
     pub forced: bool,
+}
+
+impl ForceStartingStyleParams { pub const METHOD: &'static str = "CSS.forceStartingStyle"; }
+
+impl crate::CdpCommand for ForceStartingStyleParams {
+    const METHOD: &'static str = "CSS.forceStartingStyle";
+    type Response = crate::EmptyReturns;
 }
 
 
@@ -1145,6 +1200,13 @@ pub struct GetBackgroundColorsReturns {
     pub computedFontWeight: Option<String>,
 }
 
+impl GetBackgroundColorsParams { pub const METHOD: &'static str = "CSS.getBackgroundColors"; }
+
+impl crate::CdpCommand for GetBackgroundColorsParams {
+    const METHOD: &'static str = "CSS.getBackgroundColors";
+    type Response = GetBackgroundColorsReturns;
+}
+
 /// Returns the computed style for a DOM node identified by 'nodeId'.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1166,6 +1228,13 @@ pub struct GetComputedStyleForNodeReturns {
     /// computed style.
 
     pub extraFields: ComputedStyleExtraFields,
+}
+
+impl GetComputedStyleForNodeParams { pub const METHOD: &'static str = "CSS.getComputedStyleForNode"; }
+
+impl crate::CdpCommand for GetComputedStyleForNodeParams {
+    const METHOD: &'static str = "CSS.getComputedStyleForNode";
+    type Response = GetComputedStyleForNodeReturns;
 }
 
 /// Resolve the specified values in the context of the provided element.
@@ -1223,6 +1292,13 @@ pub struct ResolveValuesReturns {
     pub results: Vec<String>,
 }
 
+impl ResolveValuesParams { pub const METHOD: &'static str = "CSS.resolveValues"; }
+
+impl crate::CdpCommand for ResolveValuesParams {
+    const METHOD: &'static str = "CSS.resolveValues";
+    type Response = ResolveValuesReturns;
+}
+
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -1239,6 +1315,13 @@ pub struct GetLonghandPropertiesParams {
 pub struct GetLonghandPropertiesReturns {
 
     pub longhandProperties: Vec<CSSProperty>,
+}
+
+impl GetLonghandPropertiesParams { pub const METHOD: &'static str = "CSS.getLonghandProperties"; }
+
+impl crate::CdpCommand for GetLonghandPropertiesParams {
+    const METHOD: &'static str = "CSS.getLonghandProperties";
+    type Response = GetLonghandPropertiesReturns;
 }
 
 /// Returns the styles defined inline (explicitly in the "style" attribute and implicitly, using DOM
@@ -1265,6 +1348,13 @@ pub struct GetInlineStylesForNodeReturns {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub attributesStyle: Option<CSSStyle>,
+}
+
+impl GetInlineStylesForNodeParams { pub const METHOD: &'static str = "CSS.getInlineStylesForNode"; }
+
+impl crate::CdpCommand for GetInlineStylesForNodeParams {
+    const METHOD: &'static str = "CSS.getInlineStylesForNode";
+    type Response = GetInlineStylesForNodeReturns;
 }
 
 /// Returns the styles coming from animations & transitions
@@ -1296,6 +1386,13 @@ pub struct GetAnimatedStylesForNodeReturns {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub inherited: Option<Vec<InheritedAnimatedStyleEntry>>,
+}
+
+impl GetAnimatedStylesForNodeParams { pub const METHOD: &'static str = "CSS.getAnimatedStylesForNode"; }
+
+impl crate::CdpCommand for GetAnimatedStylesForNodeParams {
+    const METHOD: &'static str = "CSS.getAnimatedStylesForNode";
+    type Response = GetAnimatedStylesForNodeReturns;
 }
 
 /// Returns requested styles for a DOM node identified by 'nodeId'.
@@ -1371,6 +1468,13 @@ pub struct GetMatchedStylesForNodeReturns {
     pub cssFunctionRules: Option<Vec<CSSFunctionRule>>,
 }
 
+impl GetMatchedStylesForNodeParams { pub const METHOD: &'static str = "CSS.getMatchedStylesForNode"; }
+
+impl crate::CdpCommand for GetMatchedStylesForNodeParams {
+    const METHOD: &'static str = "CSS.getMatchedStylesForNode";
+    type Response = GetMatchedStylesForNodeReturns;
+}
+
 /// Returns the values of the default UA-defined environment variables used in env()
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1380,6 +1484,16 @@ pub struct GetEnvironmentVariablesReturns {
     pub environmentVariables: serde_json::Map<String, JsonValue>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GetEnvironmentVariablesParams {}
+
+impl GetEnvironmentVariablesParams { pub const METHOD: &'static str = "CSS.getEnvironmentVariables"; }
+
+impl crate::CdpCommand for GetEnvironmentVariablesParams {
+    const METHOD: &'static str = "CSS.getEnvironmentVariables";
+    type Response = GetEnvironmentVariablesReturns;
+}
+
 /// Returns all media queries parsed by the rendering engine.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1387,6 +1501,16 @@ pub struct GetEnvironmentVariablesReturns {
 pub struct GetMediaQueriesReturns {
 
     pub medias: Vec<CSSMedia>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GetMediaQueriesParams {}
+
+impl GetMediaQueriesParams { pub const METHOD: &'static str = "CSS.getMediaQueries"; }
+
+impl crate::CdpCommand for GetMediaQueriesParams {
+    const METHOD: &'static str = "CSS.getMediaQueries";
+    type Response = GetMediaQueriesReturns;
 }
 
 /// Requests information about platform fonts which we used to render child TextNodes in the given
@@ -1410,6 +1534,13 @@ pub struct GetPlatformFontsForNodeReturns {
     pub fonts: Vec<PlatformFontUsage>,
 }
 
+impl GetPlatformFontsForNodeParams { pub const METHOD: &'static str = "CSS.getPlatformFontsForNode"; }
+
+impl crate::CdpCommand for GetPlatformFontsForNodeParams {
+    const METHOD: &'static str = "CSS.getPlatformFontsForNode";
+    type Response = GetPlatformFontsForNodeReturns;
+}
+
 /// Returns the current textual content for a stylesheet.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1427,6 +1558,13 @@ pub struct GetStyleSheetTextReturns {
     /// The stylesheet text.
 
     pub text: String,
+}
+
+impl GetStyleSheetTextParams { pub const METHOD: &'static str = "CSS.getStyleSheetText"; }
+
+impl crate::CdpCommand for GetStyleSheetTextParams {
+    const METHOD: &'static str = "CSS.getStyleSheetText";
+    type Response = GetStyleSheetTextReturns;
 }
 
 /// Returns all layers parsed by the rendering engine for the tree scope of a node.
@@ -1453,6 +1591,13 @@ pub struct GetLayersForNodeReturns {
     pub rootLayer: CSSLayerData,
 }
 
+impl GetLayersForNodeParams { pub const METHOD: &'static str = "CSS.getLayersForNode"; }
+
+impl crate::CdpCommand for GetLayersForNodeParams {
+    const METHOD: &'static str = "CSS.getLayersForNode";
+    type Response = GetLayersForNodeReturns;
+}
+
 /// Given a CSS selector text and a style sheet ID, getLocationForSelector
 /// returns an array of locations of the CSS selector in the style sheet.
 
@@ -1475,6 +1620,13 @@ pub struct GetLocationForSelectorReturns {
     pub ranges: Vec<SourceRange>,
 }
 
+impl GetLocationForSelectorParams { pub const METHOD: &'static str = "CSS.getLocationForSelector"; }
+
+impl crate::CdpCommand for GetLocationForSelectorParams {
+    const METHOD: &'static str = "CSS.getLocationForSelector";
+    type Response = GetLocationForSelectorReturns;
+}
+
 /// Starts tracking the given node for the computed style updates
 /// and whenever the computed style is updated for node, it queues
 /// a 'computedStyleUpdated' event with throttling.
@@ -1488,6 +1640,13 @@ pub struct TrackComputedStyleUpdatesForNodeParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub nodeId: Option<crate::dom::NodeId>,
+}
+
+impl TrackComputedStyleUpdatesForNodeParams { pub const METHOD: &'static str = "CSS.trackComputedStyleUpdatesForNode"; }
+
+impl crate::CdpCommand for TrackComputedStyleUpdatesForNodeParams {
+    const METHOD: &'static str = "CSS.trackComputedStyleUpdatesForNode";
+    type Response = crate::EmptyReturns;
 }
 
 /// Starts tracking the given computed styles for updates. The specified array of properties
@@ -1504,6 +1663,13 @@ pub struct TrackComputedStyleUpdatesParams {
     pub propertiesToTrack: Vec<CSSComputedStyleProperty>,
 }
 
+impl TrackComputedStyleUpdatesParams { pub const METHOD: &'static str = "CSS.trackComputedStyleUpdates"; }
+
+impl crate::CdpCommand for TrackComputedStyleUpdatesParams {
+    const METHOD: &'static str = "CSS.trackComputedStyleUpdates";
+    type Response = crate::EmptyReturns;
+}
+
 /// Polls the next batch of computed style updates.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1512,6 +1678,16 @@ pub struct TakeComputedStyleUpdatesReturns {
     /// The list of node Ids that have their tracked computed styles updated.
 
     pub nodeIds: Vec<crate::dom::NodeId>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct TakeComputedStyleUpdatesParams {}
+
+impl TakeComputedStyleUpdatesParams { pub const METHOD: &'static str = "CSS.takeComputedStyleUpdates"; }
+
+impl crate::CdpCommand for TakeComputedStyleUpdatesParams {
+    const METHOD: &'static str = "CSS.takeComputedStyleUpdates";
+    type Response = TakeComputedStyleUpdatesReturns;
 }
 
 /// Find a rule with the given active property for the given node and set the new value for this
@@ -1527,6 +1703,13 @@ pub struct SetEffectivePropertyValueForNodeParams {
     pub propertyName: String,
 
     pub value: String,
+}
+
+impl SetEffectivePropertyValueForNodeParams { pub const METHOD: &'static str = "CSS.setEffectivePropertyValueForNode"; }
+
+impl crate::CdpCommand for SetEffectivePropertyValueForNodeParams {
+    const METHOD: &'static str = "CSS.setEffectivePropertyValueForNode";
+    type Response = crate::EmptyReturns;
 }
 
 /// Modifies the property rule property name.
@@ -1552,6 +1735,13 @@ pub struct SetPropertyRulePropertyNameReturns {
     pub propertyName: ProtocolValue,
 }
 
+impl SetPropertyRulePropertyNameParams { pub const METHOD: &'static str = "CSS.setPropertyRulePropertyName"; }
+
+impl crate::CdpCommand for SetPropertyRulePropertyNameParams {
+    const METHOD: &'static str = "CSS.setPropertyRulePropertyName";
+    type Response = SetPropertyRulePropertyNameReturns;
+}
+
 /// Modifies the keyframe rule key text.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1573,6 +1763,13 @@ pub struct SetKeyframeKeyReturns {
     /// The resulting key text after modification.
 
     pub keyText: ProtocolValue,
+}
+
+impl SetKeyframeKeyParams { pub const METHOD: &'static str = "CSS.setKeyframeKey"; }
+
+impl crate::CdpCommand for SetKeyframeKeyParams {
+    const METHOD: &'static str = "CSS.setKeyframeKey";
+    type Response = SetKeyframeKeyReturns;
 }
 
 /// Modifies the rule selector.
@@ -1598,6 +1795,13 @@ pub struct SetMediaTextReturns {
     pub media: CSSMedia,
 }
 
+impl SetMediaTextParams { pub const METHOD: &'static str = "CSS.setMediaText"; }
+
+impl crate::CdpCommand for SetMediaTextParams {
+    const METHOD: &'static str = "CSS.setMediaText";
+    type Response = SetMediaTextReturns;
+}
+
 /// Modifies the expression of a container query.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1619,6 +1823,13 @@ pub struct SetContainerQueryTextReturns {
     /// The resulting CSS container query rule after modification.
 
     pub containerQuery: CSSContainerQuery,
+}
+
+impl SetContainerQueryTextParams { pub const METHOD: &'static str = "CSS.setContainerQueryText"; }
+
+impl crate::CdpCommand for SetContainerQueryTextParams {
+    const METHOD: &'static str = "CSS.setContainerQueryText";
+    type Response = SetContainerQueryTextReturns;
 }
 
 /// Modifies the expression of a supports at-rule.
@@ -1644,6 +1855,13 @@ pub struct SetSupportsTextReturns {
     pub supports: CSSSupports,
 }
 
+impl SetSupportsTextParams { pub const METHOD: &'static str = "CSS.setSupportsText"; }
+
+impl crate::CdpCommand for SetSupportsTextParams {
+    const METHOD: &'static str = "CSS.setSupportsText";
+    type Response = SetSupportsTextReturns;
+}
+
 /// Modifies the expression of a navigation at-rule.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1665,6 +1883,13 @@ pub struct SetNavigationTextReturns {
     /// The resulting CSS Navigation rule after modification.
 
     pub navigation: CSSNavigation,
+}
+
+impl SetNavigationTextParams { pub const METHOD: &'static str = "CSS.setNavigationText"; }
+
+impl crate::CdpCommand for SetNavigationTextParams {
+    const METHOD: &'static str = "CSS.setNavigationText";
+    type Response = SetNavigationTextReturns;
 }
 
 /// Modifies the expression of a scope at-rule.
@@ -1690,6 +1915,13 @@ pub struct SetScopeTextReturns {
     pub scope: CSSScope,
 }
 
+impl SetScopeTextParams { pub const METHOD: &'static str = "CSS.setScopeText"; }
+
+impl crate::CdpCommand for SetScopeTextParams {
+    const METHOD: &'static str = "CSS.setScopeText";
+    type Response = SetScopeTextReturns;
+}
+
 /// Modifies the rule selector.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1713,6 +1945,13 @@ pub struct SetRuleSelectorReturns {
     pub selectorList: SelectorList,
 }
 
+impl SetRuleSelectorParams { pub const METHOD: &'static str = "CSS.setRuleSelector"; }
+
+impl crate::CdpCommand for SetRuleSelectorParams {
+    const METHOD: &'static str = "CSS.setRuleSelector";
+    type Response = SetRuleSelectorReturns;
+}
+
 /// Sets the new stylesheet text.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1733,6 +1972,13 @@ pub struct SetStyleSheetTextReturns {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sourceMapURL: Option<String>,
+}
+
+impl SetStyleSheetTextParams { pub const METHOD: &'static str = "CSS.setStyleSheetText"; }
+
+impl crate::CdpCommand for SetStyleSheetTextParams {
+    const METHOD: &'static str = "CSS.setStyleSheetText";
+    type Response = SetStyleSheetTextReturns;
 }
 
 /// Applies specified style edits one after another in the given order.
@@ -1760,6 +2006,23 @@ pub struct SetStyleTextsReturns {
     pub styles: Vec<CSSStyle>,
 }
 
+impl SetStyleTextsParams { pub const METHOD: &'static str = "CSS.setStyleTexts"; }
+
+impl crate::CdpCommand for SetStyleTextsParams {
+    const METHOD: &'static str = "CSS.setStyleTexts";
+    type Response = SetStyleTextsReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct StartRuleUsageTrackingParams {}
+
+impl StartRuleUsageTrackingParams { pub const METHOD: &'static str = "CSS.startRuleUsageTracking"; }
+
+impl crate::CdpCommand for StartRuleUsageTrackingParams {
+    const METHOD: &'static str = "CSS.startRuleUsageTracking";
+    type Response = crate::EmptyReturns;
+}
+
 /// Stop tracking rule usage and return the list of rules that were used since last call to
 /// 'takeCoverageDelta' (or since start of coverage instrumentation).
 
@@ -1768,6 +2031,16 @@ pub struct SetStyleTextsReturns {
 pub struct StopRuleUsageTrackingReturns {
 
     pub ruleUsage: Vec<RuleUsage>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct StopRuleUsageTrackingParams {}
+
+impl StopRuleUsageTrackingParams { pub const METHOD: &'static str = "CSS.stopRuleUsageTracking"; }
+
+impl crate::CdpCommand for StopRuleUsageTrackingParams {
+    const METHOD: &'static str = "CSS.stopRuleUsageTracking";
+    type Response = StopRuleUsageTrackingReturns;
 }
 
 /// Obtain list of rules that became used since last call to this method (or since start of coverage
@@ -1783,6 +2056,16 @@ pub struct TakeCoverageDeltaReturns {
     pub timestamp: f64,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct TakeCoverageDeltaParams {}
+
+impl TakeCoverageDeltaParams { pub const METHOD: &'static str = "CSS.takeCoverageDelta"; }
+
+impl crate::CdpCommand for TakeCoverageDeltaParams {
+    const METHOD: &'static str = "CSS.takeCoverageDelta";
+    type Response = TakeCoverageDeltaReturns;
+}
+
 /// Enables/disables rendering of local CSS fonts (enabled by default).
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1791,4 +2074,11 @@ pub struct SetLocalFontsEnabledParams {
     /// Whether rendering of local fonts is enabled.
 
     pub enabled: bool,
+}
+
+impl SetLocalFontsEnabledParams { pub const METHOD: &'static str = "CSS.setLocalFontsEnabled"; }
+
+impl crate::CdpCommand for SetLocalFontsEnabledParams {
+    const METHOD: &'static str = "CSS.setLocalFontsEnabled";
+    type Response = crate::EmptyReturns;
 }

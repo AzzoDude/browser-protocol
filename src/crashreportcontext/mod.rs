@@ -1,6 +1,7 @@
-//! This domain exposes the current state of the CrashReportContext API.
-
 use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
+
+//! This domain exposes the current state of the CrashReportContext API.
 
 /// Key-value pair in CrashReportContext.
 
@@ -23,4 +24,14 @@ pub struct CrashReportContextEntry {
 pub struct GetEntriesReturns {
 
     pub entries: Vec<CrashReportContextEntry>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GetEntriesParams {}
+
+impl GetEntriesParams { pub const METHOD: &'static str = "CrashReportContext.getEntries"; }
+
+impl crate::CdpCommand for GetEntriesParams {
+    const METHOD: &'static str = "CrashReportContext.getEntries";
+    type Response = GetEntriesReturns;
 }

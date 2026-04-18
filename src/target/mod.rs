@@ -1,6 +1,7 @@
-//! Supports additional targets discovery and allows to attach to them.
-
 use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
+
+//! Supports additional targets discovery and allows to attach to them.
 
 
 pub type TargetID = String;
@@ -15,7 +16,7 @@ pub type SessionID = String;
 pub struct TargetInfo {
 
     pub targetId: TargetID,
-    /// List of types: <https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/devtools_agent_host_impl.cc?ss=chromium&q=f:devtools%20-f:out%20%22::kTypeTab%5B%5D%22>
+    /// List of types: https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/devtools_agent_host_impl.cc?ss=chromium&q=f:devtools%20-f:out%20%22::kTypeTab%5B%5D%22
 
     #[serde(rename = "type")]
     pub type_: String,
@@ -72,7 +73,7 @@ pub struct FilterEntry {
 /// the first entry that matches determines if the target is included or not,
 /// depending on the value of 'exclude' field in the entry.
 /// If filter is not specified, the one assumed is
-/// \[{type: "browser", exclude: true}, {type: "tab", exclude: true}, {}\]
+/// [{type: "browser", exclude: true}, {type: "tab", exclude: true}, {}]
 /// (i.e. include everything but 'browser' and 'tab').
 
 pub type TargetFilter = Vec<FilterEntry>;
@@ -107,6 +108,13 @@ pub struct ActivateTargetParams {
     pub targetId: TargetID,
 }
 
+impl ActivateTargetParams { pub const METHOD: &'static str = "Target.activateTarget"; }
+
+impl crate::CdpCommand for ActivateTargetParams {
+    const METHOD: &'static str = "Target.activateTarget";
+    type Response = crate::EmptyReturns;
+}
+
 /// Attaches to the target with given id.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -132,6 +140,13 @@ pub struct AttachToTargetReturns {
     pub sessionId: SessionID,
 }
 
+impl AttachToTargetParams { pub const METHOD: &'static str = "Target.attachToTarget"; }
+
+impl crate::CdpCommand for AttachToTargetParams {
+    const METHOD: &'static str = "Target.attachToTarget";
+    type Response = AttachToTargetReturns;
+}
+
 /// Attaches to the browser target, only uses flat sessionId mode.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -140,6 +155,16 @@ pub struct AttachToBrowserTargetReturns {
     /// Id assigned to the session.
 
     pub sessionId: SessionID,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct AttachToBrowserTargetParams {}
+
+impl AttachToBrowserTargetParams { pub const METHOD: &'static str = "Target.attachToBrowserTarget"; }
+
+impl crate::CdpCommand for AttachToBrowserTargetParams {
+    const METHOD: &'static str = "Target.attachToBrowserTarget";
+    type Response = AttachToBrowserTargetReturns;
 }
 
 /// Closes the target. If the target is a page that gets closed too.
@@ -161,14 +186,21 @@ pub struct CloseTargetReturns {
     pub success: bool,
 }
 
+impl CloseTargetParams { pub const METHOD: &'static str = "Target.closeTarget"; }
+
+impl crate::CdpCommand for CloseTargetParams {
+    const METHOD: &'static str = "Target.closeTarget";
+    type Response = CloseTargetReturns;
+}
+
 /// Inject object to the target's main frame that provides a communication
 /// channel with browser target.
 /// 
-/// Injected object will be available as 'window\[bindingName\]'.
+/// Injected object will be available as 'window[bindingName]'.
 /// 
 /// The object has the following API:
 /// - 'binding.send(json)' - a method to send messages over the remote debugging protocol
-/// - 'binding.onmessage = json =\> handleMessage(json)' - a callback that will be called for the protocol notifications and command responses.
+/// - 'binding.onmessage = json => handleMessage(json)' - a callback that will be called for the protocol notifications and command responses.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -183,6 +215,13 @@ pub struct ExposeDevToolsProtocolParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub inheritPermissions: Option<bool>,
+}
+
+impl ExposeDevToolsProtocolParams { pub const METHOD: &'static str = "Target.exposeDevToolsProtocol"; }
+
+impl crate::CdpCommand for ExposeDevToolsProtocolParams {
+    const METHOD: &'static str = "Target.exposeDevToolsProtocol";
+    type Response = crate::EmptyReturns;
 }
 
 /// Creates a new empty BrowserContext. Similar to an incognito profile but you can have more than
@@ -221,6 +260,13 @@ pub struct CreateBrowserContextReturns {
     pub browserContextId: crate::browser::BrowserContextID,
 }
 
+impl CreateBrowserContextParams { pub const METHOD: &'static str = "Target.createBrowserContext"; }
+
+impl crate::CdpCommand for CreateBrowserContextParams {
+    const METHOD: &'static str = "Target.createBrowserContext";
+    type Response = CreateBrowserContextReturns;
+}
+
 /// Returns all browser contexts created with 'Target.createBrowserContext' method.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -233,6 +279,16 @@ pub struct GetBrowserContextsReturns {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub defaultBrowserContextId: Option<crate::browser::BrowserContextID>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GetBrowserContextsParams {}
+
+impl GetBrowserContextsParams { pub const METHOD: &'static str = "Target.getBrowserContexts"; }
+
+impl crate::CdpCommand for GetBrowserContextsParams {
+    const METHOD: &'static str = "Target.getBrowserContexts";
+    type Response = GetBrowserContextsReturns;
 }
 
 /// Creates a new page.
@@ -314,6 +370,13 @@ pub struct CreateTargetReturns {
     pub targetId: TargetID,
 }
 
+impl CreateTargetParams { pub const METHOD: &'static str = "Target.createTarget"; }
+
+impl crate::CdpCommand for CreateTargetParams {
+    const METHOD: &'static str = "Target.createTarget";
+    type Response = CreateTargetReturns;
+}
+
 /// Detaches session with given id.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -329,6 +392,13 @@ pub struct DetachFromTargetParams {
     pub targetId: Option<TargetID>,
 }
 
+impl DetachFromTargetParams { pub const METHOD: &'static str = "Target.detachFromTarget"; }
+
+impl crate::CdpCommand for DetachFromTargetParams {
+    const METHOD: &'static str = "Target.detachFromTarget";
+    type Response = crate::EmptyReturns;
+}
+
 /// Deletes a BrowserContext. All the belonging pages will be closed without calling their
 /// beforeunload hooks.
 
@@ -337,6 +407,13 @@ pub struct DetachFromTargetParams {
 pub struct DisposeBrowserContextParams {
 
     pub browserContextId: crate::browser::BrowserContextID,
+}
+
+impl DisposeBrowserContextParams { pub const METHOD: &'static str = "Target.disposeBrowserContext"; }
+
+impl crate::CdpCommand for DisposeBrowserContextParams {
+    const METHOD: &'static str = "Target.disposeBrowserContext";
+    type Response = crate::EmptyReturns;
 }
 
 /// Returns information about a target.
@@ -356,6 +433,13 @@ pub struct GetTargetInfoParams {
 pub struct GetTargetInfoReturns {
 
     pub targetInfo: TargetInfo,
+}
+
+impl GetTargetInfoParams { pub const METHOD: &'static str = "Target.getTargetInfo"; }
+
+impl crate::CdpCommand for GetTargetInfoParams {
+    const METHOD: &'static str = "Target.getTargetInfo";
+    type Response = GetTargetInfoReturns;
 }
 
 /// Retrieves a list of available targets.
@@ -381,6 +465,13 @@ pub struct GetTargetsReturns {
     pub targetInfos: Vec<TargetInfo>,
 }
 
+impl GetTargetsParams { pub const METHOD: &'static str = "Target.getTargets"; }
+
+impl crate::CdpCommand for GetTargetsParams {
+    const METHOD: &'static str = "Target.getTargets";
+    type Response = GetTargetsReturns;
+}
+
 /// Sends protocol message over session with given id.
 /// Consider using flat mode instead; see commands attachToTarget, setAutoAttach,
 /// and crbug.com/991325.
@@ -398,6 +489,13 @@ pub struct SendMessageToTargetParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub targetId: Option<TargetID>,
+}
+
+impl SendMessageToTargetParams { pub const METHOD: &'static str = "Target.sendMessageToTarget"; }
+
+impl crate::CdpCommand for SendMessageToTargetParams {
+    const METHOD: &'static str = "Target.sendMessageToTarget";
+    type Response = crate::EmptyReturns;
 }
 
 /// Controls whether to automatically attach to new targets which are considered
@@ -431,6 +529,13 @@ pub struct SetAutoAttachParams {
     pub filter: Option<TargetFilter>,
 }
 
+impl SetAutoAttachParams { pub const METHOD: &'static str = "Target.setAutoAttach"; }
+
+impl crate::CdpCommand for SetAutoAttachParams {
+    const METHOD: &'static str = "Target.setAutoAttach";
+    type Response = crate::EmptyReturns;
+}
+
 /// Adds the specified target to the list of targets that will be monitored for any related target
 /// creation (such as child frames, child workers and new versions of service worker) and reported
 /// through 'attachedToTarget'. The specified target is also auto-attached.
@@ -452,6 +557,13 @@ pub struct AutoAttachRelatedParams {
     pub filter: Option<TargetFilter>,
 }
 
+impl AutoAttachRelatedParams { pub const METHOD: &'static str = "Target.autoAttachRelated"; }
+
+impl crate::CdpCommand for AutoAttachRelatedParams {
+    const METHOD: &'static str = "Target.autoAttachRelated";
+    type Response = crate::EmptyReturns;
+}
+
 /// Controls whether to discover available targets and notify via
 /// 'targetCreated/targetInfoChanged/targetDestroyed' events.
 
@@ -468,6 +580,13 @@ pub struct SetDiscoverTargetsParams {
     pub filter: Option<TargetFilter>,
 }
 
+impl SetDiscoverTargetsParams { pub const METHOD: &'static str = "Target.setDiscoverTargets"; }
+
+impl crate::CdpCommand for SetDiscoverTargetsParams {
+    const METHOD: &'static str = "Target.setDiscoverTargets";
+    type Response = crate::EmptyReturns;
+}
+
 /// Enables target discovery for the specified locations, when 'setDiscoverTargets' was set to
 /// 'true'.
 
@@ -477,6 +596,13 @@ pub struct SetRemoteLocationsParams {
     /// List of remote locations.
 
     pub locations: Vec<RemoteLocation>,
+}
+
+impl SetRemoteLocationsParams { pub const METHOD: &'static str = "Target.setRemoteLocations"; }
+
+impl crate::CdpCommand for SetRemoteLocationsParams {
+    const METHOD: &'static str = "Target.setRemoteLocations";
+    type Response = crate::EmptyReturns;
 }
 
 /// Gets the targetId of the DevTools page target opened for the given target
@@ -500,6 +626,13 @@ pub struct GetDevToolsTargetReturns {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub targetId: Option<TargetID>,
+}
+
+impl GetDevToolsTargetParams { pub const METHOD: &'static str = "Target.getDevToolsTarget"; }
+
+impl crate::CdpCommand for GetDevToolsTargetParams {
+    const METHOD: &'static str = "Target.getDevToolsTarget";
+    type Response = GetDevToolsTargetReturns;
 }
 
 /// Opens a DevTools window for the target.
@@ -526,4 +659,11 @@ pub struct OpenDevToolsReturns {
     /// The targetId of DevTools page target.
 
     pub targetId: TargetID,
+}
+
+impl OpenDevToolsParams { pub const METHOD: &'static str = "Target.openDevTools"; }
+
+impl crate::CdpCommand for OpenDevToolsParams {
+    const METHOD: &'static str = "Target.openDevTools";
+    type Response = OpenDevToolsReturns;
 }

@@ -1,4 +1,5 @@
 use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
 
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -37,7 +38,7 @@ pub struct BucketFileSystemLocator {
     /// Storage key
 
     pub storageKey: crate::storage::SerializedStorageKey,
-    /// Bucket name. Not passing a 'bucketName' will retrieve the default Bucket. (<https://developer.mozilla.org/en-US/docs/Web/API/Storage_API#storage_buckets>)
+    /// Bucket name. Not passing a 'bucketName' will retrieve the default Bucket. (https://developer.mozilla.org/en-US/docs/Web/API/Storage_API#storage_buckets)
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bucketName: Option<String>,
@@ -61,4 +62,11 @@ pub struct GetDirectoryReturns {
     /// Returns the directory object at the path.
 
     pub directory: Directory,
+}
+
+impl GetDirectoryParams { pub const METHOD: &'static str = "FileSystem.getDirectory"; }
+
+impl crate::CdpCommand for GetDirectoryParams {
+    const METHOD: &'static str = "FileSystem.getDirectory";
+    type Response = GetDirectoryReturns;
 }

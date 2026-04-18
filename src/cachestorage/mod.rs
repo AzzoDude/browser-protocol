@@ -1,4 +1,5 @@
 use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
 
 /// Unique identifier of the Cache object.
 
@@ -101,6 +102,13 @@ pub struct DeleteCacheParams {
     pub cacheId: CacheId,
 }
 
+impl DeleteCacheParams { pub const METHOD: &'static str = "CacheStorage.deleteCache"; }
+
+impl crate::CdpCommand for DeleteCacheParams {
+    const METHOD: &'static str = "CacheStorage.deleteCache";
+    type Response = crate::EmptyReturns;
+}
+
 /// Deletes a cache entry.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -112,6 +120,13 @@ pub struct DeleteEntryParams {
     /// URL spec of the request.
 
     pub request: String,
+}
+
+impl DeleteEntryParams { pub const METHOD: &'static str = "CacheStorage.deleteEntry"; }
+
+impl crate::CdpCommand for DeleteEntryParams {
+    const METHOD: &'static str = "CacheStorage.deleteEntry";
+    type Response = crate::EmptyReturns;
 }
 
 /// Requests cache names.
@@ -144,6 +159,13 @@ pub struct RequestCacheNamesReturns {
     pub caches: Vec<Cache>,
 }
 
+impl RequestCacheNamesParams { pub const METHOD: &'static str = "CacheStorage.requestCacheNames"; }
+
+impl crate::CdpCommand for RequestCacheNamesParams {
+    const METHOD: &'static str = "CacheStorage.requestCacheNames";
+    type Response = RequestCacheNamesReturns;
+}
+
 /// Fetches cache entry.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -168,6 +190,13 @@ pub struct RequestCachedResponseReturns {
     /// Response read from the cache.
 
     pub response: CachedResponse,
+}
+
+impl RequestCachedResponseParams { pub const METHOD: &'static str = "CacheStorage.requestCachedResponse"; }
+
+impl crate::CdpCommand for RequestCachedResponseParams {
+    const METHOD: &'static str = "CacheStorage.requestCachedResponse";
+    type Response = RequestCachedResponseReturns;
 }
 
 /// Requests data from cache.
@@ -204,4 +233,11 @@ pub struct RequestEntriesReturns {
     /// is the count of all entries from this storage.
 
     pub returnCount: f64,
+}
+
+impl RequestEntriesParams { pub const METHOD: &'static str = "CacheStorage.requestEntries"; }
+
+impl crate::CdpCommand for RequestEntriesParams {
+    const METHOD: &'static str = "CacheStorage.requestEntries";
+    type Response = RequestEntriesReturns;
 }

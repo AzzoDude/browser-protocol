@@ -1,6 +1,7 @@
-//! This domain facilitates obtaining document snapshots with DOM, layout, and style information.
-
 use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
+
+//! This domain facilitates obtaining document snapshots with DOM, layout, and style information.
 
 /// A Node in the DOM tree.
 
@@ -443,6 +444,26 @@ pub struct TextBoxSnapshot {
     pub length: Vec<i64>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct DisableParams {}
+
+impl DisableParams { pub const METHOD: &'static str = "DOMSnapshot.disable"; }
+
+impl crate::CdpCommand for DisableParams {
+    const METHOD: &'static str = "DOMSnapshot.disable";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct EnableParams {}
+
+impl EnableParams { pub const METHOD: &'static str = "DOMSnapshot.enable"; }
+
+impl crate::CdpCommand for EnableParams {
+    const METHOD: &'static str = "DOMSnapshot.enable";
+    type Response = crate::EmptyReturns;
+}
+
 /// Returns a document snapshot, including the full DOM tree of the root node (including iframes,
 /// template contents, and imported documents) in a flattened array, as well as layout and
 /// white-listed computed style information for the nodes. Shadow DOM in the returned DOM tree is
@@ -485,6 +506,13 @@ pub struct GetSnapshotReturns {
     /// Whitelisted ComputedStyle properties for each node in the layout tree.
 
     pub computedStyles: Vec<ComputedStyle>,
+}
+
+impl GetSnapshotParams { pub const METHOD: &'static str = "DOMSnapshot.getSnapshot"; }
+
+impl crate::CdpCommand for GetSnapshotParams {
+    const METHOD: &'static str = "DOMSnapshot.getSnapshot";
+    type Response = GetSnapshotReturns;
 }
 
 /// Returns a document snapshot, including the full DOM tree of the root node (including iframes,
@@ -534,4 +562,11 @@ pub struct CaptureSnapshotReturns {
     /// Shared string table that all string properties refer to with indexes.
 
     pub strings: Vec<String>,
+}
+
+impl CaptureSnapshotParams { pub const METHOD: &'static str = "DOMSnapshot.captureSnapshot"; }
+
+impl crate::CdpCommand for CaptureSnapshotParams {
+    const METHOD: &'static str = "DOMSnapshot.captureSnapshot";
+    type Response = CaptureSnapshotReturns;
 }

@@ -1,4 +1,5 @@
 use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
 
 /// Database with an array of object stores.
 
@@ -164,6 +165,13 @@ pub struct ClearObjectStoreParams {
     pub objectStoreName: String,
 }
 
+impl ClearObjectStoreParams { pub const METHOD: &'static str = "IndexedDB.clearObjectStore"; }
+
+impl crate::CdpCommand for ClearObjectStoreParams {
+    const METHOD: &'static str = "IndexedDB.clearObjectStore";
+    type Response = crate::EmptyReturns;
+}
+
 /// Deletes a database.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -185,6 +193,13 @@ pub struct DeleteDatabaseParams {
     /// Database name.
 
     pub databaseName: String,
+}
+
+impl DeleteDatabaseParams { pub const METHOD: &'static str = "IndexedDB.deleteDatabase"; }
+
+impl crate::CdpCommand for DeleteDatabaseParams {
+    const METHOD: &'static str = "IndexedDB.deleteDatabase";
+    type Response = crate::EmptyReturns;
 }
 
 /// Delete a range of entries from an object store
@@ -212,6 +227,33 @@ pub struct DeleteObjectStoreEntriesParams {
     /// Range of entry keys to delete
 
     pub keyRange: KeyRange,
+}
+
+impl DeleteObjectStoreEntriesParams { pub const METHOD: &'static str = "IndexedDB.deleteObjectStoreEntries"; }
+
+impl crate::CdpCommand for DeleteObjectStoreEntriesParams {
+    const METHOD: &'static str = "IndexedDB.deleteObjectStoreEntries";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct DisableParams {}
+
+impl DisableParams { pub const METHOD: &'static str = "IndexedDB.disable"; }
+
+impl crate::CdpCommand for DisableParams {
+    const METHOD: &'static str = "IndexedDB.disable";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct EnableParams {}
+
+impl EnableParams { pub const METHOD: &'static str = "IndexedDB.enable"; }
+
+impl crate::CdpCommand for EnableParams {
+    const METHOD: &'static str = "IndexedDB.enable";
+    type Response = crate::EmptyReturns;
 }
 
 /// Requests data from object store or index.
@@ -267,6 +309,13 @@ pub struct RequestDataReturns {
     pub hasMore: bool,
 }
 
+impl RequestDataParams { pub const METHOD: &'static str = "IndexedDB.requestData"; }
+
+impl crate::CdpCommand for RequestDataParams {
+    const METHOD: &'static str = "IndexedDB.requestData";
+    type Response = RequestDataReturns;
+}
+
 /// Gets metadata of an object store.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -308,6 +357,13 @@ pub struct GetMetadataReturns {
     pub keyGeneratorValue: f64,
 }
 
+impl GetMetadataParams { pub const METHOD: &'static str = "IndexedDB.getMetadata"; }
+
+impl crate::CdpCommand for GetMetadataParams {
+    const METHOD: &'static str = "IndexedDB.getMetadata";
+    type Response = GetMetadataReturns;
+}
+
 /// Requests database with given name in given frame.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -341,6 +397,13 @@ pub struct RequestDatabaseReturns {
     pub databaseWithObjectStores: DatabaseWithObjectStores,
 }
 
+impl RequestDatabaseParams { pub const METHOD: &'static str = "IndexedDB.requestDatabase"; }
+
+impl crate::CdpCommand for RequestDatabaseParams {
+    const METHOD: &'static str = "IndexedDB.requestDatabase";
+    type Response = RequestDatabaseReturns;
+}
+
 /// Requests database names for given security origin.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -369,4 +432,11 @@ pub struct RequestDatabaseNamesReturns {
     /// Database names for origin.
 
     pub databaseNames: Vec<String>,
+}
+
+impl RequestDatabaseNamesParams { pub const METHOD: &'static str = "IndexedDB.requestDatabaseNames"; }
+
+impl crate::CdpCommand for RequestDatabaseNamesParams {
+    const METHOD: &'static str = "IndexedDB.requestDatabaseNames";
+    type Response = RequestDatabaseNamesReturns;
 }

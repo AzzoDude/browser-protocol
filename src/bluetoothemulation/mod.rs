@@ -1,7 +1,8 @@
+use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
+
 //! This domain allows configuring virtual Bluetooth devices to test
 //! the web-bluetooth API.
-
-use serde::{Serialize, Deserialize};
 
 /// Indicates the various states of Central.
 
@@ -58,8 +59,8 @@ pub enum DescriptorOperationType {
 #[serde(rename_all = "camelCase")]
 pub struct ManufacturerData {
     /// Company identifier
-    /// <https://bitbucket.org/bluetooth-SIG/public/src/main/assigned_numbers/company_identifiers/company_identifiers.yaml>
-    /// <https://usb.org/developers>
+    /// https://bitbucket.org/bluetooth-SIG/public/src/main/assigned_numbers/company_identifiers/company_identifiers.yaml
+    /// https://usb.org/developers
 
     pub key: i64,
     /// Manufacturer-specific data (Encoded as a base64 string when passed over JSON)
@@ -151,6 +152,13 @@ pub struct EnableParams {
     pub leSupported: bool,
 }
 
+impl EnableParams { pub const METHOD: &'static str = "BluetoothEmulation.enable"; }
+
+impl crate::CdpCommand for EnableParams {
+    const METHOD: &'static str = "BluetoothEmulation.enable";
+    type Response = crate::EmptyReturns;
+}
+
 /// Set the state of the simulated central.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -159,6 +167,23 @@ pub struct SetSimulatedCentralStateParams {
     /// State of the simulated central.
 
     pub state: CentralState,
+}
+
+impl SetSimulatedCentralStateParams { pub const METHOD: &'static str = "BluetoothEmulation.setSimulatedCentralState"; }
+
+impl crate::CdpCommand for SetSimulatedCentralStateParams {
+    const METHOD: &'static str = "BluetoothEmulation.setSimulatedCentralState";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct DisableParams {}
+
+impl DisableParams { pub const METHOD: &'static str = "BluetoothEmulation.disable"; }
+
+impl crate::CdpCommand for DisableParams {
+    const METHOD: &'static str = "BluetoothEmulation.disable";
+    type Response = crate::EmptyReturns;
 }
 
 /// Simulates a peripheral with |address|, |name| and |knownServiceUuids|
@@ -177,6 +202,13 @@ pub struct SimulatePreconnectedPeripheralParams {
     pub knownServiceUuids: Vec<String>,
 }
 
+impl SimulatePreconnectedPeripheralParams { pub const METHOD: &'static str = "BluetoothEmulation.simulatePreconnectedPeripheral"; }
+
+impl crate::CdpCommand for SimulatePreconnectedPeripheralParams {
+    const METHOD: &'static str = "BluetoothEmulation.simulatePreconnectedPeripheral";
+    type Response = crate::EmptyReturns;
+}
+
 /// Simulates an advertisement packet described in |entry| being received by
 /// the central.
 
@@ -185,6 +217,13 @@ pub struct SimulatePreconnectedPeripheralParams {
 pub struct SimulateAdvertisementParams {
 
     pub entry: ScanEntry,
+}
+
+impl SimulateAdvertisementParams { pub const METHOD: &'static str = "BluetoothEmulation.simulateAdvertisement"; }
+
+impl crate::CdpCommand for SimulateAdvertisementParams {
+    const METHOD: &'static str = "BluetoothEmulation.simulateAdvertisement";
+    type Response = crate::EmptyReturns;
 }
 
 /// Simulates the response code from the peripheral with |address| for a
@@ -201,6 +240,13 @@ pub struct SimulateGATTOperationResponseParams {
     pub type_: GATTOperationType,
 
     pub code: i64,
+}
+
+impl SimulateGATTOperationResponseParams { pub const METHOD: &'static str = "BluetoothEmulation.simulateGATTOperationResponse"; }
+
+impl crate::CdpCommand for SimulateGATTOperationResponseParams {
+    const METHOD: &'static str = "BluetoothEmulation.simulateGATTOperationResponse";
+    type Response = crate::EmptyReturns;
 }
 
 /// Simulates the response from the characteristic with |characteristicId| for a
@@ -224,6 +270,13 @@ pub struct SimulateCharacteristicOperationResponseParams {
     pub data: Option<String>,
 }
 
+impl SimulateCharacteristicOperationResponseParams { pub const METHOD: &'static str = "BluetoothEmulation.simulateCharacteristicOperationResponse"; }
+
+impl crate::CdpCommand for SimulateCharacteristicOperationResponseParams {
+    const METHOD: &'static str = "BluetoothEmulation.simulateCharacteristicOperationResponse";
+    type Response = crate::EmptyReturns;
+}
+
 /// Simulates the response from the descriptor with |descriptorId| for a
 /// descriptor operation of |type|. The |code| value follows the Error
 /// Codes from Bluetooth Core Specification Vol 3 Part F 3.4.1.1 Error Response.
@@ -243,6 +296,13 @@ pub struct SimulateDescriptorOperationResponseParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub data: Option<String>,
+}
+
+impl SimulateDescriptorOperationResponseParams { pub const METHOD: &'static str = "BluetoothEmulation.simulateDescriptorOperationResponse"; }
+
+impl crate::CdpCommand for SimulateDescriptorOperationResponseParams {
+    const METHOD: &'static str = "BluetoothEmulation.simulateDescriptorOperationResponse";
+    type Response = crate::EmptyReturns;
 }
 
 /// Adds a service with |serviceUuid| to the peripheral with |address|.
@@ -266,6 +326,13 @@ pub struct AddServiceReturns {
     pub serviceId: String,
 }
 
+impl AddServiceParams { pub const METHOD: &'static str = "BluetoothEmulation.addService"; }
+
+impl crate::CdpCommand for AddServiceParams {
+    const METHOD: &'static str = "BluetoothEmulation.addService";
+    type Response = AddServiceReturns;
+}
+
 /// Removes the service respresented by |serviceId| from the simulated central.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -273,6 +340,13 @@ pub struct AddServiceReturns {
 pub struct RemoveServiceParams {
 
     pub serviceId: String,
+}
+
+impl RemoveServiceParams { pub const METHOD: &'static str = "BluetoothEmulation.removeService"; }
+
+impl crate::CdpCommand for RemoveServiceParams {
+    const METHOD: &'static str = "BluetoothEmulation.removeService";
+    type Response = crate::EmptyReturns;
 }
 
 /// Adds a characteristic with |characteristicUuid| and |properties| to the
@@ -300,6 +374,13 @@ pub struct AddCharacteristicReturns {
     pub characteristicId: String,
 }
 
+impl AddCharacteristicParams { pub const METHOD: &'static str = "BluetoothEmulation.addCharacteristic"; }
+
+impl crate::CdpCommand for AddCharacteristicParams {
+    const METHOD: &'static str = "BluetoothEmulation.addCharacteristic";
+    type Response = AddCharacteristicReturns;
+}
+
 /// Removes the characteristic respresented by |characteristicId| from the
 /// simulated central.
 
@@ -308,6 +389,13 @@ pub struct AddCharacteristicReturns {
 pub struct RemoveCharacteristicParams {
 
     pub characteristicId: String,
+}
+
+impl RemoveCharacteristicParams { pub const METHOD: &'static str = "BluetoothEmulation.removeCharacteristic"; }
+
+impl crate::CdpCommand for RemoveCharacteristicParams {
+    const METHOD: &'static str = "BluetoothEmulation.removeCharacteristic";
+    type Response = crate::EmptyReturns;
 }
 
 /// Adds a descriptor with |descriptorUuid| to the characteristic respresented
@@ -333,6 +421,13 @@ pub struct AddDescriptorReturns {
     pub descriptorId: String,
 }
 
+impl AddDescriptorParams { pub const METHOD: &'static str = "BluetoothEmulation.addDescriptor"; }
+
+impl crate::CdpCommand for AddDescriptorParams {
+    const METHOD: &'static str = "BluetoothEmulation.addDescriptor";
+    type Response = AddDescriptorReturns;
+}
+
 /// Removes the descriptor with |descriptorId| from the simulated central.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -342,6 +437,13 @@ pub struct RemoveDescriptorParams {
     pub descriptorId: String,
 }
 
+impl RemoveDescriptorParams { pub const METHOD: &'static str = "BluetoothEmulation.removeDescriptor"; }
+
+impl crate::CdpCommand for RemoveDescriptorParams {
+    const METHOD: &'static str = "BluetoothEmulation.removeDescriptor";
+    type Response = crate::EmptyReturns;
+}
+
 /// Simulates a GATT disconnection from the peripheral with |address|.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -349,4 +451,11 @@ pub struct RemoveDescriptorParams {
 pub struct SimulateGATTDisconnectionParams {
 
     pub address: String,
+}
+
+impl SimulateGATTDisconnectionParams { pub const METHOD: &'static str = "BluetoothEmulation.simulateGATTDisconnection"; }
+
+impl crate::CdpCommand for SimulateGATTDisconnectionParams {
+    const METHOD: &'static str = "BluetoothEmulation.simulateGATTDisconnection";
+    type Response = crate::EmptyReturns;
 }

@@ -1,4 +1,5 @@
 use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
 
 
 pub type RegistrationID = String;
@@ -104,6 +105,23 @@ pub struct DeliverPushMessageParams {
     pub data: String,
 }
 
+impl DeliverPushMessageParams { pub const METHOD: &'static str = "ServiceWorker.deliverPushMessage"; }
+
+impl crate::CdpCommand for DeliverPushMessageParams {
+    const METHOD: &'static str = "ServiceWorker.deliverPushMessage";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct DisableParams {}
+
+impl DisableParams { pub const METHOD: &'static str = "ServiceWorker.disable"; }
+
+impl crate::CdpCommand for DisableParams {
+    const METHOD: &'static str = "ServiceWorker.disable";
+    type Response = crate::EmptyReturns;
+}
+
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -118,6 +136,13 @@ pub struct DispatchSyncEventParams {
     pub lastChance: bool,
 }
 
+impl DispatchSyncEventParams { pub const METHOD: &'static str = "ServiceWorker.dispatchSyncEvent"; }
+
+impl crate::CdpCommand for DispatchSyncEventParams {
+    const METHOD: &'static str = "ServiceWorker.dispatchSyncEvent";
+    type Response = crate::EmptyReturns;
+}
+
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -130,12 +155,36 @@ pub struct DispatchPeriodicSyncEventParams {
     pub tag: String,
 }
 
+impl DispatchPeriodicSyncEventParams { pub const METHOD: &'static str = "ServiceWorker.dispatchPeriodicSyncEvent"; }
+
+impl crate::CdpCommand for DispatchPeriodicSyncEventParams {
+    const METHOD: &'static str = "ServiceWorker.dispatchPeriodicSyncEvent";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct EnableParams {}
+
+impl EnableParams { pub const METHOD: &'static str = "ServiceWorker.enable"; }
+
+impl crate::CdpCommand for EnableParams {
+    const METHOD: &'static str = "ServiceWorker.enable";
+    type Response = crate::EmptyReturns;
+}
+
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetForceUpdateOnPageLoadParams {
 
     pub forceUpdateOnPageLoad: bool,
+}
+
+impl SetForceUpdateOnPageLoadParams { pub const METHOD: &'static str = "ServiceWorker.setForceUpdateOnPageLoad"; }
+
+impl crate::CdpCommand for SetForceUpdateOnPageLoadParams {
+    const METHOD: &'static str = "ServiceWorker.setForceUpdateOnPageLoad";
+    type Response = crate::EmptyReturns;
 }
 
 
@@ -146,12 +195,36 @@ pub struct SkipWaitingParams {
     pub scopeURL: String,
 }
 
+impl SkipWaitingParams { pub const METHOD: &'static str = "ServiceWorker.skipWaiting"; }
+
+impl crate::CdpCommand for SkipWaitingParams {
+    const METHOD: &'static str = "ServiceWorker.skipWaiting";
+    type Response = crate::EmptyReturns;
+}
+
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct StartWorkerParams {
 
     pub scopeURL: String,
+}
+
+impl StartWorkerParams { pub const METHOD: &'static str = "ServiceWorker.startWorker"; }
+
+impl crate::CdpCommand for StartWorkerParams {
+    const METHOD: &'static str = "ServiceWorker.startWorker";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct StopAllWorkersParams {}
+
+impl StopAllWorkersParams { pub const METHOD: &'static str = "ServiceWorker.stopAllWorkers"; }
+
+impl crate::CdpCommand for StopAllWorkersParams {
+    const METHOD: &'static str = "ServiceWorker.stopAllWorkers";
+    type Response = crate::EmptyReturns;
 }
 
 
@@ -162,6 +235,13 @@ pub struct StopWorkerParams {
     pub versionId: String,
 }
 
+impl StopWorkerParams { pub const METHOD: &'static str = "ServiceWorker.stopWorker"; }
+
+impl crate::CdpCommand for StopWorkerParams {
+    const METHOD: &'static str = "ServiceWorker.stopWorker";
+    type Response = crate::EmptyReturns;
+}
+
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -170,10 +250,24 @@ pub struct UnregisterParams {
     pub scopeURL: String,
 }
 
+impl UnregisterParams { pub const METHOD: &'static str = "ServiceWorker.unregister"; }
+
+impl crate::CdpCommand for UnregisterParams {
+    const METHOD: &'static str = "ServiceWorker.unregister";
+    type Response = crate::EmptyReturns;
+}
+
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateRegistrationParams {
 
     pub scopeURL: String,
+}
+
+impl UpdateRegistrationParams { pub const METHOD: &'static str = "ServiceWorker.updateRegistration"; }
+
+impl crate::CdpCommand for UpdateRegistrationParams {
+    const METHOD: &'static str = "ServiceWorker.updateRegistration";
+    type Response = crate::EmptyReturns;
 }

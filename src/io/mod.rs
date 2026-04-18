@@ -1,9 +1,10 @@
+use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
+
 //! Input/Output operations for streams produced by DevTools.
 
-use serde::{Serialize, Deserialize};
-
-/// This is either obtained from another method or specified as 'blob:\<uuid\>' where
-/// '\<uuid\>' is an UUID of a Blob.
+/// This is either obtained from another method or specified as 'blob:<uuid>' where
+/// '<uuid>' is an UUID of a Blob.
 
 pub type StreamHandle = String;
 
@@ -15,6 +16,13 @@ pub struct CloseParams {
     /// Handle of the stream to close.
 
     pub handle: StreamHandle,
+}
+
+impl CloseParams { pub const METHOD: &'static str = "IO.close"; }
+
+impl crate::CdpCommand for CloseParams {
+    const METHOD: &'static str = "IO.close";
+    type Response = crate::EmptyReturns;
 }
 
 /// Read a chunk of the stream
@@ -53,6 +61,13 @@ pub struct ReadReturns {
     pub eof: bool,
 }
 
+impl ReadParams { pub const METHOD: &'static str = "IO.read"; }
+
+impl crate::CdpCommand for ReadParams {
+    const METHOD: &'static str = "IO.read";
+    type Response = ReadReturns;
+}
+
 /// Return UUID of Blob object specified by a remote object id.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -71,4 +86,11 @@ pub struct ResolveBlobReturns {
     /// UUID of the specified Blob.
 
     pub uuid: String,
+}
+
+impl ResolveBlobParams { pub const METHOD: &'static str = "IO.resolveBlob"; }
+
+impl crate::CdpCommand for ResolveBlobParams {
+    const METHOD: &'static str = "IO.resolveBlob";
+    type Response = ResolveBlobReturns;
 }

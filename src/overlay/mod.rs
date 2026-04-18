@@ -1,7 +1,7 @@
-//! This domain provides various functionality related to drawing atop the inspected page.
-
 use serde::{Serialize, Deserialize};
 use serde_json::Value as JsonValue;
+
+//! This domain provides various functionality related to drawing atop the inspected page.
 
 /// Configuration data for drawing the source order of an elements children.
 
@@ -466,6 +466,26 @@ pub struct InspectedElementAnchorConfig {
     pub backendNodeId: Option<crate::dom::BackendNodeId>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct DisableParams {}
+
+impl DisableParams { pub const METHOD: &'static str = "Overlay.disable"; }
+
+impl crate::CdpCommand for DisableParams {
+    const METHOD: &'static str = "Overlay.disable";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct EnableParams {}
+
+impl EnableParams { pub const METHOD: &'static str = "Overlay.enable"; }
+
+impl crate::CdpCommand for EnableParams {
+    const METHOD: &'static str = "Overlay.enable";
+    type Response = crate::EmptyReturns;
+}
+
 /// For testing.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -502,6 +522,13 @@ pub struct GetHighlightObjectForTestReturns {
     pub highlight: serde_json::Map<String, JsonValue>,
 }
 
+impl GetHighlightObjectForTestParams { pub const METHOD: &'static str = "Overlay.getHighlightObjectForTest"; }
+
+impl crate::CdpCommand for GetHighlightObjectForTestParams {
+    const METHOD: &'static str = "Overlay.getHighlightObjectForTest";
+    type Response = GetHighlightObjectForTestReturns;
+}
+
 /// For Persistent Grid testing.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -520,6 +547,13 @@ pub struct GetGridHighlightObjectsForTestReturns {
     /// Grid Highlight data for the node ids provided.
 
     pub highlights: serde_json::Map<String, JsonValue>,
+}
+
+impl GetGridHighlightObjectsForTestParams { pub const METHOD: &'static str = "Overlay.getGridHighlightObjectsForTest"; }
+
+impl crate::CdpCommand for GetGridHighlightObjectsForTestParams {
+    const METHOD: &'static str = "Overlay.getGridHighlightObjectsForTest";
+    type Response = GetGridHighlightObjectsForTestReturns;
 }
 
 /// For Source Order Viewer testing.
@@ -542,6 +576,23 @@ pub struct GetSourceOrderHighlightObjectForTestReturns {
     pub highlight: serde_json::Map<String, JsonValue>,
 }
 
+impl GetSourceOrderHighlightObjectForTestParams { pub const METHOD: &'static str = "Overlay.getSourceOrderHighlightObjectForTest"; }
+
+impl crate::CdpCommand for GetSourceOrderHighlightObjectForTestParams {
+    const METHOD: &'static str = "Overlay.getSourceOrderHighlightObjectForTest";
+    type Response = GetSourceOrderHighlightObjectForTestReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct HideHighlightParams {}
+
+impl HideHighlightParams { pub const METHOD: &'static str = "Overlay.hideHighlight"; }
+
+impl crate::CdpCommand for HideHighlightParams {
+    const METHOD: &'static str = "Overlay.hideHighlight";
+    type Response = crate::EmptyReturns;
+}
+
 /// Highlights owner element of the frame with given id.
 /// Deprecated: Doesn't work reliably and cannot be fixed due to process
 /// separation (the owner node might be in a different process). Determine
@@ -561,6 +612,13 @@ pub struct HighlightFrameParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub contentOutlineColor: Option<crate::dom::RGBA>,
+}
+
+impl HighlightFrameParams { pub const METHOD: &'static str = "Overlay.highlightFrame"; }
+
+impl crate::CdpCommand for HighlightFrameParams {
+    const METHOD: &'static str = "Overlay.highlightFrame";
+    type Response = crate::EmptyReturns;
 }
 
 /// Highlights DOM node with given id or with the given JavaScript object wrapper. Either nodeId or
@@ -590,6 +648,13 @@ pub struct HighlightNodeParams {
     pub selector: Option<String>,
 }
 
+impl HighlightNodeParams { pub const METHOD: &'static str = "Overlay.highlightNode"; }
+
+impl crate::CdpCommand for HighlightNodeParams {
+    const METHOD: &'static str = "Overlay.highlightNode";
+    type Response = crate::EmptyReturns;
+}
+
 /// Highlights given quad. Coordinates are absolute with respect to the main frame viewport.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -606,6 +671,13 @@ pub struct HighlightQuadParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub outlineColor: Option<crate::dom::RGBA>,
+}
+
+impl HighlightQuadParams { pub const METHOD: &'static str = "Overlay.highlightQuad"; }
+
+impl crate::CdpCommand for HighlightQuadParams {
+    const METHOD: &'static str = "Overlay.highlightQuad";
+    type Response = crate::EmptyReturns;
 }
 
 /// Highlights given rectangle. Coordinates are absolute with respect to the main frame viewport.
@@ -638,6 +710,13 @@ pub struct HighlightRectParams {
     pub outlineColor: Option<crate::dom::RGBA>,
 }
 
+impl HighlightRectParams { pub const METHOD: &'static str = "Overlay.highlightRect"; }
+
+impl crate::CdpCommand for HighlightRectParams {
+    const METHOD: &'static str = "Overlay.highlightRect";
+    type Response = crate::EmptyReturns;
+}
+
 /// Highlights the source order of the children of the DOM node with given id or with the given
 /// JavaScript object wrapper. Either nodeId or objectId must be specified.
 
@@ -661,6 +740,13 @@ pub struct HighlightSourceOrderParams {
     pub objectId: Option<crate::runtime::RemoteObjectId>,
 }
 
+impl HighlightSourceOrderParams { pub const METHOD: &'static str = "Overlay.highlightSourceOrder"; }
+
+impl crate::CdpCommand for HighlightSourceOrderParams {
+    const METHOD: &'static str = "Overlay.highlightSourceOrder";
+    type Response = crate::EmptyReturns;
+}
+
 /// Enters the 'inspect' mode. In this mode, elements that user is hovering over are highlighted.
 /// Backend then generates 'inspectNodeRequested' event upon element selection.
 
@@ -677,6 +763,13 @@ pub struct SetInspectModeParams {
     pub highlightConfig: Option<HighlightConfig>,
 }
 
+impl SetInspectModeParams { pub const METHOD: &'static str = "Overlay.setInspectMode"; }
+
+impl crate::CdpCommand for SetInspectModeParams {
+    const METHOD: &'static str = "Overlay.setInspectMode";
+    type Response = crate::EmptyReturns;
+}
+
 /// Highlights owner element of all frames detected to be ads.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -685,6 +778,13 @@ pub struct SetShowAdHighlightsParams {
     /// True for showing ad highlights
 
     pub show: bool,
+}
+
+impl SetShowAdHighlightsParams { pub const METHOD: &'static str = "Overlay.setShowAdHighlights"; }
+
+impl crate::CdpCommand for SetShowAdHighlightsParams {
+    const METHOD: &'static str = "Overlay.setShowAdHighlights";
+    type Response = crate::EmptyReturns;
 }
 
 
@@ -697,6 +797,13 @@ pub struct SetPausedInDebuggerMessageParams {
     pub message: Option<String>,
 }
 
+impl SetPausedInDebuggerMessageParams { pub const METHOD: &'static str = "Overlay.setPausedInDebuggerMessage"; }
+
+impl crate::CdpCommand for SetPausedInDebuggerMessageParams {
+    const METHOD: &'static str = "Overlay.setPausedInDebuggerMessage";
+    type Response = crate::EmptyReturns;
+}
+
 /// Requests that backend shows debug borders on layers
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -705,6 +812,13 @@ pub struct SetShowDebugBordersParams {
     /// True for showing debug borders
 
     pub show: bool,
+}
+
+impl SetShowDebugBordersParams { pub const METHOD: &'static str = "Overlay.setShowDebugBorders"; }
+
+impl crate::CdpCommand for SetShowDebugBordersParams {
+    const METHOD: &'static str = "Overlay.setShowDebugBorders";
+    type Response = crate::EmptyReturns;
 }
 
 /// Requests that backend shows the FPS counter
@@ -717,6 +831,13 @@ pub struct SetShowFPSCounterParams {
     pub show: bool,
 }
 
+impl SetShowFPSCounterParams { pub const METHOD: &'static str = "Overlay.setShowFPSCounter"; }
+
+impl crate::CdpCommand for SetShowFPSCounterParams {
+    const METHOD: &'static str = "Overlay.setShowFPSCounter";
+    type Response = crate::EmptyReturns;
+}
+
 /// Highlight multiple elements with the CSS Grid overlay.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -725,6 +846,13 @@ pub struct SetShowGridOverlaysParams {
     /// An array of node identifiers and descriptors for the highlight appearance.
 
     pub gridNodeHighlightConfigs: Vec<GridNodeHighlightConfig>,
+}
+
+impl SetShowGridOverlaysParams { pub const METHOD: &'static str = "Overlay.setShowGridOverlays"; }
+
+impl crate::CdpCommand for SetShowGridOverlaysParams {
+    const METHOD: &'static str = "Overlay.setShowGridOverlays";
+    type Response = crate::EmptyReturns;
 }
 
 
@@ -736,6 +864,13 @@ pub struct SetShowFlexOverlaysParams {
     pub flexNodeHighlightConfigs: Vec<FlexNodeHighlightConfig>,
 }
 
+impl SetShowFlexOverlaysParams { pub const METHOD: &'static str = "Overlay.setShowFlexOverlays"; }
+
+impl crate::CdpCommand for SetShowFlexOverlaysParams {
+    const METHOD: &'static str = "Overlay.setShowFlexOverlays";
+    type Response = crate::EmptyReturns;
+}
+
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -743,6 +878,13 @@ pub struct SetShowScrollSnapOverlaysParams {
     /// An array of node identifiers and descriptors for the highlight appearance.
 
     pub scrollSnapHighlightConfigs: Vec<ScrollSnapHighlightConfig>,
+}
+
+impl SetShowScrollSnapOverlaysParams { pub const METHOD: &'static str = "Overlay.setShowScrollSnapOverlays"; }
+
+impl crate::CdpCommand for SetShowScrollSnapOverlaysParams {
+    const METHOD: &'static str = "Overlay.setShowScrollSnapOverlays";
+    type Response = crate::EmptyReturns;
 }
 
 
@@ -754,6 +896,13 @@ pub struct SetShowContainerQueryOverlaysParams {
     pub containerQueryHighlightConfigs: Vec<ContainerQueryHighlightConfig>,
 }
 
+impl SetShowContainerQueryOverlaysParams { pub const METHOD: &'static str = "Overlay.setShowContainerQueryOverlays"; }
+
+impl crate::CdpCommand for SetShowContainerQueryOverlaysParams {
+    const METHOD: &'static str = "Overlay.setShowContainerQueryOverlays";
+    type Response = crate::EmptyReturns;
+}
+
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -761,6 +910,13 @@ pub struct SetShowInspectedElementAnchorParams {
     /// Node identifier for which to show an anchor for.
 
     pub inspectedElementAnchorConfig: InspectedElementAnchorConfig,
+}
+
+impl SetShowInspectedElementAnchorParams { pub const METHOD: &'static str = "Overlay.setShowInspectedElementAnchor"; }
+
+impl crate::CdpCommand for SetShowInspectedElementAnchorParams {
+    const METHOD: &'static str = "Overlay.setShowInspectedElementAnchor";
+    type Response = crate::EmptyReturns;
 }
 
 /// Requests that backend shows paint rectangles
@@ -773,6 +929,13 @@ pub struct SetShowPaintRectsParams {
     pub result: bool,
 }
 
+impl SetShowPaintRectsParams { pub const METHOD: &'static str = "Overlay.setShowPaintRects"; }
+
+impl crate::CdpCommand for SetShowPaintRectsParams {
+    const METHOD: &'static str = "Overlay.setShowPaintRects";
+    type Response = crate::EmptyReturns;
+}
+
 /// Requests that backend shows layout shift regions
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -781,6 +944,13 @@ pub struct SetShowLayoutShiftRegionsParams {
     /// True for showing layout shift regions
 
     pub result: bool,
+}
+
+impl SetShowLayoutShiftRegionsParams { pub const METHOD: &'static str = "Overlay.setShowLayoutShiftRegions"; }
+
+impl crate::CdpCommand for SetShowLayoutShiftRegionsParams {
+    const METHOD: &'static str = "Overlay.setShowLayoutShiftRegions";
+    type Response = crate::EmptyReturns;
 }
 
 /// Requests that backend shows scroll bottleneck rects
@@ -793,6 +963,13 @@ pub struct SetShowScrollBottleneckRectsParams {
     pub show: bool,
 }
 
+impl SetShowScrollBottleneckRectsParams { pub const METHOD: &'static str = "Overlay.setShowScrollBottleneckRects"; }
+
+impl crate::CdpCommand for SetShowScrollBottleneckRectsParams {
+    const METHOD: &'static str = "Overlay.setShowScrollBottleneckRects";
+    type Response = crate::EmptyReturns;
+}
+
 /// Deprecated, no longer has any effect.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -801,6 +978,13 @@ pub struct SetShowHitTestBordersParams {
     /// True for showing hit-test borders
 
     pub show: bool,
+}
+
+impl SetShowHitTestBordersParams { pub const METHOD: &'static str = "Overlay.setShowHitTestBorders"; }
+
+impl crate::CdpCommand for SetShowHitTestBordersParams {
+    const METHOD: &'static str = "Overlay.setShowHitTestBorders";
+    type Response = crate::EmptyReturns;
 }
 
 /// Deprecated, no longer has any effect.
@@ -812,6 +996,13 @@ pub struct SetShowWebVitalsParams {
     pub show: bool,
 }
 
+impl SetShowWebVitalsParams { pub const METHOD: &'static str = "Overlay.setShowWebVitals"; }
+
+impl crate::CdpCommand for SetShowWebVitalsParams {
+    const METHOD: &'static str = "Overlay.setShowWebVitals";
+    type Response = crate::EmptyReturns;
+}
+
 /// Paints viewport size upon main frame resize.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -820,6 +1011,13 @@ pub struct SetShowViewportSizeOnResizeParams {
     /// Whether to paint size or not.
 
     pub show: bool,
+}
+
+impl SetShowViewportSizeOnResizeParams { pub const METHOD: &'static str = "Overlay.setShowViewportSizeOnResize"; }
+
+impl crate::CdpCommand for SetShowViewportSizeOnResizeParams {
+    const METHOD: &'static str = "Overlay.setShowViewportSizeOnResize";
+    type Response = crate::EmptyReturns;
 }
 
 /// Add a dual screen device hinge
@@ -833,6 +1031,13 @@ pub struct SetShowHingeParams {
     pub hingeConfig: Option<HingeConfig>,
 }
 
+impl SetShowHingeParams { pub const METHOD: &'static str = "Overlay.setShowHinge"; }
+
+impl crate::CdpCommand for SetShowHingeParams {
+    const METHOD: &'static str = "Overlay.setShowHinge";
+    type Response = crate::EmptyReturns;
+}
+
 /// Show elements in isolation mode with overlays.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -841,6 +1046,13 @@ pub struct SetShowIsolatedElementsParams {
     /// An array of node identifiers and descriptors for the highlight appearance.
 
     pub isolatedElementHighlightConfigs: Vec<IsolatedElementHighlightConfig>,
+}
+
+impl SetShowIsolatedElementsParams { pub const METHOD: &'static str = "Overlay.setShowIsolatedElements"; }
+
+impl crate::CdpCommand for SetShowIsolatedElementsParams {
+    const METHOD: &'static str = "Overlay.setShowIsolatedElements";
+    type Response = crate::EmptyReturns;
 }
 
 /// Show Window Controls Overlay for PWA
@@ -852,4 +1064,11 @@ pub struct SetShowWindowControlsOverlayParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub windowControlsOverlayConfig: Option<WindowControlsOverlayConfig>,
+}
+
+impl SetShowWindowControlsOverlayParams { pub const METHOD: &'static str = "Overlay.setShowWindowControlsOverlay"; }
+
+impl crate::CdpCommand for SetShowWindowControlsOverlayParams {
+    const METHOD: &'static str = "Overlay.setShowWindowControlsOverlay";
+    type Response = crate::EmptyReturns;
 }

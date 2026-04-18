@@ -1,4 +1,5 @@
 use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
 
 /// Animation instance.
 
@@ -22,7 +23,7 @@ pub struct Animation {
     pub playbackRate: f64,
     /// 'Animation''s start time.
     /// Milliseconds for time based animations and
-    /// percentage \[0 - 100\] for scroll driven animations
+    /// percentage [0 - 100] for scroll driven animations
     /// (i.e. when viewOrScrollTimeline exists).
 
     pub startTime: f64,
@@ -98,7 +99,7 @@ pub struct AnimationEffect {
     pub iterations: Option<f64>,
     /// 'AnimationEffect''s iteration duration.
     /// Milliseconds for time based animations and
-    /// percentage \[0 - 100\] for scroll driven animations
+    /// percentage [0 - 100] for scroll driven animations
     /// (i.e. when viewOrScrollTimeline exists).
 
     pub duration: f64,
@@ -148,6 +149,26 @@ pub struct KeyframeStyle {
     pub easing: String,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct DisableParams {}
+
+impl DisableParams { pub const METHOD: &'static str = "Animation.disable"; }
+
+impl crate::CdpCommand for DisableParams {
+    const METHOD: &'static str = "Animation.disable";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct EnableParams {}
+
+impl EnableParams { pub const METHOD: &'static str = "Animation.enable"; }
+
+impl crate::CdpCommand for EnableParams {
+    const METHOD: &'static str = "Animation.enable";
+    type Response = crate::EmptyReturns;
+}
+
 /// Returns the current time of the an animation.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -168,6 +189,13 @@ pub struct GetCurrentTimeReturns {
     pub currentTime: f64,
 }
 
+impl GetCurrentTimeParams { pub const METHOD: &'static str = "Animation.getCurrentTime"; }
+
+impl crate::CdpCommand for GetCurrentTimeParams {
+    const METHOD: &'static str = "Animation.getCurrentTime";
+    type Response = GetCurrentTimeReturns;
+}
+
 /// Gets the playback rate of the document timeline.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -178,6 +206,16 @@ pub struct GetPlaybackRateReturns {
     pub playbackRate: f64,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GetPlaybackRateParams {}
+
+impl GetPlaybackRateParams { pub const METHOD: &'static str = "Animation.getPlaybackRate"; }
+
+impl crate::CdpCommand for GetPlaybackRateParams {
+    const METHOD: &'static str = "Animation.getPlaybackRate";
+    type Response = GetPlaybackRateReturns;
+}
+
 /// Releases a set of animations to no longer be manipulated.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -186,6 +224,13 @@ pub struct ReleaseAnimationsParams {
     /// List of animation ids to seek.
 
     pub animations: Vec<String>,
+}
+
+impl ReleaseAnimationsParams { pub const METHOD: &'static str = "Animation.releaseAnimations"; }
+
+impl crate::CdpCommand for ReleaseAnimationsParams {
+    const METHOD: &'static str = "Animation.releaseAnimations";
+    type Response = crate::EmptyReturns;
 }
 
 /// Gets the remote object of the Animation.
@@ -208,6 +253,13 @@ pub struct ResolveAnimationReturns {
     pub remoteObject: crate::runtime::RemoteObject,
 }
 
+impl ResolveAnimationParams { pub const METHOD: &'static str = "Animation.resolveAnimation"; }
+
+impl crate::CdpCommand for ResolveAnimationParams {
+    const METHOD: &'static str = "Animation.resolveAnimation";
+    type Response = ResolveAnimationReturns;
+}
+
 /// Seek a set of animations to a particular time within each animation.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -219,6 +271,13 @@ pub struct SeekAnimationsParams {
     /// Set the current time of each animation.
 
     pub currentTime: f64,
+}
+
+impl SeekAnimationsParams { pub const METHOD: &'static str = "Animation.seekAnimations"; }
+
+impl crate::CdpCommand for SeekAnimationsParams {
+    const METHOD: &'static str = "Animation.seekAnimations";
+    type Response = crate::EmptyReturns;
 }
 
 /// Sets the paused state of a set of animations.
@@ -234,6 +293,13 @@ pub struct SetPausedParams {
     pub paused: bool,
 }
 
+impl SetPausedParams { pub const METHOD: &'static str = "Animation.setPaused"; }
+
+impl crate::CdpCommand for SetPausedParams {
+    const METHOD: &'static str = "Animation.setPaused";
+    type Response = crate::EmptyReturns;
+}
+
 /// Sets the playback rate of the document timeline.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -242,6 +308,13 @@ pub struct SetPlaybackRateParams {
     /// Playback rate for animations on page
 
     pub playbackRate: f64,
+}
+
+impl SetPlaybackRateParams { pub const METHOD: &'static str = "Animation.setPlaybackRate"; }
+
+impl crate::CdpCommand for SetPlaybackRateParams {
+    const METHOD: &'static str = "Animation.setPlaybackRate";
+    type Response = crate::EmptyReturns;
 }
 
 /// Sets the timing of an animation node.
@@ -258,4 +331,11 @@ pub struct SetTimingParams {
     /// Delay of the animation.
 
     pub delay: f64,
+}
+
+impl SetTimingParams { pub const METHOD: &'static str = "Animation.setTiming"; }
+
+impl crate::CdpCommand for SetTimingParams {
+    const METHOD: &'static str = "Animation.setTiming";
+    type Response = crate::EmptyReturns;
 }

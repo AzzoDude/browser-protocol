@@ -1,8 +1,8 @@
-//! Network domain allows tracking network activities of the page. It exposes information about http,
-//! file, data and other requests and responses, their headers, bodies, timing, etc.
-
 use serde::{Serialize, Deserialize};
 use serde_json::Value as JsonValue;
+
+//! Network domain allows tracking network activities of the page. It exposes information about http,
+//! file, data and other requests and responses, their headers, bodies, timing, etc.
 
 /// Resource type as it was perceived by the rendering engine.
 
@@ -94,7 +94,7 @@ pub enum ConnectionType {
 }
 
 /// Represents the cookie's 'SameSite' status:
-/// <https://tools.ietf.org/html/draft-west-first-party-cookies>
+/// https://tools.ietf.org/html/draft-west-first-party-cookies
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum CookieSameSite {
@@ -105,7 +105,7 @@ pub enum CookieSameSite {
 }
 
 /// Represents the cookie's 'Priority' status:
-/// <https://tools.ietf.org/html/draft-west-cookie-priority-00>
+/// https://tools.ietf.org/html/draft-west-cookie-priority-00
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum CookiePriority {
@@ -272,7 +272,7 @@ pub struct Request {
     /// Priority of the resource request at the time request is sent.
 
     pub initialPriority: ResourcePriority,
-    /// The referrer policy of the request, as defined in <https://www.w3.org/TR/referrer-policy/>
+    /// The referrer policy of the request, as defined in https://www.w3.org/TR/referrer-policy/
 
     pub referrerPolicy: String,
     /// Whether is loaded via link preload.
@@ -828,7 +828,7 @@ pub struct Cookie {
     /// Cookie source scheme type.
 
     pub sourceScheme: CookieSourceScheme,
-    /// Cookie source port. Valid values are {-1, \[1, 65535\]}, -1 indicates an unspecified port.
+    /// Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port.
     /// An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
     /// This is a temporary ability and it will be removed in the future.
 
@@ -1017,7 +1017,7 @@ pub struct CookieParam {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sourceScheme: Option<CookieSourceScheme>,
-    /// Cookie source port. Valid values are {-1, \[1, 65535\]}, -1 indicates an unspecified port.
+    /// Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port.
     /// An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
     /// This is a temporary ability and it will be removed in the future.
 
@@ -1086,7 +1086,7 @@ pub enum InterceptionStage {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct RequestPattern {
-    /// Wildcards (''*'' -\> zero or more, ''?'' -\> exactly one) are allowed. Escape character is
+    /// Wildcards (''*'' -> zero or more, ''?'' -> exactly one) are allowed. Escape character is
     /// backslash. Omitting is equivalent to '"*"'.
 
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1102,7 +1102,7 @@ pub struct RequestPattern {
 }
 
 /// Information about a signed exchange signature.
-/// <https://wicg.github.io/webpackage/draft-yasskin-httpbis-origin-signed-exchanges-impl.html#rfc.section.3.1>
+/// https://wicg.github.io/webpackage/draft-yasskin-httpbis-origin-signed-exchanges-impl.html#rfc.section.3.1
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -1140,7 +1140,7 @@ pub struct SignedExchangeSignature {
 }
 
 /// Information about a signed exchange header.
-/// <https://wicg.github.io/webpackage/draft-yasskin-httpbis-origin-signed-exchanges-impl.html#cbor-representation>
+/// https://wicg.github.io/webpackage/draft-yasskin-httpbis-origin-signed-exchanges-impl.html#cbor-representation
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -1157,7 +1157,7 @@ pub struct SignedExchangeHeader {
     /// Signed exchange response signature.
 
     pub signatures: Vec<SignedExchangeSignature>,
-    /// Signed exchange header integrity hash in the form of 'sha256-\<base64-hash-value\>'.
+    /// Signed exchange header integrity hash in the form of 'sha256-<base64-hash-value>'.
 
     pub headerIntegrity: String,
 }
@@ -1235,7 +1235,7 @@ pub enum ContentEncoding {
 #[serde(rename_all = "camelCase")]
 pub struct NetworkConditions {
     /// Only matching requests will be affected by these conditions. Patterns use the URLPattern constructor string
-    /// syntax (<https://urlpattern.spec.whatwg.org/>) and must be absolute. If the pattern is empty, all requests are
+    /// syntax (https://urlpattern.spec.whatwg.org/) and must be absolute. If the pattern is empty, all requests are
     /// matched (including p2p connections).
 
     pub urlPattern: String,
@@ -1275,7 +1275,7 @@ pub struct NetworkConditions {
 #[serde(rename_all = "camelCase")]
 pub struct BlockPattern {
     /// URL pattern to match. Patterns use the URLPattern constructor string syntax
-    /// (<https://urlpattern.spec.whatwg.org/>) and must be absolute. Example: '*://*:*/*.css'.
+    /// (https://urlpattern.spec.whatwg.org/) and must be absolute. Example: '*://*:*/*.css'.
 
     pub urlPattern: String,
     /// Whether or not to block the pattern. If false, a matching request will not be blocked even if it matches a later
@@ -1960,6 +1960,23 @@ pub struct SetAcceptedEncodingsParams {
     pub encodings: Vec<ContentEncoding>,
 }
 
+impl SetAcceptedEncodingsParams { pub const METHOD: &'static str = "Network.setAcceptedEncodings"; }
+
+impl crate::CdpCommand for SetAcceptedEncodingsParams {
+    const METHOD: &'static str = "Network.setAcceptedEncodings";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct ClearAcceptedEncodingsOverrideParams {}
+
+impl ClearAcceptedEncodingsOverrideParams { pub const METHOD: &'static str = "Network.clearAcceptedEncodingsOverride"; }
+
+impl crate::CdpCommand for ClearAcceptedEncodingsOverrideParams {
+    const METHOD: &'static str = "Network.clearAcceptedEncodingsOverride";
+    type Response = crate::EmptyReturns;
+}
+
 /// Tells whether clearing browser cache is supported.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1968,6 +1985,16 @@ pub struct CanClearBrowserCacheReturns {
     /// True if browser cache can be cleared.
 
     pub result: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct CanClearBrowserCacheParams {}
+
+impl CanClearBrowserCacheParams { pub const METHOD: &'static str = "Network.canClearBrowserCache"; }
+
+impl crate::CdpCommand for CanClearBrowserCacheParams {
+    const METHOD: &'static str = "Network.canClearBrowserCache";
+    type Response = CanClearBrowserCacheReturns;
 }
 
 /// Tells whether clearing browser cookies is supported.
@@ -1980,6 +2007,16 @@ pub struct CanClearBrowserCookiesReturns {
     pub result: bool,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct CanClearBrowserCookiesParams {}
+
+impl CanClearBrowserCookiesParams { pub const METHOD: &'static str = "Network.canClearBrowserCookies"; }
+
+impl crate::CdpCommand for CanClearBrowserCookiesParams {
+    const METHOD: &'static str = "Network.canClearBrowserCookies";
+    type Response = CanClearBrowserCookiesReturns;
+}
+
 /// Tells whether emulation of network conditions is supported.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1988,6 +2025,36 @@ pub struct CanEmulateNetworkConditionsReturns {
     /// True if emulation of network conditions is supported.
 
     pub result: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct CanEmulateNetworkConditionsParams {}
+
+impl CanEmulateNetworkConditionsParams { pub const METHOD: &'static str = "Network.canEmulateNetworkConditions"; }
+
+impl crate::CdpCommand for CanEmulateNetworkConditionsParams {
+    const METHOD: &'static str = "Network.canEmulateNetworkConditions";
+    type Response = CanEmulateNetworkConditionsReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct ClearBrowserCacheParams {}
+
+impl ClearBrowserCacheParams { pub const METHOD: &'static str = "Network.clearBrowserCache"; }
+
+impl crate::CdpCommand for ClearBrowserCacheParams {
+    const METHOD: &'static str = "Network.clearBrowserCache";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct ClearBrowserCookiesParams {}
+
+impl ClearBrowserCookiesParams { pub const METHOD: &'static str = "Network.clearBrowserCookies"; }
+
+impl crate::CdpCommand for ClearBrowserCookiesParams {
+    const METHOD: &'static str = "Network.clearBrowserCookies";
+    type Response = crate::EmptyReturns;
 }
 
 /// Response to Network.requestIntercepted which either modifies the request to continue with any
@@ -2037,6 +2104,13 @@ pub struct ContinueInterceptedRequestParams {
     pub authChallengeResponse: Option<AuthChallengeResponse>,
 }
 
+impl ContinueInterceptedRequestParams { pub const METHOD: &'static str = "Network.continueInterceptedRequest"; }
+
+impl crate::CdpCommand for ContinueInterceptedRequestParams {
+    const METHOD: &'static str = "Network.continueInterceptedRequest";
+    type Response = crate::EmptyReturns;
+}
+
 /// Deletes browser cookies with matching name and url or domain/path/partitionKey pair.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -2063,6 +2137,23 @@ pub struct DeleteCookiesParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub partitionKey: Option<CookiePartitionKey>,
+}
+
+impl DeleteCookiesParams { pub const METHOD: &'static str = "Network.deleteCookies"; }
+
+impl crate::CdpCommand for DeleteCookiesParams {
+    const METHOD: &'static str = "Network.deleteCookies";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct DisableParams {}
+
+impl DisableParams { pub const METHOD: &'static str = "Network.disable"; }
+
+impl crate::CdpCommand for DisableParams {
+    const METHOD: &'static str = "Network.disable";
+    type Response = crate::EmptyReturns;
 }
 
 /// Activates emulation of network conditions. This command is deprecated in favor of the emulateNetworkConditionsByRule
@@ -2101,6 +2192,13 @@ pub struct EmulateNetworkConditionsParams {
     pub packetReordering: Option<bool>,
 }
 
+impl EmulateNetworkConditionsParams { pub const METHOD: &'static str = "Network.emulateNetworkConditions"; }
+
+impl crate::CdpCommand for EmulateNetworkConditionsParams {
+    const METHOD: &'static str = "Network.emulateNetworkConditions";
+    type Response = crate::EmptyReturns;
+}
+
 /// Activates emulation of network conditions for individual requests using URL match patterns. Unlike the deprecated
 /// Network.emulateNetworkConditions this method does not affect 'navigator' state. Use Network.overrideNetworkState to
 /// explicitly modify 'navigator' behavior.
@@ -2137,6 +2235,13 @@ pub struct EmulateNetworkConditionsByRuleReturns {
     pub ruleIds: Vec<String>,
 }
 
+impl EmulateNetworkConditionsByRuleParams { pub const METHOD: &'static str = "Network.emulateNetworkConditionsByRule"; }
+
+impl crate::CdpCommand for EmulateNetworkConditionsByRuleParams {
+    const METHOD: &'static str = "Network.emulateNetworkConditionsByRule";
+    type Response = EmulateNetworkConditionsByRuleReturns;
+}
+
 /// Override the state of navigator.onLine and navigator.connection.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -2158,6 +2263,13 @@ pub struct OverrideNetworkStateParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub connectionType: Option<ConnectionType>,
+}
+
+impl OverrideNetworkStateParams { pub const METHOD: &'static str = "Network.overrideNetworkState"; }
+
+impl crate::CdpCommand for OverrideNetworkStateParams {
+    const METHOD: &'static str = "Network.overrideNetworkState";
+    type Response = crate::EmptyReturns;
 }
 
 /// Enables network tracking, network events will now be delivered to the client.
@@ -2193,6 +2305,13 @@ pub struct EnableParams {
     pub enableDurableMessages: Option<bool>,
 }
 
+impl EnableParams { pub const METHOD: &'static str = "Network.enable"; }
+
+impl crate::CdpCommand for EnableParams {
+    const METHOD: &'static str = "Network.enable";
+    type Response = crate::EmptyReturns;
+}
+
 /// Configures storing response bodies outside of renderer, so that these survive
 /// a cross-process navigation.
 /// If maxTotalBufferSize is not set, durable messages are disabled.
@@ -2210,6 +2329,13 @@ pub struct ConfigureDurableMessagesParams {
     pub maxResourceBufferSize: Option<u64>,
 }
 
+impl ConfigureDurableMessagesParams { pub const METHOD: &'static str = "Network.configureDurableMessages"; }
+
+impl crate::CdpCommand for ConfigureDurableMessagesParams {
+    const METHOD: &'static str = "Network.configureDurableMessages";
+    type Response = crate::EmptyReturns;
+}
+
 /// Returns all browser cookies. Depending on the backend support, will return detailed cookie
 /// information in the 'cookies' field.
 /// Deprecated. Use Storage.getCookies instead.
@@ -2220,6 +2346,16 @@ pub struct GetAllCookiesReturns {
     /// Array of cookie objects.
 
     pub cookies: Vec<Cookie>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GetAllCookiesParams {}
+
+impl GetAllCookiesParams { pub const METHOD: &'static str = "Network.getAllCookies"; }
+
+impl crate::CdpCommand for GetAllCookiesParams {
+    const METHOD: &'static str = "Network.getAllCookies";
+    type Response = GetAllCookiesReturns;
 }
 
 /// Returns the DER-encoded certificate.
@@ -2239,6 +2375,13 @@ pub struct GetCertificateParams {
 pub struct GetCertificateReturns {
 
     pub tableNames: Vec<String>,
+}
+
+impl GetCertificateParams { pub const METHOD: &'static str = "Network.getCertificate"; }
+
+impl crate::CdpCommand for GetCertificateParams {
+    const METHOD: &'static str = "Network.getCertificate";
+    type Response = GetCertificateReturns;
 }
 
 /// Returns all browser cookies for the current URL. Depending on the backend support, will return
@@ -2266,6 +2409,13 @@ pub struct GetCookiesReturns {
     pub cookies: Vec<Cookie>,
 }
 
+impl GetCookiesParams { pub const METHOD: &'static str = "Network.getCookies"; }
+
+impl crate::CdpCommand for GetCookiesParams {
+    const METHOD: &'static str = "Network.getCookies";
+    type Response = GetCookiesReturns;
+}
+
 /// Returns content served for the given request.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -2287,6 +2437,13 @@ pub struct GetResponseBodyReturns {
     /// True, if content was sent as base64.
 
     pub base64Encoded: bool,
+}
+
+impl GetResponseBodyParams { pub const METHOD: &'static str = "Network.getResponseBody"; }
+
+impl crate::CdpCommand for GetResponseBodyParams {
+    const METHOD: &'static str = "Network.getResponseBody";
+    type Response = GetResponseBodyReturns;
 }
 
 /// Returns post data sent with the request. Returns an error when no data was sent with the request.
@@ -2312,6 +2469,13 @@ pub struct GetRequestPostDataReturns {
     pub base64Encoded: bool,
 }
 
+impl GetRequestPostDataParams { pub const METHOD: &'static str = "Network.getRequestPostData"; }
+
+impl crate::CdpCommand for GetRequestPostDataParams {
+    const METHOD: &'static str = "Network.getRequestPostData";
+    type Response = GetRequestPostDataReturns;
+}
+
 /// Returns content served for the given currently intercepted request.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -2333,6 +2497,13 @@ pub struct GetResponseBodyForInterceptionReturns {
     /// True, if content was sent as base64.
 
     pub base64Encoded: bool,
+}
+
+impl GetResponseBodyForInterceptionParams { pub const METHOD: &'static str = "Network.getResponseBodyForInterception"; }
+
+impl crate::CdpCommand for GetResponseBodyForInterceptionParams {
+    const METHOD: &'static str = "Network.getResponseBodyForInterception";
+    type Response = GetResponseBodyForInterceptionReturns;
 }
 
 /// Returns a handle to the stream representing the response body. Note that after this command,
@@ -2359,6 +2530,13 @@ pub struct TakeResponseBodyForInterceptionAsStreamReturns {
     pub stream: crate::io::StreamHandle,
 }
 
+impl TakeResponseBodyForInterceptionAsStreamParams { pub const METHOD: &'static str = "Network.takeResponseBodyForInterceptionAsStream"; }
+
+impl crate::CdpCommand for TakeResponseBodyForInterceptionAsStreamParams {
+    const METHOD: &'static str = "Network.takeResponseBodyForInterceptionAsStream";
+    type Response = TakeResponseBodyForInterceptionAsStreamReturns;
+}
+
 /// This method sends a new XMLHttpRequest which is identical to the original one. The following
 /// parameters should be identical: method, url, async, request body, extra headers, withCredentials
 /// attribute, user, password.
@@ -2369,6 +2547,13 @@ pub struct ReplayXHRParams {
     /// Identifier of XHR to replay.
 
     pub requestId: RequestId,
+}
+
+impl ReplayXHRParams { pub const METHOD: &'static str = "Network.replayXHR"; }
+
+impl crate::CdpCommand for ReplayXHRParams {
+    const METHOD: &'static str = "Network.replayXHR";
+    type Response = crate::EmptyReturns;
 }
 
 /// Searches for given string in response content.
@@ -2402,6 +2587,13 @@ pub struct SearchInResponseBodyReturns {
     pub result: Vec<crate::debugger::SearchMatch>,
 }
 
+impl SearchInResponseBodyParams { pub const METHOD: &'static str = "Network.searchInResponseBody"; }
+
+impl crate::CdpCommand for SearchInResponseBodyParams {
+    const METHOD: &'static str = "Network.searchInResponseBody";
+    type Response = SearchInResponseBodyReturns;
+}
+
 /// Blocks URLs from loading.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -2418,6 +2610,13 @@ pub struct SetBlockedURLsParams {
     pub urls: Option<Vec<String>>,
 }
 
+impl SetBlockedURLsParams { pub const METHOD: &'static str = "Network.setBlockedURLs"; }
+
+impl crate::CdpCommand for SetBlockedURLsParams {
+    const METHOD: &'static str = "Network.setBlockedURLs";
+    type Response = crate::EmptyReturns;
+}
+
 /// Toggles ignoring of service worker for each request.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -2428,6 +2627,13 @@ pub struct SetBypassServiceWorkerParams {
     pub bypass: bool,
 }
 
+impl SetBypassServiceWorkerParams { pub const METHOD: &'static str = "Network.setBypassServiceWorker"; }
+
+impl crate::CdpCommand for SetBypassServiceWorkerParams {
+    const METHOD: &'static str = "Network.setBypassServiceWorker";
+    type Response = crate::EmptyReturns;
+}
+
 /// Toggles ignoring cache for each request. If 'true', cache will not be used.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -2436,6 +2642,13 @@ pub struct SetCacheDisabledParams {
     /// Cache disabled state.
 
     pub cacheDisabled: bool,
+}
+
+impl SetCacheDisabledParams { pub const METHOD: &'static str = "Network.setCacheDisabled"; }
+
+impl crate::CdpCommand for SetCacheDisabledParams {
+    const METHOD: &'static str = "Network.setCacheDisabled";
+    type Response = crate::EmptyReturns;
 }
 
 /// Sets a cookie with the given cookie data; may overwrite equivalent cookies if they exist.
@@ -2486,7 +2699,7 @@ pub struct SetCookieParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sourceScheme: Option<CookieSourceScheme>,
-    /// Cookie source port. Valid values are {-1, \[1, 65535\]}, -1 indicates an unspecified port.
+    /// Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port.
     /// An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
     /// This is a temporary ability and it will be removed in the future.
 
@@ -2508,6 +2721,13 @@ pub struct SetCookieReturns {
     pub success: bool,
 }
 
+impl SetCookieParams { pub const METHOD: &'static str = "Network.setCookie"; }
+
+impl crate::CdpCommand for SetCookieParams {
+    const METHOD: &'static str = "Network.setCookie";
+    type Response = SetCookieReturns;
+}
+
 /// Sets given cookies.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -2516,6 +2736,13 @@ pub struct SetCookiesParams {
     /// Cookies to be set.
 
     pub cookies: Vec<CookieParam>,
+}
+
+impl SetCookiesParams { pub const METHOD: &'static str = "Network.setCookies"; }
+
+impl crate::CdpCommand for SetCookiesParams {
+    const METHOD: &'static str = "Network.setCookies";
+    type Response = crate::EmptyReturns;
 }
 
 /// Specifies whether to always send extra HTTP headers with the requests from this page.
@@ -2528,6 +2755,13 @@ pub struct SetExtraHTTPHeadersParams {
     pub headers: Headers,
 }
 
+impl SetExtraHTTPHeadersParams { pub const METHOD: &'static str = "Network.setExtraHTTPHeaders"; }
+
+impl crate::CdpCommand for SetExtraHTTPHeadersParams {
+    const METHOD: &'static str = "Network.setExtraHTTPHeaders";
+    type Response = crate::EmptyReturns;
+}
+
 /// Specifies whether to attach a page script stack id in requests
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -2536,6 +2770,13 @@ pub struct SetAttachDebugStackParams {
     /// Whether to attach a page script stack for debugging purpose.
 
     pub enabled: bool,
+}
+
+impl SetAttachDebugStackParams { pub const METHOD: &'static str = "Network.setAttachDebugStack"; }
+
+impl crate::CdpCommand for SetAttachDebugStackParams {
+    const METHOD: &'static str = "Network.setAttachDebugStack";
+    type Response = crate::EmptyReturns;
 }
 
 /// Sets the requests to intercept that match the provided patterns and optionally resource types.
@@ -2548,6 +2789,13 @@ pub struct SetRequestInterceptionParams {
     /// continueInterceptedRequest call.
 
     pub patterns: Vec<RequestPattern>,
+}
+
+impl SetRequestInterceptionParams { pub const METHOD: &'static str = "Network.setRequestInterception"; }
+
+impl crate::CdpCommand for SetRequestInterceptionParams {
+    const METHOD: &'static str = "Network.setRequestInterception";
+    type Response = crate::EmptyReturns;
 }
 
 /// Allows overriding user agent with the given string.
@@ -2572,6 +2820,13 @@ pub struct SetUserAgentOverrideParams {
     pub userAgentMetadata: Option<crate::emulation::UserAgentMetadata>,
 }
 
+impl SetUserAgentOverrideParams { pub const METHOD: &'static str = "Network.setUserAgentOverride"; }
+
+impl crate::CdpCommand for SetUserAgentOverrideParams {
+    const METHOD: &'static str = "Network.setUserAgentOverride";
+    type Response = crate::EmptyReturns;
+}
+
 /// Enables streaming of the response for the given requestId.
 /// If enabled, the dataReceived event contains the data that was received during streaming.
 
@@ -2594,6 +2849,13 @@ pub struct StreamResourceContentReturns {
     pub bufferedData: String,
 }
 
+impl StreamResourceContentParams { pub const METHOD: &'static str = "Network.streamResourceContent"; }
+
+impl crate::CdpCommand for StreamResourceContentParams {
+    const METHOD: &'static str = "Network.streamResourceContent";
+    type Response = StreamResourceContentReturns;
+}
+
 /// Returns information about the COEP/COOP isolation status.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -2614,6 +2876,13 @@ pub struct GetSecurityIsolationStatusReturns {
     pub status: SecurityIsolationStatus,
 }
 
+impl GetSecurityIsolationStatusParams { pub const METHOD: &'static str = "Network.getSecurityIsolationStatus"; }
+
+impl crate::CdpCommand for GetSecurityIsolationStatusParams {
+    const METHOD: &'static str = "Network.getSecurityIsolationStatus";
+    type Response = GetSecurityIsolationStatusReturns;
+}
+
 /// Enables tracking for the Reporting API, events generated by the Reporting API will now be delivered to the client.
 /// Enabling triggers 'reportingApiReportAdded' for all existing reports.
 
@@ -2623,6 +2892,13 @@ pub struct EnableReportingApiParams {
     /// Whether to enable or disable events for the Reporting API
 
     pub enable: bool,
+}
+
+impl EnableReportingApiParams { pub const METHOD: &'static str = "Network.enableReportingApi"; }
+
+impl crate::CdpCommand for EnableReportingApiParams {
+    const METHOD: &'static str = "Network.enableReportingApi";
+    type Response = crate::EmptyReturns;
 }
 
 /// Sets up tracking device bound sessions and fetching of initial set of sessions.
@@ -2635,6 +2911,13 @@ pub struct EnableDeviceBoundSessionsParams {
     pub enable: bool,
 }
 
+impl EnableDeviceBoundSessionsParams { pub const METHOD: &'static str = "Network.enableDeviceBoundSessions"; }
+
+impl crate::CdpCommand for EnableDeviceBoundSessionsParams {
+    const METHOD: &'static str = "Network.enableDeviceBoundSessions";
+    type Response = crate::EmptyReturns;
+}
+
 /// Deletes a device bound session.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -2642,6 +2925,13 @@ pub struct EnableDeviceBoundSessionsParams {
 pub struct DeleteDeviceBoundSessionParams {
 
     pub key: DeviceBoundSessionKey,
+}
+
+impl DeleteDeviceBoundSessionParams { pub const METHOD: &'static str = "Network.deleteDeviceBoundSession"; }
+
+impl crate::CdpCommand for DeleteDeviceBoundSessionParams {
+    const METHOD: &'static str = "Network.deleteDeviceBoundSession";
+    type Response = crate::EmptyReturns;
 }
 
 /// Fetches the schemeful site for a specific origin.
@@ -2662,6 +2952,13 @@ pub struct FetchSchemefulSiteReturns {
     /// The corresponding schemeful site.
 
     pub schemefulSite: String,
+}
+
+impl FetchSchemefulSiteParams { pub const METHOD: &'static str = "Network.fetchSchemefulSite"; }
+
+impl crate::CdpCommand for FetchSchemefulSiteParams {
+    const METHOD: &'static str = "Network.fetchSchemefulSite";
+    type Response = FetchSchemefulSiteReturns;
 }
 
 /// Fetches the resource and returns the content.
@@ -2691,6 +2988,13 @@ pub struct LoadNetworkResourceReturns {
     pub resource: LoadNetworkResourcePageResult,
 }
 
+impl LoadNetworkResourceParams { pub const METHOD: &'static str = "Network.loadNetworkResource"; }
+
+impl crate::CdpCommand for LoadNetworkResourceParams {
+    const METHOD: &'static str = "Network.loadNetworkResource";
+    type Response = LoadNetworkResourceReturns;
+}
+
 /// Sets Controls for third-party cookie access
 /// Page reload is required before the new cookie behavior will be observed
 
@@ -2700,4 +3004,11 @@ pub struct SetCookieControlsParams {
     /// Whether 3pc restriction is enabled.
 
     pub enableThirdPartyCookieRestriction: bool,
+}
+
+impl SetCookieControlsParams { pub const METHOD: &'static str = "Network.setCookieControls"; }
+
+impl crate::CdpCommand for SetCookieControlsParams {
+    const METHOD: &'static str = "Network.setCookieControls";
+    type Response = crate::EmptyReturns;
 }

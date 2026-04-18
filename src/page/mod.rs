@@ -1,6 +1,7 @@
-//! Actions and events related to the inspected page belong to the page domain.
-
 use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
+
+//! Actions and events related to the inspected page belong to the page domain.
 
 /// Unique frame identifier.
 
@@ -220,7 +221,7 @@ pub struct PermissionsPolicyFeatureState {
     pub locator: Option<PermissionsPolicyBlockLocator>,
 }
 
-/// Origin Trial(<https://www.chromium.org/blink/origin-trials>) support.
+/// Origin Trial(https://www.chromium.org/blink/origin-trials) support.
 /// Status for an Origin Trial token.
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
@@ -344,8 +345,8 @@ pub struct Frame {
     pub urlFragment: Option<String>,
     /// Frame document's registered domain, taking the public suffixes list into account.
     /// Extracted from the Frame's url.
-    /// Example URLs: <http://www.google.com/file.html> -\> "google.com"
-    /// <http://a.b.co.uk/file.html>      -\> "b.co.uk"
+    /// Example URLs: http://www.google.com/file.html -> "google.com"
+    /// http://a.b.co.uk/file.html      -> "b.co.uk"
 
     pub domainAndRegistry: String,
     /// Frame document's security origin.
@@ -949,7 +950,7 @@ pub struct WebAppManifest {
     pub lang: Option<String>,
     /// TODO(crbug.com/1231886): This field is non-standard and part of a Chrome
     /// experiment. See:
-    /// <https://github.com/WICG/web-app-launch/blob/main/launch_handler.md>
+    /// https://github.com/WICG/web-app-launch/blob/main/launch_handler.md
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub launchHandler: Option<LaunchHandler>,
@@ -973,7 +974,7 @@ pub struct WebAppManifest {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub scope: Option<String>,
     /// Non-standard, see
-    /// <https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md>
+    /// https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub scopeExtensions: Option<Vec<ScopeExtension>>,
@@ -1247,6 +1248,13 @@ pub struct AddScriptToEvaluateOnLoadReturns {
     pub identifier: ScriptIdentifier,
 }
 
+impl AddScriptToEvaluateOnLoadParams { pub const METHOD: &'static str = "Page.addScriptToEvaluateOnLoad"; }
+
+impl crate::CdpCommand for AddScriptToEvaluateOnLoadParams {
+    const METHOD: &'static str = "Page.addScriptToEvaluateOnLoad";
+    type Response = AddScriptToEvaluateOnLoadReturns;
+}
+
 /// Evaluates given script in every frame upon creation (before loading frame's scripts).
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1282,6 +1290,23 @@ pub struct AddScriptToEvaluateOnNewDocumentReturns {
     pub identifier: ScriptIdentifier,
 }
 
+impl AddScriptToEvaluateOnNewDocumentParams { pub const METHOD: &'static str = "Page.addScriptToEvaluateOnNewDocument"; }
+
+impl crate::CdpCommand for AddScriptToEvaluateOnNewDocumentParams {
+    const METHOD: &'static str = "Page.addScriptToEvaluateOnNewDocument";
+    type Response = AddScriptToEvaluateOnNewDocumentReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct BringToFrontParams {}
+
+impl BringToFrontParams { pub const METHOD: &'static str = "Page.bringToFront"; }
+
+impl crate::CdpCommand for BringToFrontParams {
+    const METHOD: &'static str = "Page.bringToFront";
+    type Response = crate::EmptyReturns;
+}
+
 /// Capture page screenshot.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1291,7 +1316,7 @@ pub struct CaptureScreenshotParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub format: Option<String>,
-    /// Compression quality from range \[0..100\] (jpeg only).
+    /// Compression quality from range [0..100] (jpeg only).
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub quality: Option<i64>,
@@ -1323,6 +1348,13 @@ pub struct CaptureScreenshotReturns {
     pub data: String,
 }
 
+impl CaptureScreenshotParams { pub const METHOD: &'static str = "Page.captureScreenshot"; }
+
+impl crate::CdpCommand for CaptureScreenshotParams {
+    const METHOD: &'static str = "Page.captureScreenshot";
+    type Response = CaptureScreenshotReturns;
+}
+
 /// Returns a snapshot of the page as a string. For MHTML format, the serialization includes
 /// iframes, shadow DOM, external resources, and element-inline styles.
 
@@ -1344,6 +1376,43 @@ pub struct CaptureSnapshotReturns {
     /// Serialized page data.
 
     pub data: String,
+}
+
+impl CaptureSnapshotParams { pub const METHOD: &'static str = "Page.captureSnapshot"; }
+
+impl crate::CdpCommand for CaptureSnapshotParams {
+    const METHOD: &'static str = "Page.captureSnapshot";
+    type Response = CaptureSnapshotReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct ClearDeviceMetricsOverrideParams {}
+
+impl ClearDeviceMetricsOverrideParams { pub const METHOD: &'static str = "Page.clearDeviceMetricsOverride"; }
+
+impl crate::CdpCommand for ClearDeviceMetricsOverrideParams {
+    const METHOD: &'static str = "Page.clearDeviceMetricsOverride";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct ClearDeviceOrientationOverrideParams {}
+
+impl ClearDeviceOrientationOverrideParams { pub const METHOD: &'static str = "Page.clearDeviceOrientationOverride"; }
+
+impl crate::CdpCommand for ClearDeviceOrientationOverrideParams {
+    const METHOD: &'static str = "Page.clearDeviceOrientationOverride";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct ClearGeolocationOverrideParams {}
+
+impl ClearGeolocationOverrideParams { pub const METHOD: &'static str = "Page.clearGeolocationOverride"; }
+
+impl crate::CdpCommand for ClearGeolocationOverrideParams {
+    const METHOD: &'static str = "Page.clearGeolocationOverride";
+    type Response = crate::EmptyReturns;
 }
 
 /// Creates an isolated world for the given frame.
@@ -1375,6 +1444,13 @@ pub struct CreateIsolatedWorldReturns {
     pub executionContextId: crate::runtime::ExecutionContextId,
 }
 
+impl CreateIsolatedWorldParams { pub const METHOD: &'static str = "Page.createIsolatedWorld"; }
+
+impl crate::CdpCommand for CreateIsolatedWorldParams {
+    const METHOD: &'static str = "Page.createIsolatedWorld";
+    type Response = CreateIsolatedWorldReturns;
+}
+
 /// Deletes browser cookie with given name, domain and path.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1388,6 +1464,23 @@ pub struct DeleteCookieParams {
     pub url: String,
 }
 
+impl DeleteCookieParams { pub const METHOD: &'static str = "Page.deleteCookie"; }
+
+impl crate::CdpCommand for DeleteCookieParams {
+    const METHOD: &'static str = "Page.deleteCookie";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct DisableParams {}
+
+impl DisableParams { pub const METHOD: &'static str = "Page.disable"; }
+
+impl crate::CdpCommand for DisableParams {
+    const METHOD: &'static str = "Page.disable";
+    type Response = crate::EmptyReturns;
+}
+
 /// Enables page domain notifications.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1398,6 +1491,13 @@ pub struct EnableParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub enableFileChooserOpenedEvent: Option<bool>,
+}
+
+impl EnableParams { pub const METHOD: &'static str = "Page.enable"; }
+
+impl crate::CdpCommand for EnableParams {
+    const METHOD: &'static str = "Page.enable";
+    type Response = crate::EmptyReturns;
 }
 
 /// Gets the processed manifest for this current document.
@@ -1440,12 +1540,29 @@ pub struct GetAppManifestReturns {
     pub manifest: WebAppManifest,
 }
 
+impl GetAppManifestParams { pub const METHOD: &'static str = "Page.getAppManifest"; }
+
+impl crate::CdpCommand for GetAppManifestParams {
+    const METHOD: &'static str = "Page.getAppManifest";
+    type Response = GetAppManifestReturns;
+}
+
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetInstallabilityErrorsReturns {
 
     pub installabilityErrors: Vec<InstallabilityError>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GetInstallabilityErrorsParams {}
+
+impl GetInstallabilityErrorsParams { pub const METHOD: &'static str = "Page.getInstallabilityErrors"; }
+
+impl crate::CdpCommand for GetInstallabilityErrorsParams {
+    const METHOD: &'static str = "Page.getInstallabilityErrors";
+    type Response = GetInstallabilityErrorsReturns;
 }
 
 /// Deprecated because it's not guaranteed that the returned icon is in fact the one used for PWA installation.
@@ -1456,6 +1573,16 @@ pub struct GetManifestIconsReturns {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub primaryIcon: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GetManifestIconsParams {}
+
+impl GetManifestIconsParams { pub const METHOD: &'static str = "Page.getManifestIcons"; }
+
+impl crate::CdpCommand for GetManifestIconsParams {
+    const METHOD: &'static str = "Page.getManifestIcons";
+    type Response = GetManifestIconsReturns;
 }
 
 /// Returns the unique (PWA) app id.
@@ -1472,6 +1599,16 @@ pub struct GetAppIdReturns {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub recommendedId: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GetAppIdParams {}
+
+impl GetAppIdParams { pub const METHOD: &'static str = "Page.getAppId"; }
+
+impl crate::CdpCommand for GetAppIdParams {
+    const METHOD: &'static str = "Page.getAppId";
+    type Response = GetAppIdReturns;
 }
 
 
@@ -1496,6 +1633,13 @@ pub struct GetAdScriptAncestryReturns {
     pub adScriptAncestry: Option<crate::network::AdAncestry>,
 }
 
+impl GetAdScriptAncestryParams { pub const METHOD: &'static str = "Page.getAdScriptAncestry"; }
+
+impl crate::CdpCommand for GetAdScriptAncestryParams {
+    const METHOD: &'static str = "Page.getAdScriptAncestry";
+    type Response = GetAdScriptAncestryReturns;
+}
+
 /// Returns present frame tree structure.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1504,6 +1648,16 @@ pub struct GetFrameTreeReturns {
     /// Present frame tree structure.
 
     pub frameTree: FrameTree,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GetFrameTreeParams {}
+
+impl GetFrameTreeParams { pub const METHOD: &'static str = "Page.getFrameTree"; }
+
+impl crate::CdpCommand for GetFrameTreeParams {
+    const METHOD: &'static str = "Page.getFrameTree";
+    type Response = GetFrameTreeReturns;
 }
 
 /// Returns metrics relating to the layouting of the page, such as viewport bounds/scale.
@@ -1531,6 +1685,16 @@ pub struct GetLayoutMetricsReturns {
     pub cssContentSize: crate::dom::Rect,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GetLayoutMetricsParams {}
+
+impl GetLayoutMetricsParams { pub const METHOD: &'static str = "Page.getLayoutMetrics"; }
+
+impl crate::CdpCommand for GetLayoutMetricsParams {
+    const METHOD: &'static str = "Page.getLayoutMetrics";
+    type Response = GetLayoutMetricsReturns;
+}
+
 /// Returns navigation history for the current page.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1542,6 +1706,26 @@ pub struct GetNavigationHistoryReturns {
     /// Array of navigation history entries.
 
     pub entries: Vec<NavigationEntry>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GetNavigationHistoryParams {}
+
+impl GetNavigationHistoryParams { pub const METHOD: &'static str = "Page.getNavigationHistory"; }
+
+impl crate::CdpCommand for GetNavigationHistoryParams {
+    const METHOD: &'static str = "Page.getNavigationHistory";
+    type Response = GetNavigationHistoryReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct ResetNavigationHistoryParams {}
+
+impl ResetNavigationHistoryParams { pub const METHOD: &'static str = "Page.resetNavigationHistory"; }
+
+impl crate::CdpCommand for ResetNavigationHistoryParams {
+    const METHOD: &'static str = "Page.resetNavigationHistory";
+    type Response = crate::EmptyReturns;
 }
 
 /// Returns content of the given resource.
@@ -1570,6 +1754,13 @@ pub struct GetResourceContentReturns {
     pub base64Encoded: bool,
 }
 
+impl GetResourceContentParams { pub const METHOD: &'static str = "Page.getResourceContent"; }
+
+impl crate::CdpCommand for GetResourceContentParams {
+    const METHOD: &'static str = "Page.getResourceContent";
+    type Response = GetResourceContentReturns;
+}
+
 /// Returns present frame / resource tree structure.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1578,6 +1769,16 @@ pub struct GetResourceTreeReturns {
     /// Present frame / resource tree structure.
 
     pub frameTree: FrameResourceTree,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GetResourceTreeParams {}
+
+impl GetResourceTreeParams { pub const METHOD: &'static str = "Page.getResourceTree"; }
+
+impl crate::CdpCommand for GetResourceTreeParams {
+    const METHOD: &'static str = "Page.getResourceTree";
+    type Response = GetResourceTreeReturns;
 }
 
 /// Accepts or dismisses a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload).
@@ -1593,6 +1794,13 @@ pub struct HandleJavaScriptDialogParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub promptText: Option<String>,
+}
+
+impl HandleJavaScriptDialogParams { pub const METHOD: &'static str = "Page.handleJavaScriptDialog"; }
+
+impl crate::CdpCommand for HandleJavaScriptDialogParams {
+    const METHOD: &'static str = "Page.handleJavaScriptDialog";
+    type Response = crate::EmptyReturns;
 }
 
 /// Navigates current page to the given URL.
@@ -1644,6 +1852,13 @@ pub struct NavigateReturns {
     pub isDownload: Option<bool>,
 }
 
+impl NavigateParams { pub const METHOD: &'static str = "Page.navigate"; }
+
+impl crate::CdpCommand for NavigateParams {
+    const METHOD: &'static str = "Page.navigate";
+    type Response = NavigateReturns;
+}
+
 /// Navigates current page to the given history entry.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1652,6 +1867,13 @@ pub struct NavigateToHistoryEntryParams {
     /// Unique id of the entry to navigate to.
 
     pub entryId: u64,
+}
+
+impl NavigateToHistoryEntryParams { pub const METHOD: &'static str = "Page.navigateToHistoryEntry"; }
+
+impl crate::CdpCommand for NavigateToHistoryEntryParams {
+    const METHOD: &'static str = "Page.navigateToHistoryEntry";
+    type Response = crate::EmptyReturns;
 }
 
 /// Print page as PDF.
@@ -1718,7 +1940,7 @@ pub struct PrintToPDFParams {
     /// - 'pageNumber': current page number
     /// - 'totalPages': total pages in the document
     /// 
-    /// For example, '\<span class=title\>\</span\>' would generate span containing the title.
+    /// For example, '<span class=title></span>' would generate span containing the title.
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub headerTemplate: Option<String>,
@@ -1759,6 +1981,13 @@ pub struct PrintToPDFReturns {
     pub stream: Option<crate::io::StreamHandle>,
 }
 
+impl PrintToPDFParams { pub const METHOD: &'static str = "Page.printToPDF"; }
+
+impl crate::CdpCommand for PrintToPDFParams {
+    const METHOD: &'static str = "Page.printToPDF";
+    type Response = PrintToPDFReturns;
+}
+
 /// Reloads given page optionally ignoring the cache.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1781,6 +2010,13 @@ pub struct ReloadParams {
     pub loaderId: Option<crate::network::LoaderId>,
 }
 
+impl ReloadParams { pub const METHOD: &'static str = "Page.reload"; }
+
+impl crate::CdpCommand for ReloadParams {
+    const METHOD: &'static str = "Page.reload";
+    type Response = crate::EmptyReturns;
+}
+
 /// Deprecated, please use removeScriptToEvaluateOnNewDocument instead.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1788,6 +2024,13 @@ pub struct ReloadParams {
 pub struct RemoveScriptToEvaluateOnLoadParams {
 
     pub identifier: ScriptIdentifier,
+}
+
+impl RemoveScriptToEvaluateOnLoadParams { pub const METHOD: &'static str = "Page.removeScriptToEvaluateOnLoad"; }
+
+impl crate::CdpCommand for RemoveScriptToEvaluateOnLoadParams {
+    const METHOD: &'static str = "Page.removeScriptToEvaluateOnLoad";
+    type Response = crate::EmptyReturns;
 }
 
 /// Removes given script from the list.
@@ -1799,6 +2042,13 @@ pub struct RemoveScriptToEvaluateOnNewDocumentParams {
     pub identifier: ScriptIdentifier,
 }
 
+impl RemoveScriptToEvaluateOnNewDocumentParams { pub const METHOD: &'static str = "Page.removeScriptToEvaluateOnNewDocument"; }
+
+impl crate::CdpCommand for RemoveScriptToEvaluateOnNewDocumentParams {
+    const METHOD: &'static str = "Page.removeScriptToEvaluateOnNewDocument";
+    type Response = crate::EmptyReturns;
+}
+
 /// Acknowledges that a screencast frame has been received by the frontend.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1807,6 +2057,13 @@ pub struct ScreencastFrameAckParams {
     /// Frame number.
 
     pub sessionId: u64,
+}
+
+impl ScreencastFrameAckParams { pub const METHOD: &'static str = "Page.screencastFrameAck"; }
+
+impl crate::CdpCommand for ScreencastFrameAckParams {
+    const METHOD: &'static str = "Page.screencastFrameAck";
+    type Response = crate::EmptyReturns;
 }
 
 /// Searches for given string in resource content.
@@ -1843,6 +2100,13 @@ pub struct SearchInResourceReturns {
     pub result: Vec<crate::debugger::SearchMatch>,
 }
 
+impl SearchInResourceParams { pub const METHOD: &'static str = "Page.searchInResource"; }
+
+impl crate::CdpCommand for SearchInResourceParams {
+    const METHOD: &'static str = "Page.searchInResource";
+    type Response = SearchInResourceReturns;
+}
+
 /// Enable Chrome's experimental ad filter on all sites.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1853,6 +2117,13 @@ pub struct SetAdBlockingEnabledParams {
     pub enabled: bool,
 }
 
+impl SetAdBlockingEnabledParams { pub const METHOD: &'static str = "Page.setAdBlockingEnabled"; }
+
+impl crate::CdpCommand for SetAdBlockingEnabledParams {
+    const METHOD: &'static str = "Page.setAdBlockingEnabled";
+    type Response = crate::EmptyReturns;
+}
+
 /// Enable page Content Security Policy by-passing.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1861,6 +2132,13 @@ pub struct SetBypassCSPParams {
     /// Whether to bypass page CSP.
 
     pub enabled: bool,
+}
+
+impl SetBypassCSPParams { pub const METHOD: &'static str = "Page.setBypassCSP"; }
+
+impl crate::CdpCommand for SetBypassCSPParams {
+    const METHOD: &'static str = "Page.setBypassCSP";
+    type Response = crate::EmptyReturns;
 }
 
 /// Get Permissions Policy state on given frame.
@@ -1881,6 +2159,13 @@ pub struct GetPermissionsPolicyStateReturns {
     pub states: Vec<PermissionsPolicyFeatureState>,
 }
 
+impl GetPermissionsPolicyStateParams { pub const METHOD: &'static str = "Page.getPermissionsPolicyState"; }
+
+impl crate::CdpCommand for GetPermissionsPolicyStateParams {
+    const METHOD: &'static str = "Page.getPermissionsPolicyState";
+    type Response = GetPermissionsPolicyStateReturns;
+}
+
 /// Get Origin Trials on given frame.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1897,6 +2182,13 @@ pub struct GetOriginTrialsParams {
 pub struct GetOriginTrialsReturns {
 
     pub originTrials: Vec<OriginTrial>,
+}
+
+impl GetOriginTrialsParams { pub const METHOD: &'static str = "Page.getOriginTrials"; }
+
+impl crate::CdpCommand for GetOriginTrialsParams {
+    const METHOD: &'static str = "Page.getOriginTrials";
+    type Response = GetOriginTrialsReturns;
 }
 
 /// Overrides the values of device screen dimensions (window.screen.width, window.screen.height,
@@ -1953,6 +2245,13 @@ pub struct SetDeviceMetricsOverrideParams {
     pub viewport: Option<Viewport>,
 }
 
+impl SetDeviceMetricsOverrideParams { pub const METHOD: &'static str = "Page.setDeviceMetricsOverride"; }
+
+impl crate::CdpCommand for SetDeviceMetricsOverrideParams {
+    const METHOD: &'static str = "Page.setDeviceMetricsOverride";
+    type Response = crate::EmptyReturns;
+}
+
 /// Overrides the Device Orientation.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1969,6 +2268,13 @@ pub struct SetDeviceOrientationOverrideParams {
     pub gamma: f64,
 }
 
+impl SetDeviceOrientationOverrideParams { pub const METHOD: &'static str = "Page.setDeviceOrientationOverride"; }
+
+impl crate::CdpCommand for SetDeviceOrientationOverrideParams {
+    const METHOD: &'static str = "Page.setDeviceOrientationOverride";
+    type Response = crate::EmptyReturns;
+}
+
 /// Set generic font families.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1983,6 +2289,13 @@ pub struct SetFontFamiliesParams {
     pub forScripts: Option<Vec<ScriptFontFamilies>>,
 }
 
+impl SetFontFamiliesParams { pub const METHOD: &'static str = "Page.setFontFamilies"; }
+
+impl crate::CdpCommand for SetFontFamiliesParams {
+    const METHOD: &'static str = "Page.setFontFamilies";
+    type Response = crate::EmptyReturns;
+}
+
 /// Set default font sizes.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1991,6 +2304,13 @@ pub struct SetFontSizesParams {
     /// Specifies font sizes to set. If a font size is not specified, it won't be changed.
 
     pub fontSizes: FontSizes,
+}
+
+impl SetFontSizesParams { pub const METHOD: &'static str = "Page.setFontSizes"; }
+
+impl crate::CdpCommand for SetFontSizesParams {
+    const METHOD: &'static str = "Page.setFontSizes";
+    type Response = crate::EmptyReturns;
 }
 
 /// Sets given markup as the document's HTML.
@@ -2006,6 +2326,13 @@ pub struct SetDocumentContentParams {
     pub html: String,
 }
 
+impl SetDocumentContentParams { pub const METHOD: &'static str = "Page.setDocumentContent"; }
+
+impl crate::CdpCommand for SetDocumentContentParams {
+    const METHOD: &'static str = "Page.setDocumentContent";
+    type Response = crate::EmptyReturns;
+}
+
 /// Set the behavior when downloading a file.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -2019,6 +2346,13 @@ pub struct SetDownloadBehaviorParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub downloadPath: Option<String>,
+}
+
+impl SetDownloadBehaviorParams { pub const METHOD: &'static str = "Page.setDownloadBehavior"; }
+
+impl crate::CdpCommand for SetDownloadBehaviorParams {
+    const METHOD: &'static str = "Page.setDownloadBehavior";
+    type Response = crate::EmptyReturns;
 }
 
 /// Overrides the Geolocation Position or Error. Omitting any of the parameters emulates position
@@ -2041,6 +2375,13 @@ pub struct SetGeolocationOverrideParams {
     pub accuracy: Option<f64>,
 }
 
+impl SetGeolocationOverrideParams { pub const METHOD: &'static str = "Page.setGeolocationOverride"; }
+
+impl crate::CdpCommand for SetGeolocationOverrideParams {
+    const METHOD: &'static str = "Page.setGeolocationOverride";
+    type Response = crate::EmptyReturns;
+}
+
 /// Controls whether page will emit lifecycle events.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -2049,6 +2390,13 @@ pub struct SetLifecycleEventsEnabledParams {
     /// If true, starts emitting lifecycle events.
 
     pub enabled: bool,
+}
+
+impl SetLifecycleEventsEnabledParams { pub const METHOD: &'static str = "Page.setLifecycleEventsEnabled"; }
+
+impl crate::CdpCommand for SetLifecycleEventsEnabledParams {
+    const METHOD: &'static str = "Page.setLifecycleEventsEnabled";
+    type Response = crate::EmptyReturns;
 }
 
 /// Toggles mouse event-based touch event emulation.
@@ -2065,6 +2413,13 @@ pub struct SetTouchEmulationEnabledParams {
     pub configuration: Option<String>,
 }
 
+impl SetTouchEmulationEnabledParams { pub const METHOD: &'static str = "Page.setTouchEmulationEnabled"; }
+
+impl crate::CdpCommand for SetTouchEmulationEnabledParams {
+    const METHOD: &'static str = "Page.setTouchEmulationEnabled";
+    type Response = crate::EmptyReturns;
+}
+
 /// Starts sending each frame using the 'screencastFrame' event.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -2074,7 +2429,7 @@ pub struct StartScreencastParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub format: Option<String>,
-    /// Compression quality from range \[0..100\].
+    /// Compression quality from range [0..100].
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub quality: Option<i64>,
@@ -2092,9 +2447,46 @@ pub struct StartScreencastParams {
     pub everyNthFrame: Option<i64>,
 }
 
+impl StartScreencastParams { pub const METHOD: &'static str = "Page.startScreencast"; }
+
+impl crate::CdpCommand for StartScreencastParams {
+    const METHOD: &'static str = "Page.startScreencast";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct StopLoadingParams {}
+
+impl StopLoadingParams { pub const METHOD: &'static str = "Page.stopLoading"; }
+
+impl crate::CdpCommand for StopLoadingParams {
+    const METHOD: &'static str = "Page.stopLoading";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct CrashParams {}
+
+impl CrashParams { pub const METHOD: &'static str = "Page.crash"; }
+
+impl crate::CdpCommand for CrashParams {
+    const METHOD: &'static str = "Page.crash";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct CloseParams {}
+
+impl CloseParams { pub const METHOD: &'static str = "Page.close"; }
+
+impl crate::CdpCommand for CloseParams {
+    const METHOD: &'static str = "Page.close";
+    type Response = crate::EmptyReturns;
+}
+
 /// Tries to update the web lifecycle state of the page.
 /// It will transition the page to the given state according to:
-/// <https://github.com/WICG/web-lifecycle/>
+/// https://github.com/WICG/web-lifecycle/
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -2102,6 +2494,23 @@ pub struct SetWebLifecycleStateParams {
     /// Target lifecycle state
 
     pub state: String,
+}
+
+impl SetWebLifecycleStateParams { pub const METHOD: &'static str = "Page.setWebLifecycleState"; }
+
+impl crate::CdpCommand for SetWebLifecycleStateParams {
+    const METHOD: &'static str = "Page.setWebLifecycleState";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct StopScreencastParams {}
+
+impl StopScreencastParams { pub const METHOD: &'static str = "Page.stopScreencast"; }
+
+impl crate::CdpCommand for StopScreencastParams {
+    const METHOD: &'static str = "Page.stopScreencast";
+    type Response = crate::EmptyReturns;
 }
 
 /// Requests backend to produce compilation cache for the specified scripts.
@@ -2118,6 +2527,13 @@ pub struct ProduceCompilationCacheParams {
     pub scripts: Vec<CompilationCacheParams>,
 }
 
+impl ProduceCompilationCacheParams { pub const METHOD: &'static str = "Page.produceCompilationCache"; }
+
+impl crate::CdpCommand for ProduceCompilationCacheParams {
+    const METHOD: &'static str = "Page.produceCompilationCache";
+    type Response = crate::EmptyReturns;
+}
+
 /// Seeds compilation cache for given url. Compilation cache does not survive
 /// cross-process navigation.
 
@@ -2131,8 +2547,25 @@ pub struct AddCompilationCacheParams {
     pub data: String,
 }
 
+impl AddCompilationCacheParams { pub const METHOD: &'static str = "Page.addCompilationCache"; }
+
+impl crate::CdpCommand for AddCompilationCacheParams {
+    const METHOD: &'static str = "Page.addCompilationCache";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct ClearCompilationCacheParams {}
+
+impl ClearCompilationCacheParams { pub const METHOD: &'static str = "Page.clearCompilationCache"; }
+
+impl crate::CdpCommand for ClearCompilationCacheParams {
+    const METHOD: &'static str = "Page.clearCompilationCache";
+    type Response = crate::EmptyReturns;
+}
+
 /// Sets the Secure Payment Confirmation transaction mode.
-/// <https://w3c.github.io/secure-payment-confirmation/#sctn-automation-set-spc-transaction-mode>
+/// https://w3c.github.io/secure-payment-confirmation/#sctn-automation-set-spc-transaction-mode
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -2141,14 +2574,28 @@ pub struct SetSPCTransactionModeParams {
     pub mode: String,
 }
 
+impl SetSPCTransactionModeParams { pub const METHOD: &'static str = "Page.setSPCTransactionMode"; }
+
+impl crate::CdpCommand for SetSPCTransactionModeParams {
+    const METHOD: &'static str = "Page.setSPCTransactionMode";
+    type Response = crate::EmptyReturns;
+}
+
 /// Extensions for Custom Handlers API:
-/// <https://html.spec.whatwg.org/multipage/system-state.html#rph-automation>
+/// https://html.spec.whatwg.org/multipage/system-state.html#rph-automation
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetRPHRegistrationModeParams {
 
     pub mode: String,
+}
+
+impl SetRPHRegistrationModeParams { pub const METHOD: &'static str = "Page.setRPHRegistrationMode"; }
+
+impl crate::CdpCommand for SetRPHRegistrationModeParams {
+    const METHOD: &'static str = "Page.setRPHRegistrationMode";
+    type Response = crate::EmptyReturns;
 }
 
 /// Generates a report for testing.
@@ -2163,6 +2610,23 @@ pub struct GenerateTestReportParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub group: Option<String>,
+}
+
+impl GenerateTestReportParams { pub const METHOD: &'static str = "Page.generateTestReport"; }
+
+impl crate::CdpCommand for GenerateTestReportParams {
+    const METHOD: &'static str = "Page.generateTestReport";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct WaitForDebuggerParams {}
+
+impl WaitForDebuggerParams { pub const METHOD: &'static str = "Page.waitForDebugger"; }
+
+impl crate::CdpCommand for WaitForDebuggerParams {
+    const METHOD: &'static str = "Page.waitForDebugger";
+    type Response = crate::EmptyReturns;
 }
 
 /// Intercept file chooser requests and transfer control to protocol clients.
@@ -2182,19 +2646,33 @@ pub struct SetInterceptFileChooserDialogParams {
     pub cancel: Option<bool>,
 }
 
+impl SetInterceptFileChooserDialogParams { pub const METHOD: &'static str = "Page.setInterceptFileChooserDialog"; }
+
+impl crate::CdpCommand for SetInterceptFileChooserDialogParams {
+    const METHOD: &'static str = "Page.setInterceptFileChooserDialog";
+    type Response = crate::EmptyReturns;
+}
+
 /// Enable/disable prerendering manually.
 /// 
-/// This command is a short-term solution for <https://crbug.com/1440085.>
-/// See <https://docs.google.com/document/d/12HVmFxYj5Jc-eJr5OmWsa2bqTJsbgGLKI6ZIyx0_wpA>
+/// This command is a short-term solution for https://crbug.com/1440085.
+/// See https://docs.google.com/document/d/12HVmFxYj5Jc-eJr5OmWsa2bqTJsbgGLKI6ZIyx0_wpA
 /// for more details.
 /// 
-/// TODO(<https://crbug.com/1440085>): Remove this once Puppeteer supports tab targets.
+/// TODO(https://crbug.com/1440085): Remove this once Puppeteer supports tab targets.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetPrerenderingAllowedParams {
 
     pub isAllowed: bool,
+}
+
+impl SetPrerenderingAllowedParams { pub const METHOD: &'static str = "Page.setPrerenderingAllowed"; }
+
+impl crate::CdpCommand for SetPrerenderingAllowedParams {
+    const METHOD: &'static str = "Page.setPrerenderingAllowed";
+    type Response = crate::EmptyReturns;
 }
 
 /// Get the annotated page content for the main frame.
@@ -2220,4 +2698,11 @@ pub struct GetAnnotatedPageContentReturns {
     /// components/optimization_guide/proto/features/common_quality_data.proto (Encoded as a base64 string when passed over JSON)
 
     pub content: String,
+}
+
+impl GetAnnotatedPageContentParams { pub const METHOD: &'static str = "Page.getAnnotatedPageContent"; }
+
+impl crate::CdpCommand for GetAnnotatedPageContentParams {
+    const METHOD: &'static str = "Page.getAnnotatedPageContent";
+    type Response = GetAnnotatedPageContentReturns;
 }

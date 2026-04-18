@@ -1,4 +1,5 @@
 use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
 
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -27,19 +28,19 @@ pub struct TouchPoint {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub force: Option<f64>,
-    /// The normalized tangential pressure, which has a range of \[-1,1\] (default: 0).
+    /// The normalized tangential pressure, which has a range of [-1,1] (default: 0).
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tangentialPressure: Option<f64>,
-    /// The plane angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis, in degrees of the range \[-90,90\], a positive tiltX is to the right (default: 0)
+    /// The plane angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis, in degrees of the range [-90,90], a positive tiltX is to the right (default: 0)
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tiltX: Option<f64>,
-    /// The plane angle between the X-Z plane and the plane containing both the stylus axis and the X axis, in degrees of the range \[-90,90\], a positive tiltY is towards the user (default: 0).
+    /// The plane angle between the X-Z plane and the plane containing both the stylus axis and the X axis, in degrees of the range [-90,90], a positive tiltY is towards the user (default: 0).
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tiltY: Option<f64>,
-    /// The clockwise rotation of a pen stylus around its own major axis, in degrees in the range \[0,359\] (default: 0).
+    /// The clockwise rotation of a pen stylus around its own major axis, in degrees in the range [0,359] (default: 0).
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub twist: Option<i64>,
@@ -136,6 +137,13 @@ pub struct DispatchDragEventParams {
     pub modifiers: Option<i64>,
 }
 
+impl DispatchDragEventParams { pub const METHOD: &'static str = "Input.dispatchDragEvent"; }
+
+impl crate::CdpCommand for DispatchDragEventParams {
+    const METHOD: &'static str = "Input.dispatchDragEvent";
+    type Response = crate::EmptyReturns;
+}
+
 /// Dispatches a key event to the page.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -202,12 +210,19 @@ pub struct DispatchKeyEventParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub location: Option<i64>,
-    /// Editing commands to send with the key event (e.g., 'selectAll') (default: \[\]).
+    /// Editing commands to send with the key event (e.g., 'selectAll') (default: []).
     /// These are related to but not equal the command names used in 'document.execCommand' and NSStandardKeyBindingResponding.
-    /// See <https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h> for valid command names.
+    /// See https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h for valid command names.
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub commands: Option<Vec<String>>,
+}
+
+impl DispatchKeyEventParams { pub const METHOD: &'static str = "Input.dispatchKeyEvent"; }
+
+impl crate::CdpCommand for DispatchKeyEventParams {
+    const METHOD: &'static str = "Input.dispatchKeyEvent";
+    type Response = crate::EmptyReturns;
 }
 
 /// This method emulates inserting text that doesn't come from a key press,
@@ -219,6 +234,13 @@ pub struct InsertTextParams {
     /// The text to insert.
 
     pub text: String,
+}
+
+impl InsertTextParams { pub const METHOD: &'static str = "Input.insertText"; }
+
+impl crate::CdpCommand for InsertTextParams {
+    const METHOD: &'static str = "Input.insertText";
+    type Response = crate::EmptyReturns;
 }
 
 /// This method sets the current candidate text for IME.
@@ -245,6 +267,13 @@ pub struct ImeSetCompositionParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub replacementEnd: Option<i64>,
+}
+
+impl ImeSetCompositionParams { pub const METHOD: &'static str = "Input.imeSetComposition"; }
+
+impl crate::CdpCommand for ImeSetCompositionParams {
+    const METHOD: &'static str = "Input.imeSetComposition";
+    type Response = crate::EmptyReturns;
 }
 
 /// Dispatches a mouse event to the page.
@@ -285,23 +314,23 @@ pub struct DispatchMouseEventParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub clickCount: Option<u64>,
-    /// The normalized pressure, which has a range of \[0,1\] (default: 0).
+    /// The normalized pressure, which has a range of [0,1] (default: 0).
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub force: Option<f64>,
-    /// The normalized tangential pressure, which has a range of \[-1,1\] (default: 0).
+    /// The normalized tangential pressure, which has a range of [-1,1] (default: 0).
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tangentialPressure: Option<f64>,
-    /// The plane angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis, in degrees of the range \[-90,90\], a positive tiltX is to the right (default: 0).
+    /// The plane angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis, in degrees of the range [-90,90], a positive tiltX is to the right (default: 0).
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tiltX: Option<f64>,
-    /// The plane angle between the X-Z plane and the plane containing both the stylus axis and the X axis, in degrees of the range \[-90,90\], a positive tiltY is towards the user (default: 0).
+    /// The plane angle between the X-Z plane and the plane containing both the stylus axis and the X axis, in degrees of the range [-90,90], a positive tiltY is towards the user (default: 0).
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tiltY: Option<f64>,
-    /// The clockwise rotation of a pen stylus around its own major axis, in degrees in the range \[0,359\] (default: 0).
+    /// The clockwise rotation of a pen stylus around its own major axis, in degrees in the range [0,359] (default: 0).
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub twist: Option<i64>,
@@ -317,6 +346,13 @@ pub struct DispatchMouseEventParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pointerType: Option<String>,
+}
+
+impl DispatchMouseEventParams { pub const METHOD: &'static str = "Input.dispatchMouseEvent"; }
+
+impl crate::CdpCommand for DispatchMouseEventParams {
+    const METHOD: &'static str = "Input.dispatchMouseEvent";
+    type Response = crate::EmptyReturns;
 }
 
 /// Dispatches a touch event to the page.
@@ -343,6 +379,23 @@ pub struct DispatchTouchEventParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub timestamp: Option<TimeSinceEpoch>,
+}
+
+impl DispatchTouchEventParams { pub const METHOD: &'static str = "Input.dispatchTouchEvent"; }
+
+impl crate::CdpCommand for DispatchTouchEventParams {
+    const METHOD: &'static str = "Input.dispatchTouchEvent";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct CancelDraggingParams {}
+
+impl CancelDraggingParams { pub const METHOD: &'static str = "Input.cancelDragging"; }
+
+impl crate::CdpCommand for CancelDraggingParams {
+    const METHOD: &'static str = "Input.cancelDragging";
+    type Response = crate::EmptyReturns;
 }
 
 /// Emulates touch event from the mouse event parameters.
@@ -386,6 +439,13 @@ pub struct EmulateTouchFromMouseEventParams {
     pub clickCount: Option<u64>,
 }
 
+impl EmulateTouchFromMouseEventParams { pub const METHOD: &'static str = "Input.emulateTouchFromMouseEvent"; }
+
+impl crate::CdpCommand for EmulateTouchFromMouseEventParams {
+    const METHOD: &'static str = "Input.emulateTouchFromMouseEvent";
+    type Response = crate::EmptyReturns;
+}
+
 /// Ignores input events (useful while auditing page).
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -396,6 +456,13 @@ pub struct SetIgnoreInputEventsParams {
     pub ignore: bool,
 }
 
+impl SetIgnoreInputEventsParams { pub const METHOD: &'static str = "Input.setIgnoreInputEvents"; }
+
+impl crate::CdpCommand for SetIgnoreInputEventsParams {
+    const METHOD: &'static str = "Input.setIgnoreInputEvents";
+    type Response = crate::EmptyReturns;
+}
+
 /// Prevents default drag and drop behavior and instead emits 'Input.dragIntercepted' events.
 /// Drag and drop behavior can be directly controlled via 'Input.dispatchDragEvent'.
 
@@ -404,6 +471,13 @@ pub struct SetIgnoreInputEventsParams {
 pub struct SetInterceptDragsParams {
 
     pub enabled: bool,
+}
+
+impl SetInterceptDragsParams { pub const METHOD: &'static str = "Input.setInterceptDrags"; }
+
+impl crate::CdpCommand for SetInterceptDragsParams {
+    const METHOD: &'static str = "Input.setInterceptDrags";
+    type Response = crate::EmptyReturns;
 }
 
 /// Synthesizes a pinch gesture over a time period by issuing appropriate touch events.
@@ -417,7 +491,7 @@ pub struct SynthesizePinchGestureParams {
     /// Y coordinate of the start of the gesture in CSS pixels.
 
     pub y: f64,
-    /// Relative scale factor after zooming (\>1.0 zooms in, \<1.0 zooms out).
+    /// Relative scale factor after zooming (>1.0 zooms in, <1.0 zooms out).
 
     pub scaleFactor: f64,
     /// Relative pointer speed in pixels per second (default: 800).
@@ -429,6 +503,13 @@ pub struct SynthesizePinchGestureParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub gestureSourceType: Option<GestureSourceType>,
+}
+
+impl SynthesizePinchGestureParams { pub const METHOD: &'static str = "Input.synthesizePinchGesture"; }
+
+impl crate::CdpCommand for SynthesizePinchGestureParams {
+    const METHOD: &'static str = "Input.synthesizePinchGesture";
+    type Response = crate::EmptyReturns;
 }
 
 /// Synthesizes a scroll gesture over a time period by issuing appropriate touch events.
@@ -487,6 +568,13 @@ pub struct SynthesizeScrollGestureParams {
     pub interactionMarkerName: Option<String>,
 }
 
+impl SynthesizeScrollGestureParams { pub const METHOD: &'static str = "Input.synthesizeScrollGesture"; }
+
+impl crate::CdpCommand for SynthesizeScrollGestureParams {
+    const METHOD: &'static str = "Input.synthesizeScrollGesture";
+    type Response = crate::EmptyReturns;
+}
+
 /// Synthesizes a tap gesture over a time period by issuing appropriate touch events.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -511,4 +599,11 @@ pub struct SynthesizeTapGestureParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub gestureSourceType: Option<GestureSourceType>,
+}
+
+impl SynthesizeTapGestureParams { pub const METHOD: &'static str = "Input.synthesizeTapGesture"; }
+
+impl crate::CdpCommand for SynthesizeTapGestureParams {
+    const METHOD: &'static str = "Input.synthesizeTapGesture";
+    type Response = crate::EmptyReturns;
 }

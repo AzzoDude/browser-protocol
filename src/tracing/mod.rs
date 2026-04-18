@@ -93,6 +93,16 @@ pub enum TracingBackend {
     System,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct EndParams {}
+
+impl EndParams { pub const METHOD: &'static str = "Tracing.end"; }
+
+impl crate::CdpCommand for EndParams {
+    const METHOD: &'static str = "Tracing.end";
+    type Response = crate::EmptyReturns;
+}
+
 /// Gets supported tracing categories.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -101,6 +111,16 @@ pub struct GetCategoriesReturns {
     /// A list of supported tracing categories.
 
     pub categories: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GetCategoriesParams {}
+
+impl GetCategoriesParams { pub const METHOD: &'static str = "Tracing.getCategories"; }
+
+impl crate::CdpCommand for GetCategoriesParams {
+    const METHOD: &'static str = "Tracing.getCategories";
+    type Response = GetCategoriesReturns;
 }
 
 /// Return a descriptor for all available tracing categories.
@@ -113,6 +133,16 @@ pub struct GetTrackEventDescriptorReturns {
     pub descriptor: String,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GetTrackEventDescriptorParams {}
+
+impl GetTrackEventDescriptorParams { pub const METHOD: &'static str = "Tracing.getTrackEventDescriptor"; }
+
+impl crate::CdpCommand for GetTrackEventDescriptorParams {
+    const METHOD: &'static str = "Tracing.getTrackEventDescriptor";
+    type Response = GetTrackEventDescriptorReturns;
+}
+
 /// Record a clock sync marker in the trace.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -121,6 +151,13 @@ pub struct RecordClockSyncMarkerParams {
     /// The ID of this clock sync marker
 
     pub syncId: String,
+}
+
+impl RecordClockSyncMarkerParams { pub const METHOD: &'static str = "Tracing.recordClockSyncMarker"; }
+
+impl crate::CdpCommand for RecordClockSyncMarkerParams {
+    const METHOD: &'static str = "Tracing.recordClockSyncMarker";
+    type Response = crate::EmptyReturns;
 }
 
 /// Request a global memory dump.
@@ -149,6 +186,13 @@ pub struct RequestMemoryDumpReturns {
     /// True iff the global memory dump succeeded.
 
     pub success: bool,
+}
+
+impl RequestMemoryDumpParams { pub const METHOD: &'static str = "Tracing.requestMemoryDump"; }
+
+impl crate::CdpCommand for RequestMemoryDumpParams {
+    const METHOD: &'static str = "Tracing.requestMemoryDump";
+    type Response = RequestMemoryDumpReturns;
 }
 
 /// Start trace events collection.
@@ -196,4 +240,11 @@ pub struct StartParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tracingBackend: Option<TracingBackend>,
+}
+
+impl StartParams { pub const METHOD: &'static str = "Tracing.start"; }
+
+impl crate::CdpCommand for StartParams {
+    const METHOD: &'static str = "Tracing.start";
+    type Response = crate::EmptyReturns;
 }

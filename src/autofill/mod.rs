@@ -1,6 +1,7 @@
-//! Defines commands and events for Autofill.
-
 use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
+
+//! Defines commands and events for Autofill.
 
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -29,7 +30,7 @@ pub struct CreditCard {
 pub struct AddressField {
     /// address field name, for example GIVEN_NAME.
     /// The full list of supported field names:
-    /// <https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/field_types.cc;l=38>
+    /// https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/field_types.cc;l=38
 
     pub name: String,
     /// address field value, for example Jon Doe.
@@ -58,7 +59,7 @@ pub struct Address {
 /// Defines how an address can be displayed like in chrome://settings/addresses.
 /// Address UI is a two dimensional array, each inner array is an "address information line", and when rendered in a UI surface should be displayed as such.
 /// The following address UI for instance:
-/// \[\[{name: "GIVE_NAME", value: "Jon"}, {name: "FAMILY_NAME", value: "Doe"}\], \[{name: "CITY", value: "Munich"}, {name: "ZIP", value: "81456"}\]\]
+/// [[{name: "GIVE_NAME", value: "Jon"}, {name: "FAMILY_NAME", value: "Doe"}], [{name: "CITY", value: "Munich"}, {name: "ZIP", value: "81456"}]]
 /// should allow the receiver to render:
 /// Jon Doe
 /// Munich 81456
@@ -133,6 +134,13 @@ pub struct TriggerParams {
     pub address: Option<Address>,
 }
 
+impl TriggerParams { pub const METHOD: &'static str = "Autofill.trigger"; }
+
+impl crate::CdpCommand for TriggerParams {
+    const METHOD: &'static str = "Autofill.trigger";
+    type Response = crate::EmptyReturns;
+}
+
 /// Set addresses so that developers can verify their forms implementation.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -140,4 +148,31 @@ pub struct TriggerParams {
 pub struct SetAddressesParams {
 
     pub addresses: Vec<Address>,
+}
+
+impl SetAddressesParams { pub const METHOD: &'static str = "Autofill.setAddresses"; }
+
+impl crate::CdpCommand for SetAddressesParams {
+    const METHOD: &'static str = "Autofill.setAddresses";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct DisableParams {}
+
+impl DisableParams { pub const METHOD: &'static str = "Autofill.disable"; }
+
+impl crate::CdpCommand for DisableParams {
+    const METHOD: &'static str = "Autofill.disable";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct EnableParams {}
+
+impl EnableParams { pub const METHOD: &'static str = "Autofill.enable"; }
+
+impl crate::CdpCommand for EnableParams {
+    const METHOD: &'static str = "Autofill.enable";
+    type Response = crate::EmptyReturns;
 }

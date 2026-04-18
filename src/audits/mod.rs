@@ -1,6 +1,7 @@
-//! Audits domain allows investigation of page violations and possible improvements.
-
 use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
+
+//! Audits domain allows investigation of page violations and possible improvements.
 
 /// Information about a cookie that is affected by an inspector issue.
 
@@ -517,7 +518,7 @@ pub enum ConnectionAllowlistError {
 }
 
 /// Details for issues around "Attribution Reporting API" usage.
-/// Explainer: <https://github.com/WICG/attribution-reporting-api>
+/// Explainer: https://github.com/WICG/attribution-reporting-api
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -659,7 +660,7 @@ pub struct GenericIssueDetails {
 }
 
 /// This issue tracks information needed to print a deprecation message.
-/// <https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/frame/third_party/blink/renderer/core/frame/deprecation/README.md>
+/// https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/frame/third_party/blink/renderer/core/frame/deprecation/README.md
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -678,7 +679,7 @@ pub struct DeprecationIssueDetails {
 /// This issue warns about sites in the redirect chain of a finished navigation
 /// that may be flagged as trackers and have their state cleared if they don't
 /// receive a user interaction. Note that in this context 'site' means eTLD+1.
-/// For example, if the URL '<https://example.test:80/bounce'> was in the
+/// For example, if the URL 'https://example.test:80/bounce' was in the
 /// redirect chain, the site reported would be 'example.test'.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -691,7 +692,7 @@ pub struct BounceTrackingIssueDetails {
 /// This issue warns about third-party sites that are accessing cookies on the
 /// current page, and have been permitted due to having a global metadata grant.
 /// Note that in this context 'site' means eTLD+1. For example, if the URL
-/// '<https://example.test:80/web_page'> was accessing cookies, the site reported
+/// 'https://example.test:80/web_page' was accessing cookies, the site reported
 /// would be 'example.test'.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -981,7 +982,7 @@ pub enum PermissionElementIssueType {
     InvalidSizeValue,
 }
 
-/// This issue warns about improper usage of the \<permission\> element.
+/// This issue warns about improper usage of the <permission> element.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -993,7 +994,7 @@ pub struct PermissionElementIssueDetails {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "type")]
     pub type_: Option<String>,
-    /// The node ID of the \<permission\> element.
+    /// The node ID of the <permission> element.
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub nodeId: Option<crate::dom::BackendNodeId>,
@@ -1233,6 +1234,33 @@ pub struct GetEncodedResponseReturns {
     pub encodedSize: u64,
 }
 
+impl GetEncodedResponseParams { pub const METHOD: &'static str = "Audits.getEncodedResponse"; }
+
+impl crate::CdpCommand for GetEncodedResponseParams {
+    const METHOD: &'static str = "Audits.getEncodedResponse";
+    type Response = GetEncodedResponseReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct DisableParams {}
+
+impl DisableParams { pub const METHOD: &'static str = "Audits.disable"; }
+
+impl crate::CdpCommand for DisableParams {
+    const METHOD: &'static str = "Audits.disable";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct EnableParams {}
+
+impl EnableParams { pub const METHOD: &'static str = "Audits.enable"; }
+
+impl crate::CdpCommand for EnableParams {
+    const METHOD: &'static str = "Audits.enable";
+    type Response = crate::EmptyReturns;
+}
+
 /// Runs the form issues check for the target page. Found issues are reported
 /// using Audits.issueAdded event.
 
@@ -1241,4 +1269,14 @@ pub struct GetEncodedResponseReturns {
 pub struct CheckFormsIssuesReturns {
 
     pub formIssues: Vec<GenericIssueDetails>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct CheckFormsIssuesParams {}
+
+impl CheckFormsIssuesParams { pub const METHOD: &'static str = "Audits.checkFormsIssues"; }
+
+impl crate::CdpCommand for CheckFormsIssuesParams {
+    const METHOD: &'static str = "Audits.checkFormsIssues";
+    type Response = CheckFormsIssuesReturns;
 }

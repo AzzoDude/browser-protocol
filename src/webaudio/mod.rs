@@ -1,7 +1,8 @@
-//! This domain allows inspection of Web Audio API.
-//! <https://webaudio.github.io/web-audio-api/>
-
 use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
+
+//! This domain allows inspection of Web Audio API.
+//! https://webaudio.github.io/web-audio-api/
 
 /// An unique ID for a graph object (AudioContext, AudioNode, AudioParam) in Web Audio API
 
@@ -166,6 +167,26 @@ pub struct AudioParam {
     pub maxValue: f64,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct EnableParams {}
+
+impl EnableParams { pub const METHOD: &'static str = "WebAudio.enable"; }
+
+impl crate::CdpCommand for EnableParams {
+    const METHOD: &'static str = "WebAudio.enable";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct DisableParams {}
+
+impl DisableParams { pub const METHOD: &'static str = "WebAudio.disable"; }
+
+impl crate::CdpCommand for DisableParams {
+    const METHOD: &'static str = "WebAudio.disable";
+    type Response = crate::EmptyReturns;
+}
+
 /// Fetch the realtime data from the registered contexts.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -182,4 +203,11 @@ pub struct GetRealtimeDataParams {
 pub struct GetRealtimeDataReturns {
 
     pub realtimeData: ContextRealtimeData,
+}
+
+impl GetRealtimeDataParams { pub const METHOD: &'static str = "WebAudio.getRealtimeData"; }
+
+impl crate::CdpCommand for GetRealtimeDataParams {
+    const METHOD: &'static str = "WebAudio.getRealtimeData";
+    type Response = GetRealtimeDataReturns;
 }

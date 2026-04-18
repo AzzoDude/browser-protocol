@@ -1,6 +1,7 @@
-//! This domain provides experimental commands only supported in headless mode.
-
 use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
+
+//! This domain provides experimental commands only supported in headless mode.
 
 /// Encoding options for a screenshot.
 
@@ -11,7 +12,7 @@ pub struct ScreenshotParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub format: Option<String>,
-    /// Compression quality from range \[0..100\] (jpeg and webp only).
+    /// Compression quality from range [0..100] (jpeg and webp only).
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub quality: Option<i64>,
@@ -24,7 +25,7 @@ pub struct ScreenshotParams {
 /// Sends a BeginFrame to the target and returns when the frame was completed. Optionally captures a
 /// screenshot from the resulting frame. Requires that the target was created with enabled
 /// BeginFrameControl. Designed for use with --run-all-compositor-stages-before-draw, see also
-/// <https://goo.gle/chrome-headless-rendering> for more background.
+/// https://goo.gle/chrome-headless-rendering for more background.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -56,7 +57,7 @@ pub struct BeginFrameParams {
 /// Sends a BeginFrame to the target and returns when the frame was completed. Optionally captures a
 /// screenshot from the resulting frame. Requires that the target was created with enabled
 /// BeginFrameControl. Designed for use with --run-all-compositor-stages-before-draw, see also
-/// <https://goo.gle/chrome-headless-rendering> for more background.
+/// https://goo.gle/chrome-headless-rendering for more background.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -69,4 +70,31 @@ pub struct BeginFrameReturns {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub screenshotData: Option<String>,
+}
+
+impl BeginFrameParams { pub const METHOD: &'static str = "HeadlessExperimental.beginFrame"; }
+
+impl crate::CdpCommand for BeginFrameParams {
+    const METHOD: &'static str = "HeadlessExperimental.beginFrame";
+    type Response = BeginFrameReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct DisableParams {}
+
+impl DisableParams { pub const METHOD: &'static str = "HeadlessExperimental.disable"; }
+
+impl crate::CdpCommand for DisableParams {
+    const METHOD: &'static str = "HeadlessExperimental.disable";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct EnableParams {}
+
+impl EnableParams { pub const METHOD: &'static str = "HeadlessExperimental.enable"; }
+
+impl crate::CdpCommand for EnableParams {
+    const METHOD: &'static str = "HeadlessExperimental.enable";
+    type Response = crate::EmptyReturns;
 }

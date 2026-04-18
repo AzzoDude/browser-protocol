@@ -1,11 +1,12 @@
 use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
 
 /// An internal certificate ID value.
 
 pub type CertificateId = i64;
 
 /// A description of mixed content (HTTP resources on HTTPS pages), as defined by
-/// <https://www.w3.org/TR/mixed-content/#categories>
+/// https://www.w3.org/TR/mixed-content/#categories
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum MixedContentType {
@@ -201,6 +202,26 @@ pub enum CertificateErrorAction {
     Cancel,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct DisableParams {}
+
+impl DisableParams { pub const METHOD: &'static str = "Security.disable"; }
+
+impl crate::CdpCommand for DisableParams {
+    const METHOD: &'static str = "Security.disable";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct EnableParams {}
+
+impl EnableParams { pub const METHOD: &'static str = "Security.enable"; }
+
+impl crate::CdpCommand for EnableParams {
+    const METHOD: &'static str = "Security.enable";
+    type Response = crate::EmptyReturns;
+}
+
 /// Enable/disable whether all certificate errors should be ignored.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -209,6 +230,13 @@ pub struct SetIgnoreCertificateErrorsParams {
     /// If true, all certificate errors will be ignored.
 
     pub ignore: bool,
+}
+
+impl SetIgnoreCertificateErrorsParams { pub const METHOD: &'static str = "Security.setIgnoreCertificateErrors"; }
+
+impl crate::CdpCommand for SetIgnoreCertificateErrorsParams {
+    const METHOD: &'static str = "Security.setIgnoreCertificateErrors";
+    type Response = crate::EmptyReturns;
 }
 
 /// Handles a certificate error that fired a certificateError event.
@@ -224,6 +252,13 @@ pub struct HandleCertificateErrorParams {
     pub action: CertificateErrorAction,
 }
 
+impl HandleCertificateErrorParams { pub const METHOD: &'static str = "Security.handleCertificateError"; }
+
+impl crate::CdpCommand for HandleCertificateErrorParams {
+    const METHOD: &'static str = "Security.handleCertificateError";
+    type Response = crate::EmptyReturns;
+}
+
 /// Enable/disable overriding certificate errors. If enabled, all certificate error events need to
 /// be handled by the DevTools client and should be answered with 'handleCertificateError' commands.
 
@@ -234,4 +269,11 @@ pub struct SetOverrideCertificateErrorsParams {
 
     #[serde(rename = "override")]
     pub override_: bool,
+}
+
+impl SetOverrideCertificateErrorsParams { pub const METHOD: &'static str = "Security.setOverrideCertificateErrors"; }
+
+impl crate::CdpCommand for SetOverrideCertificateErrorsParams {
+    const METHOD: &'static str = "Security.setOverrideCertificateErrors";
+    type Response = crate::EmptyReturns;
 }

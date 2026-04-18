@@ -1,6 +1,7 @@
-//! This domain emulates different environments for the page.
-
 use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
+
+//! This domain emulates different environments for the page.
 
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -105,7 +106,7 @@ pub enum VirtualTimePolicy {
     PauseIfNetworkFetchesPending,
 }
 
-/// Used to specify User Agent Client Hints to emulate. See <https://wicg.github.io/ua-client-hints>
+/// Used to specify User Agent Client Hints to emulate. See https://wicg.github.io/ua-client-hints
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -116,7 +117,7 @@ pub struct UserAgentBrandVersion {
     pub version: String,
 }
 
-/// Used to specify User Agent Client Hints to emulate. See <https://wicg.github.io/ua-client-hints>
+/// Used to specify User Agent Client Hints to emulate. See https://wicg.github.io/ua-client-hints
 /// Missing optional values will be filled in by the target with what it would normally use.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -150,14 +151,14 @@ pub struct UserAgentMetadata {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub wow64: Option<bool>,
     /// Used to specify User Agent form-factor values.
-    /// See <https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factors>
+    /// See https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factors
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub formFactors: Option<Vec<String>>,
 }
 
 /// Used to specify sensor types to emulate.
-/// See <https://w3c.github.io/sensors/#automation> for more information.
+/// See https://w3c.github.io/sensors/#automation for more information.
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum SensorType {
@@ -288,7 +289,7 @@ pub struct WorkAreaInsets {
 pub type ScreenId = String;
 
 /// Screen information similar to the one returned by window.getScreenDetails() method,
-/// see <https://w3c.github.io/window-management/#screendetailed.>
+/// see https://w3c.github.io/window-management/#screendetailed.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -363,6 +364,46 @@ pub struct CanEmulateReturns {
     pub result: bool,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct CanEmulateParams {}
+
+impl CanEmulateParams { pub const METHOD: &'static str = "Emulation.canEmulate"; }
+
+impl crate::CdpCommand for CanEmulateParams {
+    const METHOD: &'static str = "Emulation.canEmulate";
+    type Response = CanEmulateReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct ClearDeviceMetricsOverrideParams {}
+
+impl ClearDeviceMetricsOverrideParams { pub const METHOD: &'static str = "Emulation.clearDeviceMetricsOverride"; }
+
+impl crate::CdpCommand for ClearDeviceMetricsOverrideParams {
+    const METHOD: &'static str = "Emulation.clearDeviceMetricsOverride";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct ClearGeolocationOverrideParams {}
+
+impl ClearGeolocationOverrideParams { pub const METHOD: &'static str = "Emulation.clearGeolocationOverride"; }
+
+impl crate::CdpCommand for ClearGeolocationOverrideParams {
+    const METHOD: &'static str = "Emulation.clearGeolocationOverride";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct ResetPageScaleFactorParams {}
+
+impl ResetPageScaleFactorParams { pub const METHOD: &'static str = "Emulation.resetPageScaleFactor"; }
+
+impl crate::CdpCommand for ResetPageScaleFactorParams {
+    const METHOD: &'static str = "Emulation.resetPageScaleFactor";
+    type Response = crate::EmptyReturns;
+}
+
 /// Enables or disables simulating a focused and active page.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -371,6 +412,13 @@ pub struct SetFocusEmulationEnabledParams {
     /// Whether to enable to disable focus emulation.
 
     pub enabled: bool,
+}
+
+impl SetFocusEmulationEnabledParams { pub const METHOD: &'static str = "Emulation.setFocusEmulationEnabled"; }
+
+impl crate::CdpCommand for SetFocusEmulationEnabledParams {
+    const METHOD: &'static str = "Emulation.setFocusEmulationEnabled";
+    type Response = crate::EmptyReturns;
 }
 
 /// Automatically render all web contents using a dark theme.
@@ -385,6 +433,13 @@ pub struct SetAutoDarkModeOverrideParams {
     pub enabled: Option<bool>,
 }
 
+impl SetAutoDarkModeOverrideParams { pub const METHOD: &'static str = "Emulation.setAutoDarkModeOverride"; }
+
+impl crate::CdpCommand for SetAutoDarkModeOverrideParams {
+    const METHOD: &'static str = "Emulation.setAutoDarkModeOverride";
+    type Response = crate::EmptyReturns;
+}
+
 /// Enables CPU throttling to emulate slow CPUs.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -393,6 +448,13 @@ pub struct SetCPUThrottlingRateParams {
     /// Throttling rate as a slowdown factor (1 is no throttle, 2 is 2x slowdown, etc).
 
     pub rate: f64,
+}
+
+impl SetCPUThrottlingRateParams { pub const METHOD: &'static str = "Emulation.setCPUThrottlingRate"; }
+
+impl crate::CdpCommand for SetCPUThrottlingRateParams {
+    const METHOD: &'static str = "Emulation.setCPUThrottlingRate";
+    type Response = crate::EmptyReturns;
 }
 
 /// Sets or clears an override of the default background color of the frame. This override is used
@@ -408,6 +470,13 @@ pub struct SetDefaultBackgroundColorOverrideParams {
     pub color: Option<crate::dom::RGBA>,
 }
 
+impl SetDefaultBackgroundColorOverrideParams { pub const METHOD: &'static str = "Emulation.setDefaultBackgroundColorOverride"; }
+
+impl crate::CdpCommand for SetDefaultBackgroundColorOverrideParams {
+    const METHOD: &'static str = "Emulation.setDefaultBackgroundColorOverride";
+    type Response = crate::EmptyReturns;
+}
+
 /// Overrides the values for env(safe-area-inset-*) and env(safe-area-max-inset-*). Unset values will cause the
 /// respective variables to be undefined, even if previously overridden.
 
@@ -416,6 +485,13 @@ pub struct SetDefaultBackgroundColorOverrideParams {
 pub struct SetSafeAreaInsetsOverrideParams {
 
     pub insets: SafeAreaInsets,
+}
+
+impl SetSafeAreaInsetsOverrideParams { pub const METHOD: &'static str = "Emulation.setSafeAreaInsetsOverride"; }
+
+impl crate::CdpCommand for SetSafeAreaInsetsOverrideParams {
+    const METHOD: &'static str = "Emulation.setSafeAreaInsetsOverride";
+    type Response = crate::EmptyReturns;
 }
 
 /// Overrides the values of device screen dimensions (window.screen.width, window.screen.height,
@@ -497,6 +573,13 @@ pub struct SetDeviceMetricsOverrideParams {
     pub screenOrientationLockEmulation: Option<bool>,
 }
 
+impl SetDeviceMetricsOverrideParams { pub const METHOD: &'static str = "Emulation.setDeviceMetricsOverride"; }
+
+impl crate::CdpCommand for SetDeviceMetricsOverrideParams {
+    const METHOD: &'static str = "Emulation.setDeviceMetricsOverride";
+    type Response = crate::EmptyReturns;
+}
+
 /// Start reporting the given posture value to the Device Posture API.
 /// This override can also be set in setDeviceMetricsOverride().
 
@@ -505,6 +588,23 @@ pub struct SetDeviceMetricsOverrideParams {
 pub struct SetDevicePostureOverrideParams {
 
     pub posture: DevicePosture,
+}
+
+impl SetDevicePostureOverrideParams { pub const METHOD: &'static str = "Emulation.setDevicePostureOverride"; }
+
+impl crate::CdpCommand for SetDevicePostureOverrideParams {
+    const METHOD: &'static str = "Emulation.setDevicePostureOverride";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct ClearDevicePostureOverrideParams {}
+
+impl ClearDevicePostureOverrideParams { pub const METHOD: &'static str = "Emulation.clearDevicePostureOverride"; }
+
+impl crate::CdpCommand for ClearDevicePostureOverrideParams {
+    const METHOD: &'static str = "Emulation.clearDevicePostureOverride";
+    type Response = crate::EmptyReturns;
 }
 
 /// Start using the given display features to pupulate the Viewport Segments API.
@@ -517,6 +617,23 @@ pub struct SetDisplayFeaturesOverrideParams {
     pub features: Vec<DisplayFeature>,
 }
 
+impl SetDisplayFeaturesOverrideParams { pub const METHOD: &'static str = "Emulation.setDisplayFeaturesOverride"; }
+
+impl crate::CdpCommand for SetDisplayFeaturesOverrideParams {
+    const METHOD: &'static str = "Emulation.setDisplayFeaturesOverride";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct ClearDisplayFeaturesOverrideParams {}
+
+impl ClearDisplayFeaturesOverrideParams { pub const METHOD: &'static str = "Emulation.clearDisplayFeaturesOverride"; }
+
+impl crate::CdpCommand for ClearDisplayFeaturesOverrideParams {
+    const METHOD: &'static str = "Emulation.clearDisplayFeaturesOverride";
+    type Response = crate::EmptyReturns;
+}
+
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -526,6 +643,13 @@ pub struct SetScrollbarsHiddenParams {
     pub hidden: bool,
 }
 
+impl SetScrollbarsHiddenParams { pub const METHOD: &'static str = "Emulation.setScrollbarsHidden"; }
+
+impl crate::CdpCommand for SetScrollbarsHiddenParams {
+    const METHOD: &'static str = "Emulation.setScrollbarsHidden";
+    type Response = crate::EmptyReturns;
+}
+
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -533,6 +657,13 @@ pub struct SetDocumentCookieDisabledParams {
     /// Whether document.coookie API should be disabled.
 
     pub disabled: bool,
+}
+
+impl SetDocumentCookieDisabledParams { pub const METHOD: &'static str = "Emulation.setDocumentCookieDisabled"; }
+
+impl crate::CdpCommand for SetDocumentCookieDisabledParams {
+    const METHOD: &'static str = "Emulation.setDocumentCookieDisabled";
+    type Response = crate::EmptyReturns;
 }
 
 
@@ -546,6 +677,13 @@ pub struct SetEmitTouchEventsForMouseParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub configuration: Option<String>,
+}
+
+impl SetEmitTouchEventsForMouseParams { pub const METHOD: &'static str = "Emulation.setEmitTouchEventsForMouse"; }
+
+impl crate::CdpCommand for SetEmitTouchEventsForMouseParams {
+    const METHOD: &'static str = "Emulation.setEmitTouchEventsForMouse";
+    type Response = crate::EmptyReturns;
 }
 
 /// Emulates the given media type or media feature for CSS media queries.
@@ -563,6 +701,13 @@ pub struct SetEmulatedMediaParams {
     pub features: Option<Vec<MediaFeature>>,
 }
 
+impl SetEmulatedMediaParams { pub const METHOD: &'static str = "Emulation.setEmulatedMedia"; }
+
+impl crate::CdpCommand for SetEmulatedMediaParams {
+    const METHOD: &'static str = "Emulation.setEmulatedMedia";
+    type Response = crate::EmptyReturns;
+}
+
 /// Emulates the given vision deficiency.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -575,6 +720,13 @@ pub struct SetEmulatedVisionDeficiencyParams {
     pub type_: String,
 }
 
+impl SetEmulatedVisionDeficiencyParams { pub const METHOD: &'static str = "Emulation.setEmulatedVisionDeficiency"; }
+
+impl crate::CdpCommand for SetEmulatedVisionDeficiencyParams {
+    const METHOD: &'static str = "Emulation.setEmulatedVisionDeficiency";
+    type Response = crate::EmptyReturns;
+}
+
 /// Emulates the given OS text scale.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -583,6 +735,13 @@ pub struct SetEmulatedOSTextScaleParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub scale: Option<f64>,
+}
+
+impl SetEmulatedOSTextScaleParams { pub const METHOD: &'static str = "Emulation.setEmulatedOSTextScale"; }
+
+impl crate::CdpCommand for SetEmulatedOSTextScaleParams {
+    const METHOD: &'static str = "Emulation.setEmulatedOSTextScale";
+    type Response = crate::EmptyReturns;
 }
 
 /// Overrides the Geolocation Position or Error. Omitting latitude, longitude or
@@ -621,6 +780,13 @@ pub struct SetGeolocationOverrideParams {
     pub speed: Option<f64>,
 }
 
+impl SetGeolocationOverrideParams { pub const METHOD: &'static str = "Emulation.setGeolocationOverride"; }
+
+impl crate::CdpCommand for SetGeolocationOverrideParams {
+    const METHOD: &'static str = "Emulation.setGeolocationOverride";
+    type Response = crate::EmptyReturns;
+}
+
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -636,6 +802,13 @@ pub struct GetOverriddenSensorInformationParams {
 pub struct GetOverriddenSensorInformationReturns {
 
     pub requestedSamplingFrequency: f64,
+}
+
+impl GetOverriddenSensorInformationParams { pub const METHOD: &'static str = "Emulation.getOverriddenSensorInformation"; }
+
+impl crate::CdpCommand for GetOverriddenSensorInformationParams {
+    const METHOD: &'static str = "Emulation.getOverriddenSensorInformation";
+    type Response = GetOverriddenSensorInformationReturns;
 }
 
 /// Overrides a platform sensor of a given type. If |enabled| is true, calls to
@@ -657,6 +830,13 @@ pub struct SetSensorOverrideEnabledParams {
     pub metadata: Option<SensorMetadata>,
 }
 
+impl SetSensorOverrideEnabledParams { pub const METHOD: &'static str = "Emulation.setSensorOverrideEnabled"; }
+
+impl crate::CdpCommand for SetSensorOverrideEnabledParams {
+    const METHOD: &'static str = "Emulation.setSensorOverrideEnabled";
+    type Response = crate::EmptyReturns;
+}
+
 /// Updates the sensor readings reported by a sensor type previously overridden
 /// by setSensorOverrideEnabled.
 
@@ -668,6 +848,13 @@ pub struct SetSensorOverrideReadingsParams {
     pub type_: SensorType,
 
     pub reading: SensorReading,
+}
+
+impl SetSensorOverrideReadingsParams { pub const METHOD: &'static str = "Emulation.setSensorOverrideReadings"; }
+
+impl crate::CdpCommand for SetSensorOverrideReadingsParams {
+    const METHOD: &'static str = "Emulation.setSensorOverrideReadings";
+    type Response = crate::EmptyReturns;
 }
 
 /// Overrides a pressure source of a given type, as used by the Compute
@@ -687,6 +874,13 @@ pub struct SetPressureSourceOverrideEnabledParams {
     pub metadata: Option<PressureMetadata>,
 }
 
+impl SetPressureSourceOverrideEnabledParams { pub const METHOD: &'static str = "Emulation.setPressureSourceOverrideEnabled"; }
+
+impl crate::CdpCommand for SetPressureSourceOverrideEnabledParams {
+    const METHOD: &'static str = "Emulation.setPressureSourceOverrideEnabled";
+    type Response = crate::EmptyReturns;
+}
+
 /// TODO: OBSOLETE: To remove when setPressureDataOverride is merged.
 /// Provides a given pressure state that will be processed and eventually be
 /// delivered to PressureObserver users. |source| must have been previously
@@ -699,6 +893,13 @@ pub struct SetPressureStateOverrideParams {
     pub source: PressureSource,
 
     pub state: PressureState,
+}
+
+impl SetPressureStateOverrideParams { pub const METHOD: &'static str = "Emulation.setPressureStateOverride"; }
+
+impl crate::CdpCommand for SetPressureStateOverrideParams {
+    const METHOD: &'static str = "Emulation.setPressureStateOverride";
+    type Response = crate::EmptyReturns;
 }
 
 /// Provides a given pressure data set that will be processed and eventually be
@@ -717,6 +918,13 @@ pub struct SetPressureDataOverrideParams {
     pub ownContributionEstimate: Option<f64>,
 }
 
+impl SetPressureDataOverrideParams { pub const METHOD: &'static str = "Emulation.setPressureDataOverride"; }
+
+impl crate::CdpCommand for SetPressureDataOverrideParams {
+    const METHOD: &'static str = "Emulation.setPressureDataOverride";
+    type Response = crate::EmptyReturns;
+}
+
 /// Overrides the Idle state.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -730,6 +938,23 @@ pub struct SetIdleOverrideParams {
     pub isScreenUnlocked: bool,
 }
 
+impl SetIdleOverrideParams { pub const METHOD: &'static str = "Emulation.setIdleOverride"; }
+
+impl crate::CdpCommand for SetIdleOverrideParams {
+    const METHOD: &'static str = "Emulation.setIdleOverride";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct ClearIdleOverrideParams {}
+
+impl ClearIdleOverrideParams { pub const METHOD: &'static str = "Emulation.clearIdleOverride"; }
+
+impl crate::CdpCommand for ClearIdleOverrideParams {
+    const METHOD: &'static str = "Emulation.clearIdleOverride";
+    type Response = crate::EmptyReturns;
+}
+
 /// Overrides value returned by the javascript navigator object.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -738,6 +963,13 @@ pub struct SetNavigatorOverridesParams {
     /// The platform navigator.platform should return.
 
     pub platform: String,
+}
+
+impl SetNavigatorOverridesParams { pub const METHOD: &'static str = "Emulation.setNavigatorOverrides"; }
+
+impl crate::CdpCommand for SetNavigatorOverridesParams {
+    const METHOD: &'static str = "Emulation.setNavigatorOverrides";
+    type Response = crate::EmptyReturns;
 }
 
 /// Sets a specified page scale factor.
@@ -750,6 +982,13 @@ pub struct SetPageScaleFactorParams {
     pub pageScaleFactor: f64,
 }
 
+impl SetPageScaleFactorParams { pub const METHOD: &'static str = "Emulation.setPageScaleFactor"; }
+
+impl crate::CdpCommand for SetPageScaleFactorParams {
+    const METHOD: &'static str = "Emulation.setPageScaleFactor";
+    type Response = crate::EmptyReturns;
+}
+
 /// Switches script execution in the page.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -758,6 +997,13 @@ pub struct SetScriptExecutionDisabledParams {
     /// Whether script execution should be disabled in the page.
 
     pub value: bool,
+}
+
+impl SetScriptExecutionDisabledParams { pub const METHOD: &'static str = "Emulation.setScriptExecutionDisabled"; }
+
+impl crate::CdpCommand for SetScriptExecutionDisabledParams {
+    const METHOD: &'static str = "Emulation.setScriptExecutionDisabled";
+    type Response = crate::EmptyReturns;
 }
 
 /// Enables touch on platforms which do not support them.
@@ -772,6 +1018,13 @@ pub struct SetTouchEmulationEnabledParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub maxTouchPoints: Option<i64>,
+}
+
+impl SetTouchEmulationEnabledParams { pub const METHOD: &'static str = "Emulation.setTouchEmulationEnabled"; }
+
+impl crate::CdpCommand for SetTouchEmulationEnabledParams {
+    const METHOD: &'static str = "Emulation.setTouchEmulationEnabled";
+    type Response = crate::EmptyReturns;
 }
 
 /// Turns on virtual time for all frames (replacing real-time with a synthetic time source) and sets
@@ -809,6 +1062,13 @@ pub struct SetVirtualTimePolicyReturns {
     pub virtualTimeTicksBase: f64,
 }
 
+impl SetVirtualTimePolicyParams { pub const METHOD: &'static str = "Emulation.setVirtualTimePolicy"; }
+
+impl crate::CdpCommand for SetVirtualTimePolicyParams {
+    const METHOD: &'static str = "Emulation.setVirtualTimePolicy";
+    type Response = SetVirtualTimePolicyReturns;
+}
+
 /// Overrides default host system locale with the specified one.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -821,16 +1081,30 @@ pub struct SetLocaleOverrideParams {
     pub locale: Option<String>,
 }
 
+impl SetLocaleOverrideParams { pub const METHOD: &'static str = "Emulation.setLocaleOverride"; }
+
+impl crate::CdpCommand for SetLocaleOverrideParams {
+    const METHOD: &'static str = "Emulation.setLocaleOverride";
+    type Response = crate::EmptyReturns;
+}
+
 /// Overrides default host system timezone with the specified one.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetTimezoneOverrideParams {
     /// The timezone identifier. List of supported timezones:
-    /// <https://source.chromium.org/chromium/chromium/deps/icu.git/+/faee8bc70570192d82d2978a71e2a615788597d1:source/data/misc/metaZones.txt>
+    /// https://source.chromium.org/chromium/chromium/deps/icu.git/+/faee8bc70570192d82d2978a71e2a615788597d1:source/data/misc/metaZones.txt
     /// If empty, disables the override and restores default host system timezone.
 
     pub timezoneId: String,
+}
+
+impl SetTimezoneOverrideParams { pub const METHOD: &'static str = "Emulation.setTimezoneOverride"; }
+
+impl crate::CdpCommand for SetTimezoneOverrideParams {
+    const METHOD: &'static str = "Emulation.setTimezoneOverride";
+    type Response = crate::EmptyReturns;
 }
 
 /// Resizes the frame/viewport of the page. Note that this does not affect the frame's container
@@ -848,6 +1122,13 @@ pub struct SetVisibleSizeParams {
     pub height: i64,
 }
 
+impl SetVisibleSizeParams { pub const METHOD: &'static str = "Emulation.setVisibleSize"; }
+
+impl crate::CdpCommand for SetVisibleSizeParams {
+    const METHOD: &'static str = "Emulation.setVisibleSize";
+    type Response = crate::EmptyReturns;
+}
+
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -855,6 +1136,13 @@ pub struct SetDisabledImageTypesParams {
     /// Image types to disable.
 
     pub imageTypes: Vec<DisabledImageType>,
+}
+
+impl SetDisabledImageTypesParams { pub const METHOD: &'static str = "Emulation.setDisabledImageTypes"; }
+
+impl crate::CdpCommand for SetDisabledImageTypesParams {
+    const METHOD: &'static str = "Emulation.setDisabledImageTypes";
+    type Response = crate::EmptyReturns;
 }
 
 /// Override the value of navigator.connection.saveData
@@ -868,6 +1156,13 @@ pub struct SetDataSaverOverrideParams {
     pub dataSaverEnabled: Option<bool>,
 }
 
+impl SetDataSaverOverrideParams { pub const METHOD: &'static str = "Emulation.setDataSaverOverride"; }
+
+impl crate::CdpCommand for SetDataSaverOverrideParams {
+    const METHOD: &'static str = "Emulation.setDataSaverOverride";
+    type Response = crate::EmptyReturns;
+}
+
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -875,6 +1170,13 @@ pub struct SetHardwareConcurrencyOverrideParams {
     /// Hardware concurrency to report
 
     pub hardwareConcurrency: i64,
+}
+
+impl SetHardwareConcurrencyOverrideParams { pub const METHOD: &'static str = "Emulation.setHardwareConcurrencyOverride"; }
+
+impl crate::CdpCommand for SetHardwareConcurrencyOverrideParams {
+    const METHOD: &'static str = "Emulation.setHardwareConcurrencyOverride";
+    type Response = crate::EmptyReturns;
 }
 
 /// Allows overriding user agent with the given string.
@@ -900,6 +1202,13 @@ pub struct SetUserAgentOverrideParams {
     pub userAgentMetadata: Option<UserAgentMetadata>,
 }
 
+impl SetUserAgentOverrideParams { pub const METHOD: &'static str = "Emulation.setUserAgentOverride"; }
+
+impl crate::CdpCommand for SetUserAgentOverrideParams {
+    const METHOD: &'static str = "Emulation.setUserAgentOverride";
+    type Response = crate::EmptyReturns;
+}
+
 /// Allows overriding the automation flag.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -908,6 +1217,13 @@ pub struct SetAutomationOverrideParams {
     /// Whether the override should be enabled.
 
     pub enabled: bool,
+}
+
+impl SetAutomationOverrideParams { pub const METHOD: &'static str = "Emulation.setAutomationOverride"; }
+
+impl crate::CdpCommand for SetAutomationOverrideParams {
+    const METHOD: &'static str = "Emulation.setAutomationOverride";
+    type Response = crate::EmptyReturns;
 }
 
 /// Allows overriding the difference between the small and large viewport sizes, which determine the
@@ -922,6 +1238,13 @@ pub struct SetSmallViewportHeightDifferenceOverrideParams {
     pub difference: i64,
 }
 
+impl SetSmallViewportHeightDifferenceOverrideParams { pub const METHOD: &'static str = "Emulation.setSmallViewportHeightDifferenceOverride"; }
+
+impl crate::CdpCommand for SetSmallViewportHeightDifferenceOverrideParams {
+    const METHOD: &'static str = "Emulation.setSmallViewportHeightDifferenceOverride";
+    type Response = crate::EmptyReturns;
+}
+
 /// Returns device's screen configuration. In headful mode, the physical screens configuration is returned,
 /// whereas in headless mode, a virtual headless screen configuration is provided instead.
 
@@ -930,6 +1253,16 @@ pub struct SetSmallViewportHeightDifferenceOverrideParams {
 pub struct GetScreenInfosReturns {
 
     pub screenInfos: Vec<ScreenInfo>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GetScreenInfosParams {}
+
+impl GetScreenInfosParams { pub const METHOD: &'static str = "Emulation.getScreenInfos"; }
+
+impl crate::CdpCommand for GetScreenInfosParams {
+    const METHOD: &'static str = "Emulation.getScreenInfos";
+    type Response = GetScreenInfosReturns;
 }
 
 /// Add a new screen to the device. Only supported in headless mode.
@@ -982,6 +1315,13 @@ pub struct AddScreenParams {
 pub struct AddScreenReturns {
 
     pub screenInfo: ScreenInfo,
+}
+
+impl AddScreenParams { pub const METHOD: &'static str = "Emulation.addScreen"; }
+
+impl crate::CdpCommand for AddScreenParams {
+    const METHOD: &'static str = "Emulation.addScreen";
+    type Response = AddScreenReturns;
 }
 
 /// Updates specified screen parameters. Only supported in headless mode.
@@ -1043,6 +1383,13 @@ pub struct UpdateScreenReturns {
     pub screenInfo: ScreenInfo,
 }
 
+impl UpdateScreenParams { pub const METHOD: &'static str = "Emulation.updateScreen"; }
+
+impl crate::CdpCommand for UpdateScreenParams {
+    const METHOD: &'static str = "Emulation.updateScreen";
+    type Response = UpdateScreenReturns;
+}
+
 /// Remove screen from the device. Only supported in headless mode.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1050,6 +1397,13 @@ pub struct UpdateScreenReturns {
 pub struct RemoveScreenParams {
 
     pub screenId: ScreenId,
+}
+
+impl RemoveScreenParams { pub const METHOD: &'static str = "Emulation.removeScreen"; }
+
+impl crate::CdpCommand for RemoveScreenParams {
+    const METHOD: &'static str = "Emulation.removeScreen";
+    type Response = crate::EmptyReturns;
 }
 
 /// Set primary screen. Only supported in headless mode.
@@ -1062,4 +1416,11 @@ pub struct RemoveScreenParams {
 pub struct SetPrimaryScreenParams {
 
     pub screenId: ScreenId,
+}
+
+impl SetPrimaryScreenParams { pub const METHOD: &'static str = "Emulation.setPrimaryScreen"; }
+
+impl crate::CdpCommand for SetPrimaryScreenParams {
+    const METHOD: &'static str = "Emulation.setPrimaryScreen";
+    type Response = crate::EmptyReturns;
 }

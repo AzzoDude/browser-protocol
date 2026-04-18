@@ -84,7 +84,7 @@ pub struct AXValueSource {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub superseded: Option<bool>,
-    /// The native markup source for this value, e.g. a '\<label\>' element.
+    /// The native markup source for this value, e.g. a '<label>' element.
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub nativeSource: Option<AXValueNativeSourceType>,
@@ -282,6 +282,26 @@ pub struct AXNode {
     pub frameId: Option<crate::page::FrameId>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct DisableParams {}
+
+impl DisableParams { pub const METHOD: &'static str = "Accessibility.disable"; }
+
+impl crate::CdpCommand for DisableParams {
+    const METHOD: &'static str = "Accessibility.disable";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct EnableParams {}
+
+impl EnableParams { pub const METHOD: &'static str = "Accessibility.enable"; }
+
+impl crate::CdpCommand for EnableParams {
+    const METHOD: &'static str = "Accessibility.enable";
+    type Response = crate::EmptyReturns;
+}
+
 /// Fetches the accessibility node and partial accessibility tree for this DOM node, if it exists.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -316,6 +336,13 @@ pub struct GetPartialAXTreeReturns {
     pub nodes: Vec<AXNode>,
 }
 
+impl GetPartialAXTreeParams { pub const METHOD: &'static str = "Accessibility.getPartialAXTree"; }
+
+impl crate::CdpCommand for GetPartialAXTreeParams {
+    const METHOD: &'static str = "Accessibility.getPartialAXTree";
+    type Response = GetPartialAXTreeReturns;
+}
+
 /// Fetches the entire accessibility tree for the root Document
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -342,6 +369,13 @@ pub struct GetFullAXTreeReturns {
     pub nodes: Vec<AXNode>,
 }
 
+impl GetFullAXTreeParams { pub const METHOD: &'static str = "Accessibility.getFullAXTree"; }
+
+impl crate::CdpCommand for GetFullAXTreeParams {
+    const METHOD: &'static str = "Accessibility.getFullAXTree";
+    type Response = GetFullAXTreeReturns;
+}
+
 /// Fetches the root node.
 /// Requires 'enable()' to have been called previously.
 
@@ -363,6 +397,13 @@ pub struct GetRootAXNodeParams {
 pub struct GetRootAXNodeReturns {
 
     pub node: AXNode,
+}
+
+impl GetRootAXNodeParams { pub const METHOD: &'static str = "Accessibility.getRootAXNode"; }
+
+impl crate::CdpCommand for GetRootAXNodeParams {
+    const METHOD: &'static str = "Accessibility.getRootAXNode";
+    type Response = GetRootAXNodeReturns;
 }
 
 /// Fetches a node and all ancestors up to and including the root.
@@ -395,6 +436,13 @@ pub struct GetAXNodeAndAncestorsReturns {
     pub nodes: Vec<AXNode>,
 }
 
+impl GetAXNodeAndAncestorsParams { pub const METHOD: &'static str = "Accessibility.getAXNodeAndAncestors"; }
+
+impl crate::CdpCommand for GetAXNodeAndAncestorsParams {
+    const METHOD: &'static str = "Accessibility.getAXNodeAndAncestors";
+    type Response = GetAXNodeAndAncestorsReturns;
+}
+
 /// Fetches a particular accessibility node by AXNodeId.
 /// Requires 'enable()' to have been called previously.
 
@@ -418,6 +466,13 @@ pub struct GetChildAXNodesParams {
 pub struct GetChildAXNodesReturns {
 
     pub nodes: Vec<AXNode>,
+}
+
+impl GetChildAXNodesParams { pub const METHOD: &'static str = "Accessibility.getChildAXNodes"; }
+
+impl crate::CdpCommand for GetChildAXNodesParams {
+    const METHOD: &'static str = "Accessibility.getChildAXNodes";
+    type Response = GetChildAXNodesReturns;
 }
 
 /// Query a DOM node's accessibility subtree for accessible name and role.
@@ -464,4 +519,11 @@ pub struct QueryAXTreeReturns {
     /// including nodes that are ignored for accessibility.
 
     pub nodes: Vec<AXNode>,
+}
+
+impl QueryAXTreeParams { pub const METHOD: &'static str = "Accessibility.queryAXTree"; }
+
+impl crate::CdpCommand for QueryAXTreeParams {
+    const METHOD: &'static str = "Accessibility.queryAXTree";
+    type Response = QueryAXTreeReturns;
 }

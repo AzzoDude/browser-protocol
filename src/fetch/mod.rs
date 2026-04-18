@@ -1,6 +1,7 @@
-//! A domain for letting clients substitute browser's network layer with client code.
-
 use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
+
+//! A domain for letting clients substitute browser's network layer with client code.
 
 /// Unique request identifier.
 /// Note that this does not identify individual HTTP requests that are part of
@@ -23,7 +24,7 @@ pub enum RequestStage {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct RequestPattern {
-    /// Wildcards (''*'' -\> zero or more, ''?'' -\> exactly one) are allowed. Escape character is
+    /// Wildcards (''*'' -> zero or more, ''?'' -> exactly one) are allowed. Escape character is
     /// backslash. Omitting is equivalent to '"*"'.
 
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -91,6 +92,16 @@ pub struct AuthChallengeResponse {
     pub password: Option<String>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct DisableParams {}
+
+impl DisableParams { pub const METHOD: &'static str = "Fetch.disable"; }
+
+impl crate::CdpCommand for DisableParams {
+    const METHOD: &'static str = "Fetch.disable";
+    type Response = crate::EmptyReturns;
+}
+
 /// Enables issuing of requestPaused events. A request will be paused until client
 /// calls one of failRequest, fulfillRequest or continueRequest/continueWithAuth.
 
@@ -110,6 +121,13 @@ pub struct EnableParams {
     pub handleAuthRequests: Option<bool>,
 }
 
+impl EnableParams { pub const METHOD: &'static str = "Fetch.enable"; }
+
+impl crate::CdpCommand for EnableParams {
+    const METHOD: &'static str = "Fetch.enable";
+    type Response = crate::EmptyReturns;
+}
+
 /// Causes the request to fail with specified reason.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -121,6 +139,13 @@ pub struct FailRequestParams {
     /// Causes the request to fail with the given reason.
 
     pub errorReason: crate::network::ErrorReason,
+}
+
+impl FailRequestParams { pub const METHOD: &'static str = "Fetch.failRequest"; }
+
+impl crate::CdpCommand for FailRequestParams {
+    const METHOD: &'static str = "Fetch.failRequest";
+    type Response = crate::EmptyReturns;
 }
 
 /// Provides response to the request.
@@ -158,6 +183,13 @@ pub struct FulfillRequestParams {
     pub responsePhrase: Option<String>,
 }
 
+impl FulfillRequestParams { pub const METHOD: &'static str = "Fetch.fulfillRequest"; }
+
+impl crate::CdpCommand for FulfillRequestParams {
+    const METHOD: &'static str = "Fetch.fulfillRequest";
+    type Response = crate::EmptyReturns;
+}
+
 /// Continues the request, optionally modifying some of its parameters.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -190,6 +222,13 @@ pub struct ContinueRequestParams {
     pub interceptResponse: Option<bool>,
 }
 
+impl ContinueRequestParams { pub const METHOD: &'static str = "Fetch.continueRequest"; }
+
+impl crate::CdpCommand for ContinueRequestParams {
+    const METHOD: &'static str = "Fetch.continueRequest";
+    type Response = crate::EmptyReturns;
+}
+
 /// Continues a request supplying authChallengeResponse following authRequired event.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -201,6 +240,13 @@ pub struct ContinueWithAuthParams {
     /// Response to  with an authChallenge.
 
     pub authChallengeResponse: AuthChallengeResponse,
+}
+
+impl ContinueWithAuthParams { pub const METHOD: &'static str = "Fetch.continueWithAuth"; }
+
+impl crate::CdpCommand for ContinueWithAuthParams {
+    const METHOD: &'static str = "Fetch.continueWithAuth";
+    type Response = crate::EmptyReturns;
 }
 
 /// Continues loading of the paused response, optionally modifying the
@@ -233,6 +279,13 @@ pub struct ContinueResponseParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub binaryResponseHeaders: Option<String>,
+}
+
+impl ContinueResponseParams { pub const METHOD: &'static str = "Fetch.continueResponse"; }
+
+impl crate::CdpCommand for ContinueResponseParams {
+    const METHOD: &'static str = "Fetch.continueResponse";
+    type Response = crate::EmptyReturns;
 }
 
 /// Causes the body of the response to be received from the server and
@@ -276,6 +329,13 @@ pub struct GetResponseBodyReturns {
     pub base64Encoded: bool,
 }
 
+impl GetResponseBodyParams { pub const METHOD: &'static str = "Fetch.getResponseBody"; }
+
+impl crate::CdpCommand for GetResponseBodyParams {
+    const METHOD: &'static str = "Fetch.getResponseBody";
+    type Response = GetResponseBodyReturns;
+}
+
 /// Returns a handle to the stream representing the response body.
 /// The request must be paused in the HeadersReceived stage.
 /// Note that after this command the request can't be continued
@@ -310,4 +370,11 @@ pub struct TakeResponseBodyAsStreamParams {
 pub struct TakeResponseBodyAsStreamReturns {
 
     pub stream: crate::io::StreamHandle,
+}
+
+impl TakeResponseBodyAsStreamParams { pub const METHOD: &'static str = "Fetch.takeResponseBodyAsStream"; }
+
+impl crate::CdpCommand for TakeResponseBodyAsStreamParams {
+    const METHOD: &'static str = "Fetch.takeResponseBodyAsStream";
+    type Response = TakeResponseBodyAsStreamReturns;
 }

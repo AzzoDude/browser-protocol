@@ -1,6 +1,6 @@
 [package]
 name = "browser-protocol"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 authors = ["AzzoDude"]
 description = "Generated Rust types and commands for the Chrome DevTools Protocol (browser-protocol)"
@@ -15,9 +15,16 @@ serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.149"
 tokio = { version = "1.52.1", features = ["full"] }
 
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true
+
 [features]
 default = ["full"]
-full = ["accessibility", "animation", "audits", "autofill", "backgroundservice", "bluetoothemulation", "browser", "cachestorage", "cast", "crashreportcontext", "css", "debugger", "deviceaccess", "deviceorientation", "dom", "domdebugger", "domsnapshot", "domstorage", "emulation", "eventbreakpoints", "extensions", "fedcm", "fetch", "filesystem", "headlessexperimental", "heap_profiler", "indexeddb", "input", "inspector", "io", "layertree", "log", "media", "memory", "network", "overlay", "page", "performance", "performancetimeline", "preload", "profiler", "pwa", "runtime", "security", "serviceworker", "smartcardemulation", "storage", "systeminfo", "target", "tethering", "tracing", "webaudio", "webauthn", "webmcp"]
+full = ["accessibility", "animation", "audits", "autofill", "backgroundservice", "bluetoothemulation", "browser", "cachestorage", "cast", "crashreportcontext", "css", "debugger", "deviceaccess", "deviceorientation", "dom", "domdebugger", "domsnapshot", "domstorage", "emulation", "eventbreakpoints", "extensions", "fedcm", "fetch", "filesystem", "headlessexperimental", "heapprofiler", "indexeddb", "input", "inspector", "io", "layertree", "log", "media", "memory", "network", "overlay", "page", "performance", "performancetimeline", "preload", "profiler", "pwa", "runtime", "security", "serviceworker", "smartcardemulation", "storage", "systeminfo", "target", "tethering", "tracing", "webaudio", "webauthn", "webmcp"]
 accessibility = []
 animation = []
 audits = []
@@ -43,7 +50,7 @@ fedcm = []
 fetch = []
 filesystem = []
 headlessexperimental = []
-heap_profiler = []
+heapprofiler = []
 indexeddb = []
 input = []
 inspector = []
@@ -72,10 +79,3 @@ tracing = []
 webaudio = []
 webauthn = []
 webmcp = []
-
-[profile.release]
-opt-level = 3
-lto = "fat"
-codegen-units = 1
-panic = "abort"
-strip = true

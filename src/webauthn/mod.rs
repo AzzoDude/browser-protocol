@@ -1,7 +1,8 @@
+use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
+
 //! This domain allows configuring virtual authenticators to test the WebAuthn
 //! API.
-
-use serde::{Serialize, Deserialize};
 
 
 pub type AuthenticatorId = String;
@@ -55,37 +56,37 @@ pub struct VirtualAuthenticatorOptions {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hasUserVerification: Option<bool>,
     /// If set to true, the authenticator will support the largeBlob extension.
-    /// <https://w3c.github.io/webauthn#largeBlob>
+    /// https://w3c.github.io/webauthn#largeBlob
     /// Defaults to false.
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hasLargeBlob: Option<bool>,
     /// If set to true, the authenticator will support the credBlob extension.
-    /// <https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension>
+    /// https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension
     /// Defaults to false.
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hasCredBlob: Option<bool>,
     /// If set to true, the authenticator will support the minPinLength extension.
-    /// <https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-minpinlength-extension>
+    /// https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-minpinlength-extension
     /// Defaults to false.
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hasMinPinLength: Option<bool>,
     /// If set to true, the authenticator will support the prf extension.
-    /// <https://w3c.github.io/webauthn/#prf-extension>
+    /// https://w3c.github.io/webauthn/#prf-extension
     /// Defaults to false.
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hasPrf: Option<bool>,
     /// If set to true, the authenticator will support the hmac-secret extension.
-    /// <https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-hmac-secret-extension>
+    /// https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-hmac-secret-extension
     /// Defaults to false.
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hasHmacSecret: Option<bool>,
     /// If set to true, the authenticator will support the hmac-secret-mc extension.
-    /// <https://fidoalliance.org/specs/fido-v2.2-rd-20241003/fido-client-to-authenticator-protocol-v2.2-rd-20241003.html#sctn-hmac-secret-make-cred-extension>
+    /// https://fidoalliance.org/specs/fido-v2.2-rd-20241003/fido-client-to-authenticator-protocol-v2.2-rd-20241003.html#sctn-hmac-secret-make-cred-extension
     /// Defaults to false.
 
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -102,13 +103,13 @@ pub struct VirtualAuthenticatorOptions {
     pub isUserVerified: Option<bool>,
     /// Credentials created by this authenticator will have the backup
     /// eligibility (BE) flag set to this value. Defaults to false.
-    /// <https://w3c.github.io/webauthn/#sctn-credential-backup>
+    /// https://w3c.github.io/webauthn/#sctn-credential-backup
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub defaultBackupEligibility: Option<bool>,
     /// Credentials created by this authenticator will have the backup state
     /// (BS) flag set to this value. Defaults to false.
-    /// <https://w3c.github.io/webauthn/#sctn-credential-backup>
+    /// https://w3c.github.io/webauthn/#sctn-credential-backup
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub defaultBackupState: Option<bool>,
@@ -137,11 +138,11 @@ pub struct Credential {
     pub userHandle: Option<String>,
     /// Signature counter. This is incremented by one for each successful
     /// assertion.
-    /// See <https://w3c.github.io/webauthn/#signature-counter>
+    /// See https://w3c.github.io/webauthn/#signature-counter
 
     pub signCount: u64,
     /// The large blob associated with the credential.
-    /// See <https://w3c.github.io/webauthn/#sctn-large-blob-extension> (Encoded as a base64 string when passed over JSON)
+    /// See https://w3c.github.io/webauthn/#sctn-large-blob-extension (Encoded as a base64 string when passed over JSON)
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub largeBlob: Option<String>,
@@ -158,13 +159,13 @@ pub struct Credential {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub backupState: Option<bool>,
     /// The credential's user.name property. Equivalent to empty if not set.
-    /// <https://w3c.github.io/webauthn/#dom-publickeycredentialentity-name>
+    /// https://w3c.github.io/webauthn/#dom-publickeycredentialentity-name
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub userName: Option<String>,
     /// The credential's user.displayName property. Equivalent to empty if
     /// not set.
-    /// <https://w3c.github.io/webauthn/#dom-publickeycredentialuserentity-displayname>
+    /// https://w3c.github.io/webauthn/#dom-publickeycredentialuserentity-displayname
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub userDisplayName: Option<String>,
@@ -186,6 +187,23 @@ pub struct EnableParams {
     pub enableUI: Option<bool>,
 }
 
+impl EnableParams { pub const METHOD: &'static str = "WebAuthn.enable"; }
+
+impl crate::CdpCommand for EnableParams {
+    const METHOD: &'static str = "WebAuthn.enable";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct DisableParams {}
+
+impl DisableParams { pub const METHOD: &'static str = "WebAuthn.disable"; }
+
+impl crate::CdpCommand for DisableParams {
+    const METHOD: &'static str = "WebAuthn.disable";
+    type Response = crate::EmptyReturns;
+}
+
 /// Creates and adds a virtual authenticator.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -202,6 +220,13 @@ pub struct AddVirtualAuthenticatorParams {
 pub struct AddVirtualAuthenticatorReturns {
 
     pub authenticatorId: AuthenticatorId,
+}
+
+impl AddVirtualAuthenticatorParams { pub const METHOD: &'static str = "WebAuthn.addVirtualAuthenticator"; }
+
+impl crate::CdpCommand for AddVirtualAuthenticatorParams {
+    const METHOD: &'static str = "WebAuthn.addVirtualAuthenticator";
+    type Response = AddVirtualAuthenticatorReturns;
 }
 
 /// Resets parameters isBogusSignature, isBadUV, isBadUP to false if they are not present.
@@ -228,6 +253,13 @@ pub struct SetResponseOverrideBitsParams {
     pub isBadUP: Option<bool>,
 }
 
+impl SetResponseOverrideBitsParams { pub const METHOD: &'static str = "WebAuthn.setResponseOverrideBits"; }
+
+impl crate::CdpCommand for SetResponseOverrideBitsParams {
+    const METHOD: &'static str = "WebAuthn.setResponseOverrideBits";
+    type Response = crate::EmptyReturns;
+}
+
 /// Removes the given authenticator.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -235,6 +267,13 @@ pub struct SetResponseOverrideBitsParams {
 pub struct RemoveVirtualAuthenticatorParams {
 
     pub authenticatorId: AuthenticatorId,
+}
+
+impl RemoveVirtualAuthenticatorParams { pub const METHOD: &'static str = "WebAuthn.removeVirtualAuthenticator"; }
+
+impl crate::CdpCommand for RemoveVirtualAuthenticatorParams {
+    const METHOD: &'static str = "WebAuthn.removeVirtualAuthenticator";
+    type Response = crate::EmptyReturns;
 }
 
 /// Adds the credential to the specified authenticator.
@@ -246,6 +285,13 @@ pub struct AddCredentialParams {
     pub authenticatorId: AuthenticatorId,
 
     pub credential: Credential,
+}
+
+impl AddCredentialParams { pub const METHOD: &'static str = "WebAuthn.addCredential"; }
+
+impl crate::CdpCommand for AddCredentialParams {
+    const METHOD: &'static str = "WebAuthn.addCredential";
+    type Response = crate::EmptyReturns;
 }
 
 /// Returns a single credential stored in the given virtual authenticator that
@@ -270,6 +316,13 @@ pub struct GetCredentialReturns {
     pub credential: Credential,
 }
 
+impl GetCredentialParams { pub const METHOD: &'static str = "WebAuthn.getCredential"; }
+
+impl crate::CdpCommand for GetCredentialParams {
+    const METHOD: &'static str = "WebAuthn.getCredential";
+    type Response = GetCredentialReturns;
+}
+
 /// Returns all the credentials stored in the given virtual authenticator.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -288,6 +341,13 @@ pub struct GetCredentialsReturns {
     pub credentials: Vec<Credential>,
 }
 
+impl GetCredentialsParams { pub const METHOD: &'static str = "WebAuthn.getCredentials"; }
+
+impl crate::CdpCommand for GetCredentialsParams {
+    const METHOD: &'static str = "WebAuthn.getCredentials";
+    type Response = GetCredentialsReturns;
+}
+
 /// Removes a credential from the authenticator.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -299,6 +359,13 @@ pub struct RemoveCredentialParams {
     pub credentialId: String,
 }
 
+impl RemoveCredentialParams { pub const METHOD: &'static str = "WebAuthn.removeCredential"; }
+
+impl crate::CdpCommand for RemoveCredentialParams {
+    const METHOD: &'static str = "WebAuthn.removeCredential";
+    type Response = crate::EmptyReturns;
+}
+
 /// Clears all the credentials from the specified device.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -306,6 +373,13 @@ pub struct RemoveCredentialParams {
 pub struct ClearCredentialsParams {
 
     pub authenticatorId: AuthenticatorId,
+}
+
+impl ClearCredentialsParams { pub const METHOD: &'static str = "WebAuthn.clearCredentials"; }
+
+impl crate::CdpCommand for ClearCredentialsParams {
+    const METHOD: &'static str = "WebAuthn.clearCredentials";
+    type Response = crate::EmptyReturns;
 }
 
 /// Sets whether User Verification succeeds or fails for an authenticator.
@@ -320,6 +394,13 @@ pub struct SetUserVerifiedParams {
     pub isUserVerified: bool,
 }
 
+impl SetUserVerifiedParams { pub const METHOD: &'static str = "WebAuthn.setUserVerified"; }
+
+impl crate::CdpCommand for SetUserVerifiedParams {
+    const METHOD: &'static str = "WebAuthn.setUserVerified";
+    type Response = crate::EmptyReturns;
+}
+
 /// Sets whether tests of user presence will succeed immediately (if true) or fail to resolve (if false) for an authenticator.
 /// The default is true.
 
@@ -332,8 +413,15 @@ pub struct SetAutomaticPresenceSimulationParams {
     pub enabled: bool,
 }
 
+impl SetAutomaticPresenceSimulationParams { pub const METHOD: &'static str = "WebAuthn.setAutomaticPresenceSimulation"; }
+
+impl crate::CdpCommand for SetAutomaticPresenceSimulationParams {
+    const METHOD: &'static str = "WebAuthn.setAutomaticPresenceSimulation";
+    type Response = crate::EmptyReturns;
+}
+
 /// Allows setting credential properties.
-/// <https://w3c.github.io/webauthn/#sctn-automation-set-credential-properties>
+/// https://w3c.github.io/webauthn/#sctn-automation-set-credential-properties
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -348,4 +436,11 @@ pub struct SetCredentialPropertiesParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub backupState: Option<bool>,
+}
+
+impl SetCredentialPropertiesParams { pub const METHOD: &'static str = "WebAuthn.setCredentialProperties"; }
+
+impl crate::CdpCommand for SetCredentialPropertiesParams {
+    const METHOD: &'static str = "WebAuthn.setCredentialProperties";
+    type Response = crate::EmptyReturns;
 }

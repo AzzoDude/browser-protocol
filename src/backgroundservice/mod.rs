@@ -1,6 +1,7 @@
-//! Defines events for background web platform features.
-
 use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
+
+//! Defines events for background web platform features.
 
 /// The Background Service that will be associated with the commands/events.
 /// Every Background Service operates independently, but they share the same
@@ -67,6 +68,13 @@ pub struct StartObservingParams {
     pub service: ServiceName,
 }
 
+impl StartObservingParams { pub const METHOD: &'static str = "BackgroundService.startObserving"; }
+
+impl crate::CdpCommand for StartObservingParams {
+    const METHOD: &'static str = "BackgroundService.startObserving";
+    type Response = crate::EmptyReturns;
+}
+
 /// Disables event updates for the service.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -74,6 +82,13 @@ pub struct StartObservingParams {
 pub struct StopObservingParams {
 
     pub service: ServiceName,
+}
+
+impl StopObservingParams { pub const METHOD: &'static str = "BackgroundService.stopObserving"; }
+
+impl crate::CdpCommand for StopObservingParams {
+    const METHOD: &'static str = "BackgroundService.stopObserving";
+    type Response = crate::EmptyReturns;
 }
 
 /// Set the recording state for the service.
@@ -87,6 +102,13 @@ pub struct SetRecordingParams {
     pub service: ServiceName,
 }
 
+impl SetRecordingParams { pub const METHOD: &'static str = "BackgroundService.setRecording"; }
+
+impl crate::CdpCommand for SetRecordingParams {
+    const METHOD: &'static str = "BackgroundService.setRecording";
+    type Response = crate::EmptyReturns;
+}
+
 /// Clears all stored data for the service.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -94,4 +116,11 @@ pub struct SetRecordingParams {
 pub struct ClearEventsParams {
 
     pub service: ServiceName,
+}
+
+impl ClearEventsParams { pub const METHOD: &'static str = "BackgroundService.clearEvents"; }
+
+impl crate::CdpCommand for ClearEventsParams {
+    const METHOD: &'static str = "BackgroundService.clearEvents";
+    type Response = crate::EmptyReturns;
 }

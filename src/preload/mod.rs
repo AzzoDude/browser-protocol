@@ -1,4 +1,5 @@
 use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
 
 /// Unique id
 
@@ -15,24 +16,24 @@ pub struct RuleSet {
 
     pub loaderId: crate::network::LoaderId,
     /// Source text of JSON representing the rule set. If it comes from
-    /// '\<script\>' tag, it is the textContent of the node. Note that it is
+    /// '<script>' tag, it is the textContent of the node. Note that it is
     /// a JSON for valid case.
     /// 
     /// See also:
-    /// - <https://wicg.github.io/nav-speculation/speculation-rules.html>
-    /// - <https://github.com/WICG/nav-speculation/blob/main/triggers.md>
+    /// - https://wicg.github.io/nav-speculation/speculation-rules.html
+    /// - https://github.com/WICG/nav-speculation/blob/main/triggers.md
 
     pub sourceText: String,
     /// A speculation rule set is either added through an inline
-    /// '\<script\>' tag or through an external resource via the
+    /// '<script>' tag or through an external resource via the
     /// 'Speculation-Rules' HTTP header. For the first case, we include
-    /// the BackendNodeId of the relevant '\<script\>' tag. For the second
+    /// the BackendNodeId of the relevant '<script>' tag. For the second
     /// case, we include the external URL where the rule set was loaded
     /// from, and also RequestId if Network domain is enabled.
     /// 
     /// See also:
-    /// - <https://wicg.github.io/nav-speculation/speculation-rules.html#speculation-rules-script>
-    /// - <https://wicg.github.io/nav-speculation/speculation-rules.html#speculation-rules-header>
+    /// - https://wicg.github.io/nav-speculation/speculation-rules.html#speculation-rules-script
+    /// - https://wicg.github.io/nav-speculation/speculation-rules.html#speculation-rules-header
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub backendNodeId: Option<crate::dom::BackendNodeId>,
@@ -47,12 +48,12 @@ pub struct RuleSet {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub errorType: Option<RuleSetErrorType>,
-    /// TODO(<https://crbug.com/1425354>): Replace this property with structured error.
+    /// TODO(https://crbug.com/1425354): Replace this property with structured error.
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub errorMessage: Option<String>,
     /// For more details, see:
-    /// <https://github.com/WICG/nav-speculation/blob/main/speculation-rules-tags.md>
+    /// https://github.com/WICG/nav-speculation/blob/main/speculation-rules-tags.md
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tag: Option<String>,
@@ -80,7 +81,7 @@ pub enum SpeculationAction {
 }
 
 /// Corresponds to mojom::SpeculationTargetHint.
-/// See <https://github.com/WICG/nav-speculation/blob/main/triggers.md#window-name-targeting-hints>
+/// See https://github.com/WICG/nav-speculation/blob/main/triggers.md#window-name-targeting-hints
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum SpeculationTargetHint {
@@ -115,7 +116,7 @@ pub struct PreloadingAttemptKey {
 
 /// Lists sources for a preloading attempt, specifically the ids of rule sets
 /// that had a speculation rule that triggered the attempt, and the
-/// BackendNodeIds of \<a href\> or \<area href\> elements that triggered the
+/// BackendNodeIds of <a href> or <area href> elements that triggered the
 /// attempt (in the case of attempts triggered by a document rule). It is
 /// possible for multiple rule sets and links to trigger a single attempt.
 
@@ -236,7 +237,7 @@ pub enum PreloadingStatus {
     NotSupported,
 }
 
-/// TODO(<https://crbug.com/1384419>): revisit the list of PrefetchStatus and
+/// TODO(https://crbug.com/1384419): revisit the list of PrefetchStatus and
 /// filter out the ones that aren't necessary to the developers.
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
@@ -291,4 +292,24 @@ pub struct PrerenderMismatchedHeaders {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub activationValue: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct EnableParams {}
+
+impl EnableParams { pub const METHOD: &'static str = "Preload.enable"; }
+
+impl crate::CdpCommand for EnableParams {
+    const METHOD: &'static str = "Preload.enable";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct DisableParams {}
+
+impl DisableParams { pub const METHOD: &'static str = "Preload.disable"; }
+
+impl crate::CdpCommand for DisableParams {
+    const METHOD: &'static str = "Preload.disable";
+    type Response = crate::EmptyReturns;
 }

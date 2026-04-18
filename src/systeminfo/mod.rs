@@ -1,7 +1,7 @@
-//! The SystemInfo domain defines methods and events for querying low-level system information.
-
 use serde::{Serialize, Deserialize};
 use serde_json::Value as JsonValue;
+
+//! The SystemInfo domain defines methods and events for querying low-level system information.
 
 /// Describes a single graphics processor (GPU).
 
@@ -174,6 +174,16 @@ pub struct GetInfoReturns {
     pub commandLine: String,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GetInfoParams {}
+
+impl GetInfoParams { pub const METHOD: &'static str = "SystemInfo.getInfo"; }
+
+impl crate::CdpCommand for GetInfoParams {
+    const METHOD: &'static str = "SystemInfo.getInfo";
+    type Response = GetInfoReturns;
+}
+
 /// Returns information about the feature state.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -192,6 +202,13 @@ pub struct GetFeatureStateReturns {
     pub featureEnabled: bool,
 }
 
+impl GetFeatureStateParams { pub const METHOD: &'static str = "SystemInfo.getFeatureState"; }
+
+impl crate::CdpCommand for GetFeatureStateParams {
+    const METHOD: &'static str = "SystemInfo.getFeatureState";
+    type Response = GetFeatureStateReturns;
+}
+
 /// Returns information about all running processes.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -200,4 +217,14 @@ pub struct GetProcessInfoReturns {
     /// An array of process info blocks.
 
     pub processInfo: Vec<ProcessInfo>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GetProcessInfoParams {}
+
+impl GetProcessInfoParams { pub const METHOD: &'static str = "SystemInfo.getProcessInfo"; }
+
+impl crate::CdpCommand for GetProcessInfoParams {
+    const METHOD: &'static str = "SystemInfo.getProcessInfo";
+    type Response = GetProcessInfoReturns;
 }

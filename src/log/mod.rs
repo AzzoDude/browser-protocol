@@ -1,6 +1,7 @@
-//! Provides access to log entries.
-
 use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
+
+//! Provides access to log entries.
 
 /// Log entry.
 
@@ -61,6 +62,36 @@ pub struct ViolationSetting {
     pub threshold: f64,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct ClearParams {}
+
+impl ClearParams { pub const METHOD: &'static str = "Log.clear"; }
+
+impl crate::CdpCommand for ClearParams {
+    const METHOD: &'static str = "Log.clear";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct DisableParams {}
+
+impl DisableParams { pub const METHOD: &'static str = "Log.disable"; }
+
+impl crate::CdpCommand for DisableParams {
+    const METHOD: &'static str = "Log.disable";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct EnableParams {}
+
+impl EnableParams { pub const METHOD: &'static str = "Log.enable"; }
+
+impl crate::CdpCommand for EnableParams {
+    const METHOD: &'static str = "Log.enable";
+    type Response = crate::EmptyReturns;
+}
+
 /// start violation reporting.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -69,4 +100,21 @@ pub struct StartViolationsReportParams {
     /// Configuration for violations.
 
     pub config: Vec<ViolationSetting>,
+}
+
+impl StartViolationsReportParams { pub const METHOD: &'static str = "Log.startViolationsReport"; }
+
+impl crate::CdpCommand for StartViolationsReportParams {
+    const METHOD: &'static str = "Log.startViolationsReport";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct StopViolationsReportParams {}
+
+impl StopViolationsReportParams { pub const METHOD: &'static str = "Log.stopViolationsReport"; }
+
+impl crate::CdpCommand for StopViolationsReportParams {
+    const METHOD: &'static str = "Log.stopViolationsReport";
+    type Response = crate::EmptyReturns;
 }

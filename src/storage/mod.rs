@@ -384,6 +384,13 @@ pub struct GetStorageKeyForFrameReturns {
     pub storageKey: SerializedStorageKey,
 }
 
+impl GetStorageKeyForFrameParams { pub const METHOD: &'static str = "Storage.getStorageKeyForFrame"; }
+
+impl crate::CdpCommand for GetStorageKeyForFrameParams {
+    const METHOD: &'static str = "Storage.getStorageKeyForFrame";
+    type Response = GetStorageKeyForFrameReturns;
+}
+
 /// Returns storage key for the given frame. If no frame ID is provided,
 /// the storage key of the target executing this command is returned.
 
@@ -405,6 +412,13 @@ pub struct GetStorageKeyReturns {
     pub storageKey: SerializedStorageKey,
 }
 
+impl GetStorageKeyParams { pub const METHOD: &'static str = "Storage.getStorageKey"; }
+
+impl crate::CdpCommand for GetStorageKeyParams {
+    const METHOD: &'static str = "Storage.getStorageKey";
+    type Response = GetStorageKeyReturns;
+}
+
 /// Clears storage for origin.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -418,6 +432,13 @@ pub struct ClearDataForOriginParams {
     pub storageTypes: String,
 }
 
+impl ClearDataForOriginParams { pub const METHOD: &'static str = "Storage.clearDataForOrigin"; }
+
+impl crate::CdpCommand for ClearDataForOriginParams {
+    const METHOD: &'static str = "Storage.clearDataForOrigin";
+    type Response = crate::EmptyReturns;
+}
+
 /// Clears storage for storage key.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -429,6 +450,13 @@ pub struct ClearDataForStorageKeyParams {
     /// Comma separated list of StorageType to clear.
 
     pub storageTypes: String,
+}
+
+impl ClearDataForStorageKeyParams { pub const METHOD: &'static str = "Storage.clearDataForStorageKey"; }
+
+impl crate::CdpCommand for ClearDataForStorageKeyParams {
+    const METHOD: &'static str = "Storage.clearDataForStorageKey";
+    type Response = crate::EmptyReturns;
 }
 
 /// Returns all browser cookies.
@@ -452,6 +480,13 @@ pub struct GetCookiesReturns {
     pub cookies: Vec<crate::network::Cookie>,
 }
 
+impl GetCookiesParams { pub const METHOD: &'static str = "Storage.getCookies"; }
+
+impl crate::CdpCommand for GetCookiesParams {
+    const METHOD: &'static str = "Storage.getCookies";
+    type Response = GetCookiesReturns;
+}
+
 /// Sets given cookies.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -466,6 +501,13 @@ pub struct SetCookiesParams {
     pub browserContextId: Option<crate::browser::BrowserContextID>,
 }
 
+impl SetCookiesParams { pub const METHOD: &'static str = "Storage.setCookies"; }
+
+impl crate::CdpCommand for SetCookiesParams {
+    const METHOD: &'static str = "Storage.setCookies";
+    type Response = crate::EmptyReturns;
+}
+
 /// Clears cookies.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -475,6 +517,13 @@ pub struct ClearCookiesParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub browserContextId: Option<crate::browser::BrowserContextID>,
+}
+
+impl ClearCookiesParams { pub const METHOD: &'static str = "Storage.clearCookies"; }
+
+impl crate::CdpCommand for ClearCookiesParams {
+    const METHOD: &'static str = "Storage.clearCookies";
+    type Response = crate::EmptyReturns;
 }
 
 /// Returns usage and quota in bytes.
@@ -506,6 +555,13 @@ pub struct GetUsageAndQuotaReturns {
     pub usageBreakdown: Vec<UsageForType>,
 }
 
+impl GetUsageAndQuotaParams { pub const METHOD: &'static str = "Storage.getUsageAndQuota"; }
+
+impl crate::CdpCommand for GetUsageAndQuotaParams {
+    const METHOD: &'static str = "Storage.getUsageAndQuota";
+    type Response = GetUsageAndQuotaReturns;
+}
+
 /// Override quota for the specified origin
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -526,6 +582,13 @@ pub struct OverrideQuotaForOriginParams {
     pub quotaSize: Option<f64>,
 }
 
+impl OverrideQuotaForOriginParams { pub const METHOD: &'static str = "Storage.overrideQuotaForOrigin"; }
+
+impl crate::CdpCommand for OverrideQuotaForOriginParams {
+    const METHOD: &'static str = "Storage.overrideQuotaForOrigin";
+    type Response = crate::EmptyReturns;
+}
+
 /// Registers origin to be notified when an update occurs to its cache storage list.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -534,6 +597,13 @@ pub struct TrackCacheStorageForOriginParams {
     /// Security origin.
 
     pub origin: String,
+}
+
+impl TrackCacheStorageForOriginParams { pub const METHOD: &'static str = "Storage.trackCacheStorageForOrigin"; }
+
+impl crate::CdpCommand for TrackCacheStorageForOriginParams {
+    const METHOD: &'static str = "Storage.trackCacheStorageForOrigin";
+    type Response = crate::EmptyReturns;
 }
 
 /// Registers storage key to be notified when an update occurs to its cache storage list.
@@ -546,6 +616,13 @@ pub struct TrackCacheStorageForStorageKeyParams {
     pub storageKey: String,
 }
 
+impl TrackCacheStorageForStorageKeyParams { pub const METHOD: &'static str = "Storage.trackCacheStorageForStorageKey"; }
+
+impl crate::CdpCommand for TrackCacheStorageForStorageKeyParams {
+    const METHOD: &'static str = "Storage.trackCacheStorageForStorageKey";
+    type Response = crate::EmptyReturns;
+}
+
 /// Registers origin to be notified when an update occurs to its IndexedDB.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -554,6 +631,13 @@ pub struct TrackIndexedDBForOriginParams {
     /// Security origin.
 
     pub origin: String,
+}
+
+impl TrackIndexedDBForOriginParams { pub const METHOD: &'static str = "Storage.trackIndexedDBForOrigin"; }
+
+impl crate::CdpCommand for TrackIndexedDBForOriginParams {
+    const METHOD: &'static str = "Storage.trackIndexedDBForOrigin";
+    type Response = crate::EmptyReturns;
 }
 
 /// Registers storage key to be notified when an update occurs to its IndexedDB.
@@ -566,6 +650,13 @@ pub struct TrackIndexedDBForStorageKeyParams {
     pub storageKey: String,
 }
 
+impl TrackIndexedDBForStorageKeyParams { pub const METHOD: &'static str = "Storage.trackIndexedDBForStorageKey"; }
+
+impl crate::CdpCommand for TrackIndexedDBForStorageKeyParams {
+    const METHOD: &'static str = "Storage.trackIndexedDBForStorageKey";
+    type Response = crate::EmptyReturns;
+}
+
 /// Unregisters origin from receiving notifications for cache storage.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -574,6 +665,13 @@ pub struct UntrackCacheStorageForOriginParams {
     /// Security origin.
 
     pub origin: String,
+}
+
+impl UntrackCacheStorageForOriginParams { pub const METHOD: &'static str = "Storage.untrackCacheStorageForOrigin"; }
+
+impl crate::CdpCommand for UntrackCacheStorageForOriginParams {
+    const METHOD: &'static str = "Storage.untrackCacheStorageForOrigin";
+    type Response = crate::EmptyReturns;
 }
 
 /// Unregisters storage key from receiving notifications for cache storage.
@@ -586,6 +684,13 @@ pub struct UntrackCacheStorageForStorageKeyParams {
     pub storageKey: String,
 }
 
+impl UntrackCacheStorageForStorageKeyParams { pub const METHOD: &'static str = "Storage.untrackCacheStorageForStorageKey"; }
+
+impl crate::CdpCommand for UntrackCacheStorageForStorageKeyParams {
+    const METHOD: &'static str = "Storage.untrackCacheStorageForStorageKey";
+    type Response = crate::EmptyReturns;
+}
+
 /// Unregisters origin from receiving notifications for IndexedDB.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -594,6 +699,13 @@ pub struct UntrackIndexedDBForOriginParams {
     /// Security origin.
 
     pub origin: String,
+}
+
+impl UntrackIndexedDBForOriginParams { pub const METHOD: &'static str = "Storage.untrackIndexedDBForOrigin"; }
+
+impl crate::CdpCommand for UntrackIndexedDBForOriginParams {
+    const METHOD: &'static str = "Storage.untrackIndexedDBForOrigin";
+    type Response = crate::EmptyReturns;
 }
 
 /// Unregisters storage key from receiving notifications for IndexedDB.
@@ -606,6 +718,13 @@ pub struct UntrackIndexedDBForStorageKeyParams {
     pub storageKey: String,
 }
 
+impl UntrackIndexedDBForStorageKeyParams { pub const METHOD: &'static str = "Storage.untrackIndexedDBForStorageKey"; }
+
+impl crate::CdpCommand for UntrackIndexedDBForStorageKeyParams {
+    const METHOD: &'static str = "Storage.untrackIndexedDBForStorageKey";
+    type Response = crate::EmptyReturns;
+}
+
 /// Returns the number of stored Trust Tokens per issuer for the
 /// current browsing context.
 
@@ -614,6 +733,16 @@ pub struct UntrackIndexedDBForStorageKeyParams {
 pub struct GetTrustTokensReturns {
 
     pub tokens: Vec<TrustTokens>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GetTrustTokensParams {}
+
+impl GetTrustTokensParams { pub const METHOD: &'static str = "Storage.getTrustTokens"; }
+
+impl crate::CdpCommand for GetTrustTokensParams {
+    const METHOD: &'static str = "Storage.getTrustTokens";
+    type Response = GetTrustTokensReturns;
 }
 
 /// Removes all Trust Tokens issued by the provided issuerOrigin.
@@ -637,6 +766,13 @@ pub struct ClearTrustTokensReturns {
     pub didDeleteTokens: bool,
 }
 
+impl ClearTrustTokensParams { pub const METHOD: &'static str = "Storage.clearTrustTokens"; }
+
+impl crate::CdpCommand for ClearTrustTokensParams {
+    const METHOD: &'static str = "Storage.clearTrustTokens";
+    type Response = ClearTrustTokensReturns;
+}
+
 /// Gets details for a named interest group.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -654,11 +790,18 @@ pub struct GetInterestGroupDetailsParams {
 #[serde(rename_all = "camelCase")]
 pub struct GetInterestGroupDetailsReturns {
     /// This largely corresponds to:
-    /// <https://wicg.github.io/turtledove/#dictdef-generatebidinterestgroup>
+    /// https://wicg.github.io/turtledove/#dictdef-generatebidinterestgroup
     /// but has absolute expirationTime instead of relative lifetimeMs and
     /// also adds joiningOrigin.
 
     pub details: serde_json::Map<String, JsonValue>,
+}
+
+impl GetInterestGroupDetailsParams { pub const METHOD: &'static str = "Storage.getInterestGroupDetails"; }
+
+impl crate::CdpCommand for GetInterestGroupDetailsParams {
+    const METHOD: &'static str = "Storage.getInterestGroupDetails";
+    type Response = GetInterestGroupDetailsReturns;
 }
 
 /// Enables/Disables issuing of interestGroupAccessed events.
@@ -670,6 +813,13 @@ pub struct SetInterestGroupTrackingParams {
     pub enable: bool,
 }
 
+impl SetInterestGroupTrackingParams { pub const METHOD: &'static str = "Storage.setInterestGroupTracking"; }
+
+impl crate::CdpCommand for SetInterestGroupTrackingParams {
+    const METHOD: &'static str = "Storage.setInterestGroupTracking";
+    type Response = crate::EmptyReturns;
+}
+
 /// Enables/Disables issuing of interestGroupAuctionEventOccurred and
 /// interestGroupAuctionNetworkRequestCreated.
 
@@ -678,6 +828,13 @@ pub struct SetInterestGroupTrackingParams {
 pub struct SetInterestGroupAuctionTrackingParams {
 
     pub enable: bool,
+}
+
+impl SetInterestGroupAuctionTrackingParams { pub const METHOD: &'static str = "Storage.setInterestGroupAuctionTracking"; }
+
+impl crate::CdpCommand for SetInterestGroupAuctionTrackingParams {
+    const METHOD: &'static str = "Storage.setInterestGroupAuctionTracking";
+    type Response = crate::EmptyReturns;
 }
 
 /// Gets metadata for an origin's shared storage.
@@ -698,6 +855,13 @@ pub struct GetSharedStorageMetadataReturns {
     pub metadata: SharedStorageMetadata,
 }
 
+impl GetSharedStorageMetadataParams { pub const METHOD: &'static str = "Storage.getSharedStorageMetadata"; }
+
+impl crate::CdpCommand for GetSharedStorageMetadataParams {
+    const METHOD: &'static str = "Storage.getSharedStorageMetadata";
+    type Response = GetSharedStorageMetadataReturns;
+}
+
 /// Gets the entries in an given origin's shared storage.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -714,6 +878,13 @@ pub struct GetSharedStorageEntriesParams {
 pub struct GetSharedStorageEntriesReturns {
 
     pub entries: Vec<SharedStorageEntry>,
+}
+
+impl GetSharedStorageEntriesParams { pub const METHOD: &'static str = "Storage.getSharedStorageEntries"; }
+
+impl crate::CdpCommand for GetSharedStorageEntriesParams {
+    const METHOD: &'static str = "Storage.getSharedStorageEntries";
+    type Response = GetSharedStorageEntriesReturns;
 }
 
 /// Sets entry with 'key' and 'value' for a given origin's shared storage.
@@ -734,6 +905,13 @@ pub struct SetSharedStorageEntryParams {
     pub ignoreIfPresent: Option<bool>,
 }
 
+impl SetSharedStorageEntryParams { pub const METHOD: &'static str = "Storage.setSharedStorageEntry"; }
+
+impl crate::CdpCommand for SetSharedStorageEntryParams {
+    const METHOD: &'static str = "Storage.setSharedStorageEntry";
+    type Response = crate::EmptyReturns;
+}
+
 /// Deletes entry for 'key' (if it exists) for a given origin's shared storage.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -745,6 +923,13 @@ pub struct DeleteSharedStorageEntryParams {
     pub key: String,
 }
 
+impl DeleteSharedStorageEntryParams { pub const METHOD: &'static str = "Storage.deleteSharedStorageEntry"; }
+
+impl crate::CdpCommand for DeleteSharedStorageEntryParams {
+    const METHOD: &'static str = "Storage.deleteSharedStorageEntry";
+    type Response = crate::EmptyReturns;
+}
+
 /// Clears all entries for a given origin's shared storage.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -752,6 +937,13 @@ pub struct DeleteSharedStorageEntryParams {
 pub struct ClearSharedStorageEntriesParams {
 
     pub ownerOrigin: String,
+}
+
+impl ClearSharedStorageEntriesParams { pub const METHOD: &'static str = "Storage.clearSharedStorageEntries"; }
+
+impl crate::CdpCommand for ClearSharedStorageEntriesParams {
+    const METHOD: &'static str = "Storage.clearSharedStorageEntries";
+    type Response = crate::EmptyReturns;
 }
 
 /// Resets the budget for 'ownerOrigin' by clearing all budget withdrawals.
@@ -763,6 +955,13 @@ pub struct ResetSharedStorageBudgetParams {
     pub ownerOrigin: String,
 }
 
+impl ResetSharedStorageBudgetParams { pub const METHOD: &'static str = "Storage.resetSharedStorageBudget"; }
+
+impl crate::CdpCommand for ResetSharedStorageBudgetParams {
+    const METHOD: &'static str = "Storage.resetSharedStorageBudget";
+    type Response = crate::EmptyReturns;
+}
+
 /// Enables/disables issuing of sharedStorageAccessed events.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -770,6 +969,13 @@ pub struct ResetSharedStorageBudgetParams {
 pub struct SetSharedStorageTrackingParams {
 
     pub enable: bool,
+}
+
+impl SetSharedStorageTrackingParams { pub const METHOD: &'static str = "Storage.setSharedStorageTracking"; }
+
+impl crate::CdpCommand for SetSharedStorageTrackingParams {
+    const METHOD: &'static str = "Storage.setSharedStorageTracking";
+    type Response = crate::EmptyReturns;
 }
 
 /// Set tracking for a storage key's buckets.
@@ -783,6 +989,13 @@ pub struct SetStorageBucketTrackingParams {
     pub enable: bool,
 }
 
+impl SetStorageBucketTrackingParams { pub const METHOD: &'static str = "Storage.setStorageBucketTracking"; }
+
+impl crate::CdpCommand for SetStorageBucketTrackingParams {
+    const METHOD: &'static str = "Storage.setStorageBucketTracking";
+    type Response = crate::EmptyReturns;
+}
+
 /// Deletes the Storage Bucket with the given storage key and bucket name.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -792,6 +1005,13 @@ pub struct DeleteStorageBucketParams {
     pub bucket: StorageBucket,
 }
 
+impl DeleteStorageBucketParams { pub const METHOD: &'static str = "Storage.deleteStorageBucket"; }
+
+impl crate::CdpCommand for DeleteStorageBucketParams {
+    const METHOD: &'static str = "Storage.deleteStorageBucket";
+    type Response = crate::EmptyReturns;
+}
+
 /// Deletes state for sites identified as potential bounce trackers, immediately.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -799,6 +1019,16 @@ pub struct DeleteStorageBucketParams {
 pub struct RunBounceTrackingMitigationsReturns {
 
     pub deletedSites: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct RunBounceTrackingMitigationsParams {}
+
+impl RunBounceTrackingMitigationsParams { pub const METHOD: &'static str = "Storage.runBounceTrackingMitigations"; }
+
+impl crate::CdpCommand for RunBounceTrackingMitigationsParams {
+    const METHOD: &'static str = "Storage.runBounceTrackingMitigations";
+    type Response = RunBounceTrackingMitigationsReturns;
 }
 
 /// Returns the effective Related Website Sets in use by this profile for the browser
@@ -811,6 +1041,16 @@ pub struct GetRelatedWebsiteSetsReturns {
     pub sets: Vec<RelatedWebsiteSet>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct GetRelatedWebsiteSetsParams {}
+
+impl GetRelatedWebsiteSetsParams { pub const METHOD: &'static str = "Storage.getRelatedWebsiteSets"; }
+
+impl crate::CdpCommand for GetRelatedWebsiteSetsParams {
+    const METHOD: &'static str = "Storage.getRelatedWebsiteSets";
+    type Response = GetRelatedWebsiteSetsReturns;
+}
+
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -821,4 +1061,11 @@ pub struct SetProtectedAudienceKAnonymityParams {
     pub name: String,
 
     pub hashes: Vec<String>,
+}
+
+impl SetProtectedAudienceKAnonymityParams { pub const METHOD: &'static str = "Storage.setProtectedAudienceKAnonymity"; }
+
+impl crate::CdpCommand for SetProtectedAudienceKAnonymityParams {
+    const METHOD: &'static str = "Storage.setProtectedAudienceKAnonymity";
+    type Response = crate::EmptyReturns;
 }

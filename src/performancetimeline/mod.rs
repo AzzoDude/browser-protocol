@@ -1,9 +1,10 @@
-//! Reporting of performance timeline events, as specified in
-//! <https://w3c.github.io/performance-timeline/#dom-performanceobserver.>
-
 use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
 
-/// See <https://github.com/WICG/LargestContentfulPaint> and largest_contentful_paint.idl
+//! Reporting of performance timeline events, as specified in
+//! https://w3c.github.io/performance-timeline/#dom-performanceobserver.
+
+/// See https://github.com/WICG/LargestContentfulPaint and largest_contentful_paint.idl
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -41,7 +42,7 @@ pub struct LayoutShiftAttribution {
     pub nodeId: Option<crate::dom::BackendNodeId>,
 }
 
-/// See <https://wicg.github.io/layout-instability/#sec-layout-shift> and layout_shift.idl
+/// See https://wicg.github.io/layout-instability/#sec-layout-shift and layout_shift.idl
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -64,7 +65,7 @@ pub struct TimelineEvent {
     /// Identifies the frame that this event is related to. Empty for non-frame targets.
 
     pub frameId: crate::page::FrameId,
-    /// The event type, as specified in <https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype>
+    /// The event type, as specified in https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype
     /// This determines which of the optional "details" fields is present.
 
     #[serde(rename = "type")]
@@ -94,10 +95,17 @@ pub struct TimelineEvent {
 #[serde(rename_all = "camelCase")]
 pub struct EnableParams {
     /// The types of event to report, as specified in
-    /// <https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype>
+    /// https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype
     /// The specified filter overrides any previous filters, passing empty
     /// filter disables recording.
     /// Note that not all types exposed to the web platform are currently supported.
 
     pub eventTypes: Vec<String>,
+}
+
+impl EnableParams { pub const METHOD: &'static str = "PerformanceTimeline.enable"; }
+
+impl crate::CdpCommand for EnableParams {
+    const METHOD: &'static str = "PerformanceTimeline.enable";
+    type Response = crate::EmptyReturns;
 }

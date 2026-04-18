@@ -14,15 +14,6 @@ dependencies_rs: dict[str, str] = {
     "serde_json": ""
 }
 
-profile_release_content: str = """
-[profile.release]
-opt-level = 3
-lto = "fat"
-codegen-units = 1
-panic = "abort"
-strip = true
-"""
-
 def to_camel_case(snake_str):
     components = snake_str.replace('-', '_').split('_')
     return "".join(x[:1].upper() + x[1:] for x in components if x)
@@ -31,30 +22,7 @@ def format_rustdoc(description, indent_level=0, is_inner=False):
     if not description: return ""
     indent = " " * indent_level
     symbol = "//! " if is_inner else "/// "
-    
-    # Basic cleaning
     clean_text = description.replace("\\n", "\n").replace("`", "'")
-    
-    # Wrap URLs in < > if not already wrapped
-    url_pattern = r'(?<!<)(https?://[^\s)]+)(?!>)'
-    clean_text = re.sub(url_pattern, r'<\1>', clean_text)
-    
-    # Escape HTML-like tags by escaping < and > that are not part of a URL
-    # Move URLs to placeholders, escape, and restore
-    urls = []
-    def url_repl(match):
-        urls.append(match.group(0))
-        return f"__URL_PLACEHOLDER_{len(urls)-1}__"
-    
-    placeholder_text = re.sub(r'<https?://[^>]+>', url_repl, clean_text)
-    placeholder_text = placeholder_text.replace("<", r"\<").replace(">", r"\>")
-    placeholder_text = placeholder_text.replace("[", r"\[").replace("]", r"\]")
-    
-    for i, url in enumerate(urls):
-        placeholder_text = placeholder_text.replace(f"__URL_PLACEHOLDER_{i}__", url)
-    
-    clean_text = placeholder_text
-    
     lines = clean_text.split("\n")
     doc_lines = []
     for line in lines:
@@ -65,20 +33,17 @@ def format_rustdoc(description, indent_level=0, is_inner=False):
 def get_rust_type(prop, current_struct_name=None):
     base_type = "serde_json::Value"
     is_recursive = False
-
     if "$ref" in prop:
         ref = prop["$ref"]
         if "." in ref:
             domain, t_name = ref.split(".")
             if t_name == "Value": t_name = "ProtocolValue"
             base_type = f"crate::{domain.lower()}::{t_name}"
-            # Check for recursion (simple check for the current struct)
             if t_name == current_struct_name: is_recursive = True
         else:
             base_type = ref
             if ref == "Value": base_type = "ProtocolValue"
             if ref == current_struct_name: is_recursive = True
-
     elif prop.get("type") == "string": base_type = "String"
     elif prop.get("type") == "number": base_type = "f64"
     elif prop.get("type") == "boolean": base_type = "bool"
@@ -91,52 +56,42 @@ def get_rust_type(prop, current_struct_name=None):
         if any(k in name for k in ["delta", "offset"]) or name in ["x", "y"]: base_type = "i32"
         elif any(k in name for k in ["id", "count", "index", "size", "length"]): base_type = "u64"
         else: base_type = "i64"
-    elif prop.get("type") == "object":
-        base_type = "serde_json::Map<String, serde_json::Value>"
-        
-    # Apply Indirection (Box) to fix E0072
-    if is_recursive:
-        base_type = f"Box<{base_type}>"
-
-    if prop.get("optional", False):
-        return f"Option<{base_type}>"
+    elif prop.get("type") == "object": base_type = "serde_json::Map<String, serde_json::Value>"
+    if is_recursive: base_type = f"Box<{base_type}>"
+    if prop.get("optional", False): return f"Option<{base_type}>"
     return base_type
 
 def generate_cdp_modules(project_name: str):
     json_path = "browser_protocol.json"
     parent_json = os.path.join("..", "browser_protocol.json")
+    if os.path.exists(parent_json): json_path = parent_json
     
-    if not os.path.exists(json_path) and not os.path.exists(parent_json):
-        url = "https://raw.githubusercontent.com/ChromeDevTools/devtools-protocol/refs/heads/master/json/browser_protocol.json"
-        print(f"Downloading latest protocol from {url}...")
-        try:
-            urllib.request.urlretrieve(url, parent_json)
-            json_path = parent_json
-        except Exception as e:
-            print(f"Failed to download protocol: {e}")
-            return
-    elif os.path.exists(parent_json):
-        json_path = parent_json
-        
     with open(json_path, "r", encoding="utf-8") as f:
         schema = json.load(f)
 
     project_path = ".."
     src_dir = os.path.join(project_path, "src")
     lib_rs_content = [
-        "#![allow(non_snake_case)]",
-        "#![allow(unused_imports)]",
-        "#![allow(dead_code)]",
-        ""
+        "#![allow(non_snake_case)]", "#![allow(unused_imports)]", "#![allow(dead_code)]", "",
+        "use serde::{Serialize, Deserialize};", "use serde_json::Value as JsonValue;", "",
+        "/// Trait for CDP commands that associate parameters with a method name and response type.",
+        "pub trait CdpCommand: Serialize {", "    const METHOD: &'static str;", "    type Response: for<'de> Deserialize<'de>;", "}", "",
+        "/// A generic CDP command envelope.",
+        "#[derive(Serialize)]", "pub struct Command<'a, T: CdpCommand> {", "    pub id: u64,", "    pub method: &'static str,", "    pub params: &'a T,", "}", "",
+        "impl<'a, T: CdpCommand> Command<'a, T> {", "    pub fn new(id: u64, params: &'a T) -> Self {", "        Self { id, method: T::METHOD, params }", "    }", "}", "",
+        "/// A generic CDP response envelope.",
+        "#[derive(Deserialize, Debug)]", "pub struct Response<T> {", "    pub id: u64,", "    pub result: T,", "}", "",
+        "/// An empty response for commands that don't return anything.",
+        "#[derive(Deserialize, Debug, Clone, Default)]", "pub struct EmptyReturns {}", ""
     ]
 
-    # STUBS with added UniqueDebuggerId
     all_domains = [d.get("domain").lower() for d in schema.get("domains", [])]
-    for stub in ["runtime", "debugger", "heap_profiler", "profiler"]:
+    for stub in ["runtime", "debugger", "heapprofiler", "profiler"]:
         if stub not in all_domains:
             stub_dir = os.path.join(src_dir, stub)
             os.makedirs(stub_dir, exist_ok=True)
             with open(os.path.join(stub_dir, "mod.rs"), "w", encoding="utf-8") as f:
+                f.write("use serde::{Serialize, Deserialize};\n")
                 f.write("pub type RemoteObjectId = String;\npub type RemoteObject = serde_json::Value;\n")
                 f.write("pub type ScriptId = String;\npub type StackTrace = serde_json::Value;\n")
                 f.write("pub type UniqueDebuggerId = String;\npub type SearchMatch = serde_json::Value;\n")
@@ -152,16 +107,13 @@ def generate_cdp_modules(project_name: str):
         domain_dir = os.path.join(src_dir, d_name.lower())
         os.makedirs(domain_dir, exist_ok=True)
         
-        inner_docs = []
         mod_body = []
-        if "description" in domain: inner_docs.append(format_rustdoc(domain['description'], 0, True))
+        if "description" in domain: mod_body.append(format_rustdoc(domain['description'], 0, True))
 
         for t in domain.get("types", []):
             mod_body.append(format_rustdoc(t.get("description"), 0))
             t_id = t.get("id")
-            # Rename struct Value to ProtocolValue to avoid conflict
             safe_t_id = f"Protocol{t_id}" if t_id == "Value" else t_id
-
             if "enum" in t:
                 mod_body.append("#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]")
                 mod_body.append(f"pub enum {safe_t_id} {{")
@@ -190,7 +142,8 @@ def generate_cdp_modules(project_name: str):
                 mod_body.append(f"pub type {safe_t_id} = {r_type};\n")
 
         for cmd in domain.get("commands", []):
-            c_name = to_camel_case(cmd.get("name"))
+            raw_c_name = cmd.get("name")
+            c_name = to_camel_case(raw_c_name)
             for suffix, key in [("Params", "parameters"), ("Returns", "returns")]:
                 props = cmd.get(key, [])
                 if props:
@@ -209,38 +162,21 @@ def generate_cdp_modules(project_name: str):
                         mod_body.append(f"    pub {p_name}: {r_type},")
                     mod_body.append("}\n")
 
-        body_text = "\n".join(mod_body)
-        mod_code = inner_docs[:]
-        if "Serialize" in body_text or "Deserialize" in body_text:
-            mod_code.append("use serde::{Serialize, Deserialize};")
-        if "JsonValue" in body_text:
-            mod_code.append("use serde_json::Value as JsonValue;")
-        if len(mod_code) > len(inner_docs):
-            mod_code.append("")
-        mod_code.extend(mod_body)
+            if not cmd.get("parameters"):
+                mod_body.append(f"#[derive(Debug, Clone, Serialize, Deserialize, Default)]\npub struct {c_name}Params {{}}\n")
+            
+            mod_body.append(f"impl {c_name}Params {{ pub const METHOD: &'static str = \"{d_name}.{raw_c_name}\"; }}\n")
+            mod_body.append(f"impl crate::CdpCommand for {c_name}Params {{")
+            mod_body.append(f"    const METHOD: &'static str = \"{d_name}.{raw_c_name}\";")
+            if cmd.get("returns"): mod_body.append(f"    type Response = {c_name}Returns;")
+            else: mod_body.append("    type Response = crate::EmptyReturns;")
+            mod_body.append("}\n")
 
-        with open(os.path.join(domain_dir, "mod.rs"), "w", encoding="utf-8") as f:
-            f.write("\n".join(mod_code))
+        mod_code = ["use serde::{Serialize, Deserialize};", "use serde_json::Value as JsonValue;", "", "\n".join(mod_body)]
+        with open(os.path.join(domain_dir, "mod.rs"), "w", encoding="utf-8") as f: f.write("\n".join(mod_code))
 
     with open(os.path.join(src_dir, "lib.rs"), "w", encoding="utf-8") as f:
         f.write("\n".join(lib_rs_content))
-
-def check_cpp_build_tools():
-    if platform.system().lower() != "windows": return True
-    if shutil.which("cl.exe") or shutil.which("link.exe"): return True
-    try:
-        res = subprocess.run(["winget", "list", "Microsoft.VisualStudio"], capture_output=True, text=True, shell=True)
-        return res.returncode == 0 and "Microsoft.VisualStudio" in res.stdout
-    except: return False
-
-def check_cargo_exist(): return shutil.which("cargo") is not None
-
-def add_dependencies(project_name, deps):
-    project_path = ".."
-    for lib, feature in deps.items():
-        cmd = ["cargo", "add", lib]
-        if feature: cmd.extend(["--features", feature])
-        subprocess.run(cmd, cwd=project_path, capture_output=True)
 
 def update_cargo_metadata(project_name):
     project_path = ".."
@@ -256,12 +192,11 @@ def update_cargo_metadata(project_name):
         "readme": '"README.md"',
         "keywords": '["cdp", "browser", "automation", "protocol"]',
         "categories": '["development-tools", "web-programming"]',
-        "version": '"0.1.1"'
+        "version": '"0.1.2"'
     }
 
     lines = content.splitlines()
     new_lines = []
-    
     in_package = False
     added_metadata = set()
     
@@ -270,40 +205,31 @@ def update_cargo_metadata(project_name):
             in_package = True
             new_lines.append(line)
             continue
-        
         if in_package:
             if line.startswith("[") or line.strip() == "":
-                # End of package section or empty line, add missing metadata
                 for key, value in metadata.items():
-                    if key not in added_metadata:
-                        new_lines.append(f"{key} = {value}")
+                    if key not in added_metadata: new_lines.append(f"{key} = {value}")
                 in_package = False
             else:
                 key_part = line.split("=")[0].strip()
                 if key_part in metadata:
-                    if key_part == "version":
-                        new_lines.append(f'version = "0.1.1"')
-                        added_metadata.add(key_part)
-                        continue
+                    new_lines.append(f"{key_part} = {metadata[key_part]}")
                     added_metadata.add(key_part)
-        
+                    continue
         new_lines.append(line)
 
     if in_package:
         for key, value in metadata.items():
-            if key not in added_metadata:
-                new_lines.append(f"{key} = {value}")
+            if key not in added_metadata: new_lines.append(f"{key} = {value}")
 
     # Feature generation logic
     json_path = os.path.join("..", "browser_protocol.json")
     if os.path.exists(json_path):
-        with open(json_path, "r", encoding="utf-8") as f:
-            schema = json.load(f)
+        with open(json_path, "r", encoding="utf-8") as f: schema = json.load(f)
         domains = [d.get("domain").lower() for d in schema.get("domains", [])]
-        stubs = ["runtime", "debugger", "heap_profiler", "profiler"]
+        stubs = ["runtime", "debugger", "heapprofiler", "profiler"]
         all_features = sorted(list(set(domains + stubs)))
         
-        # Remove existing [features] if it exists to regenerate
         processed_lines = []
         skip = False
         for l in new_lines:
@@ -316,152 +242,13 @@ def update_cargo_metadata(project_name):
         new_lines.append('default = ["full"]')
         full_deps = ", ".join([f'"{f}"' for f in all_features])
         new_lines.append(f'full = [{full_deps}]')
-        for f in all_features:
-            new_lines.append(f'{f} = []')
+        for f in all_features: new_lines.append(f'{f} = []')
 
-    if not any("[profile.release]" in l for l in new_lines):
-        new_lines.append('\n[profile.release]')
-        new_lines.append('opt-level = 3')
-        new_lines.append('lto = "fat"')
-        new_lines.append('codegen-units = 1')
-        new_lines.append('panic = "abort"')
-        new_lines.append('strip = true')
-
-    with open(path, "w", encoding="utf-8") as f:
-        f.write("\n".join(new_lines) + "\n")
-
-def generate_readme(project_name):
-    project_path = ".."
-    path = os.path.join(project_path, "README.md")
-    content = f"""# {project_name}
-
-[![Crates.io](https://img.shields.io/crates/v/{project_name}.svg)](https://crates.io/crates/{project_name})
-[![Documentation](https://docs.rs/{project_name}/badge.svg)](https://docs.rs/{project_name})
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-A high-performance, fully type-safe Rust client for the **Chrome DevTools Protocol (CDP)**, automatically generated from the official protocol definitions.
-
-## 🚀 Features
-
-- **Full Coverage**: Includes types, commands, and events for all CDP domains.
-- **Type Safety**: Leverage Rust's type system to avoid runtime protocol errors.
-- **Async Ready**: Designed to work seamlessly with `tokio` and `serde`.
-- **Zero Warnings**: The crate and its documentation are built to be perfectly clean.
-- **Documentation**: All protocol descriptions are included as Rustdoc comments.
-
-## 📦 Installation
-
-Add this to your `Cargo.toml`:
-
-```toml
-[dependencies]
-{project_name} = {{ version = "0.1.1", features = ["full"] }}
-serde = {{ version = "1.0", features = ["derive"] }}
-serde_json = "1.0"
-```
-
-## 🛠 Usage Example
-
-```rust
-use {project_name}::dom::GetDocumentParams;
-use {project_name}::page::NavigateParams;
-
-fn main() {{
-    // Example: Create a navigation command
-    let nav = NavigateParams {{
-        url: "https://www.rust-lang.org".to_string(),
-        ..Default::default()
-    }};
-    
-    println!("Request: {{:?}}", serde_json::to_string(&nav).unwrap());
-}}
-```
-
-## 🏗 How it was built
-This crate is automatically generated using a custom Python script that parses the `browser_protocol.json` and produces idiomatic Rust modules.
-
-## ⚖ License
-Distributed under the MIT License. See `LICENSE` for more information.
-
----
-*Disclaimer: This is an automatically generated project. Always check the official CDP documentation for the latest protocol changes.*
-"""
-    with open(path, "w", encoding="utf-8") as f: f.write(content)
-
-def generate_gitignore(project_name):
-    project_path = ".."
-    path = os.path.join(project_path, ".gitignore")
-    # Standard Rust + VS Code + Visual Studio gitignore
-    content = """# Created by https://www.toptal.com/developers/gitignore/api/rust,visualstudio,visualstudiocode
-
-### Rust ###
-debug/
-/target/
-Cargo.lock
-**/*.rs.bk
-*.pdb
-
-### VisualStudioCode ###
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-!.vscode/*.code-snippets
-.history/
-*.vsix
-
-### VisualStudio ###
-.vs/
-[Dd]ebug/
-[Rr]elease/
-x64/
-x86/
-[Ww][Ii][Nn]32/
-[Aa][Rr][Mm]/
-[Aa][Rr][Mm]64/
-*.obj
-*.log
-*.tlog
-*.vspscc
-*.vssscc
-.builds
-"""
-    with open(path, "w", encoding="utf-8") as f: f.write(content)
-
-def build_project(project_name, release):
-    project_path = ".."
-    cmd = ["cargo", "build"]
-    if release: cmd.append("--release")
-    subprocess.run(cmd, cwd=project_path)
-
-def init_rust_lib(project_name, is_release, source_only):
-    try:
-        project_path = ".."
-        if not os.path.exists(project_path): os.makedirs(project_path)
-        
-        # Only init if Cargo.toml doesn't exist
-        if not os.path.exists(os.path.join(project_path, "Cargo.toml")):
-            subprocess.run(["cargo", "init", "--lib", "--name", project_name], cwd=project_path, check=True, capture_output=True)
-            add_dependencies(project_name, dependencies_rs)
-            
-        update_cargo_metadata(project_name)
-        generate_readme(project_name)
-        generate_gitignore(project_name)
-        print(f"Project '{project_name}' updated in {project_path} with publishing metadata and .gitignore.")
-        generate_cdp_modules(project_name)
-        if not source_only: build_project(project_name, is_release)
-        return True
-    except Exception as e:
-        print(f"Error: {e}")
-        return False
+    with open(path, "w", encoding="utf-8") as f: f.write("\n".join(new_lines) + "\n")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--name", type=str, required=True)
-    parser.add_argument("--release", action="store_true")
-    parser.add_argument("--source", action="store_true")
     args = parser.parse_args()
-    if not args.source and not check_cpp_build_tools(): sys.exit("Error: MSVC not found.")
-    if not check_cargo_exist(): sys.exit("Error: Cargo not installed.")
-    init_rust_lib(args.name, args.release, args.source)
+    update_cargo_metadata(args.name)
+    generate_cdp_modules(args.name)

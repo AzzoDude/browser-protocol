@@ -152,6 +152,33 @@ pub struct CompositingReasonsReturns {
     pub compositingReasonIds: Vec<String>,
 }
 
+impl CompositingReasonsParams { pub const METHOD: &'static str = "LayerTree.compositingReasons"; }
+
+impl crate::CdpCommand for CompositingReasonsParams {
+    const METHOD: &'static str = "LayerTree.compositingReasons";
+    type Response = CompositingReasonsReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct DisableParams {}
+
+impl DisableParams { pub const METHOD: &'static str = "LayerTree.disable"; }
+
+impl crate::CdpCommand for DisableParams {
+    const METHOD: &'static str = "LayerTree.disable";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct EnableParams {}
+
+impl EnableParams { pub const METHOD: &'static str = "LayerTree.enable"; }
+
+impl crate::CdpCommand for EnableParams {
+    const METHOD: &'static str = "LayerTree.enable";
+    type Response = crate::EmptyReturns;
+}
+
 /// Returns the snapshot identifier.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -172,6 +199,13 @@ pub struct LoadSnapshotReturns {
     pub snapshotId: SnapshotId,
 }
 
+impl LoadSnapshotParams { pub const METHOD: &'static str = "LayerTree.loadSnapshot"; }
+
+impl crate::CdpCommand for LoadSnapshotParams {
+    const METHOD: &'static str = "LayerTree.loadSnapshot";
+    type Response = LoadSnapshotReturns;
+}
+
 /// Returns the layer snapshot identifier.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -190,6 +224,13 @@ pub struct MakeSnapshotReturns {
     /// The id of the layer snapshot.
 
     pub snapshotId: SnapshotId,
+}
+
+impl MakeSnapshotParams { pub const METHOD: &'static str = "LayerTree.makeSnapshot"; }
+
+impl crate::CdpCommand for MakeSnapshotParams {
+    const METHOD: &'static str = "LayerTree.makeSnapshot";
+    type Response = MakeSnapshotReturns;
 }
 
 
@@ -222,6 +263,13 @@ pub struct ProfileSnapshotReturns {
     pub timings: Vec<PaintProfile>,
 }
 
+impl ProfileSnapshotParams { pub const METHOD: &'static str = "LayerTree.profileSnapshot"; }
+
+impl crate::CdpCommand for ProfileSnapshotParams {
+    const METHOD: &'static str = "LayerTree.profileSnapshot";
+    type Response = ProfileSnapshotReturns;
+}
+
 /// Releases layer snapshot captured by the back-end.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -230,6 +278,13 @@ pub struct ReleaseSnapshotParams {
     /// The id of the layer snapshot.
 
     pub snapshotId: SnapshotId,
+}
+
+impl ReleaseSnapshotParams { pub const METHOD: &'static str = "LayerTree.releaseSnapshot"; }
+
+impl crate::CdpCommand for ReleaseSnapshotParams {
+    const METHOD: &'static str = "LayerTree.releaseSnapshot";
+    type Response = crate::EmptyReturns;
 }
 
 /// Replays the layer snapshot and returns the resulting bitmap.
@@ -264,6 +319,13 @@ pub struct ReplaySnapshotReturns {
     pub dataURL: String,
 }
 
+impl ReplaySnapshotParams { pub const METHOD: &'static str = "LayerTree.replaySnapshot"; }
+
+impl crate::CdpCommand for ReplaySnapshotParams {
+    const METHOD: &'static str = "LayerTree.replaySnapshot";
+    type Response = ReplaySnapshotReturns;
+}
+
 /// Replays the layer snapshot and returns canvas log.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -282,4 +344,11 @@ pub struct SnapshotCommandLogReturns {
     /// The array of canvas function calls.
 
     pub commandLog: Vec<serde_json::Map<String, JsonValue>>,
+}
+
+impl SnapshotCommandLogParams { pub const METHOD: &'static str = "LayerTree.snapshotCommandLog"; }
+
+impl crate::CdpCommand for SnapshotCommandLogParams {
+    const METHOD: &'static str = "LayerTree.snapshotCommandLog";
+    type Response = SnapshotCommandLogReturns;
 }

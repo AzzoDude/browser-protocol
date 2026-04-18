@@ -1,15 +1,16 @@
+use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
+
 //! This domain allows interacting with the browser to control PWAs.
 
-use serde::{Serialize, Deserialize};
-
 /// The following types are the replica of
-/// <https://crsrc.org/c/chrome/browser/web_applications/proto/web_app_os_integration_state.proto;drc=9910d3be894c8f142c977ba1023f30a656bc13fc;l=67>
+/// https://crsrc.org/c/chrome/browser/web_applications/proto/web_app_os_integration_state.proto;drc=9910d3be894c8f142c977ba1023f30a656bc13fc;l=67
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct FileHandlerAccept {
     /// New name of the mimetype according to
-    /// <https://www.iana.org/assignments/media-types/media-types.xhtml>
+    /// https://www.iana.org/assignments/media-types/media-types.xhtml
 
     pub mediaType: String,
 
@@ -44,7 +45,7 @@ pub enum DisplayMode {
 pub struct GetOsAppStateParams {
     /// The id from the webapp's manifest file, commonly it's the url of the
     /// site installing the webapp. See
-    /// <https://web.dev/learn/pwa/web-app-manifest.>
+    /// https://web.dev/learn/pwa/web-app-manifest.
 
     pub manifestId: String,
 }
@@ -58,6 +59,13 @@ pub struct GetOsAppStateReturns {
     pub badgeCount: u64,
 
     pub fileHandlers: Vec<FileHandler>,
+}
+
+impl GetOsAppStateParams { pub const METHOD: &'static str = "PWA.getOsAppState"; }
+
+impl crate::CdpCommand for GetOsAppStateParams {
+    const METHOD: &'static str = "PWA.getOsAppState";
+    type Response = GetOsAppStateReturns;
 }
 
 /// Installs the given manifest identity, optionally using the given installUrlOrBundleUrl
@@ -81,7 +89,7 @@ pub struct GetOsAppStateReturns {
 /// To generate bundle id for proxy mode:
 /// 1. Generate 32 random bytes.
 /// 2. Add a specific suffix at the end following the documentation
-/// <https://github.com/WICG/isolated-web-apps/blob/main/Scheme.md#suffix>
+/// https://github.com/WICG/isolated-web-apps/blob/main/Scheme.md#suffix
 /// 3. Encode the entire sequence using Base32 without padding.
 /// 
 /// If Chrome is not in IWA dev
@@ -99,6 +107,13 @@ pub struct InstallParams {
     pub installUrlOrBundleUrl: Option<String>,
 }
 
+impl InstallParams { pub const METHOD: &'static str = "PWA.install"; }
+
+impl crate::CdpCommand for InstallParams {
+    const METHOD: &'static str = "PWA.install";
+    type Response = crate::EmptyReturns;
+}
+
 /// Uninstalls the given manifest_id and closes any opened app windows.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -106,6 +121,13 @@ pub struct InstallParams {
 pub struct UninstallParams {
 
     pub manifestId: String,
+}
+
+impl UninstallParams { pub const METHOD: &'static str = "PWA.uninstall"; }
+
+impl crate::CdpCommand for UninstallParams {
+    const METHOD: &'static str = "PWA.uninstall";
+    type Response = crate::EmptyReturns;
 }
 
 /// Launches the installed web app, or an url in the same web app instead of the
@@ -132,6 +154,13 @@ pub struct LaunchReturns {
     /// ID of the tab target created as a result.
 
     pub targetId: crate::target::TargetID,
+}
+
+impl LaunchParams { pub const METHOD: &'static str = "PWA.launch"; }
+
+impl crate::CdpCommand for LaunchParams {
+    const METHOD: &'static str = "PWA.launch";
+    type Response = LaunchReturns;
 }
 
 /// Opens one or more local files from an installed web app identified by its
@@ -179,6 +208,13 @@ pub struct LaunchFilesInAppReturns {
     pub targetIds: Vec<crate::target::TargetID>,
 }
 
+impl LaunchFilesInAppParams { pub const METHOD: &'static str = "PWA.launchFilesInApp"; }
+
+impl crate::CdpCommand for LaunchFilesInAppParams {
+    const METHOD: &'static str = "PWA.launchFilesInApp";
+    type Response = LaunchFilesInAppReturns;
+}
+
 /// Opens the current page in its web app identified by the manifest id, needs
 /// to be called on a page target. This function returns immediately without
 /// waiting for the app to finish loading.
@@ -188,6 +224,13 @@ pub struct LaunchFilesInAppReturns {
 pub struct OpenCurrentPageInAppParams {
 
     pub manifestId: String,
+}
+
+impl OpenCurrentPageInAppParams { pub const METHOD: &'static str = "PWA.openCurrentPageInApp"; }
+
+impl crate::CdpCommand for OpenCurrentPageInAppParams {
+    const METHOD: &'static str = "PWA.openCurrentPageInApp";
+    type Response = crate::EmptyReturns;
 }
 
 /// Changes user settings of the web app identified by its manifestId. If the
@@ -222,4 +265,11 @@ pub struct ChangeAppUserSettingsParams {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub displayMode: Option<DisplayMode>,
+}
+
+impl ChangeAppUserSettingsParams { pub const METHOD: &'static str = "PWA.changeAppUserSettings"; }
+
+impl crate::CdpCommand for ChangeAppUserSettingsParams {
+    const METHOD: &'static str = "PWA.changeAppUserSettings";
+    type Response = crate::EmptyReturns;
 }

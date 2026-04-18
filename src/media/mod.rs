@@ -1,7 +1,7 @@
-//! This domain allows detailed inspection of media elements.
-
 use serde::{Serialize, Deserialize};
 use serde_json::Value as JsonValue;
+
+//! This domain allows detailed inspection of media elements.
 
 /// Players will get an ID that is unique within the agent context.
 
@@ -97,4 +97,24 @@ pub struct Player {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub domNodeId: Option<crate::dom::BackendNodeId>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct EnableParams {}
+
+impl EnableParams { pub const METHOD: &'static str = "Media.enable"; }
+
+impl crate::CdpCommand for EnableParams {
+    const METHOD: &'static str = "Media.enable";
+    type Response = crate::EmptyReturns;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct DisableParams {}
+
+impl DisableParams { pub const METHOD: &'static str = "Media.disable"; }
+
+impl crate::CdpCommand for DisableParams {
+    const METHOD: &'static str = "Media.disable";
+    type Response = crate::EmptyReturns;
 }
