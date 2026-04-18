@@ -1,33 +1,12 @@
 [package]
 authors = ["AzzoDude"]
-description = "Generated Rust types and commands for the Chrome DevTools Protocol (browser_protocol)"
+description = "Generated Rust types and commands for the Chrome DevTools Protocol (browser-protocol)"
 license = "MIT"
-repository = "https://github.com/AzzoDude/browser_protocol"
+repository = "https://github.com/AzzoDude/browser-protocol"
 readme = "README.md"
 keywords = ["cdp", "browser", "automation", "protocol"]
 categories = ["development-tools", "web-programming"]
-authors = ["AzzoDude"]
-description = "Generated Rust types and commands for the Chrome DevTools Protocol (browser_protocol)"
-license = "MIT"
-repository = "https://github.com/AzzoDude/browser_protocol"
-readme = "README.md"
-keywords = ["cdp", "browser", "automation", "protocol"]
-categories = ["development-tools", "web-programming"]
-authors = ["AzzoDude"]
-description = "Generated Rust types and commands for the Chrome DevTools Protocol (browser_protocol)"
-license = "MIT"
-repository = "https://github.com/AzzoDude/browser_protocol"
-readme = "README.md"
-keywords = ["cdp", "browser", "automation", "protocol"]
-categories = ["development-tools", "web-programming"]
-authors = ["AzzoDude"]
-description = "Generated Rust types and commands for the Chrome DevTools Protocol (browser_protocol)"
-license = "MIT"
-repository = "https://github.com/AzzoDude/browser_protocol"
-readme = "README.md"
-keywords = ["cdp", "browser", "automation", "protocol"]
-categories = ["development-tools", "web-programming"]
-name = "browser_protocol"
+name = "browser-protocol"
 version = "0.1.0"
 edition = "2024"
 
