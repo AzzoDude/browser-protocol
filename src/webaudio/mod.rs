@@ -1,5 +1,5 @@
 //! This domain allows inspection of Web Audio API.
-//! https://webaudio.github.io/web-audio-api/
+//! <https://webaudio.github.io/web-audio-api/>
 
 
 use serde::{Serialize, Deserialize};
@@ -85,47 +85,62 @@ pub enum AutomationRate {
 #[serde(rename_all = "camelCase")]
 pub struct ContextRealtimeData {
     /// The current context time in second in BaseAudioContext.
-    currentTime: f64,
+    #[serde(rename = "currentTime")]
+    current_time: f64,
     /// The time spent on rendering graph divided by render quantum duration,
     /// and multiplied by 100. 100 means the audio renderer reached the full
     /// capacity and glitch may occur.
-    renderCapacity: f64,
+    #[serde(rename = "renderCapacity")]
+    render_capacity: f64,
     /// A running mean of callback interval.
-    callbackIntervalMean: f64,
+    #[serde(rename = "callbackIntervalMean")]
+    callback_interval_mean: f64,
     /// A running variance of callback interval.
-    callbackIntervalVariance: f64,
+    #[serde(rename = "callbackIntervalVariance")]
+    callback_interval_variance: f64,
 }
 
 impl ContextRealtimeData {
-    pub fn builder(currentTime: f64, renderCapacity: f64, callbackIntervalMean: f64, callbackIntervalVariance: f64) -> ContextRealtimeDataBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `current_time`: The current context time in second in BaseAudioContext.
+    /// * `render_capacity`: The time spent on rendering graph divided by render quantum duration, and multiplied by 100. 100 means the audio renderer reached the full capacity and glitch may occur.
+    /// * `callback_interval_mean`: A running mean of callback interval.
+    /// * `callback_interval_variance`: A running variance of callback interval.
+    pub fn builder(current_time: f64, render_capacity: f64, callback_interval_mean: f64, callback_interval_variance: f64) -> ContextRealtimeDataBuilder {
         ContextRealtimeDataBuilder {
-            currentTime: currentTime,
-            renderCapacity: renderCapacity,
-            callbackIntervalMean: callbackIntervalMean,
-            callbackIntervalVariance: callbackIntervalVariance,
+            current_time: current_time,
+            render_capacity: render_capacity,
+            callback_interval_mean: callback_interval_mean,
+            callback_interval_variance: callback_interval_variance,
         }
     }
-    pub fn currentTime(&self) -> f64 { self.currentTime }
-    pub fn renderCapacity(&self) -> f64 { self.renderCapacity }
-    pub fn callbackIntervalMean(&self) -> f64 { self.callbackIntervalMean }
-    pub fn callbackIntervalVariance(&self) -> f64 { self.callbackIntervalVariance }
+    /// The current context time in second in BaseAudioContext.
+    pub fn current_time(&self) -> f64 { self.current_time }
+    /// The time spent on rendering graph divided by render quantum duration,
+    /// and multiplied by 100. 100 means the audio renderer reached the full
+    /// capacity and glitch may occur.
+    pub fn render_capacity(&self) -> f64 { self.render_capacity }
+    /// A running mean of callback interval.
+    pub fn callback_interval_mean(&self) -> f64 { self.callback_interval_mean }
+    /// A running variance of callback interval.
+    pub fn callback_interval_variance(&self) -> f64 { self.callback_interval_variance }
 }
 
 
 pub struct ContextRealtimeDataBuilder {
-    currentTime: f64,
-    renderCapacity: f64,
-    callbackIntervalMean: f64,
-    callbackIntervalVariance: f64,
+    current_time: f64,
+    render_capacity: f64,
+    callback_interval_mean: f64,
+    callback_interval_variance: f64,
 }
 
 impl ContextRealtimeDataBuilder {
     pub fn build(self) -> ContextRealtimeData {
         ContextRealtimeData {
-            currentTime: self.currentTime,
-            renderCapacity: self.renderCapacity,
-            callbackIntervalMean: self.callbackIntervalMean,
-            callbackIntervalVariance: self.callbackIntervalVariance,
+            current_time: self.current_time,
+            render_capacity: self.render_capacity,
+            callback_interval_mean: self.callback_interval_mean,
+            callback_interval_variance: self.callback_interval_variance,
         }
     }
 }
@@ -135,62 +150,78 @@ impl ContextRealtimeDataBuilder {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct BaseAudioContext<'a> {
-    contextId: GraphObjectId<'a>,
-    contextType: ContextType,
-    contextState: ContextState,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    realtimeData: Option<ContextRealtimeData>,
+    #[serde(rename = "contextId")]
+    context_id: GraphObjectId<'a>,
+    #[serde(rename = "contextType")]
+    context_type: ContextType,
+    #[serde(rename = "contextState")]
+    context_state: ContextState,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "realtimeData")]
+    realtime_data: Option<ContextRealtimeData>,
     /// Platform-dependent callback buffer size.
-    callbackBufferSize: f64,
+    #[serde(rename = "callbackBufferSize")]
+    callback_buffer_size: f64,
     /// Number of output channels supported by audio hardware in use.
-    maxOutputChannelCount: f64,
+    #[serde(rename = "maxOutputChannelCount")]
+    max_output_channel_count: f64,
     /// Context sample rate.
-    sampleRate: f64,
+    #[serde(rename = "sampleRate")]
+    sample_rate: f64,
 }
 
 impl<'a> BaseAudioContext<'a> {
-    pub fn builder(contextId: impl Into<GraphObjectId<'a>>, contextType: impl Into<ContextType>, contextState: impl Into<ContextState>, callbackBufferSize: f64, maxOutputChannelCount: f64, sampleRate: f64) -> BaseAudioContextBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `context_id`: 
+    /// * `context_type`: 
+    /// * `context_state`: 
+    /// * `callback_buffer_size`: Platform-dependent callback buffer size.
+    /// * `max_output_channel_count`: Number of output channels supported by audio hardware in use.
+    /// * `sample_rate`: Context sample rate.
+    pub fn builder(context_id: impl Into<GraphObjectId<'a>>, context_type: impl Into<ContextType>, context_state: impl Into<ContextState>, callback_buffer_size: f64, max_output_channel_count: f64, sample_rate: f64) -> BaseAudioContextBuilder<'a> {
         BaseAudioContextBuilder {
-            contextId: contextId.into(),
-            contextType: contextType.into(),
-            contextState: contextState.into(),
-            realtimeData: None,
-            callbackBufferSize: callbackBufferSize,
-            maxOutputChannelCount: maxOutputChannelCount,
-            sampleRate: sampleRate,
+            context_id: context_id.into(),
+            context_type: context_type.into(),
+            context_state: context_state.into(),
+            realtime_data: None,
+            callback_buffer_size: callback_buffer_size,
+            max_output_channel_count: max_output_channel_count,
+            sample_rate: sample_rate,
         }
     }
-    pub fn contextId(&self) -> &GraphObjectId<'a> { &self.contextId }
-    pub fn contextType(&self) -> &ContextType { &self.contextType }
-    pub fn contextState(&self) -> &ContextState { &self.contextState }
-    pub fn realtimeData(&self) -> Option<&ContextRealtimeData> { self.realtimeData.as_ref() }
-    pub fn callbackBufferSize(&self) -> f64 { self.callbackBufferSize }
-    pub fn maxOutputChannelCount(&self) -> f64 { self.maxOutputChannelCount }
-    pub fn sampleRate(&self) -> f64 { self.sampleRate }
+    pub fn context_id(&self) -> &GraphObjectId<'a> { &self.context_id }
+    pub fn context_type(&self) -> &ContextType { &self.context_type }
+    pub fn context_state(&self) -> &ContextState { &self.context_state }
+    pub fn realtime_data(&self) -> Option<&ContextRealtimeData> { self.realtime_data.as_ref() }
+    /// Platform-dependent callback buffer size.
+    pub fn callback_buffer_size(&self) -> f64 { self.callback_buffer_size }
+    /// Number of output channels supported by audio hardware in use.
+    pub fn max_output_channel_count(&self) -> f64 { self.max_output_channel_count }
+    /// Context sample rate.
+    pub fn sample_rate(&self) -> f64 { self.sample_rate }
 }
 
 
 pub struct BaseAudioContextBuilder<'a> {
-    contextId: GraphObjectId<'a>,
-    contextType: ContextType,
-    contextState: ContextState,
-    realtimeData: Option<ContextRealtimeData>,
-    callbackBufferSize: f64,
-    maxOutputChannelCount: f64,
-    sampleRate: f64,
+    context_id: GraphObjectId<'a>,
+    context_type: ContextType,
+    context_state: ContextState,
+    realtime_data: Option<ContextRealtimeData>,
+    callback_buffer_size: f64,
+    max_output_channel_count: f64,
+    sample_rate: f64,
 }
 
 impl<'a> BaseAudioContextBuilder<'a> {
-    pub fn realtimeData(mut self, realtimeData: ContextRealtimeData) -> Self { self.realtimeData = Some(realtimeData); self }
+    pub fn realtime_data(mut self, realtime_data: ContextRealtimeData) -> Self { self.realtime_data = Some(realtime_data); self }
     pub fn build(self) -> BaseAudioContext<'a> {
         BaseAudioContext {
-            contextId: self.contextId,
-            contextType: self.contextType,
-            contextState: self.contextState,
-            realtimeData: self.realtimeData,
-            callbackBufferSize: self.callbackBufferSize,
-            maxOutputChannelCount: self.maxOutputChannelCount,
-            sampleRate: self.sampleRate,
+            context_id: self.context_id,
+            context_type: self.context_type,
+            context_state: self.context_state,
+            realtime_data: self.realtime_data,
+            callback_buffer_size: self.callback_buffer_size,
+            max_output_channel_count: self.max_output_channel_count,
+            sample_rate: self.sample_rate,
         }
     }
 }
@@ -200,32 +231,37 @@ impl<'a> BaseAudioContextBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct AudioListener<'a> {
-    listenerId: GraphObjectId<'a>,
-    contextId: GraphObjectId<'a>,
+    #[serde(rename = "listenerId")]
+    listener_id: GraphObjectId<'a>,
+    #[serde(rename = "contextId")]
+    context_id: GraphObjectId<'a>,
 }
 
 impl<'a> AudioListener<'a> {
-    pub fn builder(listenerId: impl Into<GraphObjectId<'a>>, contextId: impl Into<GraphObjectId<'a>>) -> AudioListenerBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `listener_id`: 
+    /// * `context_id`: 
+    pub fn builder(listener_id: impl Into<GraphObjectId<'a>>, context_id: impl Into<GraphObjectId<'a>>) -> AudioListenerBuilder<'a> {
         AudioListenerBuilder {
-            listenerId: listenerId.into(),
-            contextId: contextId.into(),
+            listener_id: listener_id.into(),
+            context_id: context_id.into(),
         }
     }
-    pub fn listenerId(&self) -> &GraphObjectId<'a> { &self.listenerId }
-    pub fn contextId(&self) -> &GraphObjectId<'a> { &self.contextId }
+    pub fn listener_id(&self) -> &GraphObjectId<'a> { &self.listener_id }
+    pub fn context_id(&self) -> &GraphObjectId<'a> { &self.context_id }
 }
 
 
 pub struct AudioListenerBuilder<'a> {
-    listenerId: GraphObjectId<'a>,
-    contextId: GraphObjectId<'a>,
+    listener_id: GraphObjectId<'a>,
+    context_id: GraphObjectId<'a>,
 }
 
 impl<'a> AudioListenerBuilder<'a> {
     pub fn build(self) -> AudioListener<'a> {
         AudioListener {
-            listenerId: self.listenerId,
-            contextId: self.contextId,
+            listener_id: self.listener_id,
+            context_id: self.context_id,
         }
     }
 }
@@ -235,62 +271,79 @@ impl<'a> AudioListenerBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct AudioNode<'a> {
-    nodeId: GraphObjectId<'a>,
-    contextId: GraphObjectId<'a>,
-    nodeType: NodeType<'a>,
-    numberOfInputs: f64,
-    numberOfOutputs: f64,
-    channelCount: f64,
-    channelCountMode: ChannelCountMode,
-    channelInterpretation: ChannelInterpretation,
+    #[serde(rename = "nodeId")]
+    node_id: GraphObjectId<'a>,
+    #[serde(rename = "contextId")]
+    context_id: GraphObjectId<'a>,
+    #[serde(rename = "nodeType")]
+    node_type: NodeType<'a>,
+    #[serde(rename = "numberOfInputs")]
+    number_of_inputs: f64,
+    #[serde(rename = "numberOfOutputs")]
+    number_of_outputs: f64,
+    #[serde(rename = "channelCount")]
+    channel_count: f64,
+    #[serde(rename = "channelCountMode")]
+    channel_count_mode: ChannelCountMode,
+    #[serde(rename = "channelInterpretation")]
+    channel_interpretation: ChannelInterpretation,
 }
 
 impl<'a> AudioNode<'a> {
-    pub fn builder(nodeId: impl Into<GraphObjectId<'a>>, contextId: impl Into<GraphObjectId<'a>>, nodeType: impl Into<NodeType<'a>>, numberOfInputs: f64, numberOfOutputs: f64, channelCount: f64, channelCountMode: impl Into<ChannelCountMode>, channelInterpretation: impl Into<ChannelInterpretation>) -> AudioNodeBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `node_id`: 
+    /// * `context_id`: 
+    /// * `node_type`: 
+    /// * `number_of_inputs`: 
+    /// * `number_of_outputs`: 
+    /// * `channel_count`: 
+    /// * `channel_count_mode`: 
+    /// * `channel_interpretation`: 
+    pub fn builder(node_id: impl Into<GraphObjectId<'a>>, context_id: impl Into<GraphObjectId<'a>>, node_type: impl Into<NodeType<'a>>, number_of_inputs: f64, number_of_outputs: f64, channel_count: f64, channel_count_mode: impl Into<ChannelCountMode>, channel_interpretation: impl Into<ChannelInterpretation>) -> AudioNodeBuilder<'a> {
         AudioNodeBuilder {
-            nodeId: nodeId.into(),
-            contextId: contextId.into(),
-            nodeType: nodeType.into(),
-            numberOfInputs: numberOfInputs,
-            numberOfOutputs: numberOfOutputs,
-            channelCount: channelCount,
-            channelCountMode: channelCountMode.into(),
-            channelInterpretation: channelInterpretation.into(),
+            node_id: node_id.into(),
+            context_id: context_id.into(),
+            node_type: node_type.into(),
+            number_of_inputs: number_of_inputs,
+            number_of_outputs: number_of_outputs,
+            channel_count: channel_count,
+            channel_count_mode: channel_count_mode.into(),
+            channel_interpretation: channel_interpretation.into(),
         }
     }
-    pub fn nodeId(&self) -> &GraphObjectId<'a> { &self.nodeId }
-    pub fn contextId(&self) -> &GraphObjectId<'a> { &self.contextId }
-    pub fn nodeType(&self) -> &NodeType<'a> { &self.nodeType }
-    pub fn numberOfInputs(&self) -> f64 { self.numberOfInputs }
-    pub fn numberOfOutputs(&self) -> f64 { self.numberOfOutputs }
-    pub fn channelCount(&self) -> f64 { self.channelCount }
-    pub fn channelCountMode(&self) -> &ChannelCountMode { &self.channelCountMode }
-    pub fn channelInterpretation(&self) -> &ChannelInterpretation { &self.channelInterpretation }
+    pub fn node_id(&self) -> &GraphObjectId<'a> { &self.node_id }
+    pub fn context_id(&self) -> &GraphObjectId<'a> { &self.context_id }
+    pub fn node_type(&self) -> &NodeType<'a> { &self.node_type }
+    pub fn number_of_inputs(&self) -> f64 { self.number_of_inputs }
+    pub fn number_of_outputs(&self) -> f64 { self.number_of_outputs }
+    pub fn channel_count(&self) -> f64 { self.channel_count }
+    pub fn channel_count_mode(&self) -> &ChannelCountMode { &self.channel_count_mode }
+    pub fn channel_interpretation(&self) -> &ChannelInterpretation { &self.channel_interpretation }
 }
 
 
 pub struct AudioNodeBuilder<'a> {
-    nodeId: GraphObjectId<'a>,
-    contextId: GraphObjectId<'a>,
-    nodeType: NodeType<'a>,
-    numberOfInputs: f64,
-    numberOfOutputs: f64,
-    channelCount: f64,
-    channelCountMode: ChannelCountMode,
-    channelInterpretation: ChannelInterpretation,
+    node_id: GraphObjectId<'a>,
+    context_id: GraphObjectId<'a>,
+    node_type: NodeType<'a>,
+    number_of_inputs: f64,
+    number_of_outputs: f64,
+    channel_count: f64,
+    channel_count_mode: ChannelCountMode,
+    channel_interpretation: ChannelInterpretation,
 }
 
 impl<'a> AudioNodeBuilder<'a> {
     pub fn build(self) -> AudioNode<'a> {
         AudioNode {
-            nodeId: self.nodeId,
-            contextId: self.contextId,
-            nodeType: self.nodeType,
-            numberOfInputs: self.numberOfInputs,
-            numberOfOutputs: self.numberOfOutputs,
-            channelCount: self.channelCount,
-            channelCountMode: self.channelCountMode,
-            channelInterpretation: self.channelInterpretation,
+            node_id: self.node_id,
+            context_id: self.context_id,
+            node_type: self.node_type,
+            number_of_inputs: self.number_of_inputs,
+            number_of_outputs: self.number_of_outputs,
+            channel_count: self.channel_count,
+            channel_count_mode: self.channel_count_mode,
+            channel_interpretation: self.channel_interpretation,
         }
     }
 }
@@ -300,62 +353,78 @@ impl<'a> AudioNodeBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct AudioParam<'a> {
-    paramId: GraphObjectId<'a>,
-    nodeId: GraphObjectId<'a>,
-    contextId: GraphObjectId<'a>,
-    paramType: ParamType<'a>,
+    #[serde(rename = "paramId")]
+    param_id: GraphObjectId<'a>,
+    #[serde(rename = "nodeId")]
+    node_id: GraphObjectId<'a>,
+    #[serde(rename = "contextId")]
+    context_id: GraphObjectId<'a>,
+    #[serde(rename = "paramType")]
+    param_type: ParamType<'a>,
     rate: AutomationRate,
-    defaultValue: f64,
-    minValue: f64,
-    maxValue: f64,
+    #[serde(rename = "defaultValue")]
+    default_value: f64,
+    #[serde(rename = "minValue")]
+    min_value: f64,
+    #[serde(rename = "maxValue")]
+    max_value: f64,
 }
 
 impl<'a> AudioParam<'a> {
-    pub fn builder(paramId: impl Into<GraphObjectId<'a>>, nodeId: impl Into<GraphObjectId<'a>>, contextId: impl Into<GraphObjectId<'a>>, paramType: impl Into<ParamType<'a>>, rate: impl Into<AutomationRate>, defaultValue: f64, minValue: f64, maxValue: f64) -> AudioParamBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `param_id`: 
+    /// * `node_id`: 
+    /// * `context_id`: 
+    /// * `param_type`: 
+    /// * `rate`: 
+    /// * `default_value`: 
+    /// * `min_value`: 
+    /// * `max_value`: 
+    pub fn builder(param_id: impl Into<GraphObjectId<'a>>, node_id: impl Into<GraphObjectId<'a>>, context_id: impl Into<GraphObjectId<'a>>, param_type: impl Into<ParamType<'a>>, rate: impl Into<AutomationRate>, default_value: f64, min_value: f64, max_value: f64) -> AudioParamBuilder<'a> {
         AudioParamBuilder {
-            paramId: paramId.into(),
-            nodeId: nodeId.into(),
-            contextId: contextId.into(),
-            paramType: paramType.into(),
+            param_id: param_id.into(),
+            node_id: node_id.into(),
+            context_id: context_id.into(),
+            param_type: param_type.into(),
             rate: rate.into(),
-            defaultValue: defaultValue,
-            minValue: minValue,
-            maxValue: maxValue,
+            default_value: default_value,
+            min_value: min_value,
+            max_value: max_value,
         }
     }
-    pub fn paramId(&self) -> &GraphObjectId<'a> { &self.paramId }
-    pub fn nodeId(&self) -> &GraphObjectId<'a> { &self.nodeId }
-    pub fn contextId(&self) -> &GraphObjectId<'a> { &self.contextId }
-    pub fn paramType(&self) -> &ParamType<'a> { &self.paramType }
+    pub fn param_id(&self) -> &GraphObjectId<'a> { &self.param_id }
+    pub fn node_id(&self) -> &GraphObjectId<'a> { &self.node_id }
+    pub fn context_id(&self) -> &GraphObjectId<'a> { &self.context_id }
+    pub fn param_type(&self) -> &ParamType<'a> { &self.param_type }
     pub fn rate(&self) -> &AutomationRate { &self.rate }
-    pub fn defaultValue(&self) -> f64 { self.defaultValue }
-    pub fn minValue(&self) -> f64 { self.minValue }
-    pub fn maxValue(&self) -> f64 { self.maxValue }
+    pub fn default_value(&self) -> f64 { self.default_value }
+    pub fn min_value(&self) -> f64 { self.min_value }
+    pub fn max_value(&self) -> f64 { self.max_value }
 }
 
 
 pub struct AudioParamBuilder<'a> {
-    paramId: GraphObjectId<'a>,
-    nodeId: GraphObjectId<'a>,
-    contextId: GraphObjectId<'a>,
-    paramType: ParamType<'a>,
+    param_id: GraphObjectId<'a>,
+    node_id: GraphObjectId<'a>,
+    context_id: GraphObjectId<'a>,
+    param_type: ParamType<'a>,
     rate: AutomationRate,
-    defaultValue: f64,
-    minValue: f64,
-    maxValue: f64,
+    default_value: f64,
+    min_value: f64,
+    max_value: f64,
 }
 
 impl<'a> AudioParamBuilder<'a> {
     pub fn build(self) -> AudioParam<'a> {
         AudioParam {
-            paramId: self.paramId,
-            nodeId: self.nodeId,
-            contextId: self.contextId,
-            paramType: self.paramType,
+            param_id: self.param_id,
+            node_id: self.node_id,
+            context_id: self.context_id,
+            param_type: self.param_type,
             rate: self.rate,
-            defaultValue: self.defaultValue,
-            minValue: self.minValue,
-            maxValue: self.maxValue,
+            default_value: self.default_value,
+            min_value: self.min_value,
+            max_value: self.max_value,
         }
     }
 }
@@ -385,27 +454,30 @@ impl<'a> crate::CdpCommand<'a> for DisableParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetRealtimeDataParams<'a> {
-    contextId: GraphObjectId<'a>,
+    #[serde(rename = "contextId")]
+    context_id: GraphObjectId<'a>,
 }
 
 impl<'a> GetRealtimeDataParams<'a> {
-    pub fn builder(contextId: impl Into<GraphObjectId<'a>>) -> GetRealtimeDataParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `context_id`: 
+    pub fn builder(context_id: impl Into<GraphObjectId<'a>>) -> GetRealtimeDataParamsBuilder<'a> {
         GetRealtimeDataParamsBuilder {
-            contextId: contextId.into(),
+            context_id: context_id.into(),
         }
     }
-    pub fn contextId(&self) -> &GraphObjectId<'a> { &self.contextId }
+    pub fn context_id(&self) -> &GraphObjectId<'a> { &self.context_id }
 }
 
 
 pub struct GetRealtimeDataParamsBuilder<'a> {
-    contextId: GraphObjectId<'a>,
+    context_id: GraphObjectId<'a>,
 }
 
 impl<'a> GetRealtimeDataParamsBuilder<'a> {
     pub fn build(self) -> GetRealtimeDataParams<'a> {
         GetRealtimeDataParams {
-            contextId: self.contextId,
+            context_id: self.context_id,
         }
     }
 }
@@ -415,27 +487,30 @@ impl<'a> GetRealtimeDataParamsBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetRealtimeDataReturns {
-    realtimeData: ContextRealtimeData,
+    #[serde(rename = "realtimeData")]
+    realtime_data: ContextRealtimeData,
 }
 
 impl GetRealtimeDataReturns {
-    pub fn builder(realtimeData: ContextRealtimeData) -> GetRealtimeDataReturnsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `realtime_data`: 
+    pub fn builder(realtime_data: ContextRealtimeData) -> GetRealtimeDataReturnsBuilder {
         GetRealtimeDataReturnsBuilder {
-            realtimeData: realtimeData,
+            realtime_data: realtime_data,
         }
     }
-    pub fn realtimeData(&self) -> &ContextRealtimeData { &self.realtimeData }
+    pub fn realtime_data(&self) -> &ContextRealtimeData { &self.realtime_data }
 }
 
 
 pub struct GetRealtimeDataReturnsBuilder {
-    realtimeData: ContextRealtimeData,
+    realtime_data: ContextRealtimeData,
 }
 
 impl GetRealtimeDataReturnsBuilder {
     pub fn build(self) -> GetRealtimeDataReturns {
         GetRealtimeDataReturns {
-            realtimeData: self.realtimeData,
+            realtime_data: self.realtime_data,
         }
     }
 }

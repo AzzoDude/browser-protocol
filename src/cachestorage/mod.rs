@@ -31,69 +31,94 @@ pub enum CachedResponseType {
 #[serde(rename_all = "camelCase")]
 pub struct DataEntry<'a> {
     /// Request URL.
-    requestURL: Cow<'a, str>,
+    #[serde(rename = "requestURL")]
+    request_url: Cow<'a, str>,
     /// Request method.
-    requestMethod: Cow<'a, str>,
+    #[serde(rename = "requestMethod")]
+    request_method: Cow<'a, str>,
     /// Request headers
-    requestHeaders: Vec<Header<'a>>,
+    #[serde(rename = "requestHeaders")]
+    request_headers: Vec<Header<'a>>,
     /// Number of seconds since epoch.
-    responseTime: f64,
+    #[serde(rename = "responseTime")]
+    response_time: f64,
     /// HTTP response status code.
-    responseStatus: i64,
+    #[serde(rename = "responseStatus")]
+    response_status: i64,
     /// HTTP response status text.
-    responseStatusText: Cow<'a, str>,
+    #[serde(rename = "responseStatusText")]
+    response_status_text: Cow<'a, str>,
     /// HTTP response type
-    responseType: CachedResponseType,
+    #[serde(rename = "responseType")]
+    response_type: CachedResponseType,
     /// Response headers
-    responseHeaders: Vec<Header<'a>>,
+    #[serde(rename = "responseHeaders")]
+    response_headers: Vec<Header<'a>>,
 }
 
 impl<'a> DataEntry<'a> {
-    pub fn builder(requestURL: impl Into<Cow<'a, str>>, requestMethod: impl Into<Cow<'a, str>>, requestHeaders: Vec<Header<'a>>, responseTime: f64, responseStatus: i64, responseStatusText: impl Into<Cow<'a, str>>, responseType: impl Into<CachedResponseType>, responseHeaders: Vec<Header<'a>>) -> DataEntryBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_url`: Request URL.
+    /// * `request_method`: Request method.
+    /// * `request_headers`: Request headers
+    /// * `response_time`: Number of seconds since epoch.
+    /// * `response_status`: HTTP response status code.
+    /// * `response_status_text`: HTTP response status text.
+    /// * `response_type`: HTTP response type
+    /// * `response_headers`: Response headers
+    pub fn builder(request_url: impl Into<Cow<'a, str>>, request_method: impl Into<Cow<'a, str>>, request_headers: Vec<Header<'a>>, response_time: f64, response_status: i64, response_status_text: impl Into<Cow<'a, str>>, response_type: impl Into<CachedResponseType>, response_headers: Vec<Header<'a>>) -> DataEntryBuilder<'a> {
         DataEntryBuilder {
-            requestURL: requestURL.into(),
-            requestMethod: requestMethod.into(),
-            requestHeaders: requestHeaders,
-            responseTime: responseTime,
-            responseStatus: responseStatus,
-            responseStatusText: responseStatusText.into(),
-            responseType: responseType.into(),
-            responseHeaders: responseHeaders,
+            request_url: request_url.into(),
+            request_method: request_method.into(),
+            request_headers: request_headers,
+            response_time: response_time,
+            response_status: response_status,
+            response_status_text: response_status_text.into(),
+            response_type: response_type.into(),
+            response_headers: response_headers,
         }
     }
-    pub fn requestURL(&self) -> &str { self.requestURL.as_ref() }
-    pub fn requestMethod(&self) -> &str { self.requestMethod.as_ref() }
-    pub fn requestHeaders(&self) -> &[Header<'a>] { &self.requestHeaders }
-    pub fn responseTime(&self) -> f64 { self.responseTime }
-    pub fn responseStatus(&self) -> i64 { self.responseStatus }
-    pub fn responseStatusText(&self) -> &str { self.responseStatusText.as_ref() }
-    pub fn responseType(&self) -> &CachedResponseType { &self.responseType }
-    pub fn responseHeaders(&self) -> &[Header<'a>] { &self.responseHeaders }
+    /// Request URL.
+    pub fn request_url(&self) -> &str { self.request_url.as_ref() }
+    /// Request method.
+    pub fn request_method(&self) -> &str { self.request_method.as_ref() }
+    /// Request headers
+    pub fn request_headers(&self) -> &[Header<'a>] { &self.request_headers }
+    /// Number of seconds since epoch.
+    pub fn response_time(&self) -> f64 { self.response_time }
+    /// HTTP response status code.
+    pub fn response_status(&self) -> i64 { self.response_status }
+    /// HTTP response status text.
+    pub fn response_status_text(&self) -> &str { self.response_status_text.as_ref() }
+    /// HTTP response type
+    pub fn response_type(&self) -> &CachedResponseType { &self.response_type }
+    /// Response headers
+    pub fn response_headers(&self) -> &[Header<'a>] { &self.response_headers }
 }
 
 
 pub struct DataEntryBuilder<'a> {
-    requestURL: Cow<'a, str>,
-    requestMethod: Cow<'a, str>,
-    requestHeaders: Vec<Header<'a>>,
-    responseTime: f64,
-    responseStatus: i64,
-    responseStatusText: Cow<'a, str>,
-    responseType: CachedResponseType,
-    responseHeaders: Vec<Header<'a>>,
+    request_url: Cow<'a, str>,
+    request_method: Cow<'a, str>,
+    request_headers: Vec<Header<'a>>,
+    response_time: f64,
+    response_status: i64,
+    response_status_text: Cow<'a, str>,
+    response_type: CachedResponseType,
+    response_headers: Vec<Header<'a>>,
 }
 
 impl<'a> DataEntryBuilder<'a> {
     pub fn build(self) -> DataEntry<'a> {
         DataEntry {
-            requestURL: self.requestURL,
-            requestMethod: self.requestMethod,
-            requestHeaders: self.requestHeaders,
-            responseTime: self.responseTime,
-            responseStatus: self.responseStatus,
-            responseStatusText: self.responseStatusText,
-            responseType: self.responseType,
-            responseHeaders: self.responseHeaders,
+            request_url: self.request_url,
+            request_method: self.request_method,
+            request_headers: self.request_headers,
+            response_time: self.response_time,
+            response_status: self.response_status,
+            response_status_text: self.response_status_text,
+            response_type: self.response_type,
+            response_headers: self.response_headers,
         }
     }
 }
@@ -104,54 +129,68 @@ impl<'a> DataEntryBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct Cache<'a> {
     /// An opaque unique id of the cache.
-    cacheId: CacheId<'a>,
+    #[serde(rename = "cacheId")]
+    cache_id: CacheId<'a>,
     /// Security origin of the cache.
-    securityOrigin: Cow<'a, str>,
+    #[serde(rename = "securityOrigin")]
+    security_origin: Cow<'a, str>,
     /// Storage key of the cache.
-    storageKey: Cow<'a, str>,
+    #[serde(rename = "storageKey")]
+    storage_key: Cow<'a, str>,
     /// Storage bucket of the cache.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    storageBucket: Option<crate::storage::StorageBucket<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "storageBucket")]
+    storage_bucket: Option<crate::storage::StorageBucket<'a>>,
     /// The name of the cache.
-    cacheName: Cow<'a, str>,
+    #[serde(rename = "cacheName")]
+    cache_name: Cow<'a, str>,
 }
 
 impl<'a> Cache<'a> {
-    pub fn builder(cacheId: impl Into<CacheId<'a>>, securityOrigin: impl Into<Cow<'a, str>>, storageKey: impl Into<Cow<'a, str>>, cacheName: impl Into<Cow<'a, str>>) -> CacheBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `cache_id`: An opaque unique id of the cache.
+    /// * `security_origin`: Security origin of the cache.
+    /// * `storage_key`: Storage key of the cache.
+    /// * `cache_name`: The name of the cache.
+    pub fn builder(cache_id: impl Into<CacheId<'a>>, security_origin: impl Into<Cow<'a, str>>, storage_key: impl Into<Cow<'a, str>>, cache_name: impl Into<Cow<'a, str>>) -> CacheBuilder<'a> {
         CacheBuilder {
-            cacheId: cacheId.into(),
-            securityOrigin: securityOrigin.into(),
-            storageKey: storageKey.into(),
-            storageBucket: None,
-            cacheName: cacheName.into(),
+            cache_id: cache_id.into(),
+            security_origin: security_origin.into(),
+            storage_key: storage_key.into(),
+            storage_bucket: None,
+            cache_name: cache_name.into(),
         }
     }
-    pub fn cacheId(&self) -> &CacheId<'a> { &self.cacheId }
-    pub fn securityOrigin(&self) -> &str { self.securityOrigin.as_ref() }
-    pub fn storageKey(&self) -> &str { self.storageKey.as_ref() }
-    pub fn storageBucket(&self) -> Option<&crate::storage::StorageBucket<'a>> { self.storageBucket.as_ref() }
-    pub fn cacheName(&self) -> &str { self.cacheName.as_ref() }
+    /// An opaque unique id of the cache.
+    pub fn cache_id(&self) -> &CacheId<'a> { &self.cache_id }
+    /// Security origin of the cache.
+    pub fn security_origin(&self) -> &str { self.security_origin.as_ref() }
+    /// Storage key of the cache.
+    pub fn storage_key(&self) -> &str { self.storage_key.as_ref() }
+    /// Storage bucket of the cache.
+    pub fn storage_bucket(&self) -> Option<&crate::storage::StorageBucket<'a>> { self.storage_bucket.as_ref() }
+    /// The name of the cache.
+    pub fn cache_name(&self) -> &str { self.cache_name.as_ref() }
 }
 
 
 pub struct CacheBuilder<'a> {
-    cacheId: CacheId<'a>,
-    securityOrigin: Cow<'a, str>,
-    storageKey: Cow<'a, str>,
-    storageBucket: Option<crate::storage::StorageBucket<'a>>,
-    cacheName: Cow<'a, str>,
+    cache_id: CacheId<'a>,
+    security_origin: Cow<'a, str>,
+    storage_key: Cow<'a, str>,
+    storage_bucket: Option<crate::storage::StorageBucket<'a>>,
+    cache_name: Cow<'a, str>,
 }
 
 impl<'a> CacheBuilder<'a> {
     /// Storage bucket of the cache.
-    pub fn storageBucket(mut self, storageBucket: crate::storage::StorageBucket<'a>) -> Self { self.storageBucket = Some(storageBucket); self }
+    pub fn storage_bucket(mut self, storage_bucket: crate::storage::StorageBucket<'a>) -> Self { self.storage_bucket = Some(storage_bucket); self }
     pub fn build(self) -> Cache<'a> {
         Cache {
-            cacheId: self.cacheId,
-            securityOrigin: self.securityOrigin,
-            storageKey: self.storageKey,
-            storageBucket: self.storageBucket,
-            cacheName: self.cacheName,
+            cache_id: self.cache_id,
+            security_origin: self.security_origin,
+            storage_key: self.storage_key,
+            storage_bucket: self.storage_bucket,
+            cache_name: self.cache_name,
         }
     }
 }
@@ -165,6 +204,9 @@ pub struct Header<'a> {
 }
 
 impl<'a> Header<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: 
+    /// * `value`: 
     pub fn builder(name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> HeaderBuilder<'a> {
         HeaderBuilder {
             name: name.into(),
@@ -200,11 +242,14 @@ pub struct CachedResponse<'a> {
 }
 
 impl<'a> CachedResponse<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `body`: Entry content, base64-encoded. (Encoded as a base64 string when passed over JSON)
     pub fn builder(body: impl Into<Cow<'a, str>>) -> CachedResponseBuilder<'a> {
         CachedResponseBuilder {
             body: body.into(),
         }
     }
+    /// Entry content, base64-encoded. (Encoded as a base64 string when passed over JSON)
     pub fn body(&self) -> &str { self.body.as_ref() }
 }
 
@@ -227,27 +272,31 @@ impl<'a> CachedResponseBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct DeleteCacheParams<'a> {
     /// Id of cache for deletion.
-    cacheId: CacheId<'a>,
+    #[serde(rename = "cacheId")]
+    cache_id: CacheId<'a>,
 }
 
 impl<'a> DeleteCacheParams<'a> {
-    pub fn builder(cacheId: impl Into<CacheId<'a>>) -> DeleteCacheParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `cache_id`: Id of cache for deletion.
+    pub fn builder(cache_id: impl Into<CacheId<'a>>) -> DeleteCacheParamsBuilder<'a> {
         DeleteCacheParamsBuilder {
-            cacheId: cacheId.into(),
+            cache_id: cache_id.into(),
         }
     }
-    pub fn cacheId(&self) -> &CacheId<'a> { &self.cacheId }
+    /// Id of cache for deletion.
+    pub fn cache_id(&self) -> &CacheId<'a> { &self.cache_id }
 }
 
 
 pub struct DeleteCacheParamsBuilder<'a> {
-    cacheId: CacheId<'a>,
+    cache_id: CacheId<'a>,
 }
 
 impl<'a> DeleteCacheParamsBuilder<'a> {
     pub fn build(self) -> DeleteCacheParams<'a> {
         DeleteCacheParams {
-            cacheId: self.cacheId,
+            cache_id: self.cache_id,
         }
     }
 }
@@ -265,32 +314,38 @@ impl<'a> crate::CdpCommand<'a> for DeleteCacheParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct DeleteEntryParams<'a> {
     /// Id of cache where the entry will be deleted.
-    cacheId: CacheId<'a>,
+    #[serde(rename = "cacheId")]
+    cache_id: CacheId<'a>,
     /// URL spec of the request.
     request: Cow<'a, str>,
 }
 
 impl<'a> DeleteEntryParams<'a> {
-    pub fn builder(cacheId: impl Into<CacheId<'a>>, request: impl Into<Cow<'a, str>>) -> DeleteEntryParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `cache_id`: Id of cache where the entry will be deleted.
+    /// * `request`: URL spec of the request.
+    pub fn builder(cache_id: impl Into<CacheId<'a>>, request: impl Into<Cow<'a, str>>) -> DeleteEntryParamsBuilder<'a> {
         DeleteEntryParamsBuilder {
-            cacheId: cacheId.into(),
+            cache_id: cache_id.into(),
             request: request.into(),
         }
     }
-    pub fn cacheId(&self) -> &CacheId<'a> { &self.cacheId }
+    /// Id of cache where the entry will be deleted.
+    pub fn cache_id(&self) -> &CacheId<'a> { &self.cache_id }
+    /// URL spec of the request.
     pub fn request(&self) -> &str { self.request.as_ref() }
 }
 
 
 pub struct DeleteEntryParamsBuilder<'a> {
-    cacheId: CacheId<'a>,
+    cache_id: CacheId<'a>,
     request: Cow<'a, str>,
 }
 
 impl<'a> DeleteEntryParamsBuilder<'a> {
     pub fn build(self) -> DeleteEntryParams<'a> {
         DeleteEntryParams {
-            cacheId: self.cacheId,
+            cache_id: self.cache_id,
             request: self.request,
         }
     }
@@ -310,49 +365,54 @@ impl<'a> crate::CdpCommand<'a> for DeleteEntryParams<'a> {
 pub struct RequestCacheNamesParams<'a> {
     /// At least and at most one of securityOrigin, storageKey, storageBucket must be specified.
     /// Security origin.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    securityOrigin: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "securityOrigin")]
+    security_origin: Option<Cow<'a, str>>,
     /// Storage key.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    storageKey: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "storageKey")]
+    storage_key: Option<Cow<'a, str>>,
     /// Storage bucket. If not specified, it uses the default bucket.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    storageBucket: Option<crate::storage::StorageBucket<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "storageBucket")]
+    storage_bucket: Option<crate::storage::StorageBucket<'a>>,
 }
 
 impl<'a> RequestCacheNamesParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> RequestCacheNamesParamsBuilder<'a> {
         RequestCacheNamesParamsBuilder {
-            securityOrigin: None,
-            storageKey: None,
-            storageBucket: None,
+            security_origin: None,
+            storage_key: None,
+            storage_bucket: None,
         }
     }
-    pub fn securityOrigin(&self) -> Option<&str> { self.securityOrigin.as_deref() }
-    pub fn storageKey(&self) -> Option<&str> { self.storageKey.as_deref() }
-    pub fn storageBucket(&self) -> Option<&crate::storage::StorageBucket<'a>> { self.storageBucket.as_ref() }
+    /// At least and at most one of securityOrigin, storageKey, storageBucket must be specified.
+    /// Security origin.
+    pub fn security_origin(&self) -> Option<&str> { self.security_origin.as_deref() }
+    /// Storage key.
+    pub fn storage_key(&self) -> Option<&str> { self.storage_key.as_deref() }
+    /// Storage bucket. If not specified, it uses the default bucket.
+    pub fn storage_bucket(&self) -> Option<&crate::storage::StorageBucket<'a>> { self.storage_bucket.as_ref() }
 }
 
 #[derive(Default)]
 pub struct RequestCacheNamesParamsBuilder<'a> {
-    securityOrigin: Option<Cow<'a, str>>,
-    storageKey: Option<Cow<'a, str>>,
-    storageBucket: Option<crate::storage::StorageBucket<'a>>,
+    security_origin: Option<Cow<'a, str>>,
+    storage_key: Option<Cow<'a, str>>,
+    storage_bucket: Option<crate::storage::StorageBucket<'a>>,
 }
 
 impl<'a> RequestCacheNamesParamsBuilder<'a> {
     /// At least and at most one of securityOrigin, storageKey, storageBucket must be specified.
     /// Security origin.
-    pub fn securityOrigin(mut self, securityOrigin: impl Into<Cow<'a, str>>) -> Self { self.securityOrigin = Some(securityOrigin.into()); self }
+    pub fn security_origin(mut self, security_origin: impl Into<Cow<'a, str>>) -> Self { self.security_origin = Some(security_origin.into()); self }
     /// Storage key.
-    pub fn storageKey(mut self, storageKey: impl Into<Cow<'a, str>>) -> Self { self.storageKey = Some(storageKey.into()); self }
+    pub fn storage_key(mut self, storage_key: impl Into<Cow<'a, str>>) -> Self { self.storage_key = Some(storage_key.into()); self }
     /// Storage bucket. If not specified, it uses the default bucket.
-    pub fn storageBucket(mut self, storageBucket: crate::storage::StorageBucket<'a>) -> Self { self.storageBucket = Some(storageBucket); self }
+    pub fn storage_bucket(mut self, storage_bucket: crate::storage::StorageBucket<'a>) -> Self { self.storage_bucket = Some(storage_bucket); self }
     pub fn build(self) -> RequestCacheNamesParams<'a> {
         RequestCacheNamesParams {
-            securityOrigin: self.securityOrigin,
-            storageKey: self.storageKey,
-            storageBucket: self.storageBucket,
+            security_origin: self.security_origin,
+            storage_key: self.storage_key,
+            storage_bucket: self.storage_bucket,
         }
     }
 }
@@ -367,11 +427,14 @@ pub struct RequestCacheNamesReturns<'a> {
 }
 
 impl<'a> RequestCacheNamesReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `caches`: Caches for the security origin.
     pub fn builder(caches: Vec<Cache<'a>>) -> RequestCacheNamesReturnsBuilder<'a> {
         RequestCacheNamesReturnsBuilder {
             caches: caches,
         }
     }
+    /// Caches for the security origin.
     pub fn caches(&self) -> &[Cache<'a>] { &self.caches }
 }
 
@@ -401,39 +464,49 @@ impl<'a> crate::CdpCommand<'a> for RequestCacheNamesParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct RequestCachedResponseParams<'a> {
     /// Id of cache that contains the entry.
-    cacheId: CacheId<'a>,
+    #[serde(rename = "cacheId")]
+    cache_id: CacheId<'a>,
     /// URL spec of the request.
-    requestURL: Cow<'a, str>,
+    #[serde(rename = "requestURL")]
+    request_url: Cow<'a, str>,
     /// headers of the request.
-    requestHeaders: Vec<Header<'a>>,
+    #[serde(rename = "requestHeaders")]
+    request_headers: Vec<Header<'a>>,
 }
 
 impl<'a> RequestCachedResponseParams<'a> {
-    pub fn builder(cacheId: impl Into<CacheId<'a>>, requestURL: impl Into<Cow<'a, str>>, requestHeaders: Vec<Header<'a>>) -> RequestCachedResponseParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `cache_id`: Id of cache that contains the entry.
+    /// * `request_url`: URL spec of the request.
+    /// * `request_headers`: headers of the request.
+    pub fn builder(cache_id: impl Into<CacheId<'a>>, request_url: impl Into<Cow<'a, str>>, request_headers: Vec<Header<'a>>) -> RequestCachedResponseParamsBuilder<'a> {
         RequestCachedResponseParamsBuilder {
-            cacheId: cacheId.into(),
-            requestURL: requestURL.into(),
-            requestHeaders: requestHeaders,
+            cache_id: cache_id.into(),
+            request_url: request_url.into(),
+            request_headers: request_headers,
         }
     }
-    pub fn cacheId(&self) -> &CacheId<'a> { &self.cacheId }
-    pub fn requestURL(&self) -> &str { self.requestURL.as_ref() }
-    pub fn requestHeaders(&self) -> &[Header<'a>] { &self.requestHeaders }
+    /// Id of cache that contains the entry.
+    pub fn cache_id(&self) -> &CacheId<'a> { &self.cache_id }
+    /// URL spec of the request.
+    pub fn request_url(&self) -> &str { self.request_url.as_ref() }
+    /// headers of the request.
+    pub fn request_headers(&self) -> &[Header<'a>] { &self.request_headers }
 }
 
 
 pub struct RequestCachedResponseParamsBuilder<'a> {
-    cacheId: CacheId<'a>,
-    requestURL: Cow<'a, str>,
-    requestHeaders: Vec<Header<'a>>,
+    cache_id: CacheId<'a>,
+    request_url: Cow<'a, str>,
+    request_headers: Vec<Header<'a>>,
 }
 
 impl<'a> RequestCachedResponseParamsBuilder<'a> {
     pub fn build(self) -> RequestCachedResponseParams<'a> {
         RequestCachedResponseParams {
-            cacheId: self.cacheId,
-            requestURL: self.requestURL,
-            requestHeaders: self.requestHeaders,
+            cache_id: self.cache_id,
+            request_url: self.request_url,
+            request_headers: self.request_headers,
         }
     }
 }
@@ -448,11 +521,14 @@ pub struct RequestCachedResponseReturns<'a> {
 }
 
 impl<'a> RequestCachedResponseReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `response`: Response read from the cache.
     pub fn builder(response: CachedResponse<'a>) -> RequestCachedResponseReturnsBuilder<'a> {
         RequestCachedResponseReturnsBuilder {
             response: response,
         }
     }
+    /// Response read from the cache.
     pub fn response(&self) -> &CachedResponse<'a> { &self.response }
 }
 
@@ -482,54 +558,61 @@ impl<'a> crate::CdpCommand<'a> for RequestCachedResponseParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct RequestEntriesParams<'a> {
     /// ID of cache to get entries from.
-    cacheId: CacheId<'a>,
+    #[serde(rename = "cacheId")]
+    cache_id: CacheId<'a>,
     /// Number of records to skip.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    skipCount: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "skipCount")]
+    skip_count: Option<u64>,
     /// Number of records to fetch.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pageSize: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "pageSize")]
+    page_size: Option<u64>,
     /// If present, only return the entries containing this substring in the path
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pathFilter: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "pathFilter")]
+    path_filter: Option<Cow<'a, str>>,
 }
 
 impl<'a> RequestEntriesParams<'a> {
-    pub fn builder(cacheId: impl Into<CacheId<'a>>) -> RequestEntriesParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `cache_id`: ID of cache to get entries from.
+    pub fn builder(cache_id: impl Into<CacheId<'a>>) -> RequestEntriesParamsBuilder<'a> {
         RequestEntriesParamsBuilder {
-            cacheId: cacheId.into(),
-            skipCount: None,
-            pageSize: None,
-            pathFilter: None,
+            cache_id: cache_id.into(),
+            skip_count: None,
+            page_size: None,
+            path_filter: None,
         }
     }
-    pub fn cacheId(&self) -> &CacheId<'a> { &self.cacheId }
-    pub fn skipCount(&self) -> Option<u64> { self.skipCount }
-    pub fn pageSize(&self) -> Option<u64> { self.pageSize }
-    pub fn pathFilter(&self) -> Option<&str> { self.pathFilter.as_deref() }
+    /// ID of cache to get entries from.
+    pub fn cache_id(&self) -> &CacheId<'a> { &self.cache_id }
+    /// Number of records to skip.
+    pub fn skip_count(&self) -> Option<u64> { self.skip_count }
+    /// Number of records to fetch.
+    pub fn page_size(&self) -> Option<u64> { self.page_size }
+    /// If present, only return the entries containing this substring in the path
+    pub fn path_filter(&self) -> Option<&str> { self.path_filter.as_deref() }
 }
 
 
 pub struct RequestEntriesParamsBuilder<'a> {
-    cacheId: CacheId<'a>,
-    skipCount: Option<u64>,
-    pageSize: Option<u64>,
-    pathFilter: Option<Cow<'a, str>>,
+    cache_id: CacheId<'a>,
+    skip_count: Option<u64>,
+    page_size: Option<u64>,
+    path_filter: Option<Cow<'a, str>>,
 }
 
 impl<'a> RequestEntriesParamsBuilder<'a> {
     /// Number of records to skip.
-    pub fn skipCount(mut self, skipCount: u64) -> Self { self.skipCount = Some(skipCount); self }
+    pub fn skip_count(mut self, skip_count: u64) -> Self { self.skip_count = Some(skip_count); self }
     /// Number of records to fetch.
-    pub fn pageSize(mut self, pageSize: u64) -> Self { self.pageSize = Some(pageSize); self }
+    pub fn page_size(mut self, page_size: u64) -> Self { self.page_size = Some(page_size); self }
     /// If present, only return the entries containing this substring in the path
-    pub fn pathFilter(mut self, pathFilter: impl Into<Cow<'a, str>>) -> Self { self.pathFilter = Some(pathFilter.into()); self }
+    pub fn path_filter(mut self, path_filter: impl Into<Cow<'a, str>>) -> Self { self.path_filter = Some(path_filter.into()); self }
     pub fn build(self) -> RequestEntriesParams<'a> {
         RequestEntriesParams {
-            cacheId: self.cacheId,
-            skipCount: self.skipCount,
-            pageSize: self.pageSize,
-            pathFilter: self.pathFilter,
+            cache_id: self.cache_id,
+            skip_count: self.skip_count,
+            page_size: self.page_size,
+            path_filter: self.path_filter,
         }
     }
 }
@@ -540,34 +623,42 @@ impl<'a> RequestEntriesParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct RequestEntriesReturns<'a> {
     /// Array of object store data entries.
-    cacheDataEntries: Vec<DataEntry<'a>>,
+    #[serde(rename = "cacheDataEntries")]
+    cache_data_entries: Vec<DataEntry<'a>>,
     /// Count of returned entries from this storage. If pathFilter is empty, it
     /// is the count of all entries from this storage.
-    returnCount: f64,
+    #[serde(rename = "returnCount")]
+    return_count: f64,
 }
 
 impl<'a> RequestEntriesReturns<'a> {
-    pub fn builder(cacheDataEntries: Vec<DataEntry<'a>>, returnCount: f64) -> RequestEntriesReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `cache_data_entries`: Array of object store data entries.
+    /// * `return_count`: Count of returned entries from this storage. If pathFilter is empty, it is the count of all entries from this storage.
+    pub fn builder(cache_data_entries: Vec<DataEntry<'a>>, return_count: f64) -> RequestEntriesReturnsBuilder<'a> {
         RequestEntriesReturnsBuilder {
-            cacheDataEntries: cacheDataEntries,
-            returnCount: returnCount,
+            cache_data_entries: cache_data_entries,
+            return_count: return_count,
         }
     }
-    pub fn cacheDataEntries(&self) -> &[DataEntry<'a>] { &self.cacheDataEntries }
-    pub fn returnCount(&self) -> f64 { self.returnCount }
+    /// Array of object store data entries.
+    pub fn cache_data_entries(&self) -> &[DataEntry<'a>] { &self.cache_data_entries }
+    /// Count of returned entries from this storage. If pathFilter is empty, it
+    /// is the count of all entries from this storage.
+    pub fn return_count(&self) -> f64 { self.return_count }
 }
 
 
 pub struct RequestEntriesReturnsBuilder<'a> {
-    cacheDataEntries: Vec<DataEntry<'a>>,
-    returnCount: f64,
+    cache_data_entries: Vec<DataEntry<'a>>,
+    return_count: f64,
 }
 
 impl<'a> RequestEntriesReturnsBuilder<'a> {
     pub fn build(self) -> RequestEntriesReturns<'a> {
         RequestEntriesReturns {
-            cacheDataEntries: self.cacheDataEntries,
-            returnCount: self.returnCount,
+            cache_data_entries: self.cache_data_entries,
+            return_count: self.return_count,
         }
     }
 }

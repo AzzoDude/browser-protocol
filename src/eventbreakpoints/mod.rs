@@ -13,27 +13,31 @@ use std::borrow::Cow;
 #[serde(rename_all = "camelCase")]
 pub struct SetInstrumentationBreakpointParams<'a> {
     /// Instrumentation name to stop on.
-    eventName: Cow<'a, str>,
+    #[serde(rename = "eventName")]
+    event_name: Cow<'a, str>,
 }
 
 impl<'a> SetInstrumentationBreakpointParams<'a> {
-    pub fn builder(eventName: impl Into<Cow<'a, str>>) -> SetInstrumentationBreakpointParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `event_name`: Instrumentation name to stop on.
+    pub fn builder(event_name: impl Into<Cow<'a, str>>) -> SetInstrumentationBreakpointParamsBuilder<'a> {
         SetInstrumentationBreakpointParamsBuilder {
-            eventName: eventName.into(),
+            event_name: event_name.into(),
         }
     }
-    pub fn eventName(&self) -> &str { self.eventName.as_ref() }
+    /// Instrumentation name to stop on.
+    pub fn event_name(&self) -> &str { self.event_name.as_ref() }
 }
 
 
 pub struct SetInstrumentationBreakpointParamsBuilder<'a> {
-    eventName: Cow<'a, str>,
+    event_name: Cow<'a, str>,
 }
 
 impl<'a> SetInstrumentationBreakpointParamsBuilder<'a> {
     pub fn build(self) -> SetInstrumentationBreakpointParams<'a> {
         SetInstrumentationBreakpointParams {
-            eventName: self.eventName,
+            event_name: self.event_name,
         }
     }
 }
@@ -51,27 +55,31 @@ impl<'a> crate::CdpCommand<'a> for SetInstrumentationBreakpointParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct RemoveInstrumentationBreakpointParams<'a> {
     /// Instrumentation name to stop on.
-    eventName: Cow<'a, str>,
+    #[serde(rename = "eventName")]
+    event_name: Cow<'a, str>,
 }
 
 impl<'a> RemoveInstrumentationBreakpointParams<'a> {
-    pub fn builder(eventName: impl Into<Cow<'a, str>>) -> RemoveInstrumentationBreakpointParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `event_name`: Instrumentation name to stop on.
+    pub fn builder(event_name: impl Into<Cow<'a, str>>) -> RemoveInstrumentationBreakpointParamsBuilder<'a> {
         RemoveInstrumentationBreakpointParamsBuilder {
-            eventName: eventName.into(),
+            event_name: event_name.into(),
         }
     }
-    pub fn eventName(&self) -> &str { self.eventName.as_ref() }
+    /// Instrumentation name to stop on.
+    pub fn event_name(&self) -> &str { self.event_name.as_ref() }
 }
 
 
 pub struct RemoveInstrumentationBreakpointParamsBuilder<'a> {
-    eventName: Cow<'a, str>,
+    event_name: Cow<'a, str>,
 }
 
 impl<'a> RemoveInstrumentationBreakpointParamsBuilder<'a> {
     pub fn build(self) -> RemoveInstrumentationBreakpointParams<'a> {
         RemoveInstrumentationBreakpointParams {
-            eventName: self.eventName,
+            event_name: self.event_name,
         }
     }
 }

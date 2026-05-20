@@ -5,8 +5,8 @@ use serde::{Serialize, Deserialize};
 use serde_json::Value as JsonValue;
 use std::borrow::Cow;
 
-/// This is either obtained from another method or specified as 'blob:<uuid>' where
-/// '<uuid>' is an UUID of a Blob.
+/// This is either obtained from another method or specified as 'blob:\<uuid\>' where
+/// '\<uuid\>' is an UUID of a Blob.
 
 pub type StreamHandle<'a> = Cow<'a, str>;
 
@@ -20,11 +20,14 @@ pub struct CloseParams<'a> {
 }
 
 impl<'a> CloseParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `handle`: Handle of the stream to close.
     pub fn builder(handle: impl Into<StreamHandle<'a>>) -> CloseParamsBuilder<'a> {
         CloseParamsBuilder {
             handle: handle.into(),
         }
     }
+    /// Handle of the stream to close.
     pub fn handle(&self) -> &StreamHandle<'a> { &self.handle }
 }
 
@@ -65,6 +68,8 @@ pub struct ReadParams<'a> {
 }
 
 impl<'a> ReadParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `handle`: Handle of the stream to read.
     pub fn builder(handle: impl Into<StreamHandle<'a>>) -> ReadParamsBuilder<'a> {
         ReadParamsBuilder {
             handle: handle.into(),
@@ -72,8 +77,12 @@ impl<'a> ReadParams<'a> {
             size: None,
         }
     }
+    /// Handle of the stream to read.
     pub fn handle(&self) -> &StreamHandle<'a> { &self.handle }
+    /// Seek to the specified offset before reading (if not specified, proceed with offset
+    /// following the last read). Some types of streams may only support sequential reads.
     pub fn offset(&self) -> Option<i32> { self.offset }
+    /// Maximum number of bytes to read (left upon the agent discretion if not specified).
     pub fn size(&self) -> Option<u64> { self.size }
 }
 
@@ -105,8 +114,8 @@ impl<'a> ReadParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ReadReturns<'a> {
     /// Set if the data is base64-encoded
-    #[serde(skip_serializing_if = "Option::is_none")]
-    base64Encoded: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "base64Encoded")]
+    base64_encoded: Option<bool>,
     /// Data that were read.
     data: Cow<'a, str>,
     /// Set if the end-of-file condition occurred while reading.
@@ -114,31 +123,37 @@ pub struct ReadReturns<'a> {
 }
 
 impl<'a> ReadReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `data`: Data that were read.
+    /// * `eof`: Set if the end-of-file condition occurred while reading.
     pub fn builder(data: impl Into<Cow<'a, str>>, eof: bool) -> ReadReturnsBuilder<'a> {
         ReadReturnsBuilder {
-            base64Encoded: None,
+            base64_encoded: None,
             data: data.into(),
             eof: eof,
         }
     }
-    pub fn base64Encoded(&self) -> Option<bool> { self.base64Encoded }
+    /// Set if the data is base64-encoded
+    pub fn base64_encoded(&self) -> Option<bool> { self.base64_encoded }
+    /// Data that were read.
     pub fn data(&self) -> &str { self.data.as_ref() }
+    /// Set if the end-of-file condition occurred while reading.
     pub fn eof(&self) -> bool { self.eof }
 }
 
 
 pub struct ReadReturnsBuilder<'a> {
-    base64Encoded: Option<bool>,
+    base64_encoded: Option<bool>,
     data: Cow<'a, str>,
     eof: bool,
 }
 
 impl<'a> ReadReturnsBuilder<'a> {
     /// Set if the data is base64-encoded
-    pub fn base64Encoded(mut self, base64Encoded: bool) -> Self { self.base64Encoded = Some(base64Encoded); self }
+    pub fn base64_encoded(mut self, base64_encoded: bool) -> Self { self.base64_encoded = Some(base64_encoded); self }
     pub fn build(self) -> ReadReturns<'a> {
         ReadReturns {
-            base64Encoded: self.base64Encoded,
+            base64_encoded: self.base64_encoded,
             data: self.data,
             eof: self.eof,
         }
@@ -158,27 +173,31 @@ impl<'a> crate::CdpCommand<'a> for ReadParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ResolveBlobParams<'a> {
     /// Object id of a Blob object wrapper.
-    objectId: crate::runtime::RemoteObjectId<'a>,
+    #[serde(rename = "objectId")]
+    object_id: crate::runtime::RemoteObjectId<'a>,
 }
 
 impl<'a> ResolveBlobParams<'a> {
-    pub fn builder(objectId: crate::runtime::RemoteObjectId<'a>) -> ResolveBlobParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `object_id`: Object id of a Blob object wrapper.
+    pub fn builder(object_id: crate::runtime::RemoteObjectId<'a>) -> ResolveBlobParamsBuilder<'a> {
         ResolveBlobParamsBuilder {
-            objectId: objectId,
+            object_id: object_id,
         }
     }
-    pub fn objectId(&self) -> &crate::runtime::RemoteObjectId<'a> { &self.objectId }
+    /// Object id of a Blob object wrapper.
+    pub fn object_id(&self) -> &crate::runtime::RemoteObjectId<'a> { &self.object_id }
 }
 
 
 pub struct ResolveBlobParamsBuilder<'a> {
-    objectId: crate::runtime::RemoteObjectId<'a>,
+    object_id: crate::runtime::RemoteObjectId<'a>,
 }
 
 impl<'a> ResolveBlobParamsBuilder<'a> {
     pub fn build(self) -> ResolveBlobParams<'a> {
         ResolveBlobParams {
-            objectId: self.objectId,
+            object_id: self.object_id,
         }
     }
 }
@@ -193,11 +212,14 @@ pub struct ResolveBlobReturns<'a> {
 }
 
 impl<'a> ResolveBlobReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `uuid`: UUID of the specified Blob.
     pub fn builder(uuid: impl Into<Cow<'a, str>>) -> ResolveBlobReturnsBuilder<'a> {
         ResolveBlobReturnsBuilder {
             uuid: uuid.into(),
         }
     }
+    /// UUID of the specified Blob.
     pub fn uuid(&self) -> &str { self.uuid.as_ref() }
 }
 

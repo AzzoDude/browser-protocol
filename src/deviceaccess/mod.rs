@@ -21,6 +21,9 @@ pub struct PromptDevice<'a> {
 }
 
 impl<'a> PromptDevice<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `id`: 
+    /// * `name`: Display name as it appears in a device request user prompt.
     pub fn builder(id: impl Into<DeviceId<'a>>, name: impl Into<Cow<'a, str>>) -> PromptDeviceBuilder<'a> {
         PromptDeviceBuilder {
             id: id.into(),
@@ -28,6 +31,7 @@ impl<'a> PromptDevice<'a> {
         }
     }
     pub fn id(&self) -> &DeviceId<'a> { &self.id }
+    /// Display name as it appears in a device request user prompt.
     pub fn name(&self) -> &str { self.name.as_ref() }
 }
 
@@ -72,31 +76,35 @@ impl<'a> crate::CdpCommand<'a> for DisableParams {
 #[serde(rename_all = "camelCase")]
 pub struct SelectPromptParams<'a> {
     id: RequestId<'a>,
-    deviceId: DeviceId<'a>,
+    #[serde(rename = "deviceId")]
+    device_id: DeviceId<'a>,
 }
 
 impl<'a> SelectPromptParams<'a> {
-    pub fn builder(id: impl Into<RequestId<'a>>, deviceId: impl Into<DeviceId<'a>>) -> SelectPromptParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `id`: 
+    /// * `device_id`: 
+    pub fn builder(id: impl Into<RequestId<'a>>, device_id: impl Into<DeviceId<'a>>) -> SelectPromptParamsBuilder<'a> {
         SelectPromptParamsBuilder {
             id: id.into(),
-            deviceId: deviceId.into(),
+            device_id: device_id.into(),
         }
     }
     pub fn id(&self) -> &RequestId<'a> { &self.id }
-    pub fn deviceId(&self) -> &DeviceId<'a> { &self.deviceId }
+    pub fn device_id(&self) -> &DeviceId<'a> { &self.device_id }
 }
 
 
 pub struct SelectPromptParamsBuilder<'a> {
     id: RequestId<'a>,
-    deviceId: DeviceId<'a>,
+    device_id: DeviceId<'a>,
 }
 
 impl<'a> SelectPromptParamsBuilder<'a> {
     pub fn build(self) -> SelectPromptParams<'a> {
         SelectPromptParams {
             id: self.id,
-            deviceId: self.deviceId,
+            device_id: self.device_id,
         }
     }
 }
@@ -117,6 +125,8 @@ pub struct CancelPromptParams<'a> {
 }
 
 impl<'a> CancelPromptParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `id`: 
     pub fn builder(id: impl Into<RequestId<'a>>) -> CancelPromptParamsBuilder<'a> {
         CancelPromptParamsBuilder {
             id: id.into(),

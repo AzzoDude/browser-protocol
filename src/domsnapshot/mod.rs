@@ -11,271 +11,313 @@ use std::borrow::Cow;
 #[serde(rename_all = "camelCase")]
 pub struct DOMNode<'a> {
     /// 'Node''s nodeType.
-    nodeType: i64,
+    #[serde(rename = "nodeType")]
+    node_type: i64,
     /// 'Node''s nodeName.
-    nodeName: Cow<'a, str>,
+    #[serde(rename = "nodeName")]
+    node_name: Cow<'a, str>,
     /// 'Node''s nodeValue.
-    nodeValue: Cow<'a, str>,
+    #[serde(rename = "nodeValue")]
+    node_value: Cow<'a, str>,
     /// Only set for textarea elements, contains the text value.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    textValue: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "textValue")]
+    text_value: Option<Cow<'a, str>>,
     /// Only set for input elements, contains the input's associated text value.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    inputValue: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "inputValue")]
+    input_value: Option<Cow<'a, str>>,
     /// Only set for radio and checkbox input elements, indicates if the element has been checked
-    #[serde(skip_serializing_if = "Option::is_none")]
-    inputChecked: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "inputChecked")]
+    input_checked: Option<bool>,
     /// Only set for option elements, indicates if the element has been selected
-    #[serde(skip_serializing_if = "Option::is_none")]
-    optionSelected: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "optionSelected")]
+    option_selected: Option<bool>,
     /// 'Node''s id, corresponds to DOM.Node.backendNodeId.
-    backendNodeId: crate::dom::BackendNodeId,
+    #[serde(rename = "backendNodeId")]
+    backend_node_id: crate::dom::BackendNodeId,
     /// The indexes of the node's child nodes in the 'domNodes' array returned by 'getSnapshot', if
     /// any.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    childNodeIndexes: Option<Vec<i64>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "childNodeIndexes")]
+    child_node_indexes: Option<Vec<i64>>,
     /// Attributes of an 'Element' node.
     #[serde(skip_serializing_if = "Option::is_none")]
     attributes: Option<Vec<NameValue<'a>>>,
     /// Indexes of pseudo elements associated with this node in the 'domNodes' array returned by
     /// 'getSnapshot', if any.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pseudoElementIndexes: Option<Vec<i64>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "pseudoElementIndexes")]
+    pseudo_element_indexes: Option<Vec<i64>>,
     /// The index of the node's related layout tree node in the 'layoutTreeNodes' array returned by
     /// 'getSnapshot', if any.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    layoutNodeIndex: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "layoutNodeIndex")]
+    layout_node_index: Option<u64>,
     /// Document URL that 'Document' or 'FrameOwner' node points to.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    documentURL: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "documentURL")]
+    document_url: Option<Cow<'a, str>>,
     /// Base URL that 'Document' or 'FrameOwner' node uses for URL completion.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    baseURL: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "baseURL")]
+    base_url: Option<Cow<'a, str>>,
     /// Only set for documents, contains the document's content language.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    contentLanguage: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "contentLanguage")]
+    content_language: Option<Cow<'a, str>>,
     /// Only set for documents, contains the document's character set encoding.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    documentEncoding: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "documentEncoding")]
+    document_encoding: Option<Cow<'a, str>>,
     /// 'DocumentType' node's publicId.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    publicId: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "publicId")]
+    public_id: Option<Cow<'a, str>>,
     /// 'DocumentType' node's systemId.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    systemId: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "systemId")]
+    system_id: Option<Cow<'a, str>>,
     /// Frame ID for frame owner elements and also for the document node.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    frameId: Option<crate::page::FrameId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "frameId")]
+    frame_id: Option<crate::page::FrameId<'a>>,
     /// The index of a frame owner element's content document in the 'domNodes' array returned by
     /// 'getSnapshot', if any.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    contentDocumentIndex: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "contentDocumentIndex")]
+    content_document_index: Option<u64>,
     /// Type of a pseudo element node.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pseudoType: Option<crate::dom::PseudoType>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "pseudoType")]
+    pseudo_type: Option<crate::dom::PseudoType>,
     /// Shadow root type.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    shadowRootType: Option<crate::dom::ShadowRootType>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "shadowRootType")]
+    shadow_root_type: Option<crate::dom::ShadowRootType>,
     /// Whether this DOM node responds to mouse clicks. This includes nodes that have had click
     /// event listeners attached via JavaScript as well as anchor tags that naturally navigate when
     /// clicked.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    isClickable: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "isClickable")]
+    is_clickable: Option<bool>,
     /// Details of the node's event listeners, if any.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    eventListeners: Option<Vec<crate::domdebugger::EventListener<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "eventListeners")]
+    event_listeners: Option<Vec<crate::domdebugger::EventListener<'a>>>,
     /// The selected url for nodes with a srcset attribute.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    currentSourceURL: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "currentSourceURL")]
+    current_source_url: Option<Cow<'a, str>>,
     /// The url of the script (if any) that generates this node.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    originURL: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "originURL")]
+    origin_url: Option<Cow<'a, str>>,
     /// Scroll offsets, set when this node is a Document.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    scrollOffsetX: Option<f64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    scrollOffsetY: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "scrollOffsetX")]
+    scroll_offset_x: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "scrollOffsetY")]
+    scroll_offset_y: Option<f64>,
 }
 
 impl<'a> DOMNode<'a> {
-    pub fn builder(nodeType: i64, nodeName: impl Into<Cow<'a, str>>, nodeValue: impl Into<Cow<'a, str>>, backendNodeId: crate::dom::BackendNodeId) -> DOMNodeBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `node_type`: `Node`'s nodeType.
+    /// * `node_name`: `Node`'s nodeName.
+    /// * `node_value`: `Node`'s nodeValue.
+    /// * `backend_node_id`: `Node`'s id, corresponds to DOM.Node.backendNodeId.
+    pub fn builder(node_type: i64, node_name: impl Into<Cow<'a, str>>, node_value: impl Into<Cow<'a, str>>, backend_node_id: crate::dom::BackendNodeId) -> DOMNodeBuilder<'a> {
         DOMNodeBuilder {
-            nodeType: nodeType,
-            nodeName: nodeName.into(),
-            nodeValue: nodeValue.into(),
-            textValue: None,
-            inputValue: None,
-            inputChecked: None,
-            optionSelected: None,
-            backendNodeId: backendNodeId,
-            childNodeIndexes: None,
+            node_type: node_type,
+            node_name: node_name.into(),
+            node_value: node_value.into(),
+            text_value: None,
+            input_value: None,
+            input_checked: None,
+            option_selected: None,
+            backend_node_id: backend_node_id,
+            child_node_indexes: None,
             attributes: None,
-            pseudoElementIndexes: None,
-            layoutNodeIndex: None,
-            documentURL: None,
-            baseURL: None,
-            contentLanguage: None,
-            documentEncoding: None,
-            publicId: None,
-            systemId: None,
-            frameId: None,
-            contentDocumentIndex: None,
-            pseudoType: None,
-            shadowRootType: None,
-            isClickable: None,
-            eventListeners: None,
-            currentSourceURL: None,
-            originURL: None,
-            scrollOffsetX: None,
-            scrollOffsetY: None,
+            pseudo_element_indexes: None,
+            layout_node_index: None,
+            document_url: None,
+            base_url: None,
+            content_language: None,
+            document_encoding: None,
+            public_id: None,
+            system_id: None,
+            frame_id: None,
+            content_document_index: None,
+            pseudo_type: None,
+            shadow_root_type: None,
+            is_clickable: None,
+            event_listeners: None,
+            current_source_url: None,
+            origin_url: None,
+            scroll_offset_x: None,
+            scroll_offset_y: None,
         }
     }
-    pub fn nodeType(&self) -> i64 { self.nodeType }
-    pub fn nodeName(&self) -> &str { self.nodeName.as_ref() }
-    pub fn nodeValue(&self) -> &str { self.nodeValue.as_ref() }
-    pub fn textValue(&self) -> Option<&str> { self.textValue.as_deref() }
-    pub fn inputValue(&self) -> Option<&str> { self.inputValue.as_deref() }
-    pub fn inputChecked(&self) -> Option<bool> { self.inputChecked }
-    pub fn optionSelected(&self) -> Option<bool> { self.optionSelected }
-    pub fn backendNodeId(&self) -> &crate::dom::BackendNodeId { &self.backendNodeId }
-    pub fn childNodeIndexes(&self) -> Option<&[i64]> { self.childNodeIndexes.as_deref() }
+    /// 'Node''s nodeType.
+    pub fn node_type(&self) -> i64 { self.node_type }
+    /// 'Node''s nodeName.
+    pub fn node_name(&self) -> &str { self.node_name.as_ref() }
+    /// 'Node''s nodeValue.
+    pub fn node_value(&self) -> &str { self.node_value.as_ref() }
+    /// Only set for textarea elements, contains the text value.
+    pub fn text_value(&self) -> Option<&str> { self.text_value.as_deref() }
+    /// Only set for input elements, contains the input's associated text value.
+    pub fn input_value(&self) -> Option<&str> { self.input_value.as_deref() }
+    /// Only set for radio and checkbox input elements, indicates if the element has been checked
+    pub fn input_checked(&self) -> Option<bool> { self.input_checked }
+    /// Only set for option elements, indicates if the element has been selected
+    pub fn option_selected(&self) -> Option<bool> { self.option_selected }
+    /// 'Node''s id, corresponds to DOM.Node.backendNodeId.
+    pub fn backend_node_id(&self) -> &crate::dom::BackendNodeId { &self.backend_node_id }
+    /// The indexes of the node's child nodes in the 'domNodes' array returned by 'getSnapshot', if
+    /// any.
+    pub fn child_node_indexes(&self) -> Option<&[i64]> { self.child_node_indexes.as_deref() }
+    /// Attributes of an 'Element' node.
     pub fn attributes(&self) -> Option<&[NameValue<'a>]> { self.attributes.as_deref() }
-    pub fn pseudoElementIndexes(&self) -> Option<&[i64]> { self.pseudoElementIndexes.as_deref() }
-    pub fn layoutNodeIndex(&self) -> Option<u64> { self.layoutNodeIndex }
-    pub fn documentURL(&self) -> Option<&str> { self.documentURL.as_deref() }
-    pub fn baseURL(&self) -> Option<&str> { self.baseURL.as_deref() }
-    pub fn contentLanguage(&self) -> Option<&str> { self.contentLanguage.as_deref() }
-    pub fn documentEncoding(&self) -> Option<&str> { self.documentEncoding.as_deref() }
-    pub fn publicId(&self) -> Option<&str> { self.publicId.as_deref() }
-    pub fn systemId(&self) -> Option<&str> { self.systemId.as_deref() }
-    pub fn frameId(&self) -> Option<&crate::page::FrameId<'a>> { self.frameId.as_ref() }
-    pub fn contentDocumentIndex(&self) -> Option<u64> { self.contentDocumentIndex }
-    pub fn pseudoType(&self) -> Option<&crate::dom::PseudoType> { self.pseudoType.as_ref() }
-    pub fn shadowRootType(&self) -> Option<&crate::dom::ShadowRootType> { self.shadowRootType.as_ref() }
-    pub fn isClickable(&self) -> Option<bool> { self.isClickable }
-    pub fn eventListeners(&self) -> Option<&[crate::domdebugger::EventListener<'a>]> { self.eventListeners.as_deref() }
-    pub fn currentSourceURL(&self) -> Option<&str> { self.currentSourceURL.as_deref() }
-    pub fn originURL(&self) -> Option<&str> { self.originURL.as_deref() }
-    pub fn scrollOffsetX(&self) -> Option<f64> { self.scrollOffsetX }
-    pub fn scrollOffsetY(&self) -> Option<f64> { self.scrollOffsetY }
+    /// Indexes of pseudo elements associated with this node in the 'domNodes' array returned by
+    /// 'getSnapshot', if any.
+    pub fn pseudo_element_indexes(&self) -> Option<&[i64]> { self.pseudo_element_indexes.as_deref() }
+    /// The index of the node's related layout tree node in the 'layoutTreeNodes' array returned by
+    /// 'getSnapshot', if any.
+    pub fn layout_node_index(&self) -> Option<u64> { self.layout_node_index }
+    /// Document URL that 'Document' or 'FrameOwner' node points to.
+    pub fn document_url(&self) -> Option<&str> { self.document_url.as_deref() }
+    /// Base URL that 'Document' or 'FrameOwner' node uses for URL completion.
+    pub fn base_url(&self) -> Option<&str> { self.base_url.as_deref() }
+    /// Only set for documents, contains the document's content language.
+    pub fn content_language(&self) -> Option<&str> { self.content_language.as_deref() }
+    /// Only set for documents, contains the document's character set encoding.
+    pub fn document_encoding(&self) -> Option<&str> { self.document_encoding.as_deref() }
+    /// 'DocumentType' node's publicId.
+    pub fn public_id(&self) -> Option<&str> { self.public_id.as_deref() }
+    /// 'DocumentType' node's systemId.
+    pub fn system_id(&self) -> Option<&str> { self.system_id.as_deref() }
+    /// Frame ID for frame owner elements and also for the document node.
+    pub fn frame_id(&self) -> Option<&crate::page::FrameId<'a>> { self.frame_id.as_ref() }
+    /// The index of a frame owner element's content document in the 'domNodes' array returned by
+    /// 'getSnapshot', if any.
+    pub fn content_document_index(&self) -> Option<u64> { self.content_document_index }
+    /// Type of a pseudo element node.
+    pub fn pseudo_type(&self) -> Option<&crate::dom::PseudoType> { self.pseudo_type.as_ref() }
+    /// Shadow root type.
+    pub fn shadow_root_type(&self) -> Option<&crate::dom::ShadowRootType> { self.shadow_root_type.as_ref() }
+    /// Whether this DOM node responds to mouse clicks. This includes nodes that have had click
+    /// event listeners attached via JavaScript as well as anchor tags that naturally navigate when
+    /// clicked.
+    pub fn is_clickable(&self) -> Option<bool> { self.is_clickable }
+    /// Details of the node's event listeners, if any.
+    pub fn event_listeners(&self) -> Option<&[crate::domdebugger::EventListener<'a>]> { self.event_listeners.as_deref() }
+    /// The selected url for nodes with a srcset attribute.
+    pub fn current_source_url(&self) -> Option<&str> { self.current_source_url.as_deref() }
+    /// The url of the script (if any) that generates this node.
+    pub fn origin_url(&self) -> Option<&str> { self.origin_url.as_deref() }
+    /// Scroll offsets, set when this node is a Document.
+    pub fn scroll_offset_x(&self) -> Option<f64> { self.scroll_offset_x }
+    pub fn scroll_offset_y(&self) -> Option<f64> { self.scroll_offset_y }
 }
 
 
 pub struct DOMNodeBuilder<'a> {
-    nodeType: i64,
-    nodeName: Cow<'a, str>,
-    nodeValue: Cow<'a, str>,
-    textValue: Option<Cow<'a, str>>,
-    inputValue: Option<Cow<'a, str>>,
-    inputChecked: Option<bool>,
-    optionSelected: Option<bool>,
-    backendNodeId: crate::dom::BackendNodeId,
-    childNodeIndexes: Option<Vec<i64>>,
+    node_type: i64,
+    node_name: Cow<'a, str>,
+    node_value: Cow<'a, str>,
+    text_value: Option<Cow<'a, str>>,
+    input_value: Option<Cow<'a, str>>,
+    input_checked: Option<bool>,
+    option_selected: Option<bool>,
+    backend_node_id: crate::dom::BackendNodeId,
+    child_node_indexes: Option<Vec<i64>>,
     attributes: Option<Vec<NameValue<'a>>>,
-    pseudoElementIndexes: Option<Vec<i64>>,
-    layoutNodeIndex: Option<u64>,
-    documentURL: Option<Cow<'a, str>>,
-    baseURL: Option<Cow<'a, str>>,
-    contentLanguage: Option<Cow<'a, str>>,
-    documentEncoding: Option<Cow<'a, str>>,
-    publicId: Option<Cow<'a, str>>,
-    systemId: Option<Cow<'a, str>>,
-    frameId: Option<crate::page::FrameId<'a>>,
-    contentDocumentIndex: Option<u64>,
-    pseudoType: Option<crate::dom::PseudoType>,
-    shadowRootType: Option<crate::dom::ShadowRootType>,
-    isClickable: Option<bool>,
-    eventListeners: Option<Vec<crate::domdebugger::EventListener<'a>>>,
-    currentSourceURL: Option<Cow<'a, str>>,
-    originURL: Option<Cow<'a, str>>,
-    scrollOffsetX: Option<f64>,
-    scrollOffsetY: Option<f64>,
+    pseudo_element_indexes: Option<Vec<i64>>,
+    layout_node_index: Option<u64>,
+    document_url: Option<Cow<'a, str>>,
+    base_url: Option<Cow<'a, str>>,
+    content_language: Option<Cow<'a, str>>,
+    document_encoding: Option<Cow<'a, str>>,
+    public_id: Option<Cow<'a, str>>,
+    system_id: Option<Cow<'a, str>>,
+    frame_id: Option<crate::page::FrameId<'a>>,
+    content_document_index: Option<u64>,
+    pseudo_type: Option<crate::dom::PseudoType>,
+    shadow_root_type: Option<crate::dom::ShadowRootType>,
+    is_clickable: Option<bool>,
+    event_listeners: Option<Vec<crate::domdebugger::EventListener<'a>>>,
+    current_source_url: Option<Cow<'a, str>>,
+    origin_url: Option<Cow<'a, str>>,
+    scroll_offset_x: Option<f64>,
+    scroll_offset_y: Option<f64>,
 }
 
 impl<'a> DOMNodeBuilder<'a> {
     /// Only set for textarea elements, contains the text value.
-    pub fn textValue(mut self, textValue: impl Into<Cow<'a, str>>) -> Self { self.textValue = Some(textValue.into()); self }
+    pub fn text_value(mut self, text_value: impl Into<Cow<'a, str>>) -> Self { self.text_value = Some(text_value.into()); self }
     /// Only set for input elements, contains the input's associated text value.
-    pub fn inputValue(mut self, inputValue: impl Into<Cow<'a, str>>) -> Self { self.inputValue = Some(inputValue.into()); self }
+    pub fn input_value(mut self, input_value: impl Into<Cow<'a, str>>) -> Self { self.input_value = Some(input_value.into()); self }
     /// Only set for radio and checkbox input elements, indicates if the element has been checked
-    pub fn inputChecked(mut self, inputChecked: bool) -> Self { self.inputChecked = Some(inputChecked); self }
+    pub fn input_checked(mut self, input_checked: bool) -> Self { self.input_checked = Some(input_checked); self }
     /// Only set for option elements, indicates if the element has been selected
-    pub fn optionSelected(mut self, optionSelected: bool) -> Self { self.optionSelected = Some(optionSelected); self }
+    pub fn option_selected(mut self, option_selected: bool) -> Self { self.option_selected = Some(option_selected); self }
     /// The indexes of the node's child nodes in the 'domNodes' array returned by 'getSnapshot', if
     /// any.
-    pub fn childNodeIndexes(mut self, childNodeIndexes: Vec<i64>) -> Self { self.childNodeIndexes = Some(childNodeIndexes); self }
+    pub fn child_node_indexes(mut self, child_node_indexes: Vec<i64>) -> Self { self.child_node_indexes = Some(child_node_indexes); self }
     /// Attributes of an 'Element' node.
     pub fn attributes(mut self, attributes: Vec<NameValue<'a>>) -> Self { self.attributes = Some(attributes); self }
     /// Indexes of pseudo elements associated with this node in the 'domNodes' array returned by
     /// 'getSnapshot', if any.
-    pub fn pseudoElementIndexes(mut self, pseudoElementIndexes: Vec<i64>) -> Self { self.pseudoElementIndexes = Some(pseudoElementIndexes); self }
+    pub fn pseudo_element_indexes(mut self, pseudo_element_indexes: Vec<i64>) -> Self { self.pseudo_element_indexes = Some(pseudo_element_indexes); self }
     /// The index of the node's related layout tree node in the 'layoutTreeNodes' array returned by
     /// 'getSnapshot', if any.
-    pub fn layoutNodeIndex(mut self, layoutNodeIndex: u64) -> Self { self.layoutNodeIndex = Some(layoutNodeIndex); self }
+    pub fn layout_node_index(mut self, layout_node_index: u64) -> Self { self.layout_node_index = Some(layout_node_index); self }
     /// Document URL that 'Document' or 'FrameOwner' node points to.
-    pub fn documentURL(mut self, documentURL: impl Into<Cow<'a, str>>) -> Self { self.documentURL = Some(documentURL.into()); self }
+    pub fn document_url(mut self, document_url: impl Into<Cow<'a, str>>) -> Self { self.document_url = Some(document_url.into()); self }
     /// Base URL that 'Document' or 'FrameOwner' node uses for URL completion.
-    pub fn baseURL(mut self, baseURL: impl Into<Cow<'a, str>>) -> Self { self.baseURL = Some(baseURL.into()); self }
+    pub fn base_url(mut self, base_url: impl Into<Cow<'a, str>>) -> Self { self.base_url = Some(base_url.into()); self }
     /// Only set for documents, contains the document's content language.
-    pub fn contentLanguage(mut self, contentLanguage: impl Into<Cow<'a, str>>) -> Self { self.contentLanguage = Some(contentLanguage.into()); self }
+    pub fn content_language(mut self, content_language: impl Into<Cow<'a, str>>) -> Self { self.content_language = Some(content_language.into()); self }
     /// Only set for documents, contains the document's character set encoding.
-    pub fn documentEncoding(mut self, documentEncoding: impl Into<Cow<'a, str>>) -> Self { self.documentEncoding = Some(documentEncoding.into()); self }
+    pub fn document_encoding(mut self, document_encoding: impl Into<Cow<'a, str>>) -> Self { self.document_encoding = Some(document_encoding.into()); self }
     /// 'DocumentType' node's publicId.
-    pub fn publicId(mut self, publicId: impl Into<Cow<'a, str>>) -> Self { self.publicId = Some(publicId.into()); self }
+    pub fn public_id(mut self, public_id: impl Into<Cow<'a, str>>) -> Self { self.public_id = Some(public_id.into()); self }
     /// 'DocumentType' node's systemId.
-    pub fn systemId(mut self, systemId: impl Into<Cow<'a, str>>) -> Self { self.systemId = Some(systemId.into()); self }
+    pub fn system_id(mut self, system_id: impl Into<Cow<'a, str>>) -> Self { self.system_id = Some(system_id.into()); self }
     /// Frame ID for frame owner elements and also for the document node.
-    pub fn frameId(mut self, frameId: crate::page::FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
+    pub fn frame_id(mut self, frame_id: crate::page::FrameId<'a>) -> Self { self.frame_id = Some(frame_id); self }
     /// The index of a frame owner element's content document in the 'domNodes' array returned by
     /// 'getSnapshot', if any.
-    pub fn contentDocumentIndex(mut self, contentDocumentIndex: u64) -> Self { self.contentDocumentIndex = Some(contentDocumentIndex); self }
+    pub fn content_document_index(mut self, content_document_index: u64) -> Self { self.content_document_index = Some(content_document_index); self }
     /// Type of a pseudo element node.
-    pub fn pseudoType(mut self, pseudoType: crate::dom::PseudoType) -> Self { self.pseudoType = Some(pseudoType); self }
+    pub fn pseudo_type(mut self, pseudo_type: crate::dom::PseudoType) -> Self { self.pseudo_type = Some(pseudo_type); self }
     /// Shadow root type.
-    pub fn shadowRootType(mut self, shadowRootType: crate::dom::ShadowRootType) -> Self { self.shadowRootType = Some(shadowRootType); self }
+    pub fn shadow_root_type(mut self, shadow_root_type: crate::dom::ShadowRootType) -> Self { self.shadow_root_type = Some(shadow_root_type); self }
     /// Whether this DOM node responds to mouse clicks. This includes nodes that have had click
     /// event listeners attached via JavaScript as well as anchor tags that naturally navigate when
     /// clicked.
-    pub fn isClickable(mut self, isClickable: bool) -> Self { self.isClickable = Some(isClickable); self }
+    pub fn is_clickable(mut self, is_clickable: bool) -> Self { self.is_clickable = Some(is_clickable); self }
     /// Details of the node's event listeners, if any.
-    pub fn eventListeners(mut self, eventListeners: Vec<crate::domdebugger::EventListener<'a>>) -> Self { self.eventListeners = Some(eventListeners); self }
+    pub fn event_listeners(mut self, event_listeners: Vec<crate::domdebugger::EventListener<'a>>) -> Self { self.event_listeners = Some(event_listeners); self }
     /// The selected url for nodes with a srcset attribute.
-    pub fn currentSourceURL(mut self, currentSourceURL: impl Into<Cow<'a, str>>) -> Self { self.currentSourceURL = Some(currentSourceURL.into()); self }
+    pub fn current_source_url(mut self, current_source_url: impl Into<Cow<'a, str>>) -> Self { self.current_source_url = Some(current_source_url.into()); self }
     /// The url of the script (if any) that generates this node.
-    pub fn originURL(mut self, originURL: impl Into<Cow<'a, str>>) -> Self { self.originURL = Some(originURL.into()); self }
+    pub fn origin_url(mut self, origin_url: impl Into<Cow<'a, str>>) -> Self { self.origin_url = Some(origin_url.into()); self }
     /// Scroll offsets, set when this node is a Document.
-    pub fn scrollOffsetX(mut self, scrollOffsetX: f64) -> Self { self.scrollOffsetX = Some(scrollOffsetX); self }
-    pub fn scrollOffsetY(mut self, scrollOffsetY: f64) -> Self { self.scrollOffsetY = Some(scrollOffsetY); self }
+    pub fn scroll_offset_x(mut self, scroll_offset_x: f64) -> Self { self.scroll_offset_x = Some(scroll_offset_x); self }
+    pub fn scroll_offset_y(mut self, scroll_offset_y: f64) -> Self { self.scroll_offset_y = Some(scroll_offset_y); self }
     pub fn build(self) -> DOMNode<'a> {
         DOMNode {
-            nodeType: self.nodeType,
-            nodeName: self.nodeName,
-            nodeValue: self.nodeValue,
-            textValue: self.textValue,
-            inputValue: self.inputValue,
-            inputChecked: self.inputChecked,
-            optionSelected: self.optionSelected,
-            backendNodeId: self.backendNodeId,
-            childNodeIndexes: self.childNodeIndexes,
+            node_type: self.node_type,
+            node_name: self.node_name,
+            node_value: self.node_value,
+            text_value: self.text_value,
+            input_value: self.input_value,
+            input_checked: self.input_checked,
+            option_selected: self.option_selected,
+            backend_node_id: self.backend_node_id,
+            child_node_indexes: self.child_node_indexes,
             attributes: self.attributes,
-            pseudoElementIndexes: self.pseudoElementIndexes,
-            layoutNodeIndex: self.layoutNodeIndex,
-            documentURL: self.documentURL,
-            baseURL: self.baseURL,
-            contentLanguage: self.contentLanguage,
-            documentEncoding: self.documentEncoding,
-            publicId: self.publicId,
-            systemId: self.systemId,
-            frameId: self.frameId,
-            contentDocumentIndex: self.contentDocumentIndex,
-            pseudoType: self.pseudoType,
-            shadowRootType: self.shadowRootType,
-            isClickable: self.isClickable,
-            eventListeners: self.eventListeners,
-            currentSourceURL: self.currentSourceURL,
-            originURL: self.originURL,
-            scrollOffsetX: self.scrollOffsetX,
-            scrollOffsetY: self.scrollOffsetY,
+            pseudo_element_indexes: self.pseudo_element_indexes,
+            layout_node_index: self.layout_node_index,
+            document_url: self.document_url,
+            base_url: self.base_url,
+            content_language: self.content_language,
+            document_encoding: self.document_encoding,
+            public_id: self.public_id,
+            system_id: self.system_id,
+            frame_id: self.frame_id,
+            content_document_index: self.content_document_index,
+            pseudo_type: self.pseudo_type,
+            shadow_root_type: self.shadow_root_type,
+            is_clickable: self.is_clickable,
+            event_listeners: self.event_listeners,
+            current_source_url: self.current_source_url,
+            origin_url: self.origin_url,
+            scroll_offset_x: self.scroll_offset_x,
+            scroll_offset_y: self.scroll_offset_y,
         }
     }
 }
@@ -287,41 +329,53 @@ impl<'a> DOMNodeBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct InlineTextBox {
     /// The bounding box in document coordinates. Note that scroll offset of the document is ignored.
-    boundingBox: crate::dom::Rect,
+    #[serde(rename = "boundingBox")]
+    bounding_box: crate::dom::Rect,
     /// The starting index in characters, for this post layout textbox substring. Characters that
     /// would be represented as a surrogate pair in UTF-16 have length 2.
-    startCharacterIndex: u64,
+    #[serde(rename = "startCharacterIndex")]
+    start_character_index: u64,
     /// The number of characters in this post layout textbox substring. Characters that would be
     /// represented as a surrogate pair in UTF-16 have length 2.
-    numCharacters: i64,
+    #[serde(rename = "numCharacters")]
+    num_characters: i64,
 }
 
 impl InlineTextBox {
-    pub fn builder(boundingBox: crate::dom::Rect, startCharacterIndex: u64, numCharacters: i64) -> InlineTextBoxBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `bounding_box`: The bounding box in document coordinates. Note that scroll offset of the document is ignored.
+    /// * `start_character_index`: The starting index in characters, for this post layout textbox substring. Characters that would be represented as a surrogate pair in UTF-16 have length 2.
+    /// * `num_characters`: The number of characters in this post layout textbox substring. Characters that would be represented as a surrogate pair in UTF-16 have length 2.
+    pub fn builder(bounding_box: crate::dom::Rect, start_character_index: u64, num_characters: i64) -> InlineTextBoxBuilder {
         InlineTextBoxBuilder {
-            boundingBox: boundingBox,
-            startCharacterIndex: startCharacterIndex,
-            numCharacters: numCharacters,
+            bounding_box: bounding_box,
+            start_character_index: start_character_index,
+            num_characters: num_characters,
         }
     }
-    pub fn boundingBox(&self) -> &crate::dom::Rect { &self.boundingBox }
-    pub fn startCharacterIndex(&self) -> u64 { self.startCharacterIndex }
-    pub fn numCharacters(&self) -> i64 { self.numCharacters }
+    /// The bounding box in document coordinates. Note that scroll offset of the document is ignored.
+    pub fn bounding_box(&self) -> &crate::dom::Rect { &self.bounding_box }
+    /// The starting index in characters, for this post layout textbox substring. Characters that
+    /// would be represented as a surrogate pair in UTF-16 have length 2.
+    pub fn start_character_index(&self) -> u64 { self.start_character_index }
+    /// The number of characters in this post layout textbox substring. Characters that would be
+    /// represented as a surrogate pair in UTF-16 have length 2.
+    pub fn num_characters(&self) -> i64 { self.num_characters }
 }
 
 
 pub struct InlineTextBoxBuilder {
-    boundingBox: crate::dom::Rect,
-    startCharacterIndex: u64,
-    numCharacters: i64,
+    bounding_box: crate::dom::Rect,
+    start_character_index: u64,
+    num_characters: i64,
 }
 
 impl InlineTextBoxBuilder {
     pub fn build(self) -> InlineTextBox {
         InlineTextBox {
-            boundingBox: self.boundingBox,
-            startCharacterIndex: self.startCharacterIndex,
-            numCharacters: self.numCharacters,
+            bounding_box: self.bounding_box,
+            start_character_index: self.start_character_index,
+            num_characters: self.num_characters,
         }
     }
 }
@@ -332,82 +386,96 @@ impl InlineTextBoxBuilder {
 #[serde(rename_all = "camelCase")]
 pub struct LayoutTreeNode<'a> {
     /// The index of the related DOM node in the 'domNodes' array returned by 'getSnapshot'.
-    domNodeIndex: u64,
+    #[serde(rename = "domNodeIndex")]
+    dom_node_index: u64,
     /// The bounding box in document coordinates. Note that scroll offset of the document is ignored.
-    boundingBox: crate::dom::Rect,
+    #[serde(rename = "boundingBox")]
+    bounding_box: crate::dom::Rect,
     /// Contents of the LayoutText, if any.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    layoutText: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "layoutText")]
+    layout_text: Option<Cow<'a, str>>,
     /// The post-layout inline text nodes, if any.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    inlineTextNodes: Option<Vec<InlineTextBox>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "inlineTextNodes")]
+    inline_text_nodes: Option<Vec<InlineTextBox>>,
     /// Index into the 'computedStyles' array returned by 'getSnapshot'.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    styleIndex: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "styleIndex")]
+    style_index: Option<u64>,
     /// Global paint order index, which is determined by the stacking order of the nodes. Nodes
     /// that are painted together will have the same index. Only provided if includePaintOrder in
     /// getSnapshot was true.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    paintOrder: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "paintOrder")]
+    paint_order: Option<i64>,
     /// Set to true to indicate the element begins a new stacking context.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    isStackingContext: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "isStackingContext")]
+    is_stacking_context: Option<bool>,
 }
 
 impl<'a> LayoutTreeNode<'a> {
-    pub fn builder(domNodeIndex: u64, boundingBox: crate::dom::Rect) -> LayoutTreeNodeBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `dom_node_index`: The index of the related DOM node in the `domNodes` array returned by `getSnapshot`.
+    /// * `bounding_box`: The bounding box in document coordinates. Note that scroll offset of the document is ignored.
+    pub fn builder(dom_node_index: u64, bounding_box: crate::dom::Rect) -> LayoutTreeNodeBuilder<'a> {
         LayoutTreeNodeBuilder {
-            domNodeIndex: domNodeIndex,
-            boundingBox: boundingBox,
-            layoutText: None,
-            inlineTextNodes: None,
-            styleIndex: None,
-            paintOrder: None,
-            isStackingContext: None,
+            dom_node_index: dom_node_index,
+            bounding_box: bounding_box,
+            layout_text: None,
+            inline_text_nodes: None,
+            style_index: None,
+            paint_order: None,
+            is_stacking_context: None,
         }
     }
-    pub fn domNodeIndex(&self) -> u64 { self.domNodeIndex }
-    pub fn boundingBox(&self) -> &crate::dom::Rect { &self.boundingBox }
-    pub fn layoutText(&self) -> Option<&str> { self.layoutText.as_deref() }
-    pub fn inlineTextNodes(&self) -> Option<&[InlineTextBox]> { self.inlineTextNodes.as_deref() }
-    pub fn styleIndex(&self) -> Option<u64> { self.styleIndex }
-    pub fn paintOrder(&self) -> Option<i64> { self.paintOrder }
-    pub fn isStackingContext(&self) -> Option<bool> { self.isStackingContext }
+    /// The index of the related DOM node in the 'domNodes' array returned by 'getSnapshot'.
+    pub fn dom_node_index(&self) -> u64 { self.dom_node_index }
+    /// The bounding box in document coordinates. Note that scroll offset of the document is ignored.
+    pub fn bounding_box(&self) -> &crate::dom::Rect { &self.bounding_box }
+    /// Contents of the LayoutText, if any.
+    pub fn layout_text(&self) -> Option<&str> { self.layout_text.as_deref() }
+    /// The post-layout inline text nodes, if any.
+    pub fn inline_text_nodes(&self) -> Option<&[InlineTextBox]> { self.inline_text_nodes.as_deref() }
+    /// Index into the 'computedStyles' array returned by 'getSnapshot'.
+    pub fn style_index(&self) -> Option<u64> { self.style_index }
+    /// Global paint order index, which is determined by the stacking order of the nodes. Nodes
+    /// that are painted together will have the same index. Only provided if includePaintOrder in
+    /// getSnapshot was true.
+    pub fn paint_order(&self) -> Option<i64> { self.paint_order }
+    /// Set to true to indicate the element begins a new stacking context.
+    pub fn is_stacking_context(&self) -> Option<bool> { self.is_stacking_context }
 }
 
 
 pub struct LayoutTreeNodeBuilder<'a> {
-    domNodeIndex: u64,
-    boundingBox: crate::dom::Rect,
-    layoutText: Option<Cow<'a, str>>,
-    inlineTextNodes: Option<Vec<InlineTextBox>>,
-    styleIndex: Option<u64>,
-    paintOrder: Option<i64>,
-    isStackingContext: Option<bool>,
+    dom_node_index: u64,
+    bounding_box: crate::dom::Rect,
+    layout_text: Option<Cow<'a, str>>,
+    inline_text_nodes: Option<Vec<InlineTextBox>>,
+    style_index: Option<u64>,
+    paint_order: Option<i64>,
+    is_stacking_context: Option<bool>,
 }
 
 impl<'a> LayoutTreeNodeBuilder<'a> {
     /// Contents of the LayoutText, if any.
-    pub fn layoutText(mut self, layoutText: impl Into<Cow<'a, str>>) -> Self { self.layoutText = Some(layoutText.into()); self }
+    pub fn layout_text(mut self, layout_text: impl Into<Cow<'a, str>>) -> Self { self.layout_text = Some(layout_text.into()); self }
     /// The post-layout inline text nodes, if any.
-    pub fn inlineTextNodes(mut self, inlineTextNodes: Vec<InlineTextBox>) -> Self { self.inlineTextNodes = Some(inlineTextNodes); self }
+    pub fn inline_text_nodes(mut self, inline_text_nodes: Vec<InlineTextBox>) -> Self { self.inline_text_nodes = Some(inline_text_nodes); self }
     /// Index into the 'computedStyles' array returned by 'getSnapshot'.
-    pub fn styleIndex(mut self, styleIndex: u64) -> Self { self.styleIndex = Some(styleIndex); self }
+    pub fn style_index(mut self, style_index: u64) -> Self { self.style_index = Some(style_index); self }
     /// Global paint order index, which is determined by the stacking order of the nodes. Nodes
     /// that are painted together will have the same index. Only provided if includePaintOrder in
     /// getSnapshot was true.
-    pub fn paintOrder(mut self, paintOrder: i64) -> Self { self.paintOrder = Some(paintOrder); self }
+    pub fn paint_order(mut self, paint_order: i64) -> Self { self.paint_order = Some(paint_order); self }
     /// Set to true to indicate the element begins a new stacking context.
-    pub fn isStackingContext(mut self, isStackingContext: bool) -> Self { self.isStackingContext = Some(isStackingContext); self }
+    pub fn is_stacking_context(mut self, is_stacking_context: bool) -> Self { self.is_stacking_context = Some(is_stacking_context); self }
     pub fn build(self) -> LayoutTreeNode<'a> {
         LayoutTreeNode {
-            domNodeIndex: self.domNodeIndex,
-            boundingBox: self.boundingBox,
-            layoutText: self.layoutText,
-            inlineTextNodes: self.inlineTextNodes,
-            styleIndex: self.styleIndex,
-            paintOrder: self.paintOrder,
-            isStackingContext: self.isStackingContext,
+            dom_node_index: self.dom_node_index,
+            bounding_box: self.bounding_box,
+            layout_text: self.layout_text,
+            inline_text_nodes: self.inline_text_nodes,
+            style_index: self.style_index,
+            paint_order: self.paint_order,
+            is_stacking_context: self.is_stacking_context,
         }
     }
 }
@@ -422,11 +490,14 @@ pub struct ComputedStyle<'a> {
 }
 
 impl<'a> ComputedStyle<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `properties`: Name/value pairs of computed style properties.
     pub fn builder(properties: Vec<NameValue<'a>>) -> ComputedStyleBuilder<'a> {
         ComputedStyleBuilder {
             properties: properties,
         }
     }
+    /// Name/value pairs of computed style properties.
     pub fn properties(&self) -> &[NameValue<'a>] { &self.properties }
 }
 
@@ -455,13 +526,18 @@ pub struct NameValue<'a> {
 }
 
 impl<'a> NameValue<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: Attribute/property name.
+    /// * `value`: Attribute/property value.
     pub fn builder(name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> NameValueBuilder<'a> {
         NameValueBuilder {
             name: name.into(),
             value: value.into(),
         }
     }
+    /// Attribute/property name.
     pub fn name(&self) -> &str { self.name.as_ref() }
+    /// Attribute/property value.
     pub fn value(&self) -> &str { self.value.as_ref() }
 }
 
@@ -498,6 +574,9 @@ pub struct RareStringData {
 }
 
 impl RareStringData {
+    /// Creates a builder for this type with the required parameters:
+    /// * `index`: 
+    /// * `value`: 
     pub fn builder(index: Vec<i64>, value: Vec<StringIndex>) -> RareStringDataBuilder {
         RareStringDataBuilder {
             index: index,
@@ -531,6 +610,8 @@ pub struct RareBooleanData {
 }
 
 impl RareBooleanData {
+    /// Creates a builder for this type with the required parameters:
+    /// * `index`: 
     pub fn builder(index: Vec<i64>) -> RareBooleanDataBuilder {
         RareBooleanDataBuilder {
             index: index,
@@ -561,6 +642,9 @@ pub struct RareIntegerData {
 }
 
 impl RareIntegerData {
+    /// Creates a builder for this type with the required parameters:
+    /// * `index`: 
+    /// * `value`: 
     pub fn builder(index: Vec<i64>, value: Vec<i64>) -> RareIntegerDataBuilder {
         RareIntegerDataBuilder {
             index: index,
@@ -595,123 +679,158 @@ pub type Rectangle = Vec<f64>;
 #[serde(rename_all = "camelCase")]
 pub struct DocumentSnapshot {
     /// Document URL that 'Document' or 'FrameOwner' node points to.
-    documentURL: StringIndex,
+    #[serde(rename = "documentURL")]
+    document_url: StringIndex,
     /// Document title.
     title: StringIndex,
     /// Base URL that 'Document' or 'FrameOwner' node uses for URL completion.
-    baseURL: StringIndex,
+    #[serde(rename = "baseURL")]
+    base_url: StringIndex,
     /// Contains the document's content language.
-    contentLanguage: StringIndex,
+    #[serde(rename = "contentLanguage")]
+    content_language: StringIndex,
     /// Contains the document's character set encoding.
-    encodingName: StringIndex,
+    #[serde(rename = "encodingName")]
+    encoding_name: StringIndex,
     /// 'DocumentType' node's publicId.
-    publicId: StringIndex,
+    #[serde(rename = "publicId")]
+    public_id: StringIndex,
     /// 'DocumentType' node's systemId.
-    systemId: StringIndex,
+    #[serde(rename = "systemId")]
+    system_id: StringIndex,
     /// Frame ID for frame owner elements and also for the document node.
-    frameId: StringIndex,
+    #[serde(rename = "frameId")]
+    frame_id: StringIndex,
     /// A table with dom nodes.
     nodes: NodeTreeSnapshot,
     /// The nodes in the layout tree.
     layout: LayoutTreeSnapshot,
     /// The post-layout inline text nodes.
-    textBoxes: TextBoxSnapshot,
+    #[serde(rename = "textBoxes")]
+    text_boxes: TextBoxSnapshot,
     /// Horizontal scroll offset.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    scrollOffsetX: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "scrollOffsetX")]
+    scroll_offset_x: Option<f64>,
     /// Vertical scroll offset.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    scrollOffsetY: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "scrollOffsetY")]
+    scroll_offset_y: Option<f64>,
     /// Document content width.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    contentWidth: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "contentWidth")]
+    content_width: Option<f64>,
     /// Document content height.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    contentHeight: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "contentHeight")]
+    content_height: Option<f64>,
 }
 
 impl DocumentSnapshot {
-    pub fn builder(documentURL: StringIndex, title: StringIndex, baseURL: StringIndex, contentLanguage: StringIndex, encodingName: StringIndex, publicId: StringIndex, systemId: StringIndex, frameId: StringIndex, nodes: NodeTreeSnapshot, layout: LayoutTreeSnapshot, textBoxes: TextBoxSnapshot) -> DocumentSnapshotBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `document_url`: Document URL that `Document` or `FrameOwner` node points to.
+    /// * `title`: Document title.
+    /// * `base_url`: Base URL that `Document` or `FrameOwner` node uses for URL completion.
+    /// * `content_language`: Contains the document's content language.
+    /// * `encoding_name`: Contains the document's character set encoding.
+    /// * `public_id`: `DocumentType` node's publicId.
+    /// * `system_id`: `DocumentType` node's systemId.
+    /// * `frame_id`: Frame ID for frame owner elements and also for the document node.
+    /// * `nodes`: A table with dom nodes.
+    /// * `layout`: The nodes in the layout tree.
+    /// * `text_boxes`: The post-layout inline text nodes.
+    pub fn builder(document_url: StringIndex, title: StringIndex, base_url: StringIndex, content_language: StringIndex, encoding_name: StringIndex, public_id: StringIndex, system_id: StringIndex, frame_id: StringIndex, nodes: NodeTreeSnapshot, layout: LayoutTreeSnapshot, text_boxes: TextBoxSnapshot) -> DocumentSnapshotBuilder {
         DocumentSnapshotBuilder {
-            documentURL: documentURL,
+            document_url: document_url,
             title: title,
-            baseURL: baseURL,
-            contentLanguage: contentLanguage,
-            encodingName: encodingName,
-            publicId: publicId,
-            systemId: systemId,
-            frameId: frameId,
+            base_url: base_url,
+            content_language: content_language,
+            encoding_name: encoding_name,
+            public_id: public_id,
+            system_id: system_id,
+            frame_id: frame_id,
             nodes: nodes,
             layout: layout,
-            textBoxes: textBoxes,
-            scrollOffsetX: None,
-            scrollOffsetY: None,
-            contentWidth: None,
-            contentHeight: None,
+            text_boxes: text_boxes,
+            scroll_offset_x: None,
+            scroll_offset_y: None,
+            content_width: None,
+            content_height: None,
         }
     }
-    pub fn documentURL(&self) -> &StringIndex { &self.documentURL }
+    /// Document URL that 'Document' or 'FrameOwner' node points to.
+    pub fn document_url(&self) -> &StringIndex { &self.document_url }
+    /// Document title.
     pub fn title(&self) -> &StringIndex { &self.title }
-    pub fn baseURL(&self) -> &StringIndex { &self.baseURL }
-    pub fn contentLanguage(&self) -> &StringIndex { &self.contentLanguage }
-    pub fn encodingName(&self) -> &StringIndex { &self.encodingName }
-    pub fn publicId(&self) -> &StringIndex { &self.publicId }
-    pub fn systemId(&self) -> &StringIndex { &self.systemId }
-    pub fn frameId(&self) -> &StringIndex { &self.frameId }
+    /// Base URL that 'Document' or 'FrameOwner' node uses for URL completion.
+    pub fn base_url(&self) -> &StringIndex { &self.base_url }
+    /// Contains the document's content language.
+    pub fn content_language(&self) -> &StringIndex { &self.content_language }
+    /// Contains the document's character set encoding.
+    pub fn encoding_name(&self) -> &StringIndex { &self.encoding_name }
+    /// 'DocumentType' node's publicId.
+    pub fn public_id(&self) -> &StringIndex { &self.public_id }
+    /// 'DocumentType' node's systemId.
+    pub fn system_id(&self) -> &StringIndex { &self.system_id }
+    /// Frame ID for frame owner elements and also for the document node.
+    pub fn frame_id(&self) -> &StringIndex { &self.frame_id }
+    /// A table with dom nodes.
     pub fn nodes(&self) -> &NodeTreeSnapshot { &self.nodes }
+    /// The nodes in the layout tree.
     pub fn layout(&self) -> &LayoutTreeSnapshot { &self.layout }
-    pub fn textBoxes(&self) -> &TextBoxSnapshot { &self.textBoxes }
-    pub fn scrollOffsetX(&self) -> Option<f64> { self.scrollOffsetX }
-    pub fn scrollOffsetY(&self) -> Option<f64> { self.scrollOffsetY }
-    pub fn contentWidth(&self) -> Option<f64> { self.contentWidth }
-    pub fn contentHeight(&self) -> Option<f64> { self.contentHeight }
+    /// The post-layout inline text nodes.
+    pub fn text_boxes(&self) -> &TextBoxSnapshot { &self.text_boxes }
+    /// Horizontal scroll offset.
+    pub fn scroll_offset_x(&self) -> Option<f64> { self.scroll_offset_x }
+    /// Vertical scroll offset.
+    pub fn scroll_offset_y(&self) -> Option<f64> { self.scroll_offset_y }
+    /// Document content width.
+    pub fn content_width(&self) -> Option<f64> { self.content_width }
+    /// Document content height.
+    pub fn content_height(&self) -> Option<f64> { self.content_height }
 }
 
 
 pub struct DocumentSnapshotBuilder {
-    documentURL: StringIndex,
+    document_url: StringIndex,
     title: StringIndex,
-    baseURL: StringIndex,
-    contentLanguage: StringIndex,
-    encodingName: StringIndex,
-    publicId: StringIndex,
-    systemId: StringIndex,
-    frameId: StringIndex,
+    base_url: StringIndex,
+    content_language: StringIndex,
+    encoding_name: StringIndex,
+    public_id: StringIndex,
+    system_id: StringIndex,
+    frame_id: StringIndex,
     nodes: NodeTreeSnapshot,
     layout: LayoutTreeSnapshot,
-    textBoxes: TextBoxSnapshot,
-    scrollOffsetX: Option<f64>,
-    scrollOffsetY: Option<f64>,
-    contentWidth: Option<f64>,
-    contentHeight: Option<f64>,
+    text_boxes: TextBoxSnapshot,
+    scroll_offset_x: Option<f64>,
+    scroll_offset_y: Option<f64>,
+    content_width: Option<f64>,
+    content_height: Option<f64>,
 }
 
 impl DocumentSnapshotBuilder {
     /// Horizontal scroll offset.
-    pub fn scrollOffsetX(mut self, scrollOffsetX: f64) -> Self { self.scrollOffsetX = Some(scrollOffsetX); self }
+    pub fn scroll_offset_x(mut self, scroll_offset_x: f64) -> Self { self.scroll_offset_x = Some(scroll_offset_x); self }
     /// Vertical scroll offset.
-    pub fn scrollOffsetY(mut self, scrollOffsetY: f64) -> Self { self.scrollOffsetY = Some(scrollOffsetY); self }
+    pub fn scroll_offset_y(mut self, scroll_offset_y: f64) -> Self { self.scroll_offset_y = Some(scroll_offset_y); self }
     /// Document content width.
-    pub fn contentWidth(mut self, contentWidth: f64) -> Self { self.contentWidth = Some(contentWidth); self }
+    pub fn content_width(mut self, content_width: f64) -> Self { self.content_width = Some(content_width); self }
     /// Document content height.
-    pub fn contentHeight(mut self, contentHeight: f64) -> Self { self.contentHeight = Some(contentHeight); self }
+    pub fn content_height(mut self, content_height: f64) -> Self { self.content_height = Some(content_height); self }
     pub fn build(self) -> DocumentSnapshot {
         DocumentSnapshot {
-            documentURL: self.documentURL,
+            document_url: self.document_url,
             title: self.title,
-            baseURL: self.baseURL,
-            contentLanguage: self.contentLanguage,
-            encodingName: self.encodingName,
-            publicId: self.publicId,
-            systemId: self.systemId,
-            frameId: self.frameId,
+            base_url: self.base_url,
+            content_language: self.content_language,
+            encoding_name: self.encoding_name,
+            public_id: self.public_id,
+            system_id: self.system_id,
+            frame_id: self.frame_id,
             nodes: self.nodes,
             layout: self.layout,
-            textBoxes: self.textBoxes,
-            scrollOffsetX: self.scrollOffsetX,
-            scrollOffsetY: self.scrollOffsetY,
-            contentWidth: self.contentWidth,
-            contentHeight: self.contentHeight,
+            text_boxes: self.text_boxes,
+            scroll_offset_x: self.scroll_offset_x,
+            scroll_offset_y: self.scroll_offset_y,
+            content_width: self.content_width,
+            content_height: self.content_height,
         }
     }
 }
@@ -722,180 +841,201 @@ impl DocumentSnapshotBuilder {
 #[serde(rename_all = "camelCase")]
 pub struct NodeTreeSnapshot {
     /// Parent node index.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    parentIndex: Option<Vec<i64>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "parentIndex")]
+    parent_index: Option<Vec<i64>>,
     /// 'Node''s nodeType.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    nodeType: Option<Vec<i64>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "nodeType")]
+    node_type: Option<Vec<i64>>,
     /// Type of the shadow root the 'Node' is in. String values are equal to the 'ShadowRootType' enum.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    shadowRootType: Option<RareStringData>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "shadowRootType")]
+    shadow_root_type: Option<RareStringData>,
     /// 'Node''s nodeName.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    nodeName: Option<Vec<StringIndex>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "nodeName")]
+    node_name: Option<Vec<StringIndex>>,
     /// 'Node''s nodeValue.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    nodeValue: Option<Vec<StringIndex>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "nodeValue")]
+    node_value: Option<Vec<StringIndex>>,
     /// 'Node''s id, corresponds to DOM.Node.backendNodeId.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    backendNodeId: Option<Vec<crate::dom::BackendNodeId>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "backendNodeId")]
+    backend_node_id: Option<Vec<crate::dom::BackendNodeId>>,
     /// Attributes of an 'Element' node. Flatten name, value pairs.
     #[serde(skip_serializing_if = "Option::is_none")]
     attributes: Option<Vec<ArrayOfStrings>>,
     /// Only set for textarea elements, contains the text value.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    textValue: Option<RareStringData>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "textValue")]
+    text_value: Option<RareStringData>,
     /// Only set for input elements, contains the input's associated text value.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    inputValue: Option<RareStringData>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "inputValue")]
+    input_value: Option<RareStringData>,
     /// Only set for radio and checkbox input elements, indicates if the element has been checked
-    #[serde(skip_serializing_if = "Option::is_none")]
-    inputChecked: Option<RareBooleanData>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "inputChecked")]
+    input_checked: Option<RareBooleanData>,
     /// Only set for option elements, indicates if the element has been selected
-    #[serde(skip_serializing_if = "Option::is_none")]
-    optionSelected: Option<RareBooleanData>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "optionSelected")]
+    option_selected: Option<RareBooleanData>,
     /// The index of the document in the list of the snapshot documents.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    contentDocumentIndex: Option<RareIntegerData>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "contentDocumentIndex")]
+    content_document_index: Option<RareIntegerData>,
     /// Type of a pseudo element node.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pseudoType: Option<RareStringData>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "pseudoType")]
+    pseudo_type: Option<RareStringData>,
     /// Pseudo element identifier for this node. Only present if there is a
     /// valid pseudoType.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pseudoIdentifier: Option<RareStringData>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "pseudoIdentifier")]
+    pseudo_identifier: Option<RareStringData>,
     /// Whether this DOM node responds to mouse clicks. This includes nodes that have had click
     /// event listeners attached via JavaScript as well as anchor tags that naturally navigate when
     /// clicked.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    isClickable: Option<RareBooleanData>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "isClickable")]
+    is_clickable: Option<RareBooleanData>,
     /// The selected url for nodes with a srcset attribute.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    currentSourceURL: Option<RareStringData>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "currentSourceURL")]
+    current_source_url: Option<RareStringData>,
     /// The url of the script (if any) that generates this node.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    originURL: Option<RareStringData>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "originURL")]
+    origin_url: Option<RareStringData>,
 }
 
 impl NodeTreeSnapshot {
+    /// Creates a builder for this type.
     pub fn builder() -> NodeTreeSnapshotBuilder {
         NodeTreeSnapshotBuilder {
-            parentIndex: None,
-            nodeType: None,
-            shadowRootType: None,
-            nodeName: None,
-            nodeValue: None,
-            backendNodeId: None,
+            parent_index: None,
+            node_type: None,
+            shadow_root_type: None,
+            node_name: None,
+            node_value: None,
+            backend_node_id: None,
             attributes: None,
-            textValue: None,
-            inputValue: None,
-            inputChecked: None,
-            optionSelected: None,
-            contentDocumentIndex: None,
-            pseudoType: None,
-            pseudoIdentifier: None,
-            isClickable: None,
-            currentSourceURL: None,
-            originURL: None,
+            text_value: None,
+            input_value: None,
+            input_checked: None,
+            option_selected: None,
+            content_document_index: None,
+            pseudo_type: None,
+            pseudo_identifier: None,
+            is_clickable: None,
+            current_source_url: None,
+            origin_url: None,
         }
     }
-    pub fn parentIndex(&self) -> Option<&[i64]> { self.parentIndex.as_deref() }
-    pub fn nodeType(&self) -> Option<&[i64]> { self.nodeType.as_deref() }
-    pub fn shadowRootType(&self) -> Option<&RareStringData> { self.shadowRootType.as_ref() }
-    pub fn nodeName(&self) -> Option<&[StringIndex]> { self.nodeName.as_deref() }
-    pub fn nodeValue(&self) -> Option<&[StringIndex]> { self.nodeValue.as_deref() }
-    pub fn backendNodeId(&self) -> Option<&[crate::dom::BackendNodeId]> { self.backendNodeId.as_deref() }
+    /// Parent node index.
+    pub fn parent_index(&self) -> Option<&[i64]> { self.parent_index.as_deref() }
+    /// 'Node''s nodeType.
+    pub fn node_type(&self) -> Option<&[i64]> { self.node_type.as_deref() }
+    /// Type of the shadow root the 'Node' is in. String values are equal to the 'ShadowRootType' enum.
+    pub fn shadow_root_type(&self) -> Option<&RareStringData> { self.shadow_root_type.as_ref() }
+    /// 'Node''s nodeName.
+    pub fn node_name(&self) -> Option<&[StringIndex]> { self.node_name.as_deref() }
+    /// 'Node''s nodeValue.
+    pub fn node_value(&self) -> Option<&[StringIndex]> { self.node_value.as_deref() }
+    /// 'Node''s id, corresponds to DOM.Node.backendNodeId.
+    pub fn backend_node_id(&self) -> Option<&[crate::dom::BackendNodeId]> { self.backend_node_id.as_deref() }
+    /// Attributes of an 'Element' node. Flatten name, value pairs.
     pub fn attributes(&self) -> Option<&[ArrayOfStrings]> { self.attributes.as_deref() }
-    pub fn textValue(&self) -> Option<&RareStringData> { self.textValue.as_ref() }
-    pub fn inputValue(&self) -> Option<&RareStringData> { self.inputValue.as_ref() }
-    pub fn inputChecked(&self) -> Option<&RareBooleanData> { self.inputChecked.as_ref() }
-    pub fn optionSelected(&self) -> Option<&RareBooleanData> { self.optionSelected.as_ref() }
-    pub fn contentDocumentIndex(&self) -> Option<&RareIntegerData> { self.contentDocumentIndex.as_ref() }
-    pub fn pseudoType(&self) -> Option<&RareStringData> { self.pseudoType.as_ref() }
-    pub fn pseudoIdentifier(&self) -> Option<&RareStringData> { self.pseudoIdentifier.as_ref() }
-    pub fn isClickable(&self) -> Option<&RareBooleanData> { self.isClickable.as_ref() }
-    pub fn currentSourceURL(&self) -> Option<&RareStringData> { self.currentSourceURL.as_ref() }
-    pub fn originURL(&self) -> Option<&RareStringData> { self.originURL.as_ref() }
+    /// Only set for textarea elements, contains the text value.
+    pub fn text_value(&self) -> Option<&RareStringData> { self.text_value.as_ref() }
+    /// Only set for input elements, contains the input's associated text value.
+    pub fn input_value(&self) -> Option<&RareStringData> { self.input_value.as_ref() }
+    /// Only set for radio and checkbox input elements, indicates if the element has been checked
+    pub fn input_checked(&self) -> Option<&RareBooleanData> { self.input_checked.as_ref() }
+    /// Only set for option elements, indicates if the element has been selected
+    pub fn option_selected(&self) -> Option<&RareBooleanData> { self.option_selected.as_ref() }
+    /// The index of the document in the list of the snapshot documents.
+    pub fn content_document_index(&self) -> Option<&RareIntegerData> { self.content_document_index.as_ref() }
+    /// Type of a pseudo element node.
+    pub fn pseudo_type(&self) -> Option<&RareStringData> { self.pseudo_type.as_ref() }
+    /// Pseudo element identifier for this node. Only present if there is a
+    /// valid pseudoType.
+    pub fn pseudo_identifier(&self) -> Option<&RareStringData> { self.pseudo_identifier.as_ref() }
+    /// Whether this DOM node responds to mouse clicks. This includes nodes that have had click
+    /// event listeners attached via JavaScript as well as anchor tags that naturally navigate when
+    /// clicked.
+    pub fn is_clickable(&self) -> Option<&RareBooleanData> { self.is_clickable.as_ref() }
+    /// The selected url for nodes with a srcset attribute.
+    pub fn current_source_url(&self) -> Option<&RareStringData> { self.current_source_url.as_ref() }
+    /// The url of the script (if any) that generates this node.
+    pub fn origin_url(&self) -> Option<&RareStringData> { self.origin_url.as_ref() }
 }
 
 #[derive(Default)]
 pub struct NodeTreeSnapshotBuilder {
-    parentIndex: Option<Vec<i64>>,
-    nodeType: Option<Vec<i64>>,
-    shadowRootType: Option<RareStringData>,
-    nodeName: Option<Vec<StringIndex>>,
-    nodeValue: Option<Vec<StringIndex>>,
-    backendNodeId: Option<Vec<crate::dom::BackendNodeId>>,
+    parent_index: Option<Vec<i64>>,
+    node_type: Option<Vec<i64>>,
+    shadow_root_type: Option<RareStringData>,
+    node_name: Option<Vec<StringIndex>>,
+    node_value: Option<Vec<StringIndex>>,
+    backend_node_id: Option<Vec<crate::dom::BackendNodeId>>,
     attributes: Option<Vec<ArrayOfStrings>>,
-    textValue: Option<RareStringData>,
-    inputValue: Option<RareStringData>,
-    inputChecked: Option<RareBooleanData>,
-    optionSelected: Option<RareBooleanData>,
-    contentDocumentIndex: Option<RareIntegerData>,
-    pseudoType: Option<RareStringData>,
-    pseudoIdentifier: Option<RareStringData>,
-    isClickable: Option<RareBooleanData>,
-    currentSourceURL: Option<RareStringData>,
-    originURL: Option<RareStringData>,
+    text_value: Option<RareStringData>,
+    input_value: Option<RareStringData>,
+    input_checked: Option<RareBooleanData>,
+    option_selected: Option<RareBooleanData>,
+    content_document_index: Option<RareIntegerData>,
+    pseudo_type: Option<RareStringData>,
+    pseudo_identifier: Option<RareStringData>,
+    is_clickable: Option<RareBooleanData>,
+    current_source_url: Option<RareStringData>,
+    origin_url: Option<RareStringData>,
 }
 
 impl NodeTreeSnapshotBuilder {
     /// Parent node index.
-    pub fn parentIndex(mut self, parentIndex: Vec<i64>) -> Self { self.parentIndex = Some(parentIndex); self }
+    pub fn parent_index(mut self, parent_index: Vec<i64>) -> Self { self.parent_index = Some(parent_index); self }
     /// 'Node''s nodeType.
-    pub fn nodeType(mut self, nodeType: Vec<i64>) -> Self { self.nodeType = Some(nodeType); self }
+    pub fn node_type(mut self, node_type: Vec<i64>) -> Self { self.node_type = Some(node_type); self }
     /// Type of the shadow root the 'Node' is in. String values are equal to the 'ShadowRootType' enum.
-    pub fn shadowRootType(mut self, shadowRootType: RareStringData) -> Self { self.shadowRootType = Some(shadowRootType); self }
+    pub fn shadow_root_type(mut self, shadow_root_type: RareStringData) -> Self { self.shadow_root_type = Some(shadow_root_type); self }
     /// 'Node''s nodeName.
-    pub fn nodeName(mut self, nodeName: Vec<StringIndex>) -> Self { self.nodeName = Some(nodeName); self }
+    pub fn node_name(mut self, node_name: Vec<StringIndex>) -> Self { self.node_name = Some(node_name); self }
     /// 'Node''s nodeValue.
-    pub fn nodeValue(mut self, nodeValue: Vec<StringIndex>) -> Self { self.nodeValue = Some(nodeValue); self }
+    pub fn node_value(mut self, node_value: Vec<StringIndex>) -> Self { self.node_value = Some(node_value); self }
     /// 'Node''s id, corresponds to DOM.Node.backendNodeId.
-    pub fn backendNodeId(mut self, backendNodeId: Vec<crate::dom::BackendNodeId>) -> Self { self.backendNodeId = Some(backendNodeId); self }
+    pub fn backend_node_id(mut self, backend_node_id: Vec<crate::dom::BackendNodeId>) -> Self { self.backend_node_id = Some(backend_node_id); self }
     /// Attributes of an 'Element' node. Flatten name, value pairs.
     pub fn attributes(mut self, attributes: Vec<ArrayOfStrings>) -> Self { self.attributes = Some(attributes); self }
     /// Only set for textarea elements, contains the text value.
-    pub fn textValue(mut self, textValue: RareStringData) -> Self { self.textValue = Some(textValue); self }
+    pub fn text_value(mut self, text_value: RareStringData) -> Self { self.text_value = Some(text_value); self }
     /// Only set for input elements, contains the input's associated text value.
-    pub fn inputValue(mut self, inputValue: RareStringData) -> Self { self.inputValue = Some(inputValue); self }
+    pub fn input_value(mut self, input_value: RareStringData) -> Self { self.input_value = Some(input_value); self }
     /// Only set for radio and checkbox input elements, indicates if the element has been checked
-    pub fn inputChecked(mut self, inputChecked: RareBooleanData) -> Self { self.inputChecked = Some(inputChecked); self }
+    pub fn input_checked(mut self, input_checked: RareBooleanData) -> Self { self.input_checked = Some(input_checked); self }
     /// Only set for option elements, indicates if the element has been selected
-    pub fn optionSelected(mut self, optionSelected: RareBooleanData) -> Self { self.optionSelected = Some(optionSelected); self }
+    pub fn option_selected(mut self, option_selected: RareBooleanData) -> Self { self.option_selected = Some(option_selected); self }
     /// The index of the document in the list of the snapshot documents.
-    pub fn contentDocumentIndex(mut self, contentDocumentIndex: RareIntegerData) -> Self { self.contentDocumentIndex = Some(contentDocumentIndex); self }
+    pub fn content_document_index(mut self, content_document_index: RareIntegerData) -> Self { self.content_document_index = Some(content_document_index); self }
     /// Type of a pseudo element node.
-    pub fn pseudoType(mut self, pseudoType: RareStringData) -> Self { self.pseudoType = Some(pseudoType); self }
+    pub fn pseudo_type(mut self, pseudo_type: RareStringData) -> Self { self.pseudo_type = Some(pseudo_type); self }
     /// Pseudo element identifier for this node. Only present if there is a
     /// valid pseudoType.
-    pub fn pseudoIdentifier(mut self, pseudoIdentifier: RareStringData) -> Self { self.pseudoIdentifier = Some(pseudoIdentifier); self }
+    pub fn pseudo_identifier(mut self, pseudo_identifier: RareStringData) -> Self { self.pseudo_identifier = Some(pseudo_identifier); self }
     /// Whether this DOM node responds to mouse clicks. This includes nodes that have had click
     /// event listeners attached via JavaScript as well as anchor tags that naturally navigate when
     /// clicked.
-    pub fn isClickable(mut self, isClickable: RareBooleanData) -> Self { self.isClickable = Some(isClickable); self }
+    pub fn is_clickable(mut self, is_clickable: RareBooleanData) -> Self { self.is_clickable = Some(is_clickable); self }
     /// The selected url for nodes with a srcset attribute.
-    pub fn currentSourceURL(mut self, currentSourceURL: RareStringData) -> Self { self.currentSourceURL = Some(currentSourceURL); self }
+    pub fn current_source_url(mut self, current_source_url: RareStringData) -> Self { self.current_source_url = Some(current_source_url); self }
     /// The url of the script (if any) that generates this node.
-    pub fn originURL(mut self, originURL: RareStringData) -> Self { self.originURL = Some(originURL); self }
+    pub fn origin_url(mut self, origin_url: RareStringData) -> Self { self.origin_url = Some(origin_url); self }
     pub fn build(self) -> NodeTreeSnapshot {
         NodeTreeSnapshot {
-            parentIndex: self.parentIndex,
-            nodeType: self.nodeType,
-            shadowRootType: self.shadowRootType,
-            nodeName: self.nodeName,
-            nodeValue: self.nodeValue,
-            backendNodeId: self.backendNodeId,
+            parent_index: self.parent_index,
+            node_type: self.node_type,
+            shadow_root_type: self.shadow_root_type,
+            node_name: self.node_name,
+            node_value: self.node_value,
+            backend_node_id: self.backend_node_id,
             attributes: self.attributes,
-            textValue: self.textValue,
-            inputValue: self.inputValue,
-            inputChecked: self.inputChecked,
-            optionSelected: self.optionSelected,
-            contentDocumentIndex: self.contentDocumentIndex,
-            pseudoType: self.pseudoType,
-            pseudoIdentifier: self.pseudoIdentifier,
-            isClickable: self.isClickable,
-            currentSourceURL: self.currentSourceURL,
-            originURL: self.originURL,
+            text_value: self.text_value,
+            input_value: self.input_value,
+            input_checked: self.input_checked,
+            option_selected: self.option_selected,
+            content_document_index: self.content_document_index,
+            pseudo_type: self.pseudo_type,
+            pseudo_identifier: self.pseudo_identifier,
+            is_clickable: self.is_clickable,
+            current_source_url: self.current_source_url,
+            origin_url: self.origin_url,
         }
     }
 }
@@ -906,7 +1046,8 @@ impl NodeTreeSnapshotBuilder {
 #[serde(rename_all = "camelCase")]
 pub struct LayoutTreeSnapshot {
     /// Index of the corresponding node in the 'NodeTreeSnapshot' array returned by 'captureSnapshot'.
-    nodeIndex: Vec<i64>,
+    #[serde(rename = "nodeIndex")]
+    node_index: Vec<i64>,
     /// Array of indexes specifying computed style strings, filtered according to the 'computedStyles' parameter passed to 'captureSnapshot'.
     styles: Vec<ArrayOfStrings>,
     /// The absolute position bounding box.
@@ -914,101 +1055,121 @@ pub struct LayoutTreeSnapshot {
     /// Contents of the LayoutText, if any.
     text: Vec<StringIndex>,
     /// Stacking context information.
-    stackingContexts: RareBooleanData,
+    #[serde(rename = "stackingContexts")]
+    stacking_contexts: RareBooleanData,
     /// Global paint order index, which is determined by the stacking order of the nodes. Nodes
     /// that are painted together will have the same index. Only provided if includePaintOrder in
     /// captureSnapshot was true.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    paintOrders: Option<Vec<i64>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "paintOrders")]
+    paint_orders: Option<Vec<i64>>,
     /// The offset rect of nodes. Only available when includeDOMRects is set to true
-    #[serde(skip_serializing_if = "Option::is_none")]
-    offsetRects: Option<Vec<Rectangle>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "offsetRects")]
+    offset_rects: Option<Vec<Rectangle>>,
     /// The scroll rect of nodes. Only available when includeDOMRects is set to true
-    #[serde(skip_serializing_if = "Option::is_none")]
-    scrollRects: Option<Vec<Rectangle>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "scrollRects")]
+    scroll_rects: Option<Vec<Rectangle>>,
     /// The client rect of nodes. Only available when includeDOMRects is set to true
-    #[serde(skip_serializing_if = "Option::is_none")]
-    clientRects: Option<Vec<Rectangle>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "clientRects")]
+    client_rects: Option<Vec<Rectangle>>,
     /// The list of background colors that are blended with colors of overlapping elements.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    blendedBackgroundColors: Option<Vec<StringIndex>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "blendedBackgroundColors")]
+    blended_background_colors: Option<Vec<StringIndex>>,
     /// The list of computed text opacities.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    textColorOpacities: Option<Vec<f64>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "textColorOpacities")]
+    text_color_opacities: Option<Vec<f64>>,
 }
 
 impl LayoutTreeSnapshot {
-    pub fn builder(nodeIndex: Vec<i64>, styles: Vec<ArrayOfStrings>, bounds: Vec<Rectangle>, text: Vec<StringIndex>, stackingContexts: RareBooleanData) -> LayoutTreeSnapshotBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `node_index`: Index of the corresponding node in the `NodeTreeSnapshot` array returned by `captureSnapshot`.
+    /// * `styles`: Array of indexes specifying computed style strings, filtered according to the `computedStyles` parameter passed to `captureSnapshot`.
+    /// * `bounds`: The absolute position bounding box.
+    /// * `text`: Contents of the LayoutText, if any.
+    /// * `stacking_contexts`: Stacking context information.
+    pub fn builder(node_index: Vec<i64>, styles: Vec<ArrayOfStrings>, bounds: Vec<Rectangle>, text: Vec<StringIndex>, stacking_contexts: RareBooleanData) -> LayoutTreeSnapshotBuilder {
         LayoutTreeSnapshotBuilder {
-            nodeIndex: nodeIndex,
+            node_index: node_index,
             styles: styles,
             bounds: bounds,
             text: text,
-            stackingContexts: stackingContexts,
-            paintOrders: None,
-            offsetRects: None,
-            scrollRects: None,
-            clientRects: None,
-            blendedBackgroundColors: None,
-            textColorOpacities: None,
+            stacking_contexts: stacking_contexts,
+            paint_orders: None,
+            offset_rects: None,
+            scroll_rects: None,
+            client_rects: None,
+            blended_background_colors: None,
+            text_color_opacities: None,
         }
     }
-    pub fn nodeIndex(&self) -> &[i64] { &self.nodeIndex }
+    /// Index of the corresponding node in the 'NodeTreeSnapshot' array returned by 'captureSnapshot'.
+    pub fn node_index(&self) -> &[i64] { &self.node_index }
+    /// Array of indexes specifying computed style strings, filtered according to the 'computedStyles' parameter passed to 'captureSnapshot'.
     pub fn styles(&self) -> &[ArrayOfStrings] { &self.styles }
+    /// The absolute position bounding box.
     pub fn bounds(&self) -> &[Rectangle] { &self.bounds }
+    /// Contents of the LayoutText, if any.
     pub fn text(&self) -> &[StringIndex] { &self.text }
-    pub fn stackingContexts(&self) -> &RareBooleanData { &self.stackingContexts }
-    pub fn paintOrders(&self) -> Option<&[i64]> { self.paintOrders.as_deref() }
-    pub fn offsetRects(&self) -> Option<&[Rectangle]> { self.offsetRects.as_deref() }
-    pub fn scrollRects(&self) -> Option<&[Rectangle]> { self.scrollRects.as_deref() }
-    pub fn clientRects(&self) -> Option<&[Rectangle]> { self.clientRects.as_deref() }
-    pub fn blendedBackgroundColors(&self) -> Option<&[StringIndex]> { self.blendedBackgroundColors.as_deref() }
-    pub fn textColorOpacities(&self) -> Option<&[f64]> { self.textColorOpacities.as_deref() }
+    /// Stacking context information.
+    pub fn stacking_contexts(&self) -> &RareBooleanData { &self.stacking_contexts }
+    /// Global paint order index, which is determined by the stacking order of the nodes. Nodes
+    /// that are painted together will have the same index. Only provided if includePaintOrder in
+    /// captureSnapshot was true.
+    pub fn paint_orders(&self) -> Option<&[i64]> { self.paint_orders.as_deref() }
+    /// The offset rect of nodes. Only available when includeDOMRects is set to true
+    pub fn offset_rects(&self) -> Option<&[Rectangle]> { self.offset_rects.as_deref() }
+    /// The scroll rect of nodes. Only available when includeDOMRects is set to true
+    pub fn scroll_rects(&self) -> Option<&[Rectangle]> { self.scroll_rects.as_deref() }
+    /// The client rect of nodes. Only available when includeDOMRects is set to true
+    pub fn client_rects(&self) -> Option<&[Rectangle]> { self.client_rects.as_deref() }
+    /// The list of background colors that are blended with colors of overlapping elements.
+    pub fn blended_background_colors(&self) -> Option<&[StringIndex]> { self.blended_background_colors.as_deref() }
+    /// The list of computed text opacities.
+    pub fn text_color_opacities(&self) -> Option<&[f64]> { self.text_color_opacities.as_deref() }
 }
 
 
 pub struct LayoutTreeSnapshotBuilder {
-    nodeIndex: Vec<i64>,
+    node_index: Vec<i64>,
     styles: Vec<ArrayOfStrings>,
     bounds: Vec<Rectangle>,
     text: Vec<StringIndex>,
-    stackingContexts: RareBooleanData,
-    paintOrders: Option<Vec<i64>>,
-    offsetRects: Option<Vec<Rectangle>>,
-    scrollRects: Option<Vec<Rectangle>>,
-    clientRects: Option<Vec<Rectangle>>,
-    blendedBackgroundColors: Option<Vec<StringIndex>>,
-    textColorOpacities: Option<Vec<f64>>,
+    stacking_contexts: RareBooleanData,
+    paint_orders: Option<Vec<i64>>,
+    offset_rects: Option<Vec<Rectangle>>,
+    scroll_rects: Option<Vec<Rectangle>>,
+    client_rects: Option<Vec<Rectangle>>,
+    blended_background_colors: Option<Vec<StringIndex>>,
+    text_color_opacities: Option<Vec<f64>>,
 }
 
 impl LayoutTreeSnapshotBuilder {
     /// Global paint order index, which is determined by the stacking order of the nodes. Nodes
     /// that are painted together will have the same index. Only provided if includePaintOrder in
     /// captureSnapshot was true.
-    pub fn paintOrders(mut self, paintOrders: Vec<i64>) -> Self { self.paintOrders = Some(paintOrders); self }
+    pub fn paint_orders(mut self, paint_orders: Vec<i64>) -> Self { self.paint_orders = Some(paint_orders); self }
     /// The offset rect of nodes. Only available when includeDOMRects is set to true
-    pub fn offsetRects(mut self, offsetRects: Vec<Rectangle>) -> Self { self.offsetRects = Some(offsetRects); self }
+    pub fn offset_rects(mut self, offset_rects: Vec<Rectangle>) -> Self { self.offset_rects = Some(offset_rects); self }
     /// The scroll rect of nodes. Only available when includeDOMRects is set to true
-    pub fn scrollRects(mut self, scrollRects: Vec<Rectangle>) -> Self { self.scrollRects = Some(scrollRects); self }
+    pub fn scroll_rects(mut self, scroll_rects: Vec<Rectangle>) -> Self { self.scroll_rects = Some(scroll_rects); self }
     /// The client rect of nodes. Only available when includeDOMRects is set to true
-    pub fn clientRects(mut self, clientRects: Vec<Rectangle>) -> Self { self.clientRects = Some(clientRects); self }
+    pub fn client_rects(mut self, client_rects: Vec<Rectangle>) -> Self { self.client_rects = Some(client_rects); self }
     /// The list of background colors that are blended with colors of overlapping elements.
-    pub fn blendedBackgroundColors(mut self, blendedBackgroundColors: Vec<StringIndex>) -> Self { self.blendedBackgroundColors = Some(blendedBackgroundColors); self }
+    pub fn blended_background_colors(mut self, blended_background_colors: Vec<StringIndex>) -> Self { self.blended_background_colors = Some(blended_background_colors); self }
     /// The list of computed text opacities.
-    pub fn textColorOpacities(mut self, textColorOpacities: Vec<f64>) -> Self { self.textColorOpacities = Some(textColorOpacities); self }
+    pub fn text_color_opacities(mut self, text_color_opacities: Vec<f64>) -> Self { self.text_color_opacities = Some(text_color_opacities); self }
     pub fn build(self) -> LayoutTreeSnapshot {
         LayoutTreeSnapshot {
-            nodeIndex: self.nodeIndex,
+            node_index: self.node_index,
             styles: self.styles,
             bounds: self.bounds,
             text: self.text,
-            stackingContexts: self.stackingContexts,
-            paintOrders: self.paintOrders,
-            offsetRects: self.offsetRects,
-            scrollRects: self.scrollRects,
-            clientRects: self.clientRects,
-            blendedBackgroundColors: self.blendedBackgroundColors,
-            textColorOpacities: self.textColorOpacities,
+            stacking_contexts: self.stacking_contexts,
+            paint_orders: self.paint_orders,
+            offset_rects: self.offset_rects,
+            scroll_rects: self.scroll_rects,
+            client_rects: self.client_rects,
+            blended_background_colors: self.blended_background_colors,
+            text_color_opacities: self.text_color_opacities,
         }
     }
 }
@@ -1020,7 +1181,8 @@ impl LayoutTreeSnapshotBuilder {
 #[serde(rename_all = "camelCase")]
 pub struct TextBoxSnapshot {
     /// Index of the layout tree node that owns this box collection.
-    layoutIndex: Vec<i64>,
+    #[serde(rename = "layoutIndex")]
+    layout_index: Vec<i64>,
     /// The absolute position bounding box.
     bounds: Vec<Rectangle>,
     /// The starting index in characters, for this post layout textbox substring. Characters that
@@ -1032,23 +1194,34 @@ pub struct TextBoxSnapshot {
 }
 
 impl TextBoxSnapshot {
-    pub fn builder(layoutIndex: Vec<i64>, bounds: Vec<Rectangle>, start: Vec<i64>, length: Vec<i64>) -> TextBoxSnapshotBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `layout_index`: Index of the layout tree node that owns this box collection.
+    /// * `bounds`: The absolute position bounding box.
+    /// * `start`: The starting index in characters, for this post layout textbox substring. Characters that would be represented as a surrogate pair in UTF-16 have length 2.
+    /// * `length`: The number of characters in this post layout textbox substring. Characters that would be represented as a surrogate pair in UTF-16 have length 2.
+    pub fn builder(layout_index: Vec<i64>, bounds: Vec<Rectangle>, start: Vec<i64>, length: Vec<i64>) -> TextBoxSnapshotBuilder {
         TextBoxSnapshotBuilder {
-            layoutIndex: layoutIndex,
+            layout_index: layout_index,
             bounds: bounds,
             start: start,
             length: length,
         }
     }
-    pub fn layoutIndex(&self) -> &[i64] { &self.layoutIndex }
+    /// Index of the layout tree node that owns this box collection.
+    pub fn layout_index(&self) -> &[i64] { &self.layout_index }
+    /// The absolute position bounding box.
     pub fn bounds(&self) -> &[Rectangle] { &self.bounds }
+    /// The starting index in characters, for this post layout textbox substring. Characters that
+    /// would be represented as a surrogate pair in UTF-16 have length 2.
     pub fn start(&self) -> &[i64] { &self.start }
+    /// The number of characters in this post layout textbox substring. Characters that would be
+    /// represented as a surrogate pair in UTF-16 have length 2.
     pub fn length(&self) -> &[i64] { &self.length }
 }
 
 
 pub struct TextBoxSnapshotBuilder {
-    layoutIndex: Vec<i64>,
+    layout_index: Vec<i64>,
     bounds: Vec<Rectangle>,
     start: Vec<i64>,
     length: Vec<i64>,
@@ -1057,7 +1230,7 @@ pub struct TextBoxSnapshotBuilder {
 impl TextBoxSnapshotBuilder {
     pub fn build(self) -> TextBoxSnapshot {
         TextBoxSnapshot {
-            layoutIndex: self.layoutIndex,
+            layout_index: self.layout_index,
             bounds: self.bounds,
             start: self.start,
             length: self.length,
@@ -1094,54 +1267,61 @@ impl<'a> crate::CdpCommand<'a> for EnableParams {
 #[serde(rename_all = "camelCase")]
 pub struct GetSnapshotParams<'a> {
     /// Whitelist of computed styles to return.
-    computedStyleWhitelist: Vec<Cow<'a, str>>,
+    #[serde(rename = "computedStyleWhitelist")]
+    computed_style_whitelist: Vec<Cow<'a, str>>,
     /// Whether or not to retrieve details of DOM listeners (default false).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    includeEventListeners: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "includeEventListeners")]
+    include_event_listeners: Option<bool>,
     /// Whether to determine and include the paint order index of LayoutTreeNodes (default false).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    includePaintOrder: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "includePaintOrder")]
+    include_paint_order: Option<bool>,
     /// Whether to include UA shadow tree in the snapshot (default false).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    includeUserAgentShadowTree: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "includeUserAgentShadowTree")]
+    include_user_agent_shadow_tree: Option<bool>,
 }
 
 impl<'a> GetSnapshotParams<'a> {
-    pub fn builder(computedStyleWhitelist: Vec<Cow<'a, str>>) -> GetSnapshotParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `computed_style_whitelist`: Whitelist of computed styles to return.
+    pub fn builder(computed_style_whitelist: Vec<Cow<'a, str>>) -> GetSnapshotParamsBuilder<'a> {
         GetSnapshotParamsBuilder {
-            computedStyleWhitelist: computedStyleWhitelist,
-            includeEventListeners: None,
-            includePaintOrder: None,
-            includeUserAgentShadowTree: None,
+            computed_style_whitelist: computed_style_whitelist,
+            include_event_listeners: None,
+            include_paint_order: None,
+            include_user_agent_shadow_tree: None,
         }
     }
-    pub fn computedStyleWhitelist(&self) -> &[Cow<'a, str>] { &self.computedStyleWhitelist }
-    pub fn includeEventListeners(&self) -> Option<bool> { self.includeEventListeners }
-    pub fn includePaintOrder(&self) -> Option<bool> { self.includePaintOrder }
-    pub fn includeUserAgentShadowTree(&self) -> Option<bool> { self.includeUserAgentShadowTree }
+    /// Whitelist of computed styles to return.
+    pub fn computed_style_whitelist(&self) -> &[Cow<'a, str>] { &self.computed_style_whitelist }
+    /// Whether or not to retrieve details of DOM listeners (default false).
+    pub fn include_event_listeners(&self) -> Option<bool> { self.include_event_listeners }
+    /// Whether to determine and include the paint order index of LayoutTreeNodes (default false).
+    pub fn include_paint_order(&self) -> Option<bool> { self.include_paint_order }
+    /// Whether to include UA shadow tree in the snapshot (default false).
+    pub fn include_user_agent_shadow_tree(&self) -> Option<bool> { self.include_user_agent_shadow_tree }
 }
 
 
 pub struct GetSnapshotParamsBuilder<'a> {
-    computedStyleWhitelist: Vec<Cow<'a, str>>,
-    includeEventListeners: Option<bool>,
-    includePaintOrder: Option<bool>,
-    includeUserAgentShadowTree: Option<bool>,
+    computed_style_whitelist: Vec<Cow<'a, str>>,
+    include_event_listeners: Option<bool>,
+    include_paint_order: Option<bool>,
+    include_user_agent_shadow_tree: Option<bool>,
 }
 
 impl<'a> GetSnapshotParamsBuilder<'a> {
     /// Whether or not to retrieve details of DOM listeners (default false).
-    pub fn includeEventListeners(mut self, includeEventListeners: bool) -> Self { self.includeEventListeners = Some(includeEventListeners); self }
+    pub fn include_event_listeners(mut self, include_event_listeners: bool) -> Self { self.include_event_listeners = Some(include_event_listeners); self }
     /// Whether to determine and include the paint order index of LayoutTreeNodes (default false).
-    pub fn includePaintOrder(mut self, includePaintOrder: bool) -> Self { self.includePaintOrder = Some(includePaintOrder); self }
+    pub fn include_paint_order(mut self, include_paint_order: bool) -> Self { self.include_paint_order = Some(include_paint_order); self }
     /// Whether to include UA shadow tree in the snapshot (default false).
-    pub fn includeUserAgentShadowTree(mut self, includeUserAgentShadowTree: bool) -> Self { self.includeUserAgentShadowTree = Some(includeUserAgentShadowTree); self }
+    pub fn include_user_agent_shadow_tree(mut self, include_user_agent_shadow_tree: bool) -> Self { self.include_user_agent_shadow_tree = Some(include_user_agent_shadow_tree); self }
     pub fn build(self) -> GetSnapshotParams<'a> {
         GetSnapshotParams {
-            computedStyleWhitelist: self.computedStyleWhitelist,
-            includeEventListeners: self.includeEventListeners,
-            includePaintOrder: self.includePaintOrder,
-            includeUserAgentShadowTree: self.includeUserAgentShadowTree,
+            computed_style_whitelist: self.computed_style_whitelist,
+            include_event_listeners: self.include_event_listeners,
+            include_paint_order: self.include_paint_order,
+            include_user_agent_shadow_tree: self.include_user_agent_shadow_tree,
         }
     }
 }
@@ -1155,39 +1335,49 @@ impl<'a> GetSnapshotParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct GetSnapshotReturns<'a> {
     /// The nodes in the DOM tree. The DOMNode at index 0 corresponds to the root document.
-    domNodes: Vec<DOMNode<'a>>,
+    #[serde(rename = "domNodes")]
+    dom_nodes: Vec<DOMNode<'a>>,
     /// The nodes in the layout tree.
-    layoutTreeNodes: Vec<LayoutTreeNode<'a>>,
+    #[serde(rename = "layoutTreeNodes")]
+    layout_tree_nodes: Vec<LayoutTreeNode<'a>>,
     /// Whitelisted ComputedStyle properties for each node in the layout tree.
-    computedStyles: Vec<ComputedStyle<'a>>,
+    #[serde(rename = "computedStyles")]
+    computed_styles: Vec<ComputedStyle<'a>>,
 }
 
 impl<'a> GetSnapshotReturns<'a> {
-    pub fn builder(domNodes: Vec<DOMNode<'a>>, layoutTreeNodes: Vec<LayoutTreeNode<'a>>, computedStyles: Vec<ComputedStyle<'a>>) -> GetSnapshotReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `dom_nodes`: The nodes in the DOM tree. The DOMNode at index 0 corresponds to the root document.
+    /// * `layout_tree_nodes`: The nodes in the layout tree.
+    /// * `computed_styles`: Whitelisted ComputedStyle properties for each node in the layout tree.
+    pub fn builder(dom_nodes: Vec<DOMNode<'a>>, layout_tree_nodes: Vec<LayoutTreeNode<'a>>, computed_styles: Vec<ComputedStyle<'a>>) -> GetSnapshotReturnsBuilder<'a> {
         GetSnapshotReturnsBuilder {
-            domNodes: domNodes,
-            layoutTreeNodes: layoutTreeNodes,
-            computedStyles: computedStyles,
+            dom_nodes: dom_nodes,
+            layout_tree_nodes: layout_tree_nodes,
+            computed_styles: computed_styles,
         }
     }
-    pub fn domNodes(&self) -> &[DOMNode<'a>] { &self.domNodes }
-    pub fn layoutTreeNodes(&self) -> &[LayoutTreeNode<'a>] { &self.layoutTreeNodes }
-    pub fn computedStyles(&self) -> &[ComputedStyle<'a>] { &self.computedStyles }
+    /// The nodes in the DOM tree. The DOMNode at index 0 corresponds to the root document.
+    pub fn dom_nodes(&self) -> &[DOMNode<'a>] { &self.dom_nodes }
+    /// The nodes in the layout tree.
+    pub fn layout_tree_nodes(&self) -> &[LayoutTreeNode<'a>] { &self.layout_tree_nodes }
+    /// Whitelisted ComputedStyle properties for each node in the layout tree.
+    pub fn computed_styles(&self) -> &[ComputedStyle<'a>] { &self.computed_styles }
 }
 
 
 pub struct GetSnapshotReturnsBuilder<'a> {
-    domNodes: Vec<DOMNode<'a>>,
-    layoutTreeNodes: Vec<LayoutTreeNode<'a>>,
-    computedStyles: Vec<ComputedStyle<'a>>,
+    dom_nodes: Vec<DOMNode<'a>>,
+    layout_tree_nodes: Vec<LayoutTreeNode<'a>>,
+    computed_styles: Vec<ComputedStyle<'a>>,
 }
 
 impl<'a> GetSnapshotReturnsBuilder<'a> {
     pub fn build(self) -> GetSnapshotReturns<'a> {
         GetSnapshotReturns {
-            domNodes: self.domNodes,
-            layoutTreeNodes: self.layoutTreeNodes,
-            computedStyles: self.computedStyles,
+            dom_nodes: self.dom_nodes,
+            layout_tree_nodes: self.layout_tree_nodes,
+            computed_styles: self.computed_styles,
         }
     }
 }
@@ -1208,71 +1398,83 @@ impl<'a> crate::CdpCommand<'a> for GetSnapshotParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct CaptureSnapshotParams<'a> {
     /// Whitelist of computed styles to return.
-    computedStyles: Vec<Cow<'a, str>>,
+    #[serde(rename = "computedStyles")]
+    computed_styles: Vec<Cow<'a, str>>,
     /// Whether to include layout object paint orders into the snapshot.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    includePaintOrder: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "includePaintOrder")]
+    include_paint_order: Option<bool>,
     /// Whether to include DOM rectangles (offsetRects, clientRects, scrollRects) into the snapshot
-    #[serde(skip_serializing_if = "Option::is_none")]
-    includeDOMRects: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "includeDOMRects")]
+    include_dom_rects: Option<bool>,
     /// Whether to include blended background colors in the snapshot (default: false).
     /// Blended background color is achieved by blending background colors of all elements
     /// that overlap with the current element.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    includeBlendedBackgroundColors: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "includeBlendedBackgroundColors")]
+    include_blended_background_colors: Option<bool>,
     /// Whether to include text color opacity in the snapshot (default: false).
     /// An element might have the opacity property set that affects the text color of the element.
     /// The final text color opacity is computed based on the opacity of all overlapping elements.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    includeTextColorOpacities: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "includeTextColorOpacities")]
+    include_text_color_opacities: Option<bool>,
 }
 
 impl<'a> CaptureSnapshotParams<'a> {
-    pub fn builder(computedStyles: Vec<Cow<'a, str>>) -> CaptureSnapshotParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `computed_styles`: Whitelist of computed styles to return.
+    pub fn builder(computed_styles: Vec<Cow<'a, str>>) -> CaptureSnapshotParamsBuilder<'a> {
         CaptureSnapshotParamsBuilder {
-            computedStyles: computedStyles,
-            includePaintOrder: None,
-            includeDOMRects: None,
-            includeBlendedBackgroundColors: None,
-            includeTextColorOpacities: None,
+            computed_styles: computed_styles,
+            include_paint_order: None,
+            include_dom_rects: None,
+            include_blended_background_colors: None,
+            include_text_color_opacities: None,
         }
     }
-    pub fn computedStyles(&self) -> &[Cow<'a, str>] { &self.computedStyles }
-    pub fn includePaintOrder(&self) -> Option<bool> { self.includePaintOrder }
-    pub fn includeDOMRects(&self) -> Option<bool> { self.includeDOMRects }
-    pub fn includeBlendedBackgroundColors(&self) -> Option<bool> { self.includeBlendedBackgroundColors }
-    pub fn includeTextColorOpacities(&self) -> Option<bool> { self.includeTextColorOpacities }
+    /// Whitelist of computed styles to return.
+    pub fn computed_styles(&self) -> &[Cow<'a, str>] { &self.computed_styles }
+    /// Whether to include layout object paint orders into the snapshot.
+    pub fn include_paint_order(&self) -> Option<bool> { self.include_paint_order }
+    /// Whether to include DOM rectangles (offsetRects, clientRects, scrollRects) into the snapshot
+    pub fn include_dom_rects(&self) -> Option<bool> { self.include_dom_rects }
+    /// Whether to include blended background colors in the snapshot (default: false).
+    /// Blended background color is achieved by blending background colors of all elements
+    /// that overlap with the current element.
+    pub fn include_blended_background_colors(&self) -> Option<bool> { self.include_blended_background_colors }
+    /// Whether to include text color opacity in the snapshot (default: false).
+    /// An element might have the opacity property set that affects the text color of the element.
+    /// The final text color opacity is computed based on the opacity of all overlapping elements.
+    pub fn include_text_color_opacities(&self) -> Option<bool> { self.include_text_color_opacities }
 }
 
 
 pub struct CaptureSnapshotParamsBuilder<'a> {
-    computedStyles: Vec<Cow<'a, str>>,
-    includePaintOrder: Option<bool>,
-    includeDOMRects: Option<bool>,
-    includeBlendedBackgroundColors: Option<bool>,
-    includeTextColorOpacities: Option<bool>,
+    computed_styles: Vec<Cow<'a, str>>,
+    include_paint_order: Option<bool>,
+    include_dom_rects: Option<bool>,
+    include_blended_background_colors: Option<bool>,
+    include_text_color_opacities: Option<bool>,
 }
 
 impl<'a> CaptureSnapshotParamsBuilder<'a> {
     /// Whether to include layout object paint orders into the snapshot.
-    pub fn includePaintOrder(mut self, includePaintOrder: bool) -> Self { self.includePaintOrder = Some(includePaintOrder); self }
+    pub fn include_paint_order(mut self, include_paint_order: bool) -> Self { self.include_paint_order = Some(include_paint_order); self }
     /// Whether to include DOM rectangles (offsetRects, clientRects, scrollRects) into the snapshot
-    pub fn includeDOMRects(mut self, includeDOMRects: bool) -> Self { self.includeDOMRects = Some(includeDOMRects); self }
+    pub fn include_dom_rects(mut self, include_dom_rects: bool) -> Self { self.include_dom_rects = Some(include_dom_rects); self }
     /// Whether to include blended background colors in the snapshot (default: false).
     /// Blended background color is achieved by blending background colors of all elements
     /// that overlap with the current element.
-    pub fn includeBlendedBackgroundColors(mut self, includeBlendedBackgroundColors: bool) -> Self { self.includeBlendedBackgroundColors = Some(includeBlendedBackgroundColors); self }
+    pub fn include_blended_background_colors(mut self, include_blended_background_colors: bool) -> Self { self.include_blended_background_colors = Some(include_blended_background_colors); self }
     /// Whether to include text color opacity in the snapshot (default: false).
     /// An element might have the opacity property set that affects the text color of the element.
     /// The final text color opacity is computed based on the opacity of all overlapping elements.
-    pub fn includeTextColorOpacities(mut self, includeTextColorOpacities: bool) -> Self { self.includeTextColorOpacities = Some(includeTextColorOpacities); self }
+    pub fn include_text_color_opacities(mut self, include_text_color_opacities: bool) -> Self { self.include_text_color_opacities = Some(include_text_color_opacities); self }
     pub fn build(self) -> CaptureSnapshotParams<'a> {
         CaptureSnapshotParams {
-            computedStyles: self.computedStyles,
-            includePaintOrder: self.includePaintOrder,
-            includeDOMRects: self.includeDOMRects,
-            includeBlendedBackgroundColors: self.includeBlendedBackgroundColors,
-            includeTextColorOpacities: self.includeTextColorOpacities,
+            computed_styles: self.computed_styles,
+            include_paint_order: self.include_paint_order,
+            include_dom_rects: self.include_dom_rects,
+            include_blended_background_colors: self.include_blended_background_colors,
+            include_text_color_opacities: self.include_text_color_opacities,
         }
     }
 }
@@ -1292,13 +1494,18 @@ pub struct CaptureSnapshotReturns<'a> {
 }
 
 impl<'a> CaptureSnapshotReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `documents`: The nodes in the DOM tree. The DOMNode at index 0 corresponds to the root document.
+    /// * `strings`: Shared string table that all string properties refer to with indexes.
     pub fn builder(documents: Vec<DocumentSnapshot>, strings: Vec<Cow<'a, str>>) -> CaptureSnapshotReturnsBuilder<'a> {
         CaptureSnapshotReturnsBuilder {
             documents: documents,
             strings: strings,
         }
     }
+    /// The nodes in the DOM tree. The DOMNode at index 0 corresponds to the root document.
     pub fn documents(&self) -> &[DocumentSnapshot] { &self.documents }
+    /// Shared string table that all string properties refer to with indexes.
     pub fn strings(&self) -> &[Cow<'a, str>] { &self.strings }
 }
 

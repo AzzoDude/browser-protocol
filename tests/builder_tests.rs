@@ -12,12 +12,12 @@ fn test_get_version_default() {
 #[test]
 fn test_navigate_builder() {
     let params = page::NavigateParams::builder("https://google.com")
-        .transitionType(page::TransitionType::Typed)
+        .transition_type(page::TransitionType::Typed)
         .build();
         
     assert_eq!(params.url(), "https://google.com");
-    assert_eq!(params.transitionType(), Some(&page::TransitionType::Typed));
-    assert_eq!(params.frameId(), None);
+    assert_eq!(params.transition_type(), Some(&page::TransitionType::Typed));
+    assert_eq!(params.frame_id(), None);
     
     let serialized = serde_json::to_string(&params).unwrap();
     assert!(serialized.contains(r#""url":"https://google.com""#));

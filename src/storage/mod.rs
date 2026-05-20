@@ -44,32 +44,38 @@ pub enum StorageType {
 #[serde(rename_all = "camelCase")]
 pub struct UsageForType {
     /// Name of storage type.
-    storageType: StorageType,
+    #[serde(rename = "storageType")]
+    storage_type: StorageType,
     /// Storage usage (bytes).
     usage: f64,
 }
 
 impl UsageForType {
-    pub fn builder(storageType: impl Into<StorageType>, usage: f64) -> UsageForTypeBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `storage_type`: Name of storage type.
+    /// * `usage`: Storage usage (bytes).
+    pub fn builder(storage_type: impl Into<StorageType>, usage: f64) -> UsageForTypeBuilder {
         UsageForTypeBuilder {
-            storageType: storageType.into(),
+            storage_type: storage_type.into(),
             usage: usage,
         }
     }
-    pub fn storageType(&self) -> &StorageType { &self.storageType }
+    /// Name of storage type.
+    pub fn storage_type(&self) -> &StorageType { &self.storage_type }
+    /// Storage usage (bytes).
     pub fn usage(&self) -> f64 { self.usage }
 }
 
 
 pub struct UsageForTypeBuilder {
-    storageType: StorageType,
+    storage_type: StorageType,
     usage: f64,
 }
 
 impl UsageForTypeBuilder {
     pub fn build(self) -> UsageForType {
         UsageForType {
-            storageType: self.storageType,
+            storage_type: self.storage_type,
             usage: self.usage,
         }
     }
@@ -81,31 +87,35 @@ impl UsageForTypeBuilder {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct TrustTokens<'a> {
-    issuerOrigin: Cow<'a, str>,
+    #[serde(rename = "issuerOrigin")]
+    issuer_origin: Cow<'a, str>,
     count: f64,
 }
 
 impl<'a> TrustTokens<'a> {
-    pub fn builder(issuerOrigin: impl Into<Cow<'a, str>>, count: f64) -> TrustTokensBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `issuer_origin`: 
+    /// * `count`: 
+    pub fn builder(issuer_origin: impl Into<Cow<'a, str>>, count: f64) -> TrustTokensBuilder<'a> {
         TrustTokensBuilder {
-            issuerOrigin: issuerOrigin.into(),
+            issuer_origin: issuer_origin.into(),
             count: count,
         }
     }
-    pub fn issuerOrigin(&self) -> &str { self.issuerOrigin.as_ref() }
+    pub fn issuer_origin(&self) -> &str { self.issuer_origin.as_ref() }
     pub fn count(&self) -> f64 { self.count }
 }
 
 
 pub struct TrustTokensBuilder<'a> {
-    issuerOrigin: Cow<'a, str>,
+    issuer_origin: Cow<'a, str>,
     count: f64,
 }
 
 impl<'a> TrustTokensBuilder<'a> {
     pub fn build(self) -> TrustTokens<'a> {
         TrustTokens {
-            issuerOrigin: self.issuerOrigin,
+            issuer_origin: self.issuer_origin,
             count: self.count,
         }
     }
@@ -234,6 +244,9 @@ pub struct SharedStorageEntry<'a> {
 }
 
 impl<'a> SharedStorageEntry<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `key`: 
+    /// * `value`: 
     pub fn builder(key: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> SharedStorageEntryBuilder<'a> {
         SharedStorageEntryBuilder {
             key: key.into(),
@@ -265,46 +278,59 @@ impl<'a> SharedStorageEntryBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SharedStorageMetadata {
     /// Time when the origin's shared storage was last created.
-    creationTime: crate::network::TimeSinceEpoch,
+    #[serde(rename = "creationTime")]
+    creation_time: crate::network::TimeSinceEpoch,
     /// Number of key-value pairs stored in origin's shared storage.
     length: u64,
     /// Current amount of bits of entropy remaining in the navigation budget.
-    remainingBudget: f64,
+    #[serde(rename = "remainingBudget")]
+    remaining_budget: f64,
     /// Total number of bytes stored as key-value pairs in origin's shared
     /// storage.
-    bytesUsed: i64,
+    #[serde(rename = "bytesUsed")]
+    bytes_used: i64,
 }
 
 impl SharedStorageMetadata {
-    pub fn builder(creationTime: crate::network::TimeSinceEpoch, length: u64, remainingBudget: f64, bytesUsed: i64) -> SharedStorageMetadataBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `creation_time`: Time when the origin's shared storage was last created.
+    /// * `length`: Number of key-value pairs stored in origin's shared storage.
+    /// * `remaining_budget`: Current amount of bits of entropy remaining in the navigation budget.
+    /// * `bytes_used`: Total number of bytes stored as key-value pairs in origin's shared storage.
+    pub fn builder(creation_time: crate::network::TimeSinceEpoch, length: u64, remaining_budget: f64, bytes_used: i64) -> SharedStorageMetadataBuilder {
         SharedStorageMetadataBuilder {
-            creationTime: creationTime,
+            creation_time: creation_time,
             length: length,
-            remainingBudget: remainingBudget,
-            bytesUsed: bytesUsed,
+            remaining_budget: remaining_budget,
+            bytes_used: bytes_used,
         }
     }
-    pub fn creationTime(&self) -> &crate::network::TimeSinceEpoch { &self.creationTime }
+    /// Time when the origin's shared storage was last created.
+    pub fn creation_time(&self) -> &crate::network::TimeSinceEpoch { &self.creation_time }
+    /// Number of key-value pairs stored in origin's shared storage.
     pub fn length(&self) -> u64 { self.length }
-    pub fn remainingBudget(&self) -> f64 { self.remainingBudget }
-    pub fn bytesUsed(&self) -> i64 { self.bytesUsed }
+    /// Current amount of bits of entropy remaining in the navigation budget.
+    pub fn remaining_budget(&self) -> f64 { self.remaining_budget }
+    /// Total number of bytes stored as key-value pairs in origin's shared
+    /// storage.
+    pub fn bytes_used(&self) -> i64 { self.bytes_used }
 }
 
 
 pub struct SharedStorageMetadataBuilder {
-    creationTime: crate::network::TimeSinceEpoch,
+    creation_time: crate::network::TimeSinceEpoch,
     length: u64,
-    remainingBudget: f64,
-    bytesUsed: i64,
+    remaining_budget: f64,
+    bytes_used: i64,
 }
 
 impl SharedStorageMetadataBuilder {
     pub fn build(self) -> SharedStorageMetadata {
         SharedStorageMetadata {
-            creationTime: self.creationTime,
+            creation_time: self.creation_time,
             length: self.length,
-            remainingBudget: self.remainingBudget,
-            bytesUsed: self.bytesUsed,
+            remaining_budget: self.remaining_budget,
+            bytes_used: self.bytes_used,
         }
     }
 }
@@ -316,54 +342,61 @@ impl SharedStorageMetadataBuilder {
 #[serde(rename_all = "camelCase")]
 pub struct SharedStoragePrivateAggregationConfig<'a> {
     /// The chosen aggregation service deployment.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    aggregationCoordinatorOrigin: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "aggregationCoordinatorOrigin")]
+    aggregation_coordinator_origin: Option<Cow<'a, str>>,
     /// The context ID provided.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    contextId: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "contextId")]
+    context_id: Option<Cow<'a, str>>,
     /// Configures the maximum size allowed for filtering IDs.
-    filteringIdMaxBytes: u64,
+    #[serde(rename = "filteringIdMaxBytes")]
+    filtering_id_max_bytes: u64,
     /// The limit on the number of contributions in the final report.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    maxContributions: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "maxContributions")]
+    max_contributions: Option<i64>,
 }
 
 impl<'a> SharedStoragePrivateAggregationConfig<'a> {
-    pub fn builder(filteringIdMaxBytes: u64) -> SharedStoragePrivateAggregationConfigBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `filtering_id_max_bytes`: Configures the maximum size allowed for filtering IDs.
+    pub fn builder(filtering_id_max_bytes: u64) -> SharedStoragePrivateAggregationConfigBuilder<'a> {
         SharedStoragePrivateAggregationConfigBuilder {
-            aggregationCoordinatorOrigin: None,
-            contextId: None,
-            filteringIdMaxBytes: filteringIdMaxBytes,
-            maxContributions: None,
+            aggregation_coordinator_origin: None,
+            context_id: None,
+            filtering_id_max_bytes: filtering_id_max_bytes,
+            max_contributions: None,
         }
     }
-    pub fn aggregationCoordinatorOrigin(&self) -> Option<&str> { self.aggregationCoordinatorOrigin.as_deref() }
-    pub fn contextId(&self) -> Option<&str> { self.contextId.as_deref() }
-    pub fn filteringIdMaxBytes(&self) -> u64 { self.filteringIdMaxBytes }
-    pub fn maxContributions(&self) -> Option<i64> { self.maxContributions }
+    /// The chosen aggregation service deployment.
+    pub fn aggregation_coordinator_origin(&self) -> Option<&str> { self.aggregation_coordinator_origin.as_deref() }
+    /// The context ID provided.
+    pub fn context_id(&self) -> Option<&str> { self.context_id.as_deref() }
+    /// Configures the maximum size allowed for filtering IDs.
+    pub fn filtering_id_max_bytes(&self) -> u64 { self.filtering_id_max_bytes }
+    /// The limit on the number of contributions in the final report.
+    pub fn max_contributions(&self) -> Option<i64> { self.max_contributions }
 }
 
 
 pub struct SharedStoragePrivateAggregationConfigBuilder<'a> {
-    aggregationCoordinatorOrigin: Option<Cow<'a, str>>,
-    contextId: Option<Cow<'a, str>>,
-    filteringIdMaxBytes: u64,
-    maxContributions: Option<i64>,
+    aggregation_coordinator_origin: Option<Cow<'a, str>>,
+    context_id: Option<Cow<'a, str>>,
+    filtering_id_max_bytes: u64,
+    max_contributions: Option<i64>,
 }
 
 impl<'a> SharedStoragePrivateAggregationConfigBuilder<'a> {
     /// The chosen aggregation service deployment.
-    pub fn aggregationCoordinatorOrigin(mut self, aggregationCoordinatorOrigin: impl Into<Cow<'a, str>>) -> Self { self.aggregationCoordinatorOrigin = Some(aggregationCoordinatorOrigin.into()); self }
+    pub fn aggregation_coordinator_origin(mut self, aggregation_coordinator_origin: impl Into<Cow<'a, str>>) -> Self { self.aggregation_coordinator_origin = Some(aggregation_coordinator_origin.into()); self }
     /// The context ID provided.
-    pub fn contextId(mut self, contextId: impl Into<Cow<'a, str>>) -> Self { self.contextId = Some(contextId.into()); self }
+    pub fn context_id(mut self, context_id: impl Into<Cow<'a, str>>) -> Self { self.context_id = Some(context_id.into()); self }
     /// The limit on the number of contributions in the final report.
-    pub fn maxContributions(mut self, maxContributions: i64) -> Self { self.maxContributions = Some(maxContributions); self }
+    pub fn max_contributions(mut self, max_contributions: i64) -> Self { self.max_contributions = Some(max_contributions); self }
     pub fn build(self) -> SharedStoragePrivateAggregationConfig<'a> {
         SharedStoragePrivateAggregationConfig {
-            aggregationCoordinatorOrigin: self.aggregationCoordinatorOrigin,
-            contextId: self.contextId,
-            filteringIdMaxBytes: self.filteringIdMaxBytes,
-            maxContributions: self.maxContributions,
+            aggregation_coordinator_origin: self.aggregation_coordinator_origin,
+            context_id: self.context_id,
+            filtering_id_max_bytes: self.filtering_id_max_bytes,
+            max_contributions: self.max_contributions,
         }
     }
 }
@@ -373,32 +406,37 @@ impl<'a> SharedStoragePrivateAggregationConfigBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SharedStorageReportingMetadata<'a> {
-    eventType: Cow<'a, str>,
-    reportingUrl: Cow<'a, str>,
+    #[serde(rename = "eventType")]
+    event_type: Cow<'a, str>,
+    #[serde(rename = "reportingUrl")]
+    reporting_url: Cow<'a, str>,
 }
 
 impl<'a> SharedStorageReportingMetadata<'a> {
-    pub fn builder(eventType: impl Into<Cow<'a, str>>, reportingUrl: impl Into<Cow<'a, str>>) -> SharedStorageReportingMetadataBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `event_type`: 
+    /// * `reporting_url`: 
+    pub fn builder(event_type: impl Into<Cow<'a, str>>, reporting_url: impl Into<Cow<'a, str>>) -> SharedStorageReportingMetadataBuilder<'a> {
         SharedStorageReportingMetadataBuilder {
-            eventType: eventType.into(),
-            reportingUrl: reportingUrl.into(),
+            event_type: event_type.into(),
+            reporting_url: reporting_url.into(),
         }
     }
-    pub fn eventType(&self) -> &str { self.eventType.as_ref() }
-    pub fn reportingUrl(&self) -> &str { self.reportingUrl.as_ref() }
+    pub fn event_type(&self) -> &str { self.event_type.as_ref() }
+    pub fn reporting_url(&self) -> &str { self.reporting_url.as_ref() }
 }
 
 
 pub struct SharedStorageReportingMetadataBuilder<'a> {
-    eventType: Cow<'a, str>,
-    reportingUrl: Cow<'a, str>,
+    event_type: Cow<'a, str>,
+    reporting_url: Cow<'a, str>,
 }
 
 impl<'a> SharedStorageReportingMetadataBuilder<'a> {
     pub fn build(self) -> SharedStorageReportingMetadata<'a> {
         SharedStorageReportingMetadata {
-            eventType: self.eventType,
-            reportingUrl: self.reportingUrl,
+            event_type: self.event_type,
+            reporting_url: self.reporting_url,
         }
     }
 }
@@ -411,31 +449,37 @@ pub struct SharedStorageUrlWithMetadata<'a> {
     /// Spec of candidate URL.
     url: Cow<'a, str>,
     /// Any associated reporting metadata.
-    reportingMetadata: Vec<SharedStorageReportingMetadata<'a>>,
+    #[serde(rename = "reportingMetadata")]
+    reporting_metadata: Vec<SharedStorageReportingMetadata<'a>>,
 }
 
 impl<'a> SharedStorageUrlWithMetadata<'a> {
-    pub fn builder(url: impl Into<Cow<'a, str>>, reportingMetadata: Vec<SharedStorageReportingMetadata<'a>>) -> SharedStorageUrlWithMetadataBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url`: Spec of candidate URL.
+    /// * `reporting_metadata`: Any associated reporting metadata.
+    pub fn builder(url: impl Into<Cow<'a, str>>, reporting_metadata: Vec<SharedStorageReportingMetadata<'a>>) -> SharedStorageUrlWithMetadataBuilder<'a> {
         SharedStorageUrlWithMetadataBuilder {
             url: url.into(),
-            reportingMetadata: reportingMetadata,
+            reporting_metadata: reporting_metadata,
         }
     }
+    /// Spec of candidate URL.
     pub fn url(&self) -> &str { self.url.as_ref() }
-    pub fn reportingMetadata(&self) -> &[SharedStorageReportingMetadata<'a>] { &self.reportingMetadata }
+    /// Any associated reporting metadata.
+    pub fn reporting_metadata(&self) -> &[SharedStorageReportingMetadata<'a>] { &self.reporting_metadata }
 }
 
 
 pub struct SharedStorageUrlWithMetadataBuilder<'a> {
     url: Cow<'a, str>,
-    reportingMetadata: Vec<SharedStorageReportingMetadata<'a>>,
+    reporting_metadata: Vec<SharedStorageReportingMetadata<'a>>,
 }
 
 impl<'a> SharedStorageUrlWithMetadataBuilder<'a> {
     pub fn build(self) -> SharedStorageUrlWithMetadata<'a> {
         SharedStorageUrlWithMetadata {
             url: self.url,
-            reportingMetadata: self.reportingMetadata,
+            reporting_metadata: self.reporting_metadata,
         }
     }
 }
@@ -449,43 +493,43 @@ pub struct SharedStorageAccessParams<'a> {
     /// Spec of the module script URL.
     /// Present only for SharedStorageAccessMethods: addModule and
     /// createWorklet.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    scriptSourceUrl: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "scriptSourceUrl")]
+    script_source_url: Option<Cow<'a, str>>,
     /// String denoting "context-origin", "script-origin", or a custom
     /// origin to be used as the worklet's data origin.
     /// Present only for SharedStorageAccessMethod: createWorklet.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    dataOrigin: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "dataOrigin")]
+    data_origin: Option<Cow<'a, str>>,
     /// Name of the registered operation to be run.
     /// Present only for SharedStorageAccessMethods: run and selectURL.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    operationName: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "operationName")]
+    operation_name: Option<Cow<'a, str>>,
     /// ID of the operation call.
     /// Present only for SharedStorageAccessMethods: run and selectURL.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    operationId: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "operationId")]
+    operation_id: Option<Cow<'a, str>>,
     /// Whether or not to keep the worket alive for future run or selectURL
     /// calls.
     /// Present only for SharedStorageAccessMethods: run and selectURL.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    keepAlive: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "keepAlive")]
+    keep_alive: Option<bool>,
     /// Configures the private aggregation options.
     /// Present only for SharedStorageAccessMethods: run and selectURL.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    privateAggregationConfig: Option<SharedStoragePrivateAggregationConfig<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "privateAggregationConfig")]
+    private_aggregation_config: Option<SharedStoragePrivateAggregationConfig<'a>>,
     /// The operation's serialized data in bytes (converted to a string).
     /// Present only for SharedStorageAccessMethods: run and selectURL.
     /// TODO(crbug.com/401011862): Consider updating this parameter to binary.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    serializedData: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "serializedData")]
+    serialized_data: Option<Cow<'a, str>>,
     /// Array of candidate URLs' specs, along with any associated metadata.
     /// Present only for SharedStorageAccessMethod: selectURL.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    urlsWithMetadata: Option<Vec<SharedStorageUrlWithMetadata<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "urlsWithMetadata")]
+    urls_with_metadata: Option<Vec<SharedStorageUrlWithMetadata<'a>>>,
     /// Spec of the URN:UUID generated for a selectURL call.
     /// Present only for SharedStorageAccessMethod: selectURL.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    urnUuid: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "urnUuid")]
+    urn_uuid: Option<Cow<'a, str>>,
     /// Key for a specific entry in an origin's shared storage.
     /// Present only for SharedStorageAccessMethods: set, append, delete, and
     /// get.
@@ -497,132 +541,180 @@ pub struct SharedStorageAccessParams<'a> {
     value: Option<Cow<'a, str>>,
     /// Whether or not to set an entry for a key if that key is already present.
     /// Present only for SharedStorageAccessMethod: set.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    ignoreIfPresent: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "ignoreIfPresent")]
+    ignore_if_present: Option<bool>,
     /// A number denoting the (0-based) order of the worklet's
     /// creation relative to all other shared storage worklets created by
     /// documents using the current storage partition.
     /// Present only for SharedStorageAccessMethods: addModule, createWorklet.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    workletOrdinal: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "workletOrdinal")]
+    worklet_ordinal: Option<i64>,
     /// Hex representation of the DevTools token used as the TargetID for the
     /// associated shared storage worklet.
     /// Present only for SharedStorageAccessMethods: addModule, createWorklet,
     /// run, selectURL, and any other SharedStorageAccessMethod when the
     /// SharedStorageAccessScope is sharedStorageWorklet.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    workletTargetId: Option<crate::target::TargetID<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "workletTargetId")]
+    worklet_target_id: Option<crate::target::TargetID<'a>>,
     /// Name of the lock to be acquired, if present.
     /// Optionally present only for SharedStorageAccessMethods: batchUpdate,
     /// set, append, delete, and clear.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    withLock: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "withLock")]
+    with_lock: Option<Cow<'a, str>>,
     /// If the method has been called as part of a batchUpdate, then this
     /// number identifies the batch to which it belongs.
     /// Optionally present only for SharedStorageAccessMethods:
     /// batchUpdate (required), set, append, delete, and clear.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    batchUpdateId: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "batchUpdateId")]
+    batch_update_id: Option<Cow<'a, str>>,
     /// Number of modifier methods sent in batch.
     /// Present only for SharedStorageAccessMethod: batchUpdate.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    batchSize: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "batchSize")]
+    batch_size: Option<u64>,
 }
 
 impl<'a> SharedStorageAccessParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> SharedStorageAccessParamsBuilder<'a> {
         SharedStorageAccessParamsBuilder {
-            scriptSourceUrl: None,
-            dataOrigin: None,
-            operationName: None,
-            operationId: None,
-            keepAlive: None,
-            privateAggregationConfig: None,
-            serializedData: None,
-            urlsWithMetadata: None,
-            urnUuid: None,
+            script_source_url: None,
+            data_origin: None,
+            operation_name: None,
+            operation_id: None,
+            keep_alive: None,
+            private_aggregation_config: None,
+            serialized_data: None,
+            urls_with_metadata: None,
+            urn_uuid: None,
             key: None,
             value: None,
-            ignoreIfPresent: None,
-            workletOrdinal: None,
-            workletTargetId: None,
-            withLock: None,
-            batchUpdateId: None,
-            batchSize: None,
+            ignore_if_present: None,
+            worklet_ordinal: None,
+            worklet_target_id: None,
+            with_lock: None,
+            batch_update_id: None,
+            batch_size: None,
         }
     }
-    pub fn scriptSourceUrl(&self) -> Option<&str> { self.scriptSourceUrl.as_deref() }
-    pub fn dataOrigin(&self) -> Option<&str> { self.dataOrigin.as_deref() }
-    pub fn operationName(&self) -> Option<&str> { self.operationName.as_deref() }
-    pub fn operationId(&self) -> Option<&str> { self.operationId.as_deref() }
-    pub fn keepAlive(&self) -> Option<bool> { self.keepAlive }
-    pub fn privateAggregationConfig(&self) -> Option<&SharedStoragePrivateAggregationConfig<'a>> { self.privateAggregationConfig.as_ref() }
-    pub fn serializedData(&self) -> Option<&str> { self.serializedData.as_deref() }
-    pub fn urlsWithMetadata(&self) -> Option<&[SharedStorageUrlWithMetadata<'a>]> { self.urlsWithMetadata.as_deref() }
-    pub fn urnUuid(&self) -> Option<&str> { self.urnUuid.as_deref() }
+    /// Spec of the module script URL.
+    /// Present only for SharedStorageAccessMethods: addModule and
+    /// createWorklet.
+    pub fn script_source_url(&self) -> Option<&str> { self.script_source_url.as_deref() }
+    /// String denoting "context-origin", "script-origin", or a custom
+    /// origin to be used as the worklet's data origin.
+    /// Present only for SharedStorageAccessMethod: createWorklet.
+    pub fn data_origin(&self) -> Option<&str> { self.data_origin.as_deref() }
+    /// Name of the registered operation to be run.
+    /// Present only for SharedStorageAccessMethods: run and selectURL.
+    pub fn operation_name(&self) -> Option<&str> { self.operation_name.as_deref() }
+    /// ID of the operation call.
+    /// Present only for SharedStorageAccessMethods: run and selectURL.
+    pub fn operation_id(&self) -> Option<&str> { self.operation_id.as_deref() }
+    /// Whether or not to keep the worket alive for future run or selectURL
+    /// calls.
+    /// Present only for SharedStorageAccessMethods: run and selectURL.
+    pub fn keep_alive(&self) -> Option<bool> { self.keep_alive }
+    /// Configures the private aggregation options.
+    /// Present only for SharedStorageAccessMethods: run and selectURL.
+    pub fn private_aggregation_config(&self) -> Option<&SharedStoragePrivateAggregationConfig<'a>> { self.private_aggregation_config.as_ref() }
+    /// The operation's serialized data in bytes (converted to a string).
+    /// Present only for SharedStorageAccessMethods: run and selectURL.
+    /// TODO(crbug.com/401011862): Consider updating this parameter to binary.
+    pub fn serialized_data(&self) -> Option<&str> { self.serialized_data.as_deref() }
+    /// Array of candidate URLs' specs, along with any associated metadata.
+    /// Present only for SharedStorageAccessMethod: selectURL.
+    pub fn urls_with_metadata(&self) -> Option<&[SharedStorageUrlWithMetadata<'a>]> { self.urls_with_metadata.as_deref() }
+    /// Spec of the URN:UUID generated for a selectURL call.
+    /// Present only for SharedStorageAccessMethod: selectURL.
+    pub fn urn_uuid(&self) -> Option<&str> { self.urn_uuid.as_deref() }
+    /// Key for a specific entry in an origin's shared storage.
+    /// Present only for SharedStorageAccessMethods: set, append, delete, and
+    /// get.
     pub fn key(&self) -> Option<&str> { self.key.as_deref() }
+    /// Value for a specific entry in an origin's shared storage.
+    /// Present only for SharedStorageAccessMethods: set and append.
     pub fn value(&self) -> Option<&str> { self.value.as_deref() }
-    pub fn ignoreIfPresent(&self) -> Option<bool> { self.ignoreIfPresent }
-    pub fn workletOrdinal(&self) -> Option<i64> { self.workletOrdinal }
-    pub fn workletTargetId(&self) -> Option<&crate::target::TargetID<'a>> { self.workletTargetId.as_ref() }
-    pub fn withLock(&self) -> Option<&str> { self.withLock.as_deref() }
-    pub fn batchUpdateId(&self) -> Option<&str> { self.batchUpdateId.as_deref() }
-    pub fn batchSize(&self) -> Option<u64> { self.batchSize }
+    /// Whether or not to set an entry for a key if that key is already present.
+    /// Present only for SharedStorageAccessMethod: set.
+    pub fn ignore_if_present(&self) -> Option<bool> { self.ignore_if_present }
+    /// A number denoting the (0-based) order of the worklet's
+    /// creation relative to all other shared storage worklets created by
+    /// documents using the current storage partition.
+    /// Present only for SharedStorageAccessMethods: addModule, createWorklet.
+    pub fn worklet_ordinal(&self) -> Option<i64> { self.worklet_ordinal }
+    /// Hex representation of the DevTools token used as the TargetID for the
+    /// associated shared storage worklet.
+    /// Present only for SharedStorageAccessMethods: addModule, createWorklet,
+    /// run, selectURL, and any other SharedStorageAccessMethod when the
+    /// SharedStorageAccessScope is sharedStorageWorklet.
+    pub fn worklet_target_id(&self) -> Option<&crate::target::TargetID<'a>> { self.worklet_target_id.as_ref() }
+    /// Name of the lock to be acquired, if present.
+    /// Optionally present only for SharedStorageAccessMethods: batchUpdate,
+    /// set, append, delete, and clear.
+    pub fn with_lock(&self) -> Option<&str> { self.with_lock.as_deref() }
+    /// If the method has been called as part of a batchUpdate, then this
+    /// number identifies the batch to which it belongs.
+    /// Optionally present only for SharedStorageAccessMethods:
+    /// batchUpdate (required), set, append, delete, and clear.
+    pub fn batch_update_id(&self) -> Option<&str> { self.batch_update_id.as_deref() }
+    /// Number of modifier methods sent in batch.
+    /// Present only for SharedStorageAccessMethod: batchUpdate.
+    pub fn batch_size(&self) -> Option<u64> { self.batch_size }
 }
 
 #[derive(Default)]
 pub struct SharedStorageAccessParamsBuilder<'a> {
-    scriptSourceUrl: Option<Cow<'a, str>>,
-    dataOrigin: Option<Cow<'a, str>>,
-    operationName: Option<Cow<'a, str>>,
-    operationId: Option<Cow<'a, str>>,
-    keepAlive: Option<bool>,
-    privateAggregationConfig: Option<SharedStoragePrivateAggregationConfig<'a>>,
-    serializedData: Option<Cow<'a, str>>,
-    urlsWithMetadata: Option<Vec<SharedStorageUrlWithMetadata<'a>>>,
-    urnUuid: Option<Cow<'a, str>>,
+    script_source_url: Option<Cow<'a, str>>,
+    data_origin: Option<Cow<'a, str>>,
+    operation_name: Option<Cow<'a, str>>,
+    operation_id: Option<Cow<'a, str>>,
+    keep_alive: Option<bool>,
+    private_aggregation_config: Option<SharedStoragePrivateAggregationConfig<'a>>,
+    serialized_data: Option<Cow<'a, str>>,
+    urls_with_metadata: Option<Vec<SharedStorageUrlWithMetadata<'a>>>,
+    urn_uuid: Option<Cow<'a, str>>,
     key: Option<Cow<'a, str>>,
     value: Option<Cow<'a, str>>,
-    ignoreIfPresent: Option<bool>,
-    workletOrdinal: Option<i64>,
-    workletTargetId: Option<crate::target::TargetID<'a>>,
-    withLock: Option<Cow<'a, str>>,
-    batchUpdateId: Option<Cow<'a, str>>,
-    batchSize: Option<u64>,
+    ignore_if_present: Option<bool>,
+    worklet_ordinal: Option<i64>,
+    worklet_target_id: Option<crate::target::TargetID<'a>>,
+    with_lock: Option<Cow<'a, str>>,
+    batch_update_id: Option<Cow<'a, str>>,
+    batch_size: Option<u64>,
 }
 
 impl<'a> SharedStorageAccessParamsBuilder<'a> {
     /// Spec of the module script URL.
     /// Present only for SharedStorageAccessMethods: addModule and
     /// createWorklet.
-    pub fn scriptSourceUrl(mut self, scriptSourceUrl: impl Into<Cow<'a, str>>) -> Self { self.scriptSourceUrl = Some(scriptSourceUrl.into()); self }
+    pub fn script_source_url(mut self, script_source_url: impl Into<Cow<'a, str>>) -> Self { self.script_source_url = Some(script_source_url.into()); self }
     /// String denoting "context-origin", "script-origin", or a custom
     /// origin to be used as the worklet's data origin.
     /// Present only for SharedStorageAccessMethod: createWorklet.
-    pub fn dataOrigin(mut self, dataOrigin: impl Into<Cow<'a, str>>) -> Self { self.dataOrigin = Some(dataOrigin.into()); self }
+    pub fn data_origin(mut self, data_origin: impl Into<Cow<'a, str>>) -> Self { self.data_origin = Some(data_origin.into()); self }
     /// Name of the registered operation to be run.
     /// Present only for SharedStorageAccessMethods: run and selectURL.
-    pub fn operationName(mut self, operationName: impl Into<Cow<'a, str>>) -> Self { self.operationName = Some(operationName.into()); self }
+    pub fn operation_name(mut self, operation_name: impl Into<Cow<'a, str>>) -> Self { self.operation_name = Some(operation_name.into()); self }
     /// ID of the operation call.
     /// Present only for SharedStorageAccessMethods: run and selectURL.
-    pub fn operationId(mut self, operationId: impl Into<Cow<'a, str>>) -> Self { self.operationId = Some(operationId.into()); self }
+    pub fn operation_id(mut self, operation_id: impl Into<Cow<'a, str>>) -> Self { self.operation_id = Some(operation_id.into()); self }
     /// Whether or not to keep the worket alive for future run or selectURL
     /// calls.
     /// Present only for SharedStorageAccessMethods: run and selectURL.
-    pub fn keepAlive(mut self, keepAlive: bool) -> Self { self.keepAlive = Some(keepAlive); self }
+    pub fn keep_alive(mut self, keep_alive: bool) -> Self { self.keep_alive = Some(keep_alive); self }
     /// Configures the private aggregation options.
     /// Present only for SharedStorageAccessMethods: run and selectURL.
-    pub fn privateAggregationConfig(mut self, privateAggregationConfig: SharedStoragePrivateAggregationConfig<'a>) -> Self { self.privateAggregationConfig = Some(privateAggregationConfig); self }
+    pub fn private_aggregation_config(mut self, private_aggregation_config: SharedStoragePrivateAggregationConfig<'a>) -> Self { self.private_aggregation_config = Some(private_aggregation_config); self }
     /// The operation's serialized data in bytes (converted to a string).
     /// Present only for SharedStorageAccessMethods: run and selectURL.
     /// TODO(crbug.com/401011862): Consider updating this parameter to binary.
-    pub fn serializedData(mut self, serializedData: impl Into<Cow<'a, str>>) -> Self { self.serializedData = Some(serializedData.into()); self }
+    pub fn serialized_data(mut self, serialized_data: impl Into<Cow<'a, str>>) -> Self { self.serialized_data = Some(serialized_data.into()); self }
     /// Array of candidate URLs' specs, along with any associated metadata.
     /// Present only for SharedStorageAccessMethod: selectURL.
-    pub fn urlsWithMetadata(mut self, urlsWithMetadata: Vec<SharedStorageUrlWithMetadata<'a>>) -> Self { self.urlsWithMetadata = Some(urlsWithMetadata); self }
+    pub fn urls_with_metadata(mut self, urls_with_metadata: Vec<SharedStorageUrlWithMetadata<'a>>) -> Self { self.urls_with_metadata = Some(urls_with_metadata); self }
     /// Spec of the URN:UUID generated for a selectURL call.
     /// Present only for SharedStorageAccessMethod: selectURL.
-    pub fn urnUuid(mut self, urnUuid: impl Into<Cow<'a, str>>) -> Self { self.urnUuid = Some(urnUuid.into()); self }
+    pub fn urn_uuid(mut self, urn_uuid: impl Into<Cow<'a, str>>) -> Self { self.urn_uuid = Some(urn_uuid.into()); self }
     /// Key for a specific entry in an origin's shared storage.
     /// Present only for SharedStorageAccessMethods: set, append, delete, and
     /// get.
@@ -632,49 +724,49 @@ impl<'a> SharedStorageAccessParamsBuilder<'a> {
     pub fn value(mut self, value: impl Into<Cow<'a, str>>) -> Self { self.value = Some(value.into()); self }
     /// Whether or not to set an entry for a key if that key is already present.
     /// Present only for SharedStorageAccessMethod: set.
-    pub fn ignoreIfPresent(mut self, ignoreIfPresent: bool) -> Self { self.ignoreIfPresent = Some(ignoreIfPresent); self }
+    pub fn ignore_if_present(mut self, ignore_if_present: bool) -> Self { self.ignore_if_present = Some(ignore_if_present); self }
     /// A number denoting the (0-based) order of the worklet's
     /// creation relative to all other shared storage worklets created by
     /// documents using the current storage partition.
     /// Present only for SharedStorageAccessMethods: addModule, createWorklet.
-    pub fn workletOrdinal(mut self, workletOrdinal: i64) -> Self { self.workletOrdinal = Some(workletOrdinal); self }
+    pub fn worklet_ordinal(mut self, worklet_ordinal: i64) -> Self { self.worklet_ordinal = Some(worklet_ordinal); self }
     /// Hex representation of the DevTools token used as the TargetID for the
     /// associated shared storage worklet.
     /// Present only for SharedStorageAccessMethods: addModule, createWorklet,
     /// run, selectURL, and any other SharedStorageAccessMethod when the
     /// SharedStorageAccessScope is sharedStorageWorklet.
-    pub fn workletTargetId(mut self, workletTargetId: crate::target::TargetID<'a>) -> Self { self.workletTargetId = Some(workletTargetId); self }
+    pub fn worklet_target_id(mut self, worklet_target_id: crate::target::TargetID<'a>) -> Self { self.worklet_target_id = Some(worklet_target_id); self }
     /// Name of the lock to be acquired, if present.
     /// Optionally present only for SharedStorageAccessMethods: batchUpdate,
     /// set, append, delete, and clear.
-    pub fn withLock(mut self, withLock: impl Into<Cow<'a, str>>) -> Self { self.withLock = Some(withLock.into()); self }
+    pub fn with_lock(mut self, with_lock: impl Into<Cow<'a, str>>) -> Self { self.with_lock = Some(with_lock.into()); self }
     /// If the method has been called as part of a batchUpdate, then this
     /// number identifies the batch to which it belongs.
     /// Optionally present only for SharedStorageAccessMethods:
     /// batchUpdate (required), set, append, delete, and clear.
-    pub fn batchUpdateId(mut self, batchUpdateId: impl Into<Cow<'a, str>>) -> Self { self.batchUpdateId = Some(batchUpdateId.into()); self }
+    pub fn batch_update_id(mut self, batch_update_id: impl Into<Cow<'a, str>>) -> Self { self.batch_update_id = Some(batch_update_id.into()); self }
     /// Number of modifier methods sent in batch.
     /// Present only for SharedStorageAccessMethod: batchUpdate.
-    pub fn batchSize(mut self, batchSize: u64) -> Self { self.batchSize = Some(batchSize); self }
+    pub fn batch_size(mut self, batch_size: u64) -> Self { self.batch_size = Some(batch_size); self }
     pub fn build(self) -> SharedStorageAccessParams<'a> {
         SharedStorageAccessParams {
-            scriptSourceUrl: self.scriptSourceUrl,
-            dataOrigin: self.dataOrigin,
-            operationName: self.operationName,
-            operationId: self.operationId,
-            keepAlive: self.keepAlive,
-            privateAggregationConfig: self.privateAggregationConfig,
-            serializedData: self.serializedData,
-            urlsWithMetadata: self.urlsWithMetadata,
-            urnUuid: self.urnUuid,
+            script_source_url: self.script_source_url,
+            data_origin: self.data_origin,
+            operation_name: self.operation_name,
+            operation_id: self.operation_id,
+            keep_alive: self.keep_alive,
+            private_aggregation_config: self.private_aggregation_config,
+            serialized_data: self.serialized_data,
+            urls_with_metadata: self.urls_with_metadata,
+            urn_uuid: self.urn_uuid,
             key: self.key,
             value: self.value,
-            ignoreIfPresent: self.ignoreIfPresent,
-            workletOrdinal: self.workletOrdinal,
-            workletTargetId: self.workletTargetId,
-            withLock: self.withLock,
-            batchUpdateId: self.batchUpdateId,
-            batchSize: self.batchSize,
+            ignore_if_present: self.ignore_if_present,
+            worklet_ordinal: self.worklet_ordinal,
+            worklet_target_id: self.worklet_target_id,
+            with_lock: self.with_lock,
+            batch_update_id: self.batch_update_id,
+            batch_size: self.batch_size,
         }
     }
 }
@@ -693,26 +785,30 @@ pub enum StorageBucketsDurability {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct StorageBucket<'a> {
-    storageKey: SerializedStorageKey<'a>,
+    #[serde(rename = "storageKey")]
+    storage_key: SerializedStorageKey<'a>,
     /// If not specified, it is the default bucket of the storageKey.
     #[serde(skip_serializing_if = "Option::is_none")]
     name: Option<Cow<'a, str>>,
 }
 
 impl<'a> StorageBucket<'a> {
-    pub fn builder(storageKey: impl Into<SerializedStorageKey<'a>>) -> StorageBucketBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `storage_key`: 
+    pub fn builder(storage_key: impl Into<SerializedStorageKey<'a>>) -> StorageBucketBuilder<'a> {
         StorageBucketBuilder {
-            storageKey: storageKey.into(),
+            storage_key: storage_key.into(),
             name: None,
         }
     }
-    pub fn storageKey(&self) -> &SerializedStorageKey<'a> { &self.storageKey }
+    pub fn storage_key(&self) -> &SerializedStorageKey<'a> { &self.storage_key }
+    /// If not specified, it is the default bucket of the storageKey.
     pub fn name(&self) -> Option<&str> { self.name.as_deref() }
 }
 
 
 pub struct StorageBucketBuilder<'a> {
-    storageKey: SerializedStorageKey<'a>,
+    storage_key: SerializedStorageKey<'a>,
     name: Option<Cow<'a, str>>,
 }
 
@@ -721,7 +817,7 @@ impl<'a> StorageBucketBuilder<'a> {
     pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
     pub fn build(self) -> StorageBucket<'a> {
         StorageBucket {
-            storageKey: self.storageKey,
+            storage_key: self.storage_key,
             name: self.name,
         }
     }
@@ -741,6 +837,13 @@ pub struct StorageBucketInfo<'a> {
 }
 
 impl<'a> StorageBucketInfo<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `bucket`: 
+    /// * `id`: 
+    /// * `expiration`: 
+    /// * `quota`: Storage quota (bytes).
+    /// * `persistent`: 
+    /// * `durability`: 
     pub fn builder(bucket: StorageBucket<'a>, id: impl Into<Cow<'a, str>>, expiration: crate::network::TimeSinceEpoch, quota: f64, persistent: bool, durability: impl Into<StorageBucketsDurability>) -> StorageBucketInfoBuilder<'a> {
         StorageBucketInfoBuilder {
             bucket: bucket,
@@ -754,6 +857,7 @@ impl<'a> StorageBucketInfo<'a> {
     pub fn bucket(&self) -> &StorageBucket<'a> { &self.bucket }
     pub fn id(&self) -> &str { self.id.as_ref() }
     pub fn expiration(&self) -> &crate::network::TimeSinceEpoch { &self.expiration }
+    /// Storage quota (bytes).
     pub fn quota(&self) -> f64 { self.quota }
     pub fn persistent(&self) -> bool { self.persistent }
     pub fn durability(&self) -> &StorageBucketsDurability { &self.durability }
@@ -788,39 +892,49 @@ impl<'a> StorageBucketInfoBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct RelatedWebsiteSet<'a> {
     /// The primary site of this set, along with the ccTLDs if there is any.
-    primarySites: Vec<Cow<'a, str>>,
+    #[serde(rename = "primarySites")]
+    primary_sites: Vec<Cow<'a, str>>,
     /// The associated sites of this set, along with the ccTLDs if there is any.
-    associatedSites: Vec<Cow<'a, str>>,
+    #[serde(rename = "associatedSites")]
+    associated_sites: Vec<Cow<'a, str>>,
     /// The service sites of this set, along with the ccTLDs if there is any.
-    serviceSites: Vec<Cow<'a, str>>,
+    #[serde(rename = "serviceSites")]
+    service_sites: Vec<Cow<'a, str>>,
 }
 
 impl<'a> RelatedWebsiteSet<'a> {
-    pub fn builder(primarySites: Vec<Cow<'a, str>>, associatedSites: Vec<Cow<'a, str>>, serviceSites: Vec<Cow<'a, str>>) -> RelatedWebsiteSetBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `primary_sites`: The primary site of this set, along with the ccTLDs if there is any.
+    /// * `associated_sites`: The associated sites of this set, along with the ccTLDs if there is any.
+    /// * `service_sites`: The service sites of this set, along with the ccTLDs if there is any.
+    pub fn builder(primary_sites: Vec<Cow<'a, str>>, associated_sites: Vec<Cow<'a, str>>, service_sites: Vec<Cow<'a, str>>) -> RelatedWebsiteSetBuilder<'a> {
         RelatedWebsiteSetBuilder {
-            primarySites: primarySites,
-            associatedSites: associatedSites,
-            serviceSites: serviceSites,
+            primary_sites: primary_sites,
+            associated_sites: associated_sites,
+            service_sites: service_sites,
         }
     }
-    pub fn primarySites(&self) -> &[Cow<'a, str>] { &self.primarySites }
-    pub fn associatedSites(&self) -> &[Cow<'a, str>] { &self.associatedSites }
-    pub fn serviceSites(&self) -> &[Cow<'a, str>] { &self.serviceSites }
+    /// The primary site of this set, along with the ccTLDs if there is any.
+    pub fn primary_sites(&self) -> &[Cow<'a, str>] { &self.primary_sites }
+    /// The associated sites of this set, along with the ccTLDs if there is any.
+    pub fn associated_sites(&self) -> &[Cow<'a, str>] { &self.associated_sites }
+    /// The service sites of this set, along with the ccTLDs if there is any.
+    pub fn service_sites(&self) -> &[Cow<'a, str>] { &self.service_sites }
 }
 
 
 pub struct RelatedWebsiteSetBuilder<'a> {
-    primarySites: Vec<Cow<'a, str>>,
-    associatedSites: Vec<Cow<'a, str>>,
-    serviceSites: Vec<Cow<'a, str>>,
+    primary_sites: Vec<Cow<'a, str>>,
+    associated_sites: Vec<Cow<'a, str>>,
+    service_sites: Vec<Cow<'a, str>>,
 }
 
 impl<'a> RelatedWebsiteSetBuilder<'a> {
     pub fn build(self) -> RelatedWebsiteSet<'a> {
         RelatedWebsiteSet {
-            primarySites: self.primarySites,
-            associatedSites: self.associatedSites,
-            serviceSites: self.serviceSites,
+            primary_sites: self.primary_sites,
+            associated_sites: self.associated_sites,
+            service_sites: self.service_sites,
         }
     }
 }
@@ -831,27 +945,30 @@ impl<'a> RelatedWebsiteSetBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetStorageKeyForFrameParams<'a> {
-    frameId: crate::page::FrameId<'a>,
+    #[serde(rename = "frameId")]
+    frame_id: crate::page::FrameId<'a>,
 }
 
 impl<'a> GetStorageKeyForFrameParams<'a> {
-    pub fn builder(frameId: crate::page::FrameId<'a>) -> GetStorageKeyForFrameParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `frame_id`: 
+    pub fn builder(frame_id: crate::page::FrameId<'a>) -> GetStorageKeyForFrameParamsBuilder<'a> {
         GetStorageKeyForFrameParamsBuilder {
-            frameId: frameId,
+            frame_id: frame_id,
         }
     }
-    pub fn frameId(&self) -> &crate::page::FrameId<'a> { &self.frameId }
+    pub fn frame_id(&self) -> &crate::page::FrameId<'a> { &self.frame_id }
 }
 
 
 pub struct GetStorageKeyForFrameParamsBuilder<'a> {
-    frameId: crate::page::FrameId<'a>,
+    frame_id: crate::page::FrameId<'a>,
 }
 
 impl<'a> GetStorageKeyForFrameParamsBuilder<'a> {
     pub fn build(self) -> GetStorageKeyForFrameParams<'a> {
         GetStorageKeyForFrameParams {
-            frameId: self.frameId,
+            frame_id: self.frame_id,
         }
     }
 }
@@ -862,27 +979,30 @@ impl<'a> GetStorageKeyForFrameParamsBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetStorageKeyForFrameReturns<'a> {
-    storageKey: SerializedStorageKey<'a>,
+    #[serde(rename = "storageKey")]
+    storage_key: SerializedStorageKey<'a>,
 }
 
 impl<'a> GetStorageKeyForFrameReturns<'a> {
-    pub fn builder(storageKey: impl Into<SerializedStorageKey<'a>>) -> GetStorageKeyForFrameReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `storage_key`: 
+    pub fn builder(storage_key: impl Into<SerializedStorageKey<'a>>) -> GetStorageKeyForFrameReturnsBuilder<'a> {
         GetStorageKeyForFrameReturnsBuilder {
-            storageKey: storageKey.into(),
+            storage_key: storage_key.into(),
         }
     }
-    pub fn storageKey(&self) -> &SerializedStorageKey<'a> { &self.storageKey }
+    pub fn storage_key(&self) -> &SerializedStorageKey<'a> { &self.storage_key }
 }
 
 
 pub struct GetStorageKeyForFrameReturnsBuilder<'a> {
-    storageKey: SerializedStorageKey<'a>,
+    storage_key: SerializedStorageKey<'a>,
 }
 
 impl<'a> GetStorageKeyForFrameReturnsBuilder<'a> {
     pub fn build(self) -> GetStorageKeyForFrameReturns<'a> {
         GetStorageKeyForFrameReturns {
-            storageKey: self.storageKey,
+            storage_key: self.storage_key,
         }
     }
 }
@@ -900,29 +1020,30 @@ impl<'a> crate::CdpCommand<'a> for GetStorageKeyForFrameParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetStorageKeyParams<'a> {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    frameId: Option<crate::page::FrameId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "frameId")]
+    frame_id: Option<crate::page::FrameId<'a>>,
 }
 
 impl<'a> GetStorageKeyParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> GetStorageKeyParamsBuilder<'a> {
         GetStorageKeyParamsBuilder {
-            frameId: None,
+            frame_id: None,
         }
     }
-    pub fn frameId(&self) -> Option<&crate::page::FrameId<'a>> { self.frameId.as_ref() }
+    pub fn frame_id(&self) -> Option<&crate::page::FrameId<'a>> { self.frame_id.as_ref() }
 }
 
 #[derive(Default)]
 pub struct GetStorageKeyParamsBuilder<'a> {
-    frameId: Option<crate::page::FrameId<'a>>,
+    frame_id: Option<crate::page::FrameId<'a>>,
 }
 
 impl<'a> GetStorageKeyParamsBuilder<'a> {
-    pub fn frameId(mut self, frameId: crate::page::FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
+    pub fn frame_id(mut self, frame_id: crate::page::FrameId<'a>) -> Self { self.frame_id = Some(frame_id); self }
     pub fn build(self) -> GetStorageKeyParams<'a> {
         GetStorageKeyParams {
-            frameId: self.frameId,
+            frame_id: self.frame_id,
         }
     }
 }
@@ -933,27 +1054,30 @@ impl<'a> GetStorageKeyParamsBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetStorageKeyReturns<'a> {
-    storageKey: SerializedStorageKey<'a>,
+    #[serde(rename = "storageKey")]
+    storage_key: SerializedStorageKey<'a>,
 }
 
 impl<'a> GetStorageKeyReturns<'a> {
-    pub fn builder(storageKey: impl Into<SerializedStorageKey<'a>>) -> GetStorageKeyReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `storage_key`: 
+    pub fn builder(storage_key: impl Into<SerializedStorageKey<'a>>) -> GetStorageKeyReturnsBuilder<'a> {
         GetStorageKeyReturnsBuilder {
-            storageKey: storageKey.into(),
+            storage_key: storage_key.into(),
         }
     }
-    pub fn storageKey(&self) -> &SerializedStorageKey<'a> { &self.storageKey }
+    pub fn storage_key(&self) -> &SerializedStorageKey<'a> { &self.storage_key }
 }
 
 
 pub struct GetStorageKeyReturnsBuilder<'a> {
-    storageKey: SerializedStorageKey<'a>,
+    storage_key: SerializedStorageKey<'a>,
 }
 
 impl<'a> GetStorageKeyReturnsBuilder<'a> {
     pub fn build(self) -> GetStorageKeyReturns<'a> {
         GetStorageKeyReturns {
-            storageKey: self.storageKey,
+            storage_key: self.storage_key,
         }
     }
 }
@@ -973,31 +1097,37 @@ pub struct ClearDataForOriginParams<'a> {
     /// Security origin.
     origin: Cow<'a, str>,
     /// Comma separated list of StorageType to clear.
-    storageTypes: Cow<'a, str>,
+    #[serde(rename = "storageTypes")]
+    storage_types: Cow<'a, str>,
 }
 
 impl<'a> ClearDataForOriginParams<'a> {
-    pub fn builder(origin: impl Into<Cow<'a, str>>, storageTypes: impl Into<Cow<'a, str>>) -> ClearDataForOriginParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `origin`: Security origin.
+    /// * `storage_types`: Comma separated list of StorageType to clear.
+    pub fn builder(origin: impl Into<Cow<'a, str>>, storage_types: impl Into<Cow<'a, str>>) -> ClearDataForOriginParamsBuilder<'a> {
         ClearDataForOriginParamsBuilder {
             origin: origin.into(),
-            storageTypes: storageTypes.into(),
+            storage_types: storage_types.into(),
         }
     }
+    /// Security origin.
     pub fn origin(&self) -> &str { self.origin.as_ref() }
-    pub fn storageTypes(&self) -> &str { self.storageTypes.as_ref() }
+    /// Comma separated list of StorageType to clear.
+    pub fn storage_types(&self) -> &str { self.storage_types.as_ref() }
 }
 
 
 pub struct ClearDataForOriginParamsBuilder<'a> {
     origin: Cow<'a, str>,
-    storageTypes: Cow<'a, str>,
+    storage_types: Cow<'a, str>,
 }
 
 impl<'a> ClearDataForOriginParamsBuilder<'a> {
     pub fn build(self) -> ClearDataForOriginParams<'a> {
         ClearDataForOriginParams {
             origin: self.origin,
-            storageTypes: self.storageTypes,
+            storage_types: self.storage_types,
         }
     }
 }
@@ -1015,33 +1145,40 @@ impl<'a> crate::CdpCommand<'a> for ClearDataForOriginParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ClearDataForStorageKeyParams<'a> {
     /// Storage key.
-    storageKey: Cow<'a, str>,
+    #[serde(rename = "storageKey")]
+    storage_key: Cow<'a, str>,
     /// Comma separated list of StorageType to clear.
-    storageTypes: Cow<'a, str>,
+    #[serde(rename = "storageTypes")]
+    storage_types: Cow<'a, str>,
 }
 
 impl<'a> ClearDataForStorageKeyParams<'a> {
-    pub fn builder(storageKey: impl Into<Cow<'a, str>>, storageTypes: impl Into<Cow<'a, str>>) -> ClearDataForStorageKeyParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `storage_key`: Storage key.
+    /// * `storage_types`: Comma separated list of StorageType to clear.
+    pub fn builder(storage_key: impl Into<Cow<'a, str>>, storage_types: impl Into<Cow<'a, str>>) -> ClearDataForStorageKeyParamsBuilder<'a> {
         ClearDataForStorageKeyParamsBuilder {
-            storageKey: storageKey.into(),
-            storageTypes: storageTypes.into(),
+            storage_key: storage_key.into(),
+            storage_types: storage_types.into(),
         }
     }
-    pub fn storageKey(&self) -> &str { self.storageKey.as_ref() }
-    pub fn storageTypes(&self) -> &str { self.storageTypes.as_ref() }
+    /// Storage key.
+    pub fn storage_key(&self) -> &str { self.storage_key.as_ref() }
+    /// Comma separated list of StorageType to clear.
+    pub fn storage_types(&self) -> &str { self.storage_types.as_ref() }
 }
 
 
 pub struct ClearDataForStorageKeyParamsBuilder<'a> {
-    storageKey: Cow<'a, str>,
-    storageTypes: Cow<'a, str>,
+    storage_key: Cow<'a, str>,
+    storage_types: Cow<'a, str>,
 }
 
 impl<'a> ClearDataForStorageKeyParamsBuilder<'a> {
     pub fn build(self) -> ClearDataForStorageKeyParams<'a> {
         ClearDataForStorageKeyParams {
-            storageKey: self.storageKey,
-            storageTypes: self.storageTypes,
+            storage_key: self.storage_key,
+            storage_types: self.storage_types,
         }
     }
 }
@@ -1059,30 +1196,32 @@ impl<'a> crate::CdpCommand<'a> for ClearDataForStorageKeyParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct GetCookiesParams<'a> {
     /// Browser context to use when called on the browser endpoint.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    browserContextId: Option<crate::browser::BrowserContextID<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "browserContextId")]
+    browser_context_id: Option<crate::browser::BrowserContextID<'a>>,
 }
 
 impl<'a> GetCookiesParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> GetCookiesParamsBuilder<'a> {
         GetCookiesParamsBuilder {
-            browserContextId: None,
+            browser_context_id: None,
         }
     }
-    pub fn browserContextId(&self) -> Option<&crate::browser::BrowserContextID<'a>> { self.browserContextId.as_ref() }
+    /// Browser context to use when called on the browser endpoint.
+    pub fn browser_context_id(&self) -> Option<&crate::browser::BrowserContextID<'a>> { self.browser_context_id.as_ref() }
 }
 
 #[derive(Default)]
 pub struct GetCookiesParamsBuilder<'a> {
-    browserContextId: Option<crate::browser::BrowserContextID<'a>>,
+    browser_context_id: Option<crate::browser::BrowserContextID<'a>>,
 }
 
 impl<'a> GetCookiesParamsBuilder<'a> {
     /// Browser context to use when called on the browser endpoint.
-    pub fn browserContextId(mut self, browserContextId: crate::browser::BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
+    pub fn browser_context_id(mut self, browser_context_id: crate::browser::BrowserContextID<'a>) -> Self { self.browser_context_id = Some(browser_context_id); self }
     pub fn build(self) -> GetCookiesParams<'a> {
         GetCookiesParams {
-            browserContextId: self.browserContextId,
+            browser_context_id: self.browser_context_id,
         }
     }
 }
@@ -1097,11 +1236,14 @@ pub struct GetCookiesReturns<'a> {
 }
 
 impl<'a> GetCookiesReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `cookies`: Array of cookie objects.
     pub fn builder(cookies: Vec<crate::network::Cookie<'a>>) -> GetCookiesReturnsBuilder<'a> {
         GetCookiesReturnsBuilder {
             cookies: cookies,
         }
     }
+    /// Array of cookie objects.
     pub fn cookies(&self) -> &[crate::network::Cookie<'a>] { &self.cookies }
 }
 
@@ -1133,34 +1275,38 @@ pub struct SetCookiesParams<'a> {
     /// Cookies to be set.
     cookies: Vec<crate::network::CookieParam<'a>>,
     /// Browser context to use when called on the browser endpoint.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    browserContextId: Option<crate::browser::BrowserContextID<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "browserContextId")]
+    browser_context_id: Option<crate::browser::BrowserContextID<'a>>,
 }
 
 impl<'a> SetCookiesParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `cookies`: Cookies to be set.
     pub fn builder(cookies: Vec<crate::network::CookieParam<'a>>) -> SetCookiesParamsBuilder<'a> {
         SetCookiesParamsBuilder {
             cookies: cookies,
-            browserContextId: None,
+            browser_context_id: None,
         }
     }
+    /// Cookies to be set.
     pub fn cookies(&self) -> &[crate::network::CookieParam<'a>] { &self.cookies }
-    pub fn browserContextId(&self) -> Option<&crate::browser::BrowserContextID<'a>> { self.browserContextId.as_ref() }
+    /// Browser context to use when called on the browser endpoint.
+    pub fn browser_context_id(&self) -> Option<&crate::browser::BrowserContextID<'a>> { self.browser_context_id.as_ref() }
 }
 
 
 pub struct SetCookiesParamsBuilder<'a> {
     cookies: Vec<crate::network::CookieParam<'a>>,
-    browserContextId: Option<crate::browser::BrowserContextID<'a>>,
+    browser_context_id: Option<crate::browser::BrowserContextID<'a>>,
 }
 
 impl<'a> SetCookiesParamsBuilder<'a> {
     /// Browser context to use when called on the browser endpoint.
-    pub fn browserContextId(mut self, browserContextId: crate::browser::BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
+    pub fn browser_context_id(mut self, browser_context_id: crate::browser::BrowserContextID<'a>) -> Self { self.browser_context_id = Some(browser_context_id); self }
     pub fn build(self) -> SetCookiesParams<'a> {
         SetCookiesParams {
             cookies: self.cookies,
-            browserContextId: self.browserContextId,
+            browser_context_id: self.browser_context_id,
         }
     }
 }
@@ -1178,30 +1324,32 @@ impl<'a> crate::CdpCommand<'a> for SetCookiesParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ClearCookiesParams<'a> {
     /// Browser context to use when called on the browser endpoint.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    browserContextId: Option<crate::browser::BrowserContextID<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "browserContextId")]
+    browser_context_id: Option<crate::browser::BrowserContextID<'a>>,
 }
 
 impl<'a> ClearCookiesParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> ClearCookiesParamsBuilder<'a> {
         ClearCookiesParamsBuilder {
-            browserContextId: None,
+            browser_context_id: None,
         }
     }
-    pub fn browserContextId(&self) -> Option<&crate::browser::BrowserContextID<'a>> { self.browserContextId.as_ref() }
+    /// Browser context to use when called on the browser endpoint.
+    pub fn browser_context_id(&self) -> Option<&crate::browser::BrowserContextID<'a>> { self.browser_context_id.as_ref() }
 }
 
 #[derive(Default)]
 pub struct ClearCookiesParamsBuilder<'a> {
-    browserContextId: Option<crate::browser::BrowserContextID<'a>>,
+    browser_context_id: Option<crate::browser::BrowserContextID<'a>>,
 }
 
 impl<'a> ClearCookiesParamsBuilder<'a> {
     /// Browser context to use when called on the browser endpoint.
-    pub fn browserContextId(mut self, browserContextId: crate::browser::BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
+    pub fn browser_context_id(mut self, browser_context_id: crate::browser::BrowserContextID<'a>) -> Self { self.browser_context_id = Some(browser_context_id); self }
     pub fn build(self) -> ClearCookiesParams<'a> {
         ClearCookiesParams {
-            browserContextId: self.browserContextId,
+            browser_context_id: self.browser_context_id,
         }
     }
 }
@@ -1223,11 +1371,14 @@ pub struct GetUsageAndQuotaParams<'a> {
 }
 
 impl<'a> GetUsageAndQuotaParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `origin`: Security origin.
     pub fn builder(origin: impl Into<Cow<'a, str>>) -> GetUsageAndQuotaParamsBuilder<'a> {
         GetUsageAndQuotaParamsBuilder {
             origin: origin.into(),
         }
     }
+    /// Security origin.
     pub fn origin(&self) -> &str { self.origin.as_ref() }
 }
 
@@ -1254,32 +1405,43 @@ pub struct GetUsageAndQuotaReturns {
     /// Storage quota (bytes).
     quota: f64,
     /// Whether or not the origin has an active storage quota override
-    overrideActive: bool,
+    #[serde(rename = "overrideActive")]
+    override_active: bool,
     /// Storage usage per type (bytes).
-    usageBreakdown: Vec<UsageForType>,
+    #[serde(rename = "usageBreakdown")]
+    usage_breakdown: Vec<UsageForType>,
 }
 
 impl GetUsageAndQuotaReturns {
-    pub fn builder(usage: f64, quota: f64, overrideActive: bool, usageBreakdown: Vec<UsageForType>) -> GetUsageAndQuotaReturnsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `usage`: Storage usage (bytes).
+    /// * `quota`: Storage quota (bytes).
+    /// * `override_active`: Whether or not the origin has an active storage quota override
+    /// * `usage_breakdown`: Storage usage per type (bytes).
+    pub fn builder(usage: f64, quota: f64, override_active: bool, usage_breakdown: Vec<UsageForType>) -> GetUsageAndQuotaReturnsBuilder {
         GetUsageAndQuotaReturnsBuilder {
             usage: usage,
             quota: quota,
-            overrideActive: overrideActive,
-            usageBreakdown: usageBreakdown,
+            override_active: override_active,
+            usage_breakdown: usage_breakdown,
         }
     }
+    /// Storage usage (bytes).
     pub fn usage(&self) -> f64 { self.usage }
+    /// Storage quota (bytes).
     pub fn quota(&self) -> f64 { self.quota }
-    pub fn overrideActive(&self) -> bool { self.overrideActive }
-    pub fn usageBreakdown(&self) -> &[UsageForType] { &self.usageBreakdown }
+    /// Whether or not the origin has an active storage quota override
+    pub fn override_active(&self) -> bool { self.override_active }
+    /// Storage usage per type (bytes).
+    pub fn usage_breakdown(&self) -> &[UsageForType] { &self.usage_breakdown }
 }
 
 
 pub struct GetUsageAndQuotaReturnsBuilder {
     usage: f64,
     quota: f64,
-    overrideActive: bool,
-    usageBreakdown: Vec<UsageForType>,
+    override_active: bool,
+    usage_breakdown: Vec<UsageForType>,
 }
 
 impl GetUsageAndQuotaReturnsBuilder {
@@ -1287,8 +1449,8 @@ impl GetUsageAndQuotaReturnsBuilder {
         GetUsageAndQuotaReturns {
             usage: self.usage,
             quota: self.quota,
-            overrideActive: self.overrideActive,
-            usageBreakdown: self.usageBreakdown,
+            override_active: self.override_active,
+            usage_breakdown: self.usage_breakdown,
         }
     }
 }
@@ -1314,25 +1476,35 @@ pub struct OverrideQuotaForOriginParams<'a> {
     /// the specified origin. If this is called multiple times with different
     /// origins, the override will be maintained for each origin until it is
     /// disabled (called without a quotaSize).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    quotaSize: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "quotaSize")]
+    quota_size: Option<f64>,
 }
 
 impl<'a> OverrideQuotaForOriginParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `origin`: Security origin.
     pub fn builder(origin: impl Into<Cow<'a, str>>) -> OverrideQuotaForOriginParamsBuilder<'a> {
         OverrideQuotaForOriginParamsBuilder {
             origin: origin.into(),
-            quotaSize: None,
+            quota_size: None,
         }
     }
+    /// Security origin.
     pub fn origin(&self) -> &str { self.origin.as_ref() }
-    pub fn quotaSize(&self) -> Option<f64> { self.quotaSize }
+    /// The quota size (in bytes) to override the original quota with.
+    /// If this is called multiple times, the overridden quota will be equal to
+    /// the quotaSize provided in the final call. If this is called without
+    /// specifying a quotaSize, the quota will be reset to the default value for
+    /// the specified origin. If this is called multiple times with different
+    /// origins, the override will be maintained for each origin until it is
+    /// disabled (called without a quotaSize).
+    pub fn quota_size(&self) -> Option<f64> { self.quota_size }
 }
 
 
 pub struct OverrideQuotaForOriginParamsBuilder<'a> {
     origin: Cow<'a, str>,
-    quotaSize: Option<f64>,
+    quota_size: Option<f64>,
 }
 
 impl<'a> OverrideQuotaForOriginParamsBuilder<'a> {
@@ -1343,11 +1515,11 @@ impl<'a> OverrideQuotaForOriginParamsBuilder<'a> {
     /// the specified origin. If this is called multiple times with different
     /// origins, the override will be maintained for each origin until it is
     /// disabled (called without a quotaSize).
-    pub fn quotaSize(mut self, quotaSize: f64) -> Self { self.quotaSize = Some(quotaSize); self }
+    pub fn quota_size(mut self, quota_size: f64) -> Self { self.quota_size = Some(quota_size); self }
     pub fn build(self) -> OverrideQuotaForOriginParams<'a> {
         OverrideQuotaForOriginParams {
             origin: self.origin,
-            quotaSize: self.quotaSize,
+            quota_size: self.quota_size,
         }
     }
 }
@@ -1369,11 +1541,14 @@ pub struct TrackCacheStorageForOriginParams<'a> {
 }
 
 impl<'a> TrackCacheStorageForOriginParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `origin`: Security origin.
     pub fn builder(origin: impl Into<Cow<'a, str>>) -> TrackCacheStorageForOriginParamsBuilder<'a> {
         TrackCacheStorageForOriginParamsBuilder {
             origin: origin.into(),
         }
     }
+    /// Security origin.
     pub fn origin(&self) -> &str { self.origin.as_ref() }
 }
 
@@ -1403,27 +1578,31 @@ impl<'a> crate::CdpCommand<'a> for TrackCacheStorageForOriginParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct TrackCacheStorageForStorageKeyParams<'a> {
     /// Storage key.
-    storageKey: Cow<'a, str>,
+    #[serde(rename = "storageKey")]
+    storage_key: Cow<'a, str>,
 }
 
 impl<'a> TrackCacheStorageForStorageKeyParams<'a> {
-    pub fn builder(storageKey: impl Into<Cow<'a, str>>) -> TrackCacheStorageForStorageKeyParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `storage_key`: Storage key.
+    pub fn builder(storage_key: impl Into<Cow<'a, str>>) -> TrackCacheStorageForStorageKeyParamsBuilder<'a> {
         TrackCacheStorageForStorageKeyParamsBuilder {
-            storageKey: storageKey.into(),
+            storage_key: storage_key.into(),
         }
     }
-    pub fn storageKey(&self) -> &str { self.storageKey.as_ref() }
+    /// Storage key.
+    pub fn storage_key(&self) -> &str { self.storage_key.as_ref() }
 }
 
 
 pub struct TrackCacheStorageForStorageKeyParamsBuilder<'a> {
-    storageKey: Cow<'a, str>,
+    storage_key: Cow<'a, str>,
 }
 
 impl<'a> TrackCacheStorageForStorageKeyParamsBuilder<'a> {
     pub fn build(self) -> TrackCacheStorageForStorageKeyParams<'a> {
         TrackCacheStorageForStorageKeyParams {
-            storageKey: self.storageKey,
+            storage_key: self.storage_key,
         }
     }
 }
@@ -1445,11 +1624,14 @@ pub struct TrackIndexedDBForOriginParams<'a> {
 }
 
 impl<'a> TrackIndexedDBForOriginParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `origin`: Security origin.
     pub fn builder(origin: impl Into<Cow<'a, str>>) -> TrackIndexedDBForOriginParamsBuilder<'a> {
         TrackIndexedDBForOriginParamsBuilder {
             origin: origin.into(),
         }
     }
+    /// Security origin.
     pub fn origin(&self) -> &str { self.origin.as_ref() }
 }
 
@@ -1479,27 +1661,31 @@ impl<'a> crate::CdpCommand<'a> for TrackIndexedDBForOriginParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct TrackIndexedDBForStorageKeyParams<'a> {
     /// Storage key.
-    storageKey: Cow<'a, str>,
+    #[serde(rename = "storageKey")]
+    storage_key: Cow<'a, str>,
 }
 
 impl<'a> TrackIndexedDBForStorageKeyParams<'a> {
-    pub fn builder(storageKey: impl Into<Cow<'a, str>>) -> TrackIndexedDBForStorageKeyParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `storage_key`: Storage key.
+    pub fn builder(storage_key: impl Into<Cow<'a, str>>) -> TrackIndexedDBForStorageKeyParamsBuilder<'a> {
         TrackIndexedDBForStorageKeyParamsBuilder {
-            storageKey: storageKey.into(),
+            storage_key: storage_key.into(),
         }
     }
-    pub fn storageKey(&self) -> &str { self.storageKey.as_ref() }
+    /// Storage key.
+    pub fn storage_key(&self) -> &str { self.storage_key.as_ref() }
 }
 
 
 pub struct TrackIndexedDBForStorageKeyParamsBuilder<'a> {
-    storageKey: Cow<'a, str>,
+    storage_key: Cow<'a, str>,
 }
 
 impl<'a> TrackIndexedDBForStorageKeyParamsBuilder<'a> {
     pub fn build(self) -> TrackIndexedDBForStorageKeyParams<'a> {
         TrackIndexedDBForStorageKeyParams {
-            storageKey: self.storageKey,
+            storage_key: self.storage_key,
         }
     }
 }
@@ -1521,11 +1707,14 @@ pub struct UntrackCacheStorageForOriginParams<'a> {
 }
 
 impl<'a> UntrackCacheStorageForOriginParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `origin`: Security origin.
     pub fn builder(origin: impl Into<Cow<'a, str>>) -> UntrackCacheStorageForOriginParamsBuilder<'a> {
         UntrackCacheStorageForOriginParamsBuilder {
             origin: origin.into(),
         }
     }
+    /// Security origin.
     pub fn origin(&self) -> &str { self.origin.as_ref() }
 }
 
@@ -1555,27 +1744,31 @@ impl<'a> crate::CdpCommand<'a> for UntrackCacheStorageForOriginParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct UntrackCacheStorageForStorageKeyParams<'a> {
     /// Storage key.
-    storageKey: Cow<'a, str>,
+    #[serde(rename = "storageKey")]
+    storage_key: Cow<'a, str>,
 }
 
 impl<'a> UntrackCacheStorageForStorageKeyParams<'a> {
-    pub fn builder(storageKey: impl Into<Cow<'a, str>>) -> UntrackCacheStorageForStorageKeyParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `storage_key`: Storage key.
+    pub fn builder(storage_key: impl Into<Cow<'a, str>>) -> UntrackCacheStorageForStorageKeyParamsBuilder<'a> {
         UntrackCacheStorageForStorageKeyParamsBuilder {
-            storageKey: storageKey.into(),
+            storage_key: storage_key.into(),
         }
     }
-    pub fn storageKey(&self) -> &str { self.storageKey.as_ref() }
+    /// Storage key.
+    pub fn storage_key(&self) -> &str { self.storage_key.as_ref() }
 }
 
 
 pub struct UntrackCacheStorageForStorageKeyParamsBuilder<'a> {
-    storageKey: Cow<'a, str>,
+    storage_key: Cow<'a, str>,
 }
 
 impl<'a> UntrackCacheStorageForStorageKeyParamsBuilder<'a> {
     pub fn build(self) -> UntrackCacheStorageForStorageKeyParams<'a> {
         UntrackCacheStorageForStorageKeyParams {
-            storageKey: self.storageKey,
+            storage_key: self.storage_key,
         }
     }
 }
@@ -1597,11 +1790,14 @@ pub struct UntrackIndexedDBForOriginParams<'a> {
 }
 
 impl<'a> UntrackIndexedDBForOriginParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `origin`: Security origin.
     pub fn builder(origin: impl Into<Cow<'a, str>>) -> UntrackIndexedDBForOriginParamsBuilder<'a> {
         UntrackIndexedDBForOriginParamsBuilder {
             origin: origin.into(),
         }
     }
+    /// Security origin.
     pub fn origin(&self) -> &str { self.origin.as_ref() }
 }
 
@@ -1631,27 +1827,31 @@ impl<'a> crate::CdpCommand<'a> for UntrackIndexedDBForOriginParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct UntrackIndexedDBForStorageKeyParams<'a> {
     /// Storage key.
-    storageKey: Cow<'a, str>,
+    #[serde(rename = "storageKey")]
+    storage_key: Cow<'a, str>,
 }
 
 impl<'a> UntrackIndexedDBForStorageKeyParams<'a> {
-    pub fn builder(storageKey: impl Into<Cow<'a, str>>) -> UntrackIndexedDBForStorageKeyParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `storage_key`: Storage key.
+    pub fn builder(storage_key: impl Into<Cow<'a, str>>) -> UntrackIndexedDBForStorageKeyParamsBuilder<'a> {
         UntrackIndexedDBForStorageKeyParamsBuilder {
-            storageKey: storageKey.into(),
+            storage_key: storage_key.into(),
         }
     }
-    pub fn storageKey(&self) -> &str { self.storageKey.as_ref() }
+    /// Storage key.
+    pub fn storage_key(&self) -> &str { self.storage_key.as_ref() }
 }
 
 
 pub struct UntrackIndexedDBForStorageKeyParamsBuilder<'a> {
-    storageKey: Cow<'a, str>,
+    storage_key: Cow<'a, str>,
 }
 
 impl<'a> UntrackIndexedDBForStorageKeyParamsBuilder<'a> {
     pub fn build(self) -> UntrackIndexedDBForStorageKeyParams<'a> {
         UntrackIndexedDBForStorageKeyParams {
-            storageKey: self.storageKey,
+            storage_key: self.storage_key,
         }
     }
 }
@@ -1673,6 +1873,8 @@ pub struct GetTrustTokensReturns<'a> {
 }
 
 impl<'a> GetTrustTokensReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `tokens`: 
     pub fn builder(tokens: Vec<TrustTokens<'a>>) -> GetTrustTokensReturnsBuilder<'a> {
         GetTrustTokensReturnsBuilder {
             tokens: tokens,
@@ -1710,27 +1912,30 @@ impl<'a> crate::CdpCommand<'a> for GetTrustTokensParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ClearTrustTokensParams<'a> {
-    issuerOrigin: Cow<'a, str>,
+    #[serde(rename = "issuerOrigin")]
+    issuer_origin: Cow<'a, str>,
 }
 
 impl<'a> ClearTrustTokensParams<'a> {
-    pub fn builder(issuerOrigin: impl Into<Cow<'a, str>>) -> ClearTrustTokensParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `issuer_origin`: 
+    pub fn builder(issuer_origin: impl Into<Cow<'a, str>>) -> ClearTrustTokensParamsBuilder<'a> {
         ClearTrustTokensParamsBuilder {
-            issuerOrigin: issuerOrigin.into(),
+            issuer_origin: issuer_origin.into(),
         }
     }
-    pub fn issuerOrigin(&self) -> &str { self.issuerOrigin.as_ref() }
+    pub fn issuer_origin(&self) -> &str { self.issuer_origin.as_ref() }
 }
 
 
 pub struct ClearTrustTokensParamsBuilder<'a> {
-    issuerOrigin: Cow<'a, str>,
+    issuer_origin: Cow<'a, str>,
 }
 
 impl<'a> ClearTrustTokensParamsBuilder<'a> {
     pub fn build(self) -> ClearTrustTokensParams<'a> {
         ClearTrustTokensParams {
-            issuerOrigin: self.issuerOrigin,
+            issuer_origin: self.issuer_origin,
         }
     }
 }
@@ -1742,27 +1947,31 @@ impl<'a> ClearTrustTokensParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ClearTrustTokensReturns {
     /// True if any tokens were deleted, false otherwise.
-    didDeleteTokens: bool,
+    #[serde(rename = "didDeleteTokens")]
+    did_delete_tokens: bool,
 }
 
 impl ClearTrustTokensReturns {
-    pub fn builder(didDeleteTokens: bool) -> ClearTrustTokensReturnsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `did_delete_tokens`: True if any tokens were deleted, false otherwise.
+    pub fn builder(did_delete_tokens: bool) -> ClearTrustTokensReturnsBuilder {
         ClearTrustTokensReturnsBuilder {
-            didDeleteTokens: didDeleteTokens,
+            did_delete_tokens: did_delete_tokens,
         }
     }
-    pub fn didDeleteTokens(&self) -> bool { self.didDeleteTokens }
+    /// True if any tokens were deleted, false otherwise.
+    pub fn did_delete_tokens(&self) -> bool { self.did_delete_tokens }
 }
 
 
 pub struct ClearTrustTokensReturnsBuilder {
-    didDeleteTokens: bool,
+    did_delete_tokens: bool,
 }
 
 impl ClearTrustTokensReturnsBuilder {
     pub fn build(self) -> ClearTrustTokensReturns {
         ClearTrustTokensReturns {
-            didDeleteTokens: self.didDeleteTokens,
+            did_delete_tokens: self.did_delete_tokens,
         }
     }
 }
@@ -1779,31 +1988,35 @@ impl<'a> crate::CdpCommand<'a> for ClearTrustTokensParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetInterestGroupDetailsParams<'a> {
-    ownerOrigin: Cow<'a, str>,
+    #[serde(rename = "ownerOrigin")]
+    owner_origin: Cow<'a, str>,
     name: Cow<'a, str>,
 }
 
 impl<'a> GetInterestGroupDetailsParams<'a> {
-    pub fn builder(ownerOrigin: impl Into<Cow<'a, str>>, name: impl Into<Cow<'a, str>>) -> GetInterestGroupDetailsParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `owner_origin`: 
+    /// * `name`: 
+    pub fn builder(owner_origin: impl Into<Cow<'a, str>>, name: impl Into<Cow<'a, str>>) -> GetInterestGroupDetailsParamsBuilder<'a> {
         GetInterestGroupDetailsParamsBuilder {
-            ownerOrigin: ownerOrigin.into(),
+            owner_origin: owner_origin.into(),
             name: name.into(),
         }
     }
-    pub fn ownerOrigin(&self) -> &str { self.ownerOrigin.as_ref() }
+    pub fn owner_origin(&self) -> &str { self.owner_origin.as_ref() }
     pub fn name(&self) -> &str { self.name.as_ref() }
 }
 
 
 pub struct GetInterestGroupDetailsParamsBuilder<'a> {
-    ownerOrigin: Cow<'a, str>,
+    owner_origin: Cow<'a, str>,
     name: Cow<'a, str>,
 }
 
 impl<'a> GetInterestGroupDetailsParamsBuilder<'a> {
     pub fn build(self) -> GetInterestGroupDetailsParams<'a> {
         GetInterestGroupDetailsParams {
-            ownerOrigin: self.ownerOrigin,
+            owner_origin: self.owner_origin,
             name: self.name,
         }
     }
@@ -1815,18 +2028,24 @@ impl<'a> GetInterestGroupDetailsParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct GetInterestGroupDetailsReturns {
     /// This largely corresponds to:
-    /// https://wicg.github.io/turtledove/#dictdef-generatebidinterestgroup
+    /// <https://wicg.github.io/turtledove/#dictdef-generatebidinterestgroup>
     /// but has absolute expirationTime instead of relative lifetimeMs and
     /// also adds joiningOrigin.
     details: serde_json::Map<String, JsonValue>,
 }
 
 impl GetInterestGroupDetailsReturns {
+    /// Creates a builder for this type with the required parameters:
+    /// * `details`: This largely corresponds to: <https://wicg.github.io/turtledove/#dictdef-generatebidinterestgroup> but has absolute expirationTime instead of relative lifetimeMs and also adds joiningOrigin.
     pub fn builder(details: serde_json::Map<String, JsonValue>) -> GetInterestGroupDetailsReturnsBuilder {
         GetInterestGroupDetailsReturnsBuilder {
             details: details,
         }
     }
+    /// This largely corresponds to:
+    /// <https://wicg.github.io/turtledove/#dictdef-generatebidinterestgroup>
+    /// but has absolute expirationTime instead of relative lifetimeMs and
+    /// also adds joiningOrigin.
     pub fn details(&self) -> &serde_json::Map<String, JsonValue> { &self.details }
 }
 
@@ -1859,6 +2078,8 @@ pub struct SetInterestGroupTrackingParams {
 }
 
 impl SetInterestGroupTrackingParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `enable`: 
     pub fn builder(enable: bool) -> SetInterestGroupTrackingParamsBuilder {
         SetInterestGroupTrackingParamsBuilder {
             enable: enable,
@@ -1897,6 +2118,8 @@ pub struct SetInterestGroupAuctionTrackingParams {
 }
 
 impl SetInterestGroupAuctionTrackingParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `enable`: 
     pub fn builder(enable: bool) -> SetInterestGroupAuctionTrackingParamsBuilder {
         SetInterestGroupAuctionTrackingParamsBuilder {
             enable: enable,
@@ -1930,27 +2153,30 @@ impl<'a> crate::CdpCommand<'a> for SetInterestGroupAuctionTrackingParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetSharedStorageMetadataParams<'a> {
-    ownerOrigin: Cow<'a, str>,
+    #[serde(rename = "ownerOrigin")]
+    owner_origin: Cow<'a, str>,
 }
 
 impl<'a> GetSharedStorageMetadataParams<'a> {
-    pub fn builder(ownerOrigin: impl Into<Cow<'a, str>>) -> GetSharedStorageMetadataParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `owner_origin`: 
+    pub fn builder(owner_origin: impl Into<Cow<'a, str>>) -> GetSharedStorageMetadataParamsBuilder<'a> {
         GetSharedStorageMetadataParamsBuilder {
-            ownerOrigin: ownerOrigin.into(),
+            owner_origin: owner_origin.into(),
         }
     }
-    pub fn ownerOrigin(&self) -> &str { self.ownerOrigin.as_ref() }
+    pub fn owner_origin(&self) -> &str { self.owner_origin.as_ref() }
 }
 
 
 pub struct GetSharedStorageMetadataParamsBuilder<'a> {
-    ownerOrigin: Cow<'a, str>,
+    owner_origin: Cow<'a, str>,
 }
 
 impl<'a> GetSharedStorageMetadataParamsBuilder<'a> {
     pub fn build(self) -> GetSharedStorageMetadataParams<'a> {
         GetSharedStorageMetadataParams {
-            ownerOrigin: self.ownerOrigin,
+            owner_origin: self.owner_origin,
         }
     }
 }
@@ -1964,6 +2190,8 @@ pub struct GetSharedStorageMetadataReturns {
 }
 
 impl GetSharedStorageMetadataReturns {
+    /// Creates a builder for this type with the required parameters:
+    /// * `metadata`: 
     pub fn builder(metadata: SharedStorageMetadata) -> GetSharedStorageMetadataReturnsBuilder {
         GetSharedStorageMetadataReturnsBuilder {
             metadata: metadata,
@@ -1997,27 +2225,30 @@ impl<'a> crate::CdpCommand<'a> for GetSharedStorageMetadataParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetSharedStorageEntriesParams<'a> {
-    ownerOrigin: Cow<'a, str>,
+    #[serde(rename = "ownerOrigin")]
+    owner_origin: Cow<'a, str>,
 }
 
 impl<'a> GetSharedStorageEntriesParams<'a> {
-    pub fn builder(ownerOrigin: impl Into<Cow<'a, str>>) -> GetSharedStorageEntriesParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `owner_origin`: 
+    pub fn builder(owner_origin: impl Into<Cow<'a, str>>) -> GetSharedStorageEntriesParamsBuilder<'a> {
         GetSharedStorageEntriesParamsBuilder {
-            ownerOrigin: ownerOrigin.into(),
+            owner_origin: owner_origin.into(),
         }
     }
-    pub fn ownerOrigin(&self) -> &str { self.ownerOrigin.as_ref() }
+    pub fn owner_origin(&self) -> &str { self.owner_origin.as_ref() }
 }
 
 
 pub struct GetSharedStorageEntriesParamsBuilder<'a> {
-    ownerOrigin: Cow<'a, str>,
+    owner_origin: Cow<'a, str>,
 }
 
 impl<'a> GetSharedStorageEntriesParamsBuilder<'a> {
     pub fn build(self) -> GetSharedStorageEntriesParams<'a> {
         GetSharedStorageEntriesParams {
-            ownerOrigin: self.ownerOrigin,
+            owner_origin: self.owner_origin,
         }
     }
 }
@@ -2031,6 +2262,8 @@ pub struct GetSharedStorageEntriesReturns<'a> {
 }
 
 impl<'a> GetSharedStorageEntriesReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `entries`: 
     pub fn builder(entries: Vec<SharedStorageEntry<'a>>) -> GetSharedStorageEntriesReturnsBuilder<'a> {
         GetSharedStorageEntriesReturnsBuilder {
             entries: entries,
@@ -2064,48 +2297,55 @@ impl<'a> crate::CdpCommand<'a> for GetSharedStorageEntriesParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetSharedStorageEntryParams<'a> {
-    ownerOrigin: Cow<'a, str>,
+    #[serde(rename = "ownerOrigin")]
+    owner_origin: Cow<'a, str>,
     key: Cow<'a, str>,
     value: Cow<'a, str>,
     /// If 'ignoreIfPresent' is included and true, then only sets the entry if
     /// 'key' doesn't already exist.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    ignoreIfPresent: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "ignoreIfPresent")]
+    ignore_if_present: Option<bool>,
 }
 
 impl<'a> SetSharedStorageEntryParams<'a> {
-    pub fn builder(ownerOrigin: impl Into<Cow<'a, str>>, key: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> SetSharedStorageEntryParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `owner_origin`: 
+    /// * `key`: 
+    /// * `value`: 
+    pub fn builder(owner_origin: impl Into<Cow<'a, str>>, key: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> SetSharedStorageEntryParamsBuilder<'a> {
         SetSharedStorageEntryParamsBuilder {
-            ownerOrigin: ownerOrigin.into(),
+            owner_origin: owner_origin.into(),
             key: key.into(),
             value: value.into(),
-            ignoreIfPresent: None,
+            ignore_if_present: None,
         }
     }
-    pub fn ownerOrigin(&self) -> &str { self.ownerOrigin.as_ref() }
+    pub fn owner_origin(&self) -> &str { self.owner_origin.as_ref() }
     pub fn key(&self) -> &str { self.key.as_ref() }
     pub fn value(&self) -> &str { self.value.as_ref() }
-    pub fn ignoreIfPresent(&self) -> Option<bool> { self.ignoreIfPresent }
+    /// If 'ignoreIfPresent' is included and true, then only sets the entry if
+    /// 'key' doesn't already exist.
+    pub fn ignore_if_present(&self) -> Option<bool> { self.ignore_if_present }
 }
 
 
 pub struct SetSharedStorageEntryParamsBuilder<'a> {
-    ownerOrigin: Cow<'a, str>,
+    owner_origin: Cow<'a, str>,
     key: Cow<'a, str>,
     value: Cow<'a, str>,
-    ignoreIfPresent: Option<bool>,
+    ignore_if_present: Option<bool>,
 }
 
 impl<'a> SetSharedStorageEntryParamsBuilder<'a> {
     /// If 'ignoreIfPresent' is included and true, then only sets the entry if
     /// 'key' doesn't already exist.
-    pub fn ignoreIfPresent(mut self, ignoreIfPresent: bool) -> Self { self.ignoreIfPresent = Some(ignoreIfPresent); self }
+    pub fn ignore_if_present(mut self, ignore_if_present: bool) -> Self { self.ignore_if_present = Some(ignore_if_present); self }
     pub fn build(self) -> SetSharedStorageEntryParams<'a> {
         SetSharedStorageEntryParams {
-            ownerOrigin: self.ownerOrigin,
+            owner_origin: self.owner_origin,
             key: self.key,
             value: self.value,
-            ignoreIfPresent: self.ignoreIfPresent,
+            ignore_if_present: self.ignore_if_present,
         }
     }
 }
@@ -2122,31 +2362,35 @@ impl<'a> crate::CdpCommand<'a> for SetSharedStorageEntryParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct DeleteSharedStorageEntryParams<'a> {
-    ownerOrigin: Cow<'a, str>,
+    #[serde(rename = "ownerOrigin")]
+    owner_origin: Cow<'a, str>,
     key: Cow<'a, str>,
 }
 
 impl<'a> DeleteSharedStorageEntryParams<'a> {
-    pub fn builder(ownerOrigin: impl Into<Cow<'a, str>>, key: impl Into<Cow<'a, str>>) -> DeleteSharedStorageEntryParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `owner_origin`: 
+    /// * `key`: 
+    pub fn builder(owner_origin: impl Into<Cow<'a, str>>, key: impl Into<Cow<'a, str>>) -> DeleteSharedStorageEntryParamsBuilder<'a> {
         DeleteSharedStorageEntryParamsBuilder {
-            ownerOrigin: ownerOrigin.into(),
+            owner_origin: owner_origin.into(),
             key: key.into(),
         }
     }
-    pub fn ownerOrigin(&self) -> &str { self.ownerOrigin.as_ref() }
+    pub fn owner_origin(&self) -> &str { self.owner_origin.as_ref() }
     pub fn key(&self) -> &str { self.key.as_ref() }
 }
 
 
 pub struct DeleteSharedStorageEntryParamsBuilder<'a> {
-    ownerOrigin: Cow<'a, str>,
+    owner_origin: Cow<'a, str>,
     key: Cow<'a, str>,
 }
 
 impl<'a> DeleteSharedStorageEntryParamsBuilder<'a> {
     pub fn build(self) -> DeleteSharedStorageEntryParams<'a> {
         DeleteSharedStorageEntryParams {
-            ownerOrigin: self.ownerOrigin,
+            owner_origin: self.owner_origin,
             key: self.key,
         }
     }
@@ -2164,27 +2408,30 @@ impl<'a> crate::CdpCommand<'a> for DeleteSharedStorageEntryParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ClearSharedStorageEntriesParams<'a> {
-    ownerOrigin: Cow<'a, str>,
+    #[serde(rename = "ownerOrigin")]
+    owner_origin: Cow<'a, str>,
 }
 
 impl<'a> ClearSharedStorageEntriesParams<'a> {
-    pub fn builder(ownerOrigin: impl Into<Cow<'a, str>>) -> ClearSharedStorageEntriesParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `owner_origin`: 
+    pub fn builder(owner_origin: impl Into<Cow<'a, str>>) -> ClearSharedStorageEntriesParamsBuilder<'a> {
         ClearSharedStorageEntriesParamsBuilder {
-            ownerOrigin: ownerOrigin.into(),
+            owner_origin: owner_origin.into(),
         }
     }
-    pub fn ownerOrigin(&self) -> &str { self.ownerOrigin.as_ref() }
+    pub fn owner_origin(&self) -> &str { self.owner_origin.as_ref() }
 }
 
 
 pub struct ClearSharedStorageEntriesParamsBuilder<'a> {
-    ownerOrigin: Cow<'a, str>,
+    owner_origin: Cow<'a, str>,
 }
 
 impl<'a> ClearSharedStorageEntriesParamsBuilder<'a> {
     pub fn build(self) -> ClearSharedStorageEntriesParams<'a> {
         ClearSharedStorageEntriesParams {
-            ownerOrigin: self.ownerOrigin,
+            owner_origin: self.owner_origin,
         }
     }
 }
@@ -2201,27 +2448,30 @@ impl<'a> crate::CdpCommand<'a> for ClearSharedStorageEntriesParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ResetSharedStorageBudgetParams<'a> {
-    ownerOrigin: Cow<'a, str>,
+    #[serde(rename = "ownerOrigin")]
+    owner_origin: Cow<'a, str>,
 }
 
 impl<'a> ResetSharedStorageBudgetParams<'a> {
-    pub fn builder(ownerOrigin: impl Into<Cow<'a, str>>) -> ResetSharedStorageBudgetParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `owner_origin`: 
+    pub fn builder(owner_origin: impl Into<Cow<'a, str>>) -> ResetSharedStorageBudgetParamsBuilder<'a> {
         ResetSharedStorageBudgetParamsBuilder {
-            ownerOrigin: ownerOrigin.into(),
+            owner_origin: owner_origin.into(),
         }
     }
-    pub fn ownerOrigin(&self) -> &str { self.ownerOrigin.as_ref() }
+    pub fn owner_origin(&self) -> &str { self.owner_origin.as_ref() }
 }
 
 
 pub struct ResetSharedStorageBudgetParamsBuilder<'a> {
-    ownerOrigin: Cow<'a, str>,
+    owner_origin: Cow<'a, str>,
 }
 
 impl<'a> ResetSharedStorageBudgetParamsBuilder<'a> {
     pub fn build(self) -> ResetSharedStorageBudgetParams<'a> {
         ResetSharedStorageBudgetParams {
-            ownerOrigin: self.ownerOrigin,
+            owner_origin: self.owner_origin,
         }
     }
 }
@@ -2242,6 +2492,8 @@ pub struct SetSharedStorageTrackingParams {
 }
 
 impl SetSharedStorageTrackingParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `enable`: 
     pub fn builder(enable: bool) -> SetSharedStorageTrackingParamsBuilder {
         SetSharedStorageTrackingParamsBuilder {
             enable: enable,
@@ -2275,31 +2527,35 @@ impl<'a> crate::CdpCommand<'a> for SetSharedStorageTrackingParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetStorageBucketTrackingParams<'a> {
-    storageKey: Cow<'a, str>,
+    #[serde(rename = "storageKey")]
+    storage_key: Cow<'a, str>,
     enable: bool,
 }
 
 impl<'a> SetStorageBucketTrackingParams<'a> {
-    pub fn builder(storageKey: impl Into<Cow<'a, str>>, enable: bool) -> SetStorageBucketTrackingParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `storage_key`: 
+    /// * `enable`: 
+    pub fn builder(storage_key: impl Into<Cow<'a, str>>, enable: bool) -> SetStorageBucketTrackingParamsBuilder<'a> {
         SetStorageBucketTrackingParamsBuilder {
-            storageKey: storageKey.into(),
+            storage_key: storage_key.into(),
             enable: enable,
         }
     }
-    pub fn storageKey(&self) -> &str { self.storageKey.as_ref() }
+    pub fn storage_key(&self) -> &str { self.storage_key.as_ref() }
     pub fn enable(&self) -> bool { self.enable }
 }
 
 
 pub struct SetStorageBucketTrackingParamsBuilder<'a> {
-    storageKey: Cow<'a, str>,
+    storage_key: Cow<'a, str>,
     enable: bool,
 }
 
 impl<'a> SetStorageBucketTrackingParamsBuilder<'a> {
     pub fn build(self) -> SetStorageBucketTrackingParams<'a> {
         SetStorageBucketTrackingParams {
-            storageKey: self.storageKey,
+            storage_key: self.storage_key,
             enable: self.enable,
         }
     }
@@ -2321,6 +2577,8 @@ pub struct DeleteStorageBucketParams<'a> {
 }
 
 impl<'a> DeleteStorageBucketParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `bucket`: 
     pub fn builder(bucket: StorageBucket<'a>) -> DeleteStorageBucketParamsBuilder<'a> {
         DeleteStorageBucketParamsBuilder {
             bucket: bucket,
@@ -2354,27 +2612,30 @@ impl<'a> crate::CdpCommand<'a> for DeleteStorageBucketParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct RunBounceTrackingMitigationsReturns<'a> {
-    deletedSites: Vec<Cow<'a, str>>,
+    #[serde(rename = "deletedSites")]
+    deleted_sites: Vec<Cow<'a, str>>,
 }
 
 impl<'a> RunBounceTrackingMitigationsReturns<'a> {
-    pub fn builder(deletedSites: Vec<Cow<'a, str>>) -> RunBounceTrackingMitigationsReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `deleted_sites`: 
+    pub fn builder(deleted_sites: Vec<Cow<'a, str>>) -> RunBounceTrackingMitigationsReturnsBuilder<'a> {
         RunBounceTrackingMitigationsReturnsBuilder {
-            deletedSites: deletedSites,
+            deleted_sites: deleted_sites,
         }
     }
-    pub fn deletedSites(&self) -> &[Cow<'a, str>] { &self.deletedSites }
+    pub fn deleted_sites(&self) -> &[Cow<'a, str>] { &self.deleted_sites }
 }
 
 
 pub struct RunBounceTrackingMitigationsReturnsBuilder<'a> {
-    deletedSites: Vec<Cow<'a, str>>,
+    deleted_sites: Vec<Cow<'a, str>>,
 }
 
 impl<'a> RunBounceTrackingMitigationsReturnsBuilder<'a> {
     pub fn build(self) -> RunBounceTrackingMitigationsReturns<'a> {
         RunBounceTrackingMitigationsReturns {
-            deletedSites: self.deletedSites,
+            deleted_sites: self.deleted_sites,
         }
     }
 }
@@ -2399,6 +2660,8 @@ pub struct GetRelatedWebsiteSetsReturns<'a> {
 }
 
 impl<'a> GetRelatedWebsiteSetsReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `sets`: 
     pub fn builder(sets: Vec<RelatedWebsiteSet<'a>>) -> GetRelatedWebsiteSetsReturnsBuilder<'a> {
         GetRelatedWebsiteSetsReturnsBuilder {
             sets: sets,
@@ -2440,6 +2703,10 @@ pub struct SetProtectedAudienceKAnonymityParams<'a> {
 }
 
 impl<'a> SetProtectedAudienceKAnonymityParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `owner`: 
+    /// * `name`: 
+    /// * `hashes`: 
     pub fn builder(owner: impl Into<Cow<'a, str>>, name: impl Into<Cow<'a, str>>, hashes: Vec<Cow<'a, str>>) -> SetProtectedAudienceKAnonymityParamsBuilder<'a> {
         SetProtectedAudienceKAnonymityParamsBuilder {
             owner: owner.into(),

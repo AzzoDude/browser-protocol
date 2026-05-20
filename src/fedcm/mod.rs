@@ -61,78 +61,94 @@ pub enum AccountUrlType {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Account<'a> {
-    accountId: Cow<'a, str>,
+    #[serde(rename = "accountId")]
+    account_id: Cow<'a, str>,
     email: Cow<'a, str>,
     name: Cow<'a, str>,
-    givenName: Cow<'a, str>,
-    pictureUrl: Cow<'a, str>,
-    idpConfigUrl: Cow<'a, str>,
-    idpLoginUrl: Cow<'a, str>,
-    loginState: LoginState,
+    #[serde(rename = "givenName")]
+    given_name: Cow<'a, str>,
+    #[serde(rename = "pictureUrl")]
+    picture_url: Cow<'a, str>,
+    #[serde(rename = "idpConfigUrl")]
+    idp_config_url: Cow<'a, str>,
+    #[serde(rename = "idpLoginUrl")]
+    idp_login_url: Cow<'a, str>,
+    #[serde(rename = "loginState")]
+    login_state: LoginState,
     /// These two are only set if the loginState is signUp
-    #[serde(skip_serializing_if = "Option::is_none")]
-    termsOfServiceUrl: Option<Cow<'a, str>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    privacyPolicyUrl: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "termsOfServiceUrl")]
+    terms_of_service_url: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "privacyPolicyUrl")]
+    privacy_policy_url: Option<Cow<'a, str>>,
 }
 
 impl<'a> Account<'a> {
-    pub fn builder(accountId: impl Into<Cow<'a, str>>, email: impl Into<Cow<'a, str>>, name: impl Into<Cow<'a, str>>, givenName: impl Into<Cow<'a, str>>, pictureUrl: impl Into<Cow<'a, str>>, idpConfigUrl: impl Into<Cow<'a, str>>, idpLoginUrl: impl Into<Cow<'a, str>>, loginState: impl Into<LoginState>) -> AccountBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `account_id`: 
+    /// * `email`: 
+    /// * `name`: 
+    /// * `given_name`: 
+    /// * `picture_url`: 
+    /// * `idp_config_url`: 
+    /// * `idp_login_url`: 
+    /// * `login_state`: 
+    pub fn builder(account_id: impl Into<Cow<'a, str>>, email: impl Into<Cow<'a, str>>, name: impl Into<Cow<'a, str>>, given_name: impl Into<Cow<'a, str>>, picture_url: impl Into<Cow<'a, str>>, idp_config_url: impl Into<Cow<'a, str>>, idp_login_url: impl Into<Cow<'a, str>>, login_state: impl Into<LoginState>) -> AccountBuilder<'a> {
         AccountBuilder {
-            accountId: accountId.into(),
+            account_id: account_id.into(),
             email: email.into(),
             name: name.into(),
-            givenName: givenName.into(),
-            pictureUrl: pictureUrl.into(),
-            idpConfigUrl: idpConfigUrl.into(),
-            idpLoginUrl: idpLoginUrl.into(),
-            loginState: loginState.into(),
-            termsOfServiceUrl: None,
-            privacyPolicyUrl: None,
+            given_name: given_name.into(),
+            picture_url: picture_url.into(),
+            idp_config_url: idp_config_url.into(),
+            idp_login_url: idp_login_url.into(),
+            login_state: login_state.into(),
+            terms_of_service_url: None,
+            privacy_policy_url: None,
         }
     }
-    pub fn accountId(&self) -> &str { self.accountId.as_ref() }
+    pub fn account_id(&self) -> &str { self.account_id.as_ref() }
     pub fn email(&self) -> &str { self.email.as_ref() }
     pub fn name(&self) -> &str { self.name.as_ref() }
-    pub fn givenName(&self) -> &str { self.givenName.as_ref() }
-    pub fn pictureUrl(&self) -> &str { self.pictureUrl.as_ref() }
-    pub fn idpConfigUrl(&self) -> &str { self.idpConfigUrl.as_ref() }
-    pub fn idpLoginUrl(&self) -> &str { self.idpLoginUrl.as_ref() }
-    pub fn loginState(&self) -> &LoginState { &self.loginState }
-    pub fn termsOfServiceUrl(&self) -> Option<&str> { self.termsOfServiceUrl.as_deref() }
-    pub fn privacyPolicyUrl(&self) -> Option<&str> { self.privacyPolicyUrl.as_deref() }
+    pub fn given_name(&self) -> &str { self.given_name.as_ref() }
+    pub fn picture_url(&self) -> &str { self.picture_url.as_ref() }
+    pub fn idp_config_url(&self) -> &str { self.idp_config_url.as_ref() }
+    pub fn idp_login_url(&self) -> &str { self.idp_login_url.as_ref() }
+    pub fn login_state(&self) -> &LoginState { &self.login_state }
+    /// These two are only set if the loginState is signUp
+    pub fn terms_of_service_url(&self) -> Option<&str> { self.terms_of_service_url.as_deref() }
+    pub fn privacy_policy_url(&self) -> Option<&str> { self.privacy_policy_url.as_deref() }
 }
 
 
 pub struct AccountBuilder<'a> {
-    accountId: Cow<'a, str>,
+    account_id: Cow<'a, str>,
     email: Cow<'a, str>,
     name: Cow<'a, str>,
-    givenName: Cow<'a, str>,
-    pictureUrl: Cow<'a, str>,
-    idpConfigUrl: Cow<'a, str>,
-    idpLoginUrl: Cow<'a, str>,
-    loginState: LoginState,
-    termsOfServiceUrl: Option<Cow<'a, str>>,
-    privacyPolicyUrl: Option<Cow<'a, str>>,
+    given_name: Cow<'a, str>,
+    picture_url: Cow<'a, str>,
+    idp_config_url: Cow<'a, str>,
+    idp_login_url: Cow<'a, str>,
+    login_state: LoginState,
+    terms_of_service_url: Option<Cow<'a, str>>,
+    privacy_policy_url: Option<Cow<'a, str>>,
 }
 
 impl<'a> AccountBuilder<'a> {
     /// These two are only set if the loginState is signUp
-    pub fn termsOfServiceUrl(mut self, termsOfServiceUrl: impl Into<Cow<'a, str>>) -> Self { self.termsOfServiceUrl = Some(termsOfServiceUrl.into()); self }
-    pub fn privacyPolicyUrl(mut self, privacyPolicyUrl: impl Into<Cow<'a, str>>) -> Self { self.privacyPolicyUrl = Some(privacyPolicyUrl.into()); self }
+    pub fn terms_of_service_url(mut self, terms_of_service_url: impl Into<Cow<'a, str>>) -> Self { self.terms_of_service_url = Some(terms_of_service_url.into()); self }
+    pub fn privacy_policy_url(mut self, privacy_policy_url: impl Into<Cow<'a, str>>) -> Self { self.privacy_policy_url = Some(privacy_policy_url.into()); self }
     pub fn build(self) -> Account<'a> {
         Account {
-            accountId: self.accountId,
+            account_id: self.account_id,
             email: self.email,
             name: self.name,
-            givenName: self.givenName,
-            pictureUrl: self.pictureUrl,
-            idpConfigUrl: self.idpConfigUrl,
-            idpLoginUrl: self.idpLoginUrl,
-            loginState: self.loginState,
-            termsOfServiceUrl: self.termsOfServiceUrl,
-            privacyPolicyUrl: self.privacyPolicyUrl,
+            given_name: self.given_name,
+            picture_url: self.picture_url,
+            idp_config_url: self.idp_config_url,
+            idp_login_url: self.idp_login_url,
+            login_state: self.login_state,
+            terms_of_service_url: self.terms_of_service_url,
+            privacy_policy_url: self.privacy_policy_url,
         }
     }
 }
@@ -143,33 +159,37 @@ impl<'a> AccountBuilder<'a> {
 pub struct EnableParams {
     /// Allows callers to disable the promise rejection delay that would
     /// normally happen, if this is unimportant to what's being tested.
-    /// (step 4 of https://fedidcg.github.io/FedCM/#browser-api-rp-sign-in)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    disableRejectionDelay: Option<bool>,
+    /// (step 4 of <https://fedidcg.github.io/FedCM/#browser-api-rp-sign-in>)
+    #[serde(skip_serializing_if = "Option::is_none", rename = "disableRejectionDelay")]
+    disable_rejection_delay: Option<bool>,
 }
 
 impl EnableParams {
+    /// Creates a builder for this type.
     pub fn builder() -> EnableParamsBuilder {
         EnableParamsBuilder {
-            disableRejectionDelay: None,
+            disable_rejection_delay: None,
         }
     }
-    pub fn disableRejectionDelay(&self) -> Option<bool> { self.disableRejectionDelay }
+    /// Allows callers to disable the promise rejection delay that would
+    /// normally happen, if this is unimportant to what's being tested.
+    /// (step 4 of <https://fedidcg.github.io/FedCM/#browser-api-rp-sign-in>)
+    pub fn disable_rejection_delay(&self) -> Option<bool> { self.disable_rejection_delay }
 }
 
 #[derive(Default)]
 pub struct EnableParamsBuilder {
-    disableRejectionDelay: Option<bool>,
+    disable_rejection_delay: Option<bool>,
 }
 
 impl EnableParamsBuilder {
     /// Allows callers to disable the promise rejection delay that would
     /// normally happen, if this is unimportant to what's being tested.
-    /// (step 4 of https://fedidcg.github.io/FedCM/#browser-api-rp-sign-in)
-    pub fn disableRejectionDelay(mut self, disableRejectionDelay: bool) -> Self { self.disableRejectionDelay = Some(disableRejectionDelay); self }
+    /// (step 4 of <https://fedidcg.github.io/FedCM/#browser-api-rp-sign-in>)
+    pub fn disable_rejection_delay(mut self, disable_rejection_delay: bool) -> Self { self.disable_rejection_delay = Some(disable_rejection_delay); self }
     pub fn build(self) -> EnableParams {
         EnableParams {
-            disableRejectionDelay: self.disableRejectionDelay,
+            disable_rejection_delay: self.disable_rejection_delay,
         }
     }
 }
@@ -195,32 +215,37 @@ impl<'a> crate::CdpCommand<'a> for DisableParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SelectAccountParams<'a> {
-    dialogId: Cow<'a, str>,
-    accountIndex: u64,
+    #[serde(rename = "dialogId")]
+    dialog_id: Cow<'a, str>,
+    #[serde(rename = "accountIndex")]
+    account_index: u64,
 }
 
 impl<'a> SelectAccountParams<'a> {
-    pub fn builder(dialogId: impl Into<Cow<'a, str>>, accountIndex: u64) -> SelectAccountParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `dialog_id`: 
+    /// * `account_index`: 
+    pub fn builder(dialog_id: impl Into<Cow<'a, str>>, account_index: u64) -> SelectAccountParamsBuilder<'a> {
         SelectAccountParamsBuilder {
-            dialogId: dialogId.into(),
-            accountIndex: accountIndex,
+            dialog_id: dialog_id.into(),
+            account_index: account_index,
         }
     }
-    pub fn dialogId(&self) -> &str { self.dialogId.as_ref() }
-    pub fn accountIndex(&self) -> u64 { self.accountIndex }
+    pub fn dialog_id(&self) -> &str { self.dialog_id.as_ref() }
+    pub fn account_index(&self) -> u64 { self.account_index }
 }
 
 
 pub struct SelectAccountParamsBuilder<'a> {
-    dialogId: Cow<'a, str>,
-    accountIndex: u64,
+    dialog_id: Cow<'a, str>,
+    account_index: u64,
 }
 
 impl<'a> SelectAccountParamsBuilder<'a> {
     pub fn build(self) -> SelectAccountParams<'a> {
         SelectAccountParams {
-            dialogId: self.dialogId,
-            accountIndex: self.accountIndex,
+            dialog_id: self.dialog_id,
+            account_index: self.account_index,
         }
     }
 }
@@ -236,32 +261,37 @@ impl<'a> crate::CdpCommand<'a> for SelectAccountParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ClickDialogButtonParams<'a> {
-    dialogId: Cow<'a, str>,
-    dialogButton: DialogButton,
+    #[serde(rename = "dialogId")]
+    dialog_id: Cow<'a, str>,
+    #[serde(rename = "dialogButton")]
+    dialog_button: DialogButton,
 }
 
 impl<'a> ClickDialogButtonParams<'a> {
-    pub fn builder(dialogId: impl Into<Cow<'a, str>>, dialogButton: impl Into<DialogButton>) -> ClickDialogButtonParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `dialog_id`: 
+    /// * `dialog_button`: 
+    pub fn builder(dialog_id: impl Into<Cow<'a, str>>, dialog_button: impl Into<DialogButton>) -> ClickDialogButtonParamsBuilder<'a> {
         ClickDialogButtonParamsBuilder {
-            dialogId: dialogId.into(),
-            dialogButton: dialogButton.into(),
+            dialog_id: dialog_id.into(),
+            dialog_button: dialog_button.into(),
         }
     }
-    pub fn dialogId(&self) -> &str { self.dialogId.as_ref() }
-    pub fn dialogButton(&self) -> &DialogButton { &self.dialogButton }
+    pub fn dialog_id(&self) -> &str { self.dialog_id.as_ref() }
+    pub fn dialog_button(&self) -> &DialogButton { &self.dialog_button }
 }
 
 
 pub struct ClickDialogButtonParamsBuilder<'a> {
-    dialogId: Cow<'a, str>,
-    dialogButton: DialogButton,
+    dialog_id: Cow<'a, str>,
+    dialog_button: DialogButton,
 }
 
 impl<'a> ClickDialogButtonParamsBuilder<'a> {
     pub fn build(self) -> ClickDialogButtonParams<'a> {
         ClickDialogButtonParams {
-            dialogId: self.dialogId,
-            dialogButton: self.dialogButton,
+            dialog_id: self.dialog_id,
+            dialog_button: self.dialog_button,
         }
     }
 }
@@ -277,37 +307,44 @@ impl<'a> crate::CdpCommand<'a> for ClickDialogButtonParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct OpenUrlParams<'a> {
-    dialogId: Cow<'a, str>,
-    accountIndex: u64,
-    accountUrlType: AccountUrlType,
+    #[serde(rename = "dialogId")]
+    dialog_id: Cow<'a, str>,
+    #[serde(rename = "accountIndex")]
+    account_index: u64,
+    #[serde(rename = "accountUrlType")]
+    account_url_type: AccountUrlType,
 }
 
 impl<'a> OpenUrlParams<'a> {
-    pub fn builder(dialogId: impl Into<Cow<'a, str>>, accountIndex: u64, accountUrlType: impl Into<AccountUrlType>) -> OpenUrlParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `dialog_id`: 
+    /// * `account_index`: 
+    /// * `account_url_type`: 
+    pub fn builder(dialog_id: impl Into<Cow<'a, str>>, account_index: u64, account_url_type: impl Into<AccountUrlType>) -> OpenUrlParamsBuilder<'a> {
         OpenUrlParamsBuilder {
-            dialogId: dialogId.into(),
-            accountIndex: accountIndex,
-            accountUrlType: accountUrlType.into(),
+            dialog_id: dialog_id.into(),
+            account_index: account_index,
+            account_url_type: account_url_type.into(),
         }
     }
-    pub fn dialogId(&self) -> &str { self.dialogId.as_ref() }
-    pub fn accountIndex(&self) -> u64 { self.accountIndex }
-    pub fn accountUrlType(&self) -> &AccountUrlType { &self.accountUrlType }
+    pub fn dialog_id(&self) -> &str { self.dialog_id.as_ref() }
+    pub fn account_index(&self) -> u64 { self.account_index }
+    pub fn account_url_type(&self) -> &AccountUrlType { &self.account_url_type }
 }
 
 
 pub struct OpenUrlParamsBuilder<'a> {
-    dialogId: Cow<'a, str>,
-    accountIndex: u64,
-    accountUrlType: AccountUrlType,
+    dialog_id: Cow<'a, str>,
+    account_index: u64,
+    account_url_type: AccountUrlType,
 }
 
 impl<'a> OpenUrlParamsBuilder<'a> {
     pub fn build(self) -> OpenUrlParams<'a> {
         OpenUrlParams {
-            dialogId: self.dialogId,
-            accountIndex: self.accountIndex,
-            accountUrlType: self.accountUrlType,
+            dialog_id: self.dialog_id,
+            account_index: self.account_index,
+            account_url_type: self.account_url_type,
         }
     }
 }
@@ -323,34 +360,37 @@ impl<'a> crate::CdpCommand<'a> for OpenUrlParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct DismissDialogParams<'a> {
-    dialogId: Cow<'a, str>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    triggerCooldown: Option<bool>,
+    #[serde(rename = "dialogId")]
+    dialog_id: Cow<'a, str>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "triggerCooldown")]
+    trigger_cooldown: Option<bool>,
 }
 
 impl<'a> DismissDialogParams<'a> {
-    pub fn builder(dialogId: impl Into<Cow<'a, str>>) -> DismissDialogParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `dialog_id`: 
+    pub fn builder(dialog_id: impl Into<Cow<'a, str>>) -> DismissDialogParamsBuilder<'a> {
         DismissDialogParamsBuilder {
-            dialogId: dialogId.into(),
-            triggerCooldown: None,
+            dialog_id: dialog_id.into(),
+            trigger_cooldown: None,
         }
     }
-    pub fn dialogId(&self) -> &str { self.dialogId.as_ref() }
-    pub fn triggerCooldown(&self) -> Option<bool> { self.triggerCooldown }
+    pub fn dialog_id(&self) -> &str { self.dialog_id.as_ref() }
+    pub fn trigger_cooldown(&self) -> Option<bool> { self.trigger_cooldown }
 }
 
 
 pub struct DismissDialogParamsBuilder<'a> {
-    dialogId: Cow<'a, str>,
-    triggerCooldown: Option<bool>,
+    dialog_id: Cow<'a, str>,
+    trigger_cooldown: Option<bool>,
 }
 
 impl<'a> DismissDialogParamsBuilder<'a> {
-    pub fn triggerCooldown(mut self, triggerCooldown: bool) -> Self { self.triggerCooldown = Some(triggerCooldown); self }
+    pub fn trigger_cooldown(mut self, trigger_cooldown: bool) -> Self { self.trigger_cooldown = Some(trigger_cooldown); self }
     pub fn build(self) -> DismissDialogParams<'a> {
         DismissDialogParams {
-            dialogId: self.dialogId,
-            triggerCooldown: self.triggerCooldown,
+            dialog_id: self.dialog_id,
+            trigger_cooldown: self.trigger_cooldown,
         }
     }
 }

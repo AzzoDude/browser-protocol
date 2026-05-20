@@ -15,11 +15,14 @@ pub struct BindParams {
 }
 
 impl BindParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `port`: Port number to bind.
     pub fn builder(port: i64) -> BindParamsBuilder {
         BindParamsBuilder {
             port: port,
         }
     }
+    /// Port number to bind.
     pub fn port(&self) -> i64 { self.port }
 }
 
@@ -53,11 +56,14 @@ pub struct UnbindParams {
 }
 
 impl UnbindParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `port`: Port number to unbind.
     pub fn builder(port: i64) -> UnbindParamsBuilder {
         UnbindParamsBuilder {
             port: port,
         }
     }
+    /// Port number to unbind.
     pub fn port(&self) -> i64 { self.port }
 }
 

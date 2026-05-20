@@ -138,7 +138,7 @@ pub enum ConnectionType {
 }
 
 /// Represents the cookie's 'SameSite' status:
-/// https://tools.ietf.org/html/draft-west-first-party-cookies
+/// <https://tools.ietf.org/html/draft-west-first-party-cookies>
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum CookieSameSite {
@@ -152,7 +152,7 @@ pub enum CookieSameSite {
 }
 
 /// Represents the cookie's 'Priority' status:
-/// https://tools.ietf.org/html/draft-west-cookie-priority-00
+/// <https://tools.ietf.org/html/draft-west-cookie-priority-00>
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum CookiePriority {
@@ -187,153 +187,214 @@ pub enum CookieSourceScheme {
 pub struct ResourceTiming {
     /// Timing's requestTime is a baseline in seconds, while the other numbers are ticks in
     /// milliseconds relatively to this requestTime.
-    requestTime: f64,
+    #[serde(rename = "requestTime")]
+    request_time: f64,
     /// Started resolving proxy.
-    proxyStart: f64,
+    #[serde(rename = "proxyStart")]
+    proxy_start: f64,
     /// Finished resolving proxy.
-    proxyEnd: f64,
+    #[serde(rename = "proxyEnd")]
+    proxy_end: f64,
     /// Started DNS address resolve.
-    dnsStart: f64,
+    #[serde(rename = "dnsStart")]
+    dns_start: f64,
     /// Finished DNS address resolve.
-    dnsEnd: f64,
+    #[serde(rename = "dnsEnd")]
+    dns_end: f64,
     /// Started connecting to the remote host.
-    connectStart: f64,
+    #[serde(rename = "connectStart")]
+    connect_start: f64,
     /// Connected to the remote host.
-    connectEnd: f64,
+    #[serde(rename = "connectEnd")]
+    connect_end: f64,
     /// Started SSL handshake.
-    sslStart: f64,
+    #[serde(rename = "sslStart")]
+    ssl_start: f64,
     /// Finished SSL handshake.
-    sslEnd: f64,
+    #[serde(rename = "sslEnd")]
+    ssl_end: f64,
     /// Started running ServiceWorker.
-    workerStart: f64,
+    #[serde(rename = "workerStart")]
+    worker_start: f64,
     /// Finished Starting ServiceWorker.
-    workerReady: f64,
+    #[serde(rename = "workerReady")]
+    worker_ready: f64,
     /// Started fetch event.
-    workerFetchStart: f64,
+    #[serde(rename = "workerFetchStart")]
+    worker_fetch_start: f64,
     /// Settled fetch event respondWith promise.
-    workerRespondWithSettled: f64,
+    #[serde(rename = "workerRespondWithSettled")]
+    worker_respond_with_settled: f64,
     /// Started ServiceWorker static routing source evaluation.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    workerRouterEvaluationStart: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "workerRouterEvaluationStart")]
+    worker_router_evaluation_start: Option<f64>,
     /// Started cache lookup when the source was evaluated to 'cache'.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    workerCacheLookupStart: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "workerCacheLookupStart")]
+    worker_cache_lookup_start: Option<f64>,
     /// Started sending request.
-    sendStart: f64,
+    #[serde(rename = "sendStart")]
+    send_start: f64,
     /// Finished sending request.
-    sendEnd: f64,
+    #[serde(rename = "sendEnd")]
+    send_end: f64,
     /// Time the server started pushing request.
-    pushStart: f64,
+    #[serde(rename = "pushStart")]
+    push_start: f64,
     /// Time the server finished pushing request.
-    pushEnd: f64,
+    #[serde(rename = "pushEnd")]
+    push_end: f64,
     /// Started receiving response headers.
-    receiveHeadersStart: f64,
+    #[serde(rename = "receiveHeadersStart")]
+    receive_headers_start: f64,
     /// Finished receiving response headers.
-    receiveHeadersEnd: f64,
+    #[serde(rename = "receiveHeadersEnd")]
+    receive_headers_end: f64,
 }
 
 impl ResourceTiming {
-    pub fn builder(requestTime: f64, proxyStart: f64, proxyEnd: f64, dnsStart: f64, dnsEnd: f64, connectStart: f64, connectEnd: f64, sslStart: f64, sslEnd: f64, workerStart: f64, workerReady: f64, workerFetchStart: f64, workerRespondWithSettled: f64, sendStart: f64, sendEnd: f64, pushStart: f64, pushEnd: f64, receiveHeadersStart: f64, receiveHeadersEnd: f64) -> ResourceTimingBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_time`: Timing's requestTime is a baseline in seconds, while the other numbers are ticks in milliseconds relatively to this requestTime.
+    /// * `proxy_start`: Started resolving proxy.
+    /// * `proxy_end`: Finished resolving proxy.
+    /// * `dns_start`: Started DNS address resolve.
+    /// * `dns_end`: Finished DNS address resolve.
+    /// * `connect_start`: Started connecting to the remote host.
+    /// * `connect_end`: Connected to the remote host.
+    /// * `ssl_start`: Started SSL handshake.
+    /// * `ssl_end`: Finished SSL handshake.
+    /// * `worker_start`: Started running ServiceWorker.
+    /// * `worker_ready`: Finished Starting ServiceWorker.
+    /// * `worker_fetch_start`: Started fetch event.
+    /// * `worker_respond_with_settled`: Settled fetch event respondWith promise.
+    /// * `send_start`: Started sending request.
+    /// * `send_end`: Finished sending request.
+    /// * `push_start`: Time the server started pushing request.
+    /// * `push_end`: Time the server finished pushing request.
+    /// * `receive_headers_start`: Started receiving response headers.
+    /// * `receive_headers_end`: Finished receiving response headers.
+    pub fn builder(request_time: f64, proxy_start: f64, proxy_end: f64, dns_start: f64, dns_end: f64, connect_start: f64, connect_end: f64, ssl_start: f64, ssl_end: f64, worker_start: f64, worker_ready: f64, worker_fetch_start: f64, worker_respond_with_settled: f64, send_start: f64, send_end: f64, push_start: f64, push_end: f64, receive_headers_start: f64, receive_headers_end: f64) -> ResourceTimingBuilder {
         ResourceTimingBuilder {
-            requestTime: requestTime,
-            proxyStart: proxyStart,
-            proxyEnd: proxyEnd,
-            dnsStart: dnsStart,
-            dnsEnd: dnsEnd,
-            connectStart: connectStart,
-            connectEnd: connectEnd,
-            sslStart: sslStart,
-            sslEnd: sslEnd,
-            workerStart: workerStart,
-            workerReady: workerReady,
-            workerFetchStart: workerFetchStart,
-            workerRespondWithSettled: workerRespondWithSettled,
-            workerRouterEvaluationStart: None,
-            workerCacheLookupStart: None,
-            sendStart: sendStart,
-            sendEnd: sendEnd,
-            pushStart: pushStart,
-            pushEnd: pushEnd,
-            receiveHeadersStart: receiveHeadersStart,
-            receiveHeadersEnd: receiveHeadersEnd,
+            request_time: request_time,
+            proxy_start: proxy_start,
+            proxy_end: proxy_end,
+            dns_start: dns_start,
+            dns_end: dns_end,
+            connect_start: connect_start,
+            connect_end: connect_end,
+            ssl_start: ssl_start,
+            ssl_end: ssl_end,
+            worker_start: worker_start,
+            worker_ready: worker_ready,
+            worker_fetch_start: worker_fetch_start,
+            worker_respond_with_settled: worker_respond_with_settled,
+            worker_router_evaluation_start: None,
+            worker_cache_lookup_start: None,
+            send_start: send_start,
+            send_end: send_end,
+            push_start: push_start,
+            push_end: push_end,
+            receive_headers_start: receive_headers_start,
+            receive_headers_end: receive_headers_end,
         }
     }
-    pub fn requestTime(&self) -> f64 { self.requestTime }
-    pub fn proxyStart(&self) -> f64 { self.proxyStart }
-    pub fn proxyEnd(&self) -> f64 { self.proxyEnd }
-    pub fn dnsStart(&self) -> f64 { self.dnsStart }
-    pub fn dnsEnd(&self) -> f64 { self.dnsEnd }
-    pub fn connectStart(&self) -> f64 { self.connectStart }
-    pub fn connectEnd(&self) -> f64 { self.connectEnd }
-    pub fn sslStart(&self) -> f64 { self.sslStart }
-    pub fn sslEnd(&self) -> f64 { self.sslEnd }
-    pub fn workerStart(&self) -> f64 { self.workerStart }
-    pub fn workerReady(&self) -> f64 { self.workerReady }
-    pub fn workerFetchStart(&self) -> f64 { self.workerFetchStart }
-    pub fn workerRespondWithSettled(&self) -> f64 { self.workerRespondWithSettled }
-    pub fn workerRouterEvaluationStart(&self) -> Option<f64> { self.workerRouterEvaluationStart }
-    pub fn workerCacheLookupStart(&self) -> Option<f64> { self.workerCacheLookupStart }
-    pub fn sendStart(&self) -> f64 { self.sendStart }
-    pub fn sendEnd(&self) -> f64 { self.sendEnd }
-    pub fn pushStart(&self) -> f64 { self.pushStart }
-    pub fn pushEnd(&self) -> f64 { self.pushEnd }
-    pub fn receiveHeadersStart(&self) -> f64 { self.receiveHeadersStart }
-    pub fn receiveHeadersEnd(&self) -> f64 { self.receiveHeadersEnd }
+    /// Timing's requestTime is a baseline in seconds, while the other numbers are ticks in
+    /// milliseconds relatively to this requestTime.
+    pub fn request_time(&self) -> f64 { self.request_time }
+    /// Started resolving proxy.
+    pub fn proxy_start(&self) -> f64 { self.proxy_start }
+    /// Finished resolving proxy.
+    pub fn proxy_end(&self) -> f64 { self.proxy_end }
+    /// Started DNS address resolve.
+    pub fn dns_start(&self) -> f64 { self.dns_start }
+    /// Finished DNS address resolve.
+    pub fn dns_end(&self) -> f64 { self.dns_end }
+    /// Started connecting to the remote host.
+    pub fn connect_start(&self) -> f64 { self.connect_start }
+    /// Connected to the remote host.
+    pub fn connect_end(&self) -> f64 { self.connect_end }
+    /// Started SSL handshake.
+    pub fn ssl_start(&self) -> f64 { self.ssl_start }
+    /// Finished SSL handshake.
+    pub fn ssl_end(&self) -> f64 { self.ssl_end }
+    /// Started running ServiceWorker.
+    pub fn worker_start(&self) -> f64 { self.worker_start }
+    /// Finished Starting ServiceWorker.
+    pub fn worker_ready(&self) -> f64 { self.worker_ready }
+    /// Started fetch event.
+    pub fn worker_fetch_start(&self) -> f64 { self.worker_fetch_start }
+    /// Settled fetch event respondWith promise.
+    pub fn worker_respond_with_settled(&self) -> f64 { self.worker_respond_with_settled }
+    /// Started ServiceWorker static routing source evaluation.
+    pub fn worker_router_evaluation_start(&self) -> Option<f64> { self.worker_router_evaluation_start }
+    /// Started cache lookup when the source was evaluated to 'cache'.
+    pub fn worker_cache_lookup_start(&self) -> Option<f64> { self.worker_cache_lookup_start }
+    /// Started sending request.
+    pub fn send_start(&self) -> f64 { self.send_start }
+    /// Finished sending request.
+    pub fn send_end(&self) -> f64 { self.send_end }
+    /// Time the server started pushing request.
+    pub fn push_start(&self) -> f64 { self.push_start }
+    /// Time the server finished pushing request.
+    pub fn push_end(&self) -> f64 { self.push_end }
+    /// Started receiving response headers.
+    pub fn receive_headers_start(&self) -> f64 { self.receive_headers_start }
+    /// Finished receiving response headers.
+    pub fn receive_headers_end(&self) -> f64 { self.receive_headers_end }
 }
 
 
 pub struct ResourceTimingBuilder {
-    requestTime: f64,
-    proxyStart: f64,
-    proxyEnd: f64,
-    dnsStart: f64,
-    dnsEnd: f64,
-    connectStart: f64,
-    connectEnd: f64,
-    sslStart: f64,
-    sslEnd: f64,
-    workerStart: f64,
-    workerReady: f64,
-    workerFetchStart: f64,
-    workerRespondWithSettled: f64,
-    workerRouterEvaluationStart: Option<f64>,
-    workerCacheLookupStart: Option<f64>,
-    sendStart: f64,
-    sendEnd: f64,
-    pushStart: f64,
-    pushEnd: f64,
-    receiveHeadersStart: f64,
-    receiveHeadersEnd: f64,
+    request_time: f64,
+    proxy_start: f64,
+    proxy_end: f64,
+    dns_start: f64,
+    dns_end: f64,
+    connect_start: f64,
+    connect_end: f64,
+    ssl_start: f64,
+    ssl_end: f64,
+    worker_start: f64,
+    worker_ready: f64,
+    worker_fetch_start: f64,
+    worker_respond_with_settled: f64,
+    worker_router_evaluation_start: Option<f64>,
+    worker_cache_lookup_start: Option<f64>,
+    send_start: f64,
+    send_end: f64,
+    push_start: f64,
+    push_end: f64,
+    receive_headers_start: f64,
+    receive_headers_end: f64,
 }
 
 impl ResourceTimingBuilder {
     /// Started ServiceWorker static routing source evaluation.
-    pub fn workerRouterEvaluationStart(mut self, workerRouterEvaluationStart: f64) -> Self { self.workerRouterEvaluationStart = Some(workerRouterEvaluationStart); self }
+    pub fn worker_router_evaluation_start(mut self, worker_router_evaluation_start: f64) -> Self { self.worker_router_evaluation_start = Some(worker_router_evaluation_start); self }
     /// Started cache lookup when the source was evaluated to 'cache'.
-    pub fn workerCacheLookupStart(mut self, workerCacheLookupStart: f64) -> Self { self.workerCacheLookupStart = Some(workerCacheLookupStart); self }
+    pub fn worker_cache_lookup_start(mut self, worker_cache_lookup_start: f64) -> Self { self.worker_cache_lookup_start = Some(worker_cache_lookup_start); self }
     pub fn build(self) -> ResourceTiming {
         ResourceTiming {
-            requestTime: self.requestTime,
-            proxyStart: self.proxyStart,
-            proxyEnd: self.proxyEnd,
-            dnsStart: self.dnsStart,
-            dnsEnd: self.dnsEnd,
-            connectStart: self.connectStart,
-            connectEnd: self.connectEnd,
-            sslStart: self.sslStart,
-            sslEnd: self.sslEnd,
-            workerStart: self.workerStart,
-            workerReady: self.workerReady,
-            workerFetchStart: self.workerFetchStart,
-            workerRespondWithSettled: self.workerRespondWithSettled,
-            workerRouterEvaluationStart: self.workerRouterEvaluationStart,
-            workerCacheLookupStart: self.workerCacheLookupStart,
-            sendStart: self.sendStart,
-            sendEnd: self.sendEnd,
-            pushStart: self.pushStart,
-            pushEnd: self.pushEnd,
-            receiveHeadersStart: self.receiveHeadersStart,
-            receiveHeadersEnd: self.receiveHeadersEnd,
+            request_time: self.request_time,
+            proxy_start: self.proxy_start,
+            proxy_end: self.proxy_end,
+            dns_start: self.dns_start,
+            dns_end: self.dns_end,
+            connect_start: self.connect_start,
+            connect_end: self.connect_end,
+            ssl_start: self.ssl_start,
+            ssl_end: self.ssl_end,
+            worker_start: self.worker_start,
+            worker_ready: self.worker_ready,
+            worker_fetch_start: self.worker_fetch_start,
+            worker_respond_with_settled: self.worker_respond_with_settled,
+            worker_router_evaluation_start: self.worker_router_evaluation_start,
+            worker_cache_lookup_start: self.worker_cache_lookup_start,
+            send_start: self.send_start,
+            send_end: self.send_end,
+            push_start: self.push_start,
+            push_end: self.push_end,
+            receive_headers_start: self.receive_headers_start,
+            receive_headers_end: self.receive_headers_end,
         }
     }
 }
@@ -382,6 +443,7 @@ pub struct PostDataEntry<'a> {
 }
 
 impl<'a> PostDataEntry<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> PostDataEntryBuilder<'a> {
         PostDataEntryBuilder {
             bytes: None,
@@ -412,136 +474,161 @@ pub struct Request<'a> {
     /// Request URL (without fragment).
     url: Cow<'a, str>,
     /// Fragment of the requested URL starting with hash, if present.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    urlFragment: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "urlFragment")]
+    url_fragment: Option<Cow<'a, str>>,
     /// HTTP request method.
     method: Cow<'a, str>,
     /// HTTP request headers.
     headers: Headers,
     /// HTTP POST request data.
     /// Use postDataEntries instead.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    postData: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "postData")]
+    post_data: Option<Cow<'a, str>>,
     /// True when the request has POST data. Note that postData might still be omitted when this flag is true when the data is too long.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    hasPostData: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "hasPostData")]
+    has_post_data: Option<bool>,
     /// Request body elements (post data broken into individual entries).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    postDataEntries: Option<Vec<PostDataEntry<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "postDataEntries")]
+    post_data_entries: Option<Vec<PostDataEntry<'a>>>,
     /// The mixed content type of the request.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    mixedContentType: Option<crate::security::MixedContentType>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "mixedContentType")]
+    mixed_content_type: Option<crate::security::MixedContentType>,
     /// Priority of the resource request at the time request is sent.
-    initialPriority: ResourcePriority,
-    /// The referrer policy of the request, as defined in https://www.w3.org/TR/referrer-policy/
-    referrerPolicy: Cow<'a, str>,
+    #[serde(rename = "initialPriority")]
+    initial_priority: ResourcePriority,
+    /// The referrer policy of the request, as defined in <https://www.w3.org/TR/referrer-policy/>
+    #[serde(rename = "referrerPolicy")]
+    referrer_policy: Cow<'a, str>,
     /// Whether is loaded via link preload.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    isLinkPreload: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "isLinkPreload")]
+    is_link_preload: Option<bool>,
     /// Set for requests when the TrustToken API is used. Contains the parameters
     /// passed by the developer (e.g. via "fetch") as understood by the backend.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    trustTokenParams: Option<TrustTokenParams<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "trustTokenParams")]
+    trust_token_params: Option<TrustTokenParams<'a>>,
     /// True if this resource request is considered to be the 'same site' as the
     /// request corresponding to the main frame.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    isSameSite: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "isSameSite")]
+    is_same_site: Option<bool>,
     /// True when the resource request is ad-related.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    isAdRelated: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "isAdRelated")]
+    is_ad_related: Option<bool>,
 }
 
 impl<'a> Request<'a> {
-    pub fn builder(url: impl Into<Cow<'a, str>>, method: impl Into<Cow<'a, str>>, headers: Headers, initialPriority: impl Into<ResourcePriority>, referrerPolicy: impl Into<Cow<'a, str>>) -> RequestBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url`: Request URL (without fragment).
+    /// * `method`: HTTP request method.
+    /// * `headers`: HTTP request headers.
+    /// * `initial_priority`: Priority of the resource request at the time request is sent.
+    /// * `referrer_policy`: The referrer policy of the request, as defined in <https://www.w3.org/TR/referrer-policy/>
+    pub fn builder(url: impl Into<Cow<'a, str>>, method: impl Into<Cow<'a, str>>, headers: Headers, initial_priority: impl Into<ResourcePriority>, referrer_policy: impl Into<Cow<'a, str>>) -> RequestBuilder<'a> {
         RequestBuilder {
             url: url.into(),
-            urlFragment: None,
+            url_fragment: None,
             method: method.into(),
             headers: headers,
-            postData: None,
-            hasPostData: None,
-            postDataEntries: None,
-            mixedContentType: None,
-            initialPriority: initialPriority.into(),
-            referrerPolicy: referrerPolicy.into(),
-            isLinkPreload: None,
-            trustTokenParams: None,
-            isSameSite: None,
-            isAdRelated: None,
+            post_data: None,
+            has_post_data: None,
+            post_data_entries: None,
+            mixed_content_type: None,
+            initial_priority: initial_priority.into(),
+            referrer_policy: referrer_policy.into(),
+            is_link_preload: None,
+            trust_token_params: None,
+            is_same_site: None,
+            is_ad_related: None,
         }
     }
+    /// Request URL (without fragment).
     pub fn url(&self) -> &str { self.url.as_ref() }
-    pub fn urlFragment(&self) -> Option<&str> { self.urlFragment.as_deref() }
+    /// Fragment of the requested URL starting with hash, if present.
+    pub fn url_fragment(&self) -> Option<&str> { self.url_fragment.as_deref() }
+    /// HTTP request method.
     pub fn method(&self) -> &str { self.method.as_ref() }
+    /// HTTP request headers.
     pub fn headers(&self) -> &Headers { &self.headers }
-    pub fn postData(&self) -> Option<&str> { self.postData.as_deref() }
-    pub fn hasPostData(&self) -> Option<bool> { self.hasPostData }
-    pub fn postDataEntries(&self) -> Option<&[PostDataEntry<'a>]> { self.postDataEntries.as_deref() }
-    pub fn mixedContentType(&self) -> Option<&crate::security::MixedContentType> { self.mixedContentType.as_ref() }
-    pub fn initialPriority(&self) -> &ResourcePriority { &self.initialPriority }
-    pub fn referrerPolicy(&self) -> &str { self.referrerPolicy.as_ref() }
-    pub fn isLinkPreload(&self) -> Option<bool> { self.isLinkPreload }
-    pub fn trustTokenParams(&self) -> Option<&TrustTokenParams<'a>> { self.trustTokenParams.as_ref() }
-    pub fn isSameSite(&self) -> Option<bool> { self.isSameSite }
-    pub fn isAdRelated(&self) -> Option<bool> { self.isAdRelated }
+    /// HTTP POST request data.
+    /// Use postDataEntries instead.
+    pub fn post_data(&self) -> Option<&str> { self.post_data.as_deref() }
+    /// True when the request has POST data. Note that postData might still be omitted when this flag is true when the data is too long.
+    pub fn has_post_data(&self) -> Option<bool> { self.has_post_data }
+    /// Request body elements (post data broken into individual entries).
+    pub fn post_data_entries(&self) -> Option<&[PostDataEntry<'a>]> { self.post_data_entries.as_deref() }
+    /// The mixed content type of the request.
+    pub fn mixed_content_type(&self) -> Option<&crate::security::MixedContentType> { self.mixed_content_type.as_ref() }
+    /// Priority of the resource request at the time request is sent.
+    pub fn initial_priority(&self) -> &ResourcePriority { &self.initial_priority }
+    /// The referrer policy of the request, as defined in <https://www.w3.org/TR/referrer-policy/>
+    pub fn referrer_policy(&self) -> &str { self.referrer_policy.as_ref() }
+    /// Whether is loaded via link preload.
+    pub fn is_link_preload(&self) -> Option<bool> { self.is_link_preload }
+    /// Set for requests when the TrustToken API is used. Contains the parameters
+    /// passed by the developer (e.g. via "fetch") as understood by the backend.
+    pub fn trust_token_params(&self) -> Option<&TrustTokenParams<'a>> { self.trust_token_params.as_ref() }
+    /// True if this resource request is considered to be the 'same site' as the
+    /// request corresponding to the main frame.
+    pub fn is_same_site(&self) -> Option<bool> { self.is_same_site }
+    /// True when the resource request is ad-related.
+    pub fn is_ad_related(&self) -> Option<bool> { self.is_ad_related }
 }
 
 
 pub struct RequestBuilder<'a> {
     url: Cow<'a, str>,
-    urlFragment: Option<Cow<'a, str>>,
+    url_fragment: Option<Cow<'a, str>>,
     method: Cow<'a, str>,
     headers: Headers,
-    postData: Option<Cow<'a, str>>,
-    hasPostData: Option<bool>,
-    postDataEntries: Option<Vec<PostDataEntry<'a>>>,
-    mixedContentType: Option<crate::security::MixedContentType>,
-    initialPriority: ResourcePriority,
-    referrerPolicy: Cow<'a, str>,
-    isLinkPreload: Option<bool>,
-    trustTokenParams: Option<TrustTokenParams<'a>>,
-    isSameSite: Option<bool>,
-    isAdRelated: Option<bool>,
+    post_data: Option<Cow<'a, str>>,
+    has_post_data: Option<bool>,
+    post_data_entries: Option<Vec<PostDataEntry<'a>>>,
+    mixed_content_type: Option<crate::security::MixedContentType>,
+    initial_priority: ResourcePriority,
+    referrer_policy: Cow<'a, str>,
+    is_link_preload: Option<bool>,
+    trust_token_params: Option<TrustTokenParams<'a>>,
+    is_same_site: Option<bool>,
+    is_ad_related: Option<bool>,
 }
 
 impl<'a> RequestBuilder<'a> {
     /// Fragment of the requested URL starting with hash, if present.
-    pub fn urlFragment(mut self, urlFragment: impl Into<Cow<'a, str>>) -> Self { self.urlFragment = Some(urlFragment.into()); self }
+    pub fn url_fragment(mut self, url_fragment: impl Into<Cow<'a, str>>) -> Self { self.url_fragment = Some(url_fragment.into()); self }
     /// HTTP POST request data.
     /// Use postDataEntries instead.
-    pub fn postData(mut self, postData: impl Into<Cow<'a, str>>) -> Self { self.postData = Some(postData.into()); self }
+    pub fn post_data(mut self, post_data: impl Into<Cow<'a, str>>) -> Self { self.post_data = Some(post_data.into()); self }
     /// True when the request has POST data. Note that postData might still be omitted when this flag is true when the data is too long.
-    pub fn hasPostData(mut self, hasPostData: bool) -> Self { self.hasPostData = Some(hasPostData); self }
+    pub fn has_post_data(mut self, has_post_data: bool) -> Self { self.has_post_data = Some(has_post_data); self }
     /// Request body elements (post data broken into individual entries).
-    pub fn postDataEntries(mut self, postDataEntries: Vec<PostDataEntry<'a>>) -> Self { self.postDataEntries = Some(postDataEntries); self }
+    pub fn post_data_entries(mut self, post_data_entries: Vec<PostDataEntry<'a>>) -> Self { self.post_data_entries = Some(post_data_entries); self }
     /// The mixed content type of the request.
-    pub fn mixedContentType(mut self, mixedContentType: crate::security::MixedContentType) -> Self { self.mixedContentType = Some(mixedContentType); self }
+    pub fn mixed_content_type(mut self, mixed_content_type: crate::security::MixedContentType) -> Self { self.mixed_content_type = Some(mixed_content_type); self }
     /// Whether is loaded via link preload.
-    pub fn isLinkPreload(mut self, isLinkPreload: bool) -> Self { self.isLinkPreload = Some(isLinkPreload); self }
+    pub fn is_link_preload(mut self, is_link_preload: bool) -> Self { self.is_link_preload = Some(is_link_preload); self }
     /// Set for requests when the TrustToken API is used. Contains the parameters
     /// passed by the developer (e.g. via "fetch") as understood by the backend.
-    pub fn trustTokenParams(mut self, trustTokenParams: TrustTokenParams<'a>) -> Self { self.trustTokenParams = Some(trustTokenParams); self }
+    pub fn trust_token_params(mut self, trust_token_params: TrustTokenParams<'a>) -> Self { self.trust_token_params = Some(trust_token_params); self }
     /// True if this resource request is considered to be the 'same site' as the
     /// request corresponding to the main frame.
-    pub fn isSameSite(mut self, isSameSite: bool) -> Self { self.isSameSite = Some(isSameSite); self }
+    pub fn is_same_site(mut self, is_same_site: bool) -> Self { self.is_same_site = Some(is_same_site); self }
     /// True when the resource request is ad-related.
-    pub fn isAdRelated(mut self, isAdRelated: bool) -> Self { self.isAdRelated = Some(isAdRelated); self }
+    pub fn is_ad_related(mut self, is_ad_related: bool) -> Self { self.is_ad_related = Some(is_ad_related); self }
     pub fn build(self) -> Request<'a> {
         Request {
             url: self.url,
-            urlFragment: self.urlFragment,
+            url_fragment: self.url_fragment,
             method: self.method,
             headers: self.headers,
-            postData: self.postData,
-            hasPostData: self.hasPostData,
-            postDataEntries: self.postDataEntries,
-            mixedContentType: self.mixedContentType,
-            initialPriority: self.initialPriority,
-            referrerPolicy: self.referrerPolicy,
-            isLinkPreload: self.isLinkPreload,
-            trustTokenParams: self.trustTokenParams,
-            isSameSite: self.isSameSite,
-            isAdRelated: self.isAdRelated,
+            post_data: self.post_data,
+            has_post_data: self.has_post_data,
+            post_data_entries: self.post_data_entries,
+            mixed_content_type: self.mixed_content_type,
+            initial_priority: self.initial_priority,
+            referrer_policy: self.referrer_policy,
+            is_link_preload: self.is_link_preload,
+            trust_token_params: self.trust_token_params,
+            is_same_site: self.is_same_site,
+            is_ad_related: self.is_ad_related,
         }
     }
 }
@@ -556,53 +643,76 @@ pub struct SignedCertificateTimestamp<'a> {
     /// Origin.
     origin: Cow<'a, str>,
     /// Log name / description.
-    logDescription: Cow<'a, str>,
+    #[serde(rename = "logDescription")]
+    log_description: Cow<'a, str>,
     /// Log ID.
-    logId: Cow<'a, str>,
+    #[serde(rename = "logId")]
+    log_id: Cow<'a, str>,
     /// Issuance date. Unlike TimeSinceEpoch, this contains the number of
     /// milliseconds since January 1, 1970, UTC, not the number of seconds.
     timestamp: f64,
     /// Hash algorithm.
-    hashAlgorithm: Cow<'a, str>,
+    #[serde(rename = "hashAlgorithm")]
+    hash_algorithm: Cow<'a, str>,
     /// Signature algorithm.
-    signatureAlgorithm: Cow<'a, str>,
+    #[serde(rename = "signatureAlgorithm")]
+    signature_algorithm: Cow<'a, str>,
     /// Signature data.
-    signatureData: Cow<'a, str>,
+    #[serde(rename = "signatureData")]
+    signature_data: Cow<'a, str>,
 }
 
 impl<'a> SignedCertificateTimestamp<'a> {
-    pub fn builder(status: impl Into<Cow<'a, str>>, origin: impl Into<Cow<'a, str>>, logDescription: impl Into<Cow<'a, str>>, logId: impl Into<Cow<'a, str>>, timestamp: f64, hashAlgorithm: impl Into<Cow<'a, str>>, signatureAlgorithm: impl Into<Cow<'a, str>>, signatureData: impl Into<Cow<'a, str>>) -> SignedCertificateTimestampBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `status`: Validation status.
+    /// * `origin`: Origin.
+    /// * `log_description`: Log name / description.
+    /// * `log_id`: Log ID.
+    /// * `timestamp`: Issuance date. Unlike TimeSinceEpoch, this contains the number of milliseconds since January 1, 1970, UTC, not the number of seconds.
+    /// * `hash_algorithm`: Hash algorithm.
+    /// * `signature_algorithm`: Signature algorithm.
+    /// * `signature_data`: Signature data.
+    pub fn builder(status: impl Into<Cow<'a, str>>, origin: impl Into<Cow<'a, str>>, log_description: impl Into<Cow<'a, str>>, log_id: impl Into<Cow<'a, str>>, timestamp: f64, hash_algorithm: impl Into<Cow<'a, str>>, signature_algorithm: impl Into<Cow<'a, str>>, signature_data: impl Into<Cow<'a, str>>) -> SignedCertificateTimestampBuilder<'a> {
         SignedCertificateTimestampBuilder {
             status: status.into(),
             origin: origin.into(),
-            logDescription: logDescription.into(),
-            logId: logId.into(),
+            log_description: log_description.into(),
+            log_id: log_id.into(),
             timestamp: timestamp,
-            hashAlgorithm: hashAlgorithm.into(),
-            signatureAlgorithm: signatureAlgorithm.into(),
-            signatureData: signatureData.into(),
+            hash_algorithm: hash_algorithm.into(),
+            signature_algorithm: signature_algorithm.into(),
+            signature_data: signature_data.into(),
         }
     }
+    /// Validation status.
     pub fn status(&self) -> &str { self.status.as_ref() }
+    /// Origin.
     pub fn origin(&self) -> &str { self.origin.as_ref() }
-    pub fn logDescription(&self) -> &str { self.logDescription.as_ref() }
-    pub fn logId(&self) -> &str { self.logId.as_ref() }
+    /// Log name / description.
+    pub fn log_description(&self) -> &str { self.log_description.as_ref() }
+    /// Log ID.
+    pub fn log_id(&self) -> &str { self.log_id.as_ref() }
+    /// Issuance date. Unlike TimeSinceEpoch, this contains the number of
+    /// milliseconds since January 1, 1970, UTC, not the number of seconds.
     pub fn timestamp(&self) -> f64 { self.timestamp }
-    pub fn hashAlgorithm(&self) -> &str { self.hashAlgorithm.as_ref() }
-    pub fn signatureAlgorithm(&self) -> &str { self.signatureAlgorithm.as_ref() }
-    pub fn signatureData(&self) -> &str { self.signatureData.as_ref() }
+    /// Hash algorithm.
+    pub fn hash_algorithm(&self) -> &str { self.hash_algorithm.as_ref() }
+    /// Signature algorithm.
+    pub fn signature_algorithm(&self) -> &str { self.signature_algorithm.as_ref() }
+    /// Signature data.
+    pub fn signature_data(&self) -> &str { self.signature_data.as_ref() }
 }
 
 
 pub struct SignedCertificateTimestampBuilder<'a> {
     status: Cow<'a, str>,
     origin: Cow<'a, str>,
-    logDescription: Cow<'a, str>,
-    logId: Cow<'a, str>,
+    log_description: Cow<'a, str>,
+    log_id: Cow<'a, str>,
     timestamp: f64,
-    hashAlgorithm: Cow<'a, str>,
-    signatureAlgorithm: Cow<'a, str>,
-    signatureData: Cow<'a, str>,
+    hash_algorithm: Cow<'a, str>,
+    signature_algorithm: Cow<'a, str>,
+    signature_data: Cow<'a, str>,
 }
 
 impl<'a> SignedCertificateTimestampBuilder<'a> {
@@ -610,12 +720,12 @@ impl<'a> SignedCertificateTimestampBuilder<'a> {
         SignedCertificateTimestamp {
             status: self.status,
             origin: self.origin,
-            logDescription: self.logDescription,
-            logId: self.logId,
+            log_description: self.log_description,
+            log_id: self.log_id,
             timestamp: self.timestamp,
-            hashAlgorithm: self.hashAlgorithm,
-            signatureAlgorithm: self.signatureAlgorithm,
-            signatureData: self.signatureData,
+            hash_algorithm: self.hash_algorithm,
+            signature_algorithm: self.signature_algorithm,
+            signature_data: self.signature_data,
         }
     }
 }
@@ -628,122 +738,161 @@ pub struct SecurityDetails<'a> {
     /// Protocol name (e.g. "TLS 1.2" or "QUIC").
     protocol: Cow<'a, str>,
     /// Key Exchange used by the connection, or the empty string if not applicable.
-    keyExchange: Cow<'a, str>,
+    #[serde(rename = "keyExchange")]
+    key_exchange: Cow<'a, str>,
     /// (EC)DH group used by the connection, if applicable.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    keyExchangeGroup: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "keyExchangeGroup")]
+    key_exchange_group: Option<Cow<'a, str>>,
     /// Cipher name.
     cipher: Cow<'a, str>,
     /// TLS MAC. Note that AEAD ciphers do not have separate MACs.
     #[serde(skip_serializing_if = "Option::is_none")]
     mac: Option<Cow<'a, str>>,
     /// Certificate ID value.
-    certificateId: crate::security::CertificateId,
+    #[serde(rename = "certificateId")]
+    certificate_id: crate::security::CertificateId,
     /// Certificate subject name.
-    subjectName: Cow<'a, str>,
+    #[serde(rename = "subjectName")]
+    subject_name: Cow<'a, str>,
     /// Subject Alternative Name (SAN) DNS names and IP addresses.
-    sanList: Vec<Cow<'a, str>>,
+    #[serde(rename = "sanList")]
+    san_list: Vec<Cow<'a, str>>,
     /// Name of the issuing CA.
     issuer: Cow<'a, str>,
     /// Certificate valid from date.
-    validFrom: TimeSinceEpoch,
+    #[serde(rename = "validFrom")]
+    valid_from: TimeSinceEpoch,
     /// Certificate valid to (expiration) date
-    validTo: TimeSinceEpoch,
+    #[serde(rename = "validTo")]
+    valid_to: TimeSinceEpoch,
     /// List of signed certificate timestamps (SCTs).
-    signedCertificateTimestampList: Vec<SignedCertificateTimestamp<'a>>,
+    #[serde(rename = "signedCertificateTimestampList")]
+    signed_certificate_timestamp_list: Vec<SignedCertificateTimestamp<'a>>,
     /// Whether the request complied with Certificate Transparency policy
-    certificateTransparencyCompliance: CertificateTransparencyCompliance,
+    #[serde(rename = "certificateTransparencyCompliance")]
+    certificate_transparency_compliance: CertificateTransparencyCompliance,
     /// The signature algorithm used by the server in the TLS server signature,
     /// represented as a TLS SignatureScheme code point. Omitted if not
     /// applicable or not known.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    serverSignatureAlgorithm: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "serverSignatureAlgorithm")]
+    server_signature_algorithm: Option<i64>,
     /// Whether the connection used Encrypted ClientHello
-    encryptedClientHello: bool,
+    #[serde(rename = "encryptedClientHello")]
+    encrypted_client_hello: bool,
 }
 
 impl<'a> SecurityDetails<'a> {
-    pub fn builder(protocol: impl Into<Cow<'a, str>>, keyExchange: impl Into<Cow<'a, str>>, cipher: impl Into<Cow<'a, str>>, certificateId: crate::security::CertificateId, subjectName: impl Into<Cow<'a, str>>, sanList: Vec<Cow<'a, str>>, issuer: impl Into<Cow<'a, str>>, validFrom: TimeSinceEpoch, validTo: TimeSinceEpoch, signedCertificateTimestampList: Vec<SignedCertificateTimestamp<'a>>, certificateTransparencyCompliance: impl Into<CertificateTransparencyCompliance>, encryptedClientHello: bool) -> SecurityDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `protocol`: Protocol name (e.g. "TLS 1.2" or "QUIC").
+    /// * `key_exchange`: Key Exchange used by the connection, or the empty string if not applicable.
+    /// * `cipher`: Cipher name.
+    /// * `certificate_id`: Certificate ID value.
+    /// * `subject_name`: Certificate subject name.
+    /// * `san_list`: Subject Alternative Name (SAN) DNS names and IP addresses.
+    /// * `issuer`: Name of the issuing CA.
+    /// * `valid_from`: Certificate valid from date.
+    /// * `valid_to`: Certificate valid to (expiration) date
+    /// * `signed_certificate_timestamp_list`: List of signed certificate timestamps (SCTs).
+    /// * `certificate_transparency_compliance`: Whether the request complied with Certificate Transparency policy
+    /// * `encrypted_client_hello`: Whether the connection used Encrypted ClientHello
+    pub fn builder(protocol: impl Into<Cow<'a, str>>, key_exchange: impl Into<Cow<'a, str>>, cipher: impl Into<Cow<'a, str>>, certificate_id: crate::security::CertificateId, subject_name: impl Into<Cow<'a, str>>, san_list: Vec<Cow<'a, str>>, issuer: impl Into<Cow<'a, str>>, valid_from: TimeSinceEpoch, valid_to: TimeSinceEpoch, signed_certificate_timestamp_list: Vec<SignedCertificateTimestamp<'a>>, certificate_transparency_compliance: impl Into<CertificateTransparencyCompliance>, encrypted_client_hello: bool) -> SecurityDetailsBuilder<'a> {
         SecurityDetailsBuilder {
             protocol: protocol.into(),
-            keyExchange: keyExchange.into(),
-            keyExchangeGroup: None,
+            key_exchange: key_exchange.into(),
+            key_exchange_group: None,
             cipher: cipher.into(),
             mac: None,
-            certificateId: certificateId,
-            subjectName: subjectName.into(),
-            sanList: sanList,
+            certificate_id: certificate_id,
+            subject_name: subject_name.into(),
+            san_list: san_list,
             issuer: issuer.into(),
-            validFrom: validFrom,
-            validTo: validTo,
-            signedCertificateTimestampList: signedCertificateTimestampList,
-            certificateTransparencyCompliance: certificateTransparencyCompliance.into(),
-            serverSignatureAlgorithm: None,
-            encryptedClientHello: encryptedClientHello,
+            valid_from: valid_from,
+            valid_to: valid_to,
+            signed_certificate_timestamp_list: signed_certificate_timestamp_list,
+            certificate_transparency_compliance: certificate_transparency_compliance.into(),
+            server_signature_algorithm: None,
+            encrypted_client_hello: encrypted_client_hello,
         }
     }
+    /// Protocol name (e.g. "TLS 1.2" or "QUIC").
     pub fn protocol(&self) -> &str { self.protocol.as_ref() }
-    pub fn keyExchange(&self) -> &str { self.keyExchange.as_ref() }
-    pub fn keyExchangeGroup(&self) -> Option<&str> { self.keyExchangeGroup.as_deref() }
+    /// Key Exchange used by the connection, or the empty string if not applicable.
+    pub fn key_exchange(&self) -> &str { self.key_exchange.as_ref() }
+    /// (EC)DH group used by the connection, if applicable.
+    pub fn key_exchange_group(&self) -> Option<&str> { self.key_exchange_group.as_deref() }
+    /// Cipher name.
     pub fn cipher(&self) -> &str { self.cipher.as_ref() }
+    /// TLS MAC. Note that AEAD ciphers do not have separate MACs.
     pub fn mac(&self) -> Option<&str> { self.mac.as_deref() }
-    pub fn certificateId(&self) -> &crate::security::CertificateId { &self.certificateId }
-    pub fn subjectName(&self) -> &str { self.subjectName.as_ref() }
-    pub fn sanList(&self) -> &[Cow<'a, str>] { &self.sanList }
+    /// Certificate ID value.
+    pub fn certificate_id(&self) -> &crate::security::CertificateId { &self.certificate_id }
+    /// Certificate subject name.
+    pub fn subject_name(&self) -> &str { self.subject_name.as_ref() }
+    /// Subject Alternative Name (SAN) DNS names and IP addresses.
+    pub fn san_list(&self) -> &[Cow<'a, str>] { &self.san_list }
+    /// Name of the issuing CA.
     pub fn issuer(&self) -> &str { self.issuer.as_ref() }
-    pub fn validFrom(&self) -> &TimeSinceEpoch { &self.validFrom }
-    pub fn validTo(&self) -> &TimeSinceEpoch { &self.validTo }
-    pub fn signedCertificateTimestampList(&self) -> &[SignedCertificateTimestamp<'a>] { &self.signedCertificateTimestampList }
-    pub fn certificateTransparencyCompliance(&self) -> &CertificateTransparencyCompliance { &self.certificateTransparencyCompliance }
-    pub fn serverSignatureAlgorithm(&self) -> Option<i64> { self.serverSignatureAlgorithm }
-    pub fn encryptedClientHello(&self) -> bool { self.encryptedClientHello }
+    /// Certificate valid from date.
+    pub fn valid_from(&self) -> &TimeSinceEpoch { &self.valid_from }
+    /// Certificate valid to (expiration) date
+    pub fn valid_to(&self) -> &TimeSinceEpoch { &self.valid_to }
+    /// List of signed certificate timestamps (SCTs).
+    pub fn signed_certificate_timestamp_list(&self) -> &[SignedCertificateTimestamp<'a>] { &self.signed_certificate_timestamp_list }
+    /// Whether the request complied with Certificate Transparency policy
+    pub fn certificate_transparency_compliance(&self) -> &CertificateTransparencyCompliance { &self.certificate_transparency_compliance }
+    /// The signature algorithm used by the server in the TLS server signature,
+    /// represented as a TLS SignatureScheme code point. Omitted if not
+    /// applicable or not known.
+    pub fn server_signature_algorithm(&self) -> Option<i64> { self.server_signature_algorithm }
+    /// Whether the connection used Encrypted ClientHello
+    pub fn encrypted_client_hello(&self) -> bool { self.encrypted_client_hello }
 }
 
 
 pub struct SecurityDetailsBuilder<'a> {
     protocol: Cow<'a, str>,
-    keyExchange: Cow<'a, str>,
-    keyExchangeGroup: Option<Cow<'a, str>>,
+    key_exchange: Cow<'a, str>,
+    key_exchange_group: Option<Cow<'a, str>>,
     cipher: Cow<'a, str>,
     mac: Option<Cow<'a, str>>,
-    certificateId: crate::security::CertificateId,
-    subjectName: Cow<'a, str>,
-    sanList: Vec<Cow<'a, str>>,
+    certificate_id: crate::security::CertificateId,
+    subject_name: Cow<'a, str>,
+    san_list: Vec<Cow<'a, str>>,
     issuer: Cow<'a, str>,
-    validFrom: TimeSinceEpoch,
-    validTo: TimeSinceEpoch,
-    signedCertificateTimestampList: Vec<SignedCertificateTimestamp<'a>>,
-    certificateTransparencyCompliance: CertificateTransparencyCompliance,
-    serverSignatureAlgorithm: Option<i64>,
-    encryptedClientHello: bool,
+    valid_from: TimeSinceEpoch,
+    valid_to: TimeSinceEpoch,
+    signed_certificate_timestamp_list: Vec<SignedCertificateTimestamp<'a>>,
+    certificate_transparency_compliance: CertificateTransparencyCompliance,
+    server_signature_algorithm: Option<i64>,
+    encrypted_client_hello: bool,
 }
 
 impl<'a> SecurityDetailsBuilder<'a> {
     /// (EC)DH group used by the connection, if applicable.
-    pub fn keyExchangeGroup(mut self, keyExchangeGroup: impl Into<Cow<'a, str>>) -> Self { self.keyExchangeGroup = Some(keyExchangeGroup.into()); self }
+    pub fn key_exchange_group(mut self, key_exchange_group: impl Into<Cow<'a, str>>) -> Self { self.key_exchange_group = Some(key_exchange_group.into()); self }
     /// TLS MAC. Note that AEAD ciphers do not have separate MACs.
     pub fn mac(mut self, mac: impl Into<Cow<'a, str>>) -> Self { self.mac = Some(mac.into()); self }
     /// The signature algorithm used by the server in the TLS server signature,
     /// represented as a TLS SignatureScheme code point. Omitted if not
     /// applicable or not known.
-    pub fn serverSignatureAlgorithm(mut self, serverSignatureAlgorithm: i64) -> Self { self.serverSignatureAlgorithm = Some(serverSignatureAlgorithm); self }
+    pub fn server_signature_algorithm(mut self, server_signature_algorithm: i64) -> Self { self.server_signature_algorithm = Some(server_signature_algorithm); self }
     pub fn build(self) -> SecurityDetails<'a> {
         SecurityDetails {
             protocol: self.protocol,
-            keyExchange: self.keyExchange,
-            keyExchangeGroup: self.keyExchangeGroup,
+            key_exchange: self.key_exchange,
+            key_exchange_group: self.key_exchange_group,
             cipher: self.cipher,
             mac: self.mac,
-            certificateId: self.certificateId,
-            subjectName: self.subjectName,
-            sanList: self.sanList,
+            certificate_id: self.certificate_id,
+            subject_name: self.subject_name,
+            san_list: self.san_list,
             issuer: self.issuer,
-            validFrom: self.validFrom,
-            validTo: self.validTo,
-            signedCertificateTimestampList: self.signedCertificateTimestampList,
-            certificateTransparencyCompliance: self.certificateTransparencyCompliance,
-            serverSignatureAlgorithm: self.serverSignatureAlgorithm,
-            encryptedClientHello: self.encryptedClientHello,
+            valid_from: self.valid_from,
+            valid_to: self.valid_to,
+            signed_certificate_timestamp_list: self.signed_certificate_timestamp_list,
+            certificate_transparency_compliance: self.certificate_transparency_compliance,
+            server_signature_algorithm: self.server_signature_algorithm,
+            encrypted_client_hello: self.encrypted_client_hello,
         }
     }
 }
@@ -867,32 +1016,37 @@ pub enum CorsError {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct CorsErrorStatus<'a> {
-    corsError: CorsError,
-    failedParameter: Cow<'a, str>,
+    #[serde(rename = "corsError")]
+    cors_error: CorsError,
+    #[serde(rename = "failedParameter")]
+    failed_parameter: Cow<'a, str>,
 }
 
 impl<'a> CorsErrorStatus<'a> {
-    pub fn builder(corsError: impl Into<CorsError>, failedParameter: impl Into<Cow<'a, str>>) -> CorsErrorStatusBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `cors_error`: 
+    /// * `failed_parameter`: 
+    pub fn builder(cors_error: impl Into<CorsError>, failed_parameter: impl Into<Cow<'a, str>>) -> CorsErrorStatusBuilder<'a> {
         CorsErrorStatusBuilder {
-            corsError: corsError.into(),
-            failedParameter: failedParameter.into(),
+            cors_error: cors_error.into(),
+            failed_parameter: failed_parameter.into(),
         }
     }
-    pub fn corsError(&self) -> &CorsError { &self.corsError }
-    pub fn failedParameter(&self) -> &str { self.failedParameter.as_ref() }
+    pub fn cors_error(&self) -> &CorsError { &self.cors_error }
+    pub fn failed_parameter(&self) -> &str { self.failed_parameter.as_ref() }
 }
 
 
 pub struct CorsErrorStatusBuilder<'a> {
-    corsError: CorsError,
-    failedParameter: Cow<'a, str>,
+    cors_error: CorsError,
+    failed_parameter: Cow<'a, str>,
 }
 
 impl<'a> CorsErrorStatusBuilder<'a> {
     pub fn build(self) -> CorsErrorStatus<'a> {
         CorsErrorStatus {
-            corsError: self.corsError,
-            failedParameter: self.failedParameter,
+            cors_error: self.cors_error,
+            failed_parameter: self.failed_parameter,
         }
     }
 }
@@ -922,7 +1076,8 @@ pub struct TrustTokenParams<'a> {
     operation: TrustTokenOperationType,
     /// Only set for "token-redemption" operation and determine whether
     /// to request a fresh SRR or use a still valid cached SRR.
-    refreshPolicy: Cow<'a, str>,
+    #[serde(rename = "refreshPolicy")]
+    refresh_policy: Cow<'a, str>,
     /// Origins of issuers from whom to request tokens or redemption
     /// records.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -930,22 +1085,29 @@ pub struct TrustTokenParams<'a> {
 }
 
 impl<'a> TrustTokenParams<'a> {
-    pub fn builder(operation: impl Into<TrustTokenOperationType>, refreshPolicy: impl Into<Cow<'a, str>>) -> TrustTokenParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `operation`: 
+    /// * `refresh_policy`: Only set for "token-redemption" operation and determine whether to request a fresh SRR or use a still valid cached SRR.
+    pub fn builder(operation: impl Into<TrustTokenOperationType>, refresh_policy: impl Into<Cow<'a, str>>) -> TrustTokenParamsBuilder<'a> {
         TrustTokenParamsBuilder {
             operation: operation.into(),
-            refreshPolicy: refreshPolicy.into(),
+            refresh_policy: refresh_policy.into(),
             issuers: None,
         }
     }
     pub fn operation(&self) -> &TrustTokenOperationType { &self.operation }
-    pub fn refreshPolicy(&self) -> &str { self.refreshPolicy.as_ref() }
+    /// Only set for "token-redemption" operation and determine whether
+    /// to request a fresh SRR or use a still valid cached SRR.
+    pub fn refresh_policy(&self) -> &str { self.refresh_policy.as_ref() }
+    /// Origins of issuers from whom to request tokens or redemption
+    /// records.
     pub fn issuers(&self) -> Option<&[Cow<'a, str>]> { self.issuers.as_deref() }
 }
 
 
 pub struct TrustTokenParamsBuilder<'a> {
     operation: TrustTokenOperationType,
-    refreshPolicy: Cow<'a, str>,
+    refresh_policy: Cow<'a, str>,
     issuers: Option<Vec<Cow<'a, str>>>,
 }
 
@@ -956,7 +1118,7 @@ impl<'a> TrustTokenParamsBuilder<'a> {
     pub fn build(self) -> TrustTokenParams<'a> {
         TrustTokenParams {
             operation: self.operation,
-            refreshPolicy: self.refreshPolicy,
+            refresh_policy: self.refresh_policy,
             issuers: self.issuers,
         }
     }
@@ -1020,51 +1182,57 @@ pub enum ServiceWorkerRouterSource {
 pub struct ServiceWorkerRouterInfo {
     /// ID of the rule matched. If there is a matched rule, this field will
     /// be set, otherwiser no value will be set.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    ruleIdMatched: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "ruleIdMatched")]
+    rule_id_matched: Option<u64>,
     /// The router source of the matched rule. If there is a matched rule, this
     /// field will be set, otherwise no value will be set.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    matchedSourceType: Option<ServiceWorkerRouterSource>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "matchedSourceType")]
+    matched_source_type: Option<ServiceWorkerRouterSource>,
     /// The actual router source used.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    actualSourceType: Option<ServiceWorkerRouterSource>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "actualSourceType")]
+    actual_source_type: Option<ServiceWorkerRouterSource>,
 }
 
 impl ServiceWorkerRouterInfo {
+    /// Creates a builder for this type.
     pub fn builder() -> ServiceWorkerRouterInfoBuilder {
         ServiceWorkerRouterInfoBuilder {
-            ruleIdMatched: None,
-            matchedSourceType: None,
-            actualSourceType: None,
+            rule_id_matched: None,
+            matched_source_type: None,
+            actual_source_type: None,
         }
     }
-    pub fn ruleIdMatched(&self) -> Option<u64> { self.ruleIdMatched }
-    pub fn matchedSourceType(&self) -> Option<&ServiceWorkerRouterSource> { self.matchedSourceType.as_ref() }
-    pub fn actualSourceType(&self) -> Option<&ServiceWorkerRouterSource> { self.actualSourceType.as_ref() }
+    /// ID of the rule matched. If there is a matched rule, this field will
+    /// be set, otherwiser no value will be set.
+    pub fn rule_id_matched(&self) -> Option<u64> { self.rule_id_matched }
+    /// The router source of the matched rule. If there is a matched rule, this
+    /// field will be set, otherwise no value will be set.
+    pub fn matched_source_type(&self) -> Option<&ServiceWorkerRouterSource> { self.matched_source_type.as_ref() }
+    /// The actual router source used.
+    pub fn actual_source_type(&self) -> Option<&ServiceWorkerRouterSource> { self.actual_source_type.as_ref() }
 }
 
 #[derive(Default)]
 pub struct ServiceWorkerRouterInfoBuilder {
-    ruleIdMatched: Option<u64>,
-    matchedSourceType: Option<ServiceWorkerRouterSource>,
-    actualSourceType: Option<ServiceWorkerRouterSource>,
+    rule_id_matched: Option<u64>,
+    matched_source_type: Option<ServiceWorkerRouterSource>,
+    actual_source_type: Option<ServiceWorkerRouterSource>,
 }
 
 impl ServiceWorkerRouterInfoBuilder {
     /// ID of the rule matched. If there is a matched rule, this field will
     /// be set, otherwiser no value will be set.
-    pub fn ruleIdMatched(mut self, ruleIdMatched: u64) -> Self { self.ruleIdMatched = Some(ruleIdMatched); self }
+    pub fn rule_id_matched(mut self, rule_id_matched: u64) -> Self { self.rule_id_matched = Some(rule_id_matched); self }
     /// The router source of the matched rule. If there is a matched rule, this
     /// field will be set, otherwise no value will be set.
-    pub fn matchedSourceType(mut self, matchedSourceType: impl Into<ServiceWorkerRouterSource>) -> Self { self.matchedSourceType = Some(matchedSourceType.into()); self }
+    pub fn matched_source_type(mut self, matched_source_type: impl Into<ServiceWorkerRouterSource>) -> Self { self.matched_source_type = Some(matched_source_type.into()); self }
     /// The actual router source used.
-    pub fn actualSourceType(mut self, actualSourceType: impl Into<ServiceWorkerRouterSource>) -> Self { self.actualSourceType = Some(actualSourceType.into()); self }
+    pub fn actual_source_type(mut self, actual_source_type: impl Into<ServiceWorkerRouterSource>) -> Self { self.actual_source_type = Some(actual_source_type.into()); self }
     pub fn build(self) -> ServiceWorkerRouterInfo {
         ServiceWorkerRouterInfo {
-            ruleIdMatched: self.ruleIdMatched,
-            matchedSourceType: self.matchedSourceType,
-            actualSourceType: self.actualSourceType,
+            rule_id_matched: self.rule_id_matched,
+            matched_source_type: self.matched_source_type,
+            actual_source_type: self.actual_source_type,
         }
     }
 }
@@ -1079,236 +1247,283 @@ pub struct Response<'a> {
     /// HTTP response status code.
     status: i64,
     /// HTTP response status text.
-    statusText: Cow<'a, str>,
+    #[serde(rename = "statusText")]
+    status_text: Cow<'a, str>,
     /// HTTP response headers.
     headers: Headers,
     /// HTTP response headers text. This has been replaced by the headers in Network.responseReceivedExtraInfo.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    headersText: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "headersText")]
+    headers_text: Option<Cow<'a, str>>,
     /// Resource mimeType as determined by the browser.
-    mimeType: Cow<'a, str>,
+    #[serde(rename = "mimeType")]
+    mime_type: Cow<'a, str>,
     /// Resource charset as determined by the browser (if applicable).
     charset: Cow<'a, str>,
     /// Refined HTTP request headers that were actually transmitted over the network.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    requestHeaders: Option<Headers>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "requestHeaders")]
+    request_headers: Option<Headers>,
     /// HTTP request headers text. This has been replaced by the headers in Network.requestWillBeSentExtraInfo.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    requestHeadersText: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "requestHeadersText")]
+    request_headers_text: Option<Cow<'a, str>>,
     /// Specifies whether physical connection was actually reused for this request.
-    connectionReused: bool,
+    #[serde(rename = "connectionReused")]
+    connection_reused: bool,
     /// Physical connection id that was actually used for this request.
-    connectionId: f64,
+    #[serde(rename = "connectionId")]
+    connection_id: f64,
     /// Remote IP address.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    remoteIPAddress: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "remoteIPAddress")]
+    remote_ip_address: Option<Cow<'a, str>>,
     /// Remote port.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    remotePort: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "remotePort")]
+    remote_port: Option<i64>,
     /// Specifies that the request was served from the disk cache.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    fromDiskCache: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "fromDiskCache")]
+    from_disk_cache: Option<bool>,
     /// Specifies that the request was served from the ServiceWorker.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    fromServiceWorker: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "fromServiceWorker")]
+    from_service_worker: Option<bool>,
     /// Specifies that the request was served from the prefetch cache.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    fromPrefetchCache: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "fromPrefetchCache")]
+    from_prefetch_cache: Option<bool>,
     /// Specifies that the request was served from the prefetch cache.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    fromEarlyHints: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "fromEarlyHints")]
+    from_early_hints: Option<bool>,
     /// Information about how ServiceWorker Static Router API was used. If this
     /// field is set with 'matchedSourceType' field, a matching rule is found.
     /// If this field is set without 'matchedSource', no matching rule is found.
     /// Otherwise, the API is not used.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    serviceWorkerRouterInfo: Option<ServiceWorkerRouterInfo>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "serviceWorkerRouterInfo")]
+    service_worker_router_info: Option<ServiceWorkerRouterInfo>,
     /// Total number of bytes received for this request so far.
-    encodedDataLength: f64,
+    #[serde(rename = "encodedDataLength")]
+    encoded_data_length: f64,
     /// Timing information for the given request.
     #[serde(skip_serializing_if = "Option::is_none")]
     timing: Option<ResourceTiming>,
     /// Response source of response from ServiceWorker.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    serviceWorkerResponseSource: Option<ServiceWorkerResponseSource>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "serviceWorkerResponseSource")]
+    service_worker_response_source: Option<ServiceWorkerResponseSource>,
     /// The time at which the returned response was generated.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    responseTime: Option<TimeSinceEpoch>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "responseTime")]
+    response_time: Option<TimeSinceEpoch>,
     /// Cache Storage Cache Name.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    cacheStorageCacheName: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "cacheStorageCacheName")]
+    cache_storage_cache_name: Option<Cow<'a, str>>,
     /// Protocol used to fetch this request.
     #[serde(skip_serializing_if = "Option::is_none")]
     protocol: Option<Cow<'a, str>>,
     /// The reason why Chrome uses a specific transport protocol for HTTP semantics.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    alternateProtocolUsage: Option<AlternateProtocolUsage>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "alternateProtocolUsage")]
+    alternate_protocol_usage: Option<AlternateProtocolUsage>,
     /// Security state of the request resource.
-    securityState: crate::security::SecurityState,
+    #[serde(rename = "securityState")]
+    security_state: crate::security::SecurityState,
     /// Security details for the request.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    securityDetails: Option<SecurityDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "securityDetails")]
+    security_details: Option<SecurityDetails<'a>>,
 }
 
 impl<'a> Response<'a> {
-    pub fn builder(url: impl Into<Cow<'a, str>>, status: i64, statusText: impl Into<Cow<'a, str>>, headers: Headers, mimeType: impl Into<Cow<'a, str>>, charset: impl Into<Cow<'a, str>>, connectionReused: bool, connectionId: f64, encodedDataLength: f64, securityState: crate::security::SecurityState) -> ResponseBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url`: Response URL. This URL can be different from CachedResource.url in case of redirect.
+    /// * `status`: HTTP response status code.
+    /// * `status_text`: HTTP response status text.
+    /// * `headers`: HTTP response headers.
+    /// * `mime_type`: Resource mimeType as determined by the browser.
+    /// * `charset`: Resource charset as determined by the browser (if applicable).
+    /// * `connection_reused`: Specifies whether physical connection was actually reused for this request.
+    /// * `connection_id`: Physical connection id that was actually used for this request.
+    /// * `encoded_data_length`: Total number of bytes received for this request so far.
+    /// * `security_state`: Security state of the request resource.
+    pub fn builder(url: impl Into<Cow<'a, str>>, status: i64, status_text: impl Into<Cow<'a, str>>, headers: Headers, mime_type: impl Into<Cow<'a, str>>, charset: impl Into<Cow<'a, str>>, connection_reused: bool, connection_id: f64, encoded_data_length: f64, security_state: crate::security::SecurityState) -> ResponseBuilder<'a> {
         ResponseBuilder {
             url: url.into(),
             status: status,
-            statusText: statusText.into(),
+            status_text: status_text.into(),
             headers: headers,
-            headersText: None,
-            mimeType: mimeType.into(),
+            headers_text: None,
+            mime_type: mime_type.into(),
             charset: charset.into(),
-            requestHeaders: None,
-            requestHeadersText: None,
-            connectionReused: connectionReused,
-            connectionId: connectionId,
-            remoteIPAddress: None,
-            remotePort: None,
-            fromDiskCache: None,
-            fromServiceWorker: None,
-            fromPrefetchCache: None,
-            fromEarlyHints: None,
-            serviceWorkerRouterInfo: None,
-            encodedDataLength: encodedDataLength,
+            request_headers: None,
+            request_headers_text: None,
+            connection_reused: connection_reused,
+            connection_id: connection_id,
+            remote_ip_address: None,
+            remote_port: None,
+            from_disk_cache: None,
+            from_service_worker: None,
+            from_prefetch_cache: None,
+            from_early_hints: None,
+            service_worker_router_info: None,
+            encoded_data_length: encoded_data_length,
             timing: None,
-            serviceWorkerResponseSource: None,
-            responseTime: None,
-            cacheStorageCacheName: None,
+            service_worker_response_source: None,
+            response_time: None,
+            cache_storage_cache_name: None,
             protocol: None,
-            alternateProtocolUsage: None,
-            securityState: securityState,
-            securityDetails: None,
+            alternate_protocol_usage: None,
+            security_state: security_state,
+            security_details: None,
         }
     }
+    /// Response URL. This URL can be different from CachedResource.url in case of redirect.
     pub fn url(&self) -> &str { self.url.as_ref() }
+    /// HTTP response status code.
     pub fn status(&self) -> i64 { self.status }
-    pub fn statusText(&self) -> &str { self.statusText.as_ref() }
+    /// HTTP response status text.
+    pub fn status_text(&self) -> &str { self.status_text.as_ref() }
+    /// HTTP response headers.
     pub fn headers(&self) -> &Headers { &self.headers }
-    pub fn headersText(&self) -> Option<&str> { self.headersText.as_deref() }
-    pub fn mimeType(&self) -> &str { self.mimeType.as_ref() }
+    /// HTTP response headers text. This has been replaced by the headers in Network.responseReceivedExtraInfo.
+    pub fn headers_text(&self) -> Option<&str> { self.headers_text.as_deref() }
+    /// Resource mimeType as determined by the browser.
+    pub fn mime_type(&self) -> &str { self.mime_type.as_ref() }
+    /// Resource charset as determined by the browser (if applicable).
     pub fn charset(&self) -> &str { self.charset.as_ref() }
-    pub fn requestHeaders(&self) -> Option<&Headers> { self.requestHeaders.as_ref() }
-    pub fn requestHeadersText(&self) -> Option<&str> { self.requestHeadersText.as_deref() }
-    pub fn connectionReused(&self) -> bool { self.connectionReused }
-    pub fn connectionId(&self) -> f64 { self.connectionId }
-    pub fn remoteIPAddress(&self) -> Option<&str> { self.remoteIPAddress.as_deref() }
-    pub fn remotePort(&self) -> Option<i64> { self.remotePort }
-    pub fn fromDiskCache(&self) -> Option<bool> { self.fromDiskCache }
-    pub fn fromServiceWorker(&self) -> Option<bool> { self.fromServiceWorker }
-    pub fn fromPrefetchCache(&self) -> Option<bool> { self.fromPrefetchCache }
-    pub fn fromEarlyHints(&self) -> Option<bool> { self.fromEarlyHints }
-    pub fn serviceWorkerRouterInfo(&self) -> Option<&ServiceWorkerRouterInfo> { self.serviceWorkerRouterInfo.as_ref() }
-    pub fn encodedDataLength(&self) -> f64 { self.encodedDataLength }
+    /// Refined HTTP request headers that were actually transmitted over the network.
+    pub fn request_headers(&self) -> Option<&Headers> { self.request_headers.as_ref() }
+    /// HTTP request headers text. This has been replaced by the headers in Network.requestWillBeSentExtraInfo.
+    pub fn request_headers_text(&self) -> Option<&str> { self.request_headers_text.as_deref() }
+    /// Specifies whether physical connection was actually reused for this request.
+    pub fn connection_reused(&self) -> bool { self.connection_reused }
+    /// Physical connection id that was actually used for this request.
+    pub fn connection_id(&self) -> f64 { self.connection_id }
+    /// Remote IP address.
+    pub fn remote_ip_address(&self) -> Option<&str> { self.remote_ip_address.as_deref() }
+    /// Remote port.
+    pub fn remote_port(&self) -> Option<i64> { self.remote_port }
+    /// Specifies that the request was served from the disk cache.
+    pub fn from_disk_cache(&self) -> Option<bool> { self.from_disk_cache }
+    /// Specifies that the request was served from the ServiceWorker.
+    pub fn from_service_worker(&self) -> Option<bool> { self.from_service_worker }
+    /// Specifies that the request was served from the prefetch cache.
+    pub fn from_prefetch_cache(&self) -> Option<bool> { self.from_prefetch_cache }
+    /// Specifies that the request was served from the prefetch cache.
+    pub fn from_early_hints(&self) -> Option<bool> { self.from_early_hints }
+    /// Information about how ServiceWorker Static Router API was used. If this
+    /// field is set with 'matchedSourceType' field, a matching rule is found.
+    /// If this field is set without 'matchedSource', no matching rule is found.
+    /// Otherwise, the API is not used.
+    pub fn service_worker_router_info(&self) -> Option<&ServiceWorkerRouterInfo> { self.service_worker_router_info.as_ref() }
+    /// Total number of bytes received for this request so far.
+    pub fn encoded_data_length(&self) -> f64 { self.encoded_data_length }
+    /// Timing information for the given request.
     pub fn timing(&self) -> Option<&ResourceTiming> { self.timing.as_ref() }
-    pub fn serviceWorkerResponseSource(&self) -> Option<&ServiceWorkerResponseSource> { self.serviceWorkerResponseSource.as_ref() }
-    pub fn responseTime(&self) -> Option<&TimeSinceEpoch> { self.responseTime.as_ref() }
-    pub fn cacheStorageCacheName(&self) -> Option<&str> { self.cacheStorageCacheName.as_deref() }
+    /// Response source of response from ServiceWorker.
+    pub fn service_worker_response_source(&self) -> Option<&ServiceWorkerResponseSource> { self.service_worker_response_source.as_ref() }
+    /// The time at which the returned response was generated.
+    pub fn response_time(&self) -> Option<&TimeSinceEpoch> { self.response_time.as_ref() }
+    /// Cache Storage Cache Name.
+    pub fn cache_storage_cache_name(&self) -> Option<&str> { self.cache_storage_cache_name.as_deref() }
+    /// Protocol used to fetch this request.
     pub fn protocol(&self) -> Option<&str> { self.protocol.as_deref() }
-    pub fn alternateProtocolUsage(&self) -> Option<&AlternateProtocolUsage> { self.alternateProtocolUsage.as_ref() }
-    pub fn securityState(&self) -> &crate::security::SecurityState { &self.securityState }
-    pub fn securityDetails(&self) -> Option<&SecurityDetails<'a>> { self.securityDetails.as_ref() }
+    /// The reason why Chrome uses a specific transport protocol for HTTP semantics.
+    pub fn alternate_protocol_usage(&self) -> Option<&AlternateProtocolUsage> { self.alternate_protocol_usage.as_ref() }
+    /// Security state of the request resource.
+    pub fn security_state(&self) -> &crate::security::SecurityState { &self.security_state }
+    /// Security details for the request.
+    pub fn security_details(&self) -> Option<&SecurityDetails<'a>> { self.security_details.as_ref() }
 }
 
 
 pub struct ResponseBuilder<'a> {
     url: Cow<'a, str>,
     status: i64,
-    statusText: Cow<'a, str>,
+    status_text: Cow<'a, str>,
     headers: Headers,
-    headersText: Option<Cow<'a, str>>,
-    mimeType: Cow<'a, str>,
+    headers_text: Option<Cow<'a, str>>,
+    mime_type: Cow<'a, str>,
     charset: Cow<'a, str>,
-    requestHeaders: Option<Headers>,
-    requestHeadersText: Option<Cow<'a, str>>,
-    connectionReused: bool,
-    connectionId: f64,
-    remoteIPAddress: Option<Cow<'a, str>>,
-    remotePort: Option<i64>,
-    fromDiskCache: Option<bool>,
-    fromServiceWorker: Option<bool>,
-    fromPrefetchCache: Option<bool>,
-    fromEarlyHints: Option<bool>,
-    serviceWorkerRouterInfo: Option<ServiceWorkerRouterInfo>,
-    encodedDataLength: f64,
+    request_headers: Option<Headers>,
+    request_headers_text: Option<Cow<'a, str>>,
+    connection_reused: bool,
+    connection_id: f64,
+    remote_ip_address: Option<Cow<'a, str>>,
+    remote_port: Option<i64>,
+    from_disk_cache: Option<bool>,
+    from_service_worker: Option<bool>,
+    from_prefetch_cache: Option<bool>,
+    from_early_hints: Option<bool>,
+    service_worker_router_info: Option<ServiceWorkerRouterInfo>,
+    encoded_data_length: f64,
     timing: Option<ResourceTiming>,
-    serviceWorkerResponseSource: Option<ServiceWorkerResponseSource>,
-    responseTime: Option<TimeSinceEpoch>,
-    cacheStorageCacheName: Option<Cow<'a, str>>,
+    service_worker_response_source: Option<ServiceWorkerResponseSource>,
+    response_time: Option<TimeSinceEpoch>,
+    cache_storage_cache_name: Option<Cow<'a, str>>,
     protocol: Option<Cow<'a, str>>,
-    alternateProtocolUsage: Option<AlternateProtocolUsage>,
-    securityState: crate::security::SecurityState,
-    securityDetails: Option<SecurityDetails<'a>>,
+    alternate_protocol_usage: Option<AlternateProtocolUsage>,
+    security_state: crate::security::SecurityState,
+    security_details: Option<SecurityDetails<'a>>,
 }
 
 impl<'a> ResponseBuilder<'a> {
     /// HTTP response headers text. This has been replaced by the headers in Network.responseReceivedExtraInfo.
-    pub fn headersText(mut self, headersText: impl Into<Cow<'a, str>>) -> Self { self.headersText = Some(headersText.into()); self }
+    pub fn headers_text(mut self, headers_text: impl Into<Cow<'a, str>>) -> Self { self.headers_text = Some(headers_text.into()); self }
     /// Refined HTTP request headers that were actually transmitted over the network.
-    pub fn requestHeaders(mut self, requestHeaders: Headers) -> Self { self.requestHeaders = Some(requestHeaders); self }
+    pub fn request_headers(mut self, request_headers: Headers) -> Self { self.request_headers = Some(request_headers); self }
     /// HTTP request headers text. This has been replaced by the headers in Network.requestWillBeSentExtraInfo.
-    pub fn requestHeadersText(mut self, requestHeadersText: impl Into<Cow<'a, str>>) -> Self { self.requestHeadersText = Some(requestHeadersText.into()); self }
+    pub fn request_headers_text(mut self, request_headers_text: impl Into<Cow<'a, str>>) -> Self { self.request_headers_text = Some(request_headers_text.into()); self }
     /// Remote IP address.
-    pub fn remoteIPAddress(mut self, remoteIPAddress: impl Into<Cow<'a, str>>) -> Self { self.remoteIPAddress = Some(remoteIPAddress.into()); self }
+    pub fn remote_ip_address(mut self, remote_ip_address: impl Into<Cow<'a, str>>) -> Self { self.remote_ip_address = Some(remote_ip_address.into()); self }
     /// Remote port.
-    pub fn remotePort(mut self, remotePort: i64) -> Self { self.remotePort = Some(remotePort); self }
+    pub fn remote_port(mut self, remote_port: i64) -> Self { self.remote_port = Some(remote_port); self }
     /// Specifies that the request was served from the disk cache.
-    pub fn fromDiskCache(mut self, fromDiskCache: bool) -> Self { self.fromDiskCache = Some(fromDiskCache); self }
+    pub fn from_disk_cache(mut self, from_disk_cache: bool) -> Self { self.from_disk_cache = Some(from_disk_cache); self }
     /// Specifies that the request was served from the ServiceWorker.
-    pub fn fromServiceWorker(mut self, fromServiceWorker: bool) -> Self { self.fromServiceWorker = Some(fromServiceWorker); self }
+    pub fn from_service_worker(mut self, from_service_worker: bool) -> Self { self.from_service_worker = Some(from_service_worker); self }
     /// Specifies that the request was served from the prefetch cache.
-    pub fn fromPrefetchCache(mut self, fromPrefetchCache: bool) -> Self { self.fromPrefetchCache = Some(fromPrefetchCache); self }
+    pub fn from_prefetch_cache(mut self, from_prefetch_cache: bool) -> Self { self.from_prefetch_cache = Some(from_prefetch_cache); self }
     /// Specifies that the request was served from the prefetch cache.
-    pub fn fromEarlyHints(mut self, fromEarlyHints: bool) -> Self { self.fromEarlyHints = Some(fromEarlyHints); self }
+    pub fn from_early_hints(mut self, from_early_hints: bool) -> Self { self.from_early_hints = Some(from_early_hints); self }
     /// Information about how ServiceWorker Static Router API was used. If this
     /// field is set with 'matchedSourceType' field, a matching rule is found.
     /// If this field is set without 'matchedSource', no matching rule is found.
     /// Otherwise, the API is not used.
-    pub fn serviceWorkerRouterInfo(mut self, serviceWorkerRouterInfo: ServiceWorkerRouterInfo) -> Self { self.serviceWorkerRouterInfo = Some(serviceWorkerRouterInfo); self }
+    pub fn service_worker_router_info(mut self, service_worker_router_info: ServiceWorkerRouterInfo) -> Self { self.service_worker_router_info = Some(service_worker_router_info); self }
     /// Timing information for the given request.
     pub fn timing(mut self, timing: ResourceTiming) -> Self { self.timing = Some(timing); self }
     /// Response source of response from ServiceWorker.
-    pub fn serviceWorkerResponseSource(mut self, serviceWorkerResponseSource: impl Into<ServiceWorkerResponseSource>) -> Self { self.serviceWorkerResponseSource = Some(serviceWorkerResponseSource.into()); self }
+    pub fn service_worker_response_source(mut self, service_worker_response_source: impl Into<ServiceWorkerResponseSource>) -> Self { self.service_worker_response_source = Some(service_worker_response_source.into()); self }
     /// The time at which the returned response was generated.
-    pub fn responseTime(mut self, responseTime: TimeSinceEpoch) -> Self { self.responseTime = Some(responseTime); self }
+    pub fn response_time(mut self, response_time: TimeSinceEpoch) -> Self { self.response_time = Some(response_time); self }
     /// Cache Storage Cache Name.
-    pub fn cacheStorageCacheName(mut self, cacheStorageCacheName: impl Into<Cow<'a, str>>) -> Self { self.cacheStorageCacheName = Some(cacheStorageCacheName.into()); self }
+    pub fn cache_storage_cache_name(mut self, cache_storage_cache_name: impl Into<Cow<'a, str>>) -> Self { self.cache_storage_cache_name = Some(cache_storage_cache_name.into()); self }
     /// Protocol used to fetch this request.
     pub fn protocol(mut self, protocol: impl Into<Cow<'a, str>>) -> Self { self.protocol = Some(protocol.into()); self }
     /// The reason why Chrome uses a specific transport protocol for HTTP semantics.
-    pub fn alternateProtocolUsage(mut self, alternateProtocolUsage: impl Into<AlternateProtocolUsage>) -> Self { self.alternateProtocolUsage = Some(alternateProtocolUsage.into()); self }
+    pub fn alternate_protocol_usage(mut self, alternate_protocol_usage: impl Into<AlternateProtocolUsage>) -> Self { self.alternate_protocol_usage = Some(alternate_protocol_usage.into()); self }
     /// Security details for the request.
-    pub fn securityDetails(mut self, securityDetails: SecurityDetails<'a>) -> Self { self.securityDetails = Some(securityDetails); self }
+    pub fn security_details(mut self, security_details: SecurityDetails<'a>) -> Self { self.security_details = Some(security_details); self }
     pub fn build(self) -> Response<'a> {
         Response {
             url: self.url,
             status: self.status,
-            statusText: self.statusText,
+            status_text: self.status_text,
             headers: self.headers,
-            headersText: self.headersText,
-            mimeType: self.mimeType,
+            headers_text: self.headers_text,
+            mime_type: self.mime_type,
             charset: self.charset,
-            requestHeaders: self.requestHeaders,
-            requestHeadersText: self.requestHeadersText,
-            connectionReused: self.connectionReused,
-            connectionId: self.connectionId,
-            remoteIPAddress: self.remoteIPAddress,
-            remotePort: self.remotePort,
-            fromDiskCache: self.fromDiskCache,
-            fromServiceWorker: self.fromServiceWorker,
-            fromPrefetchCache: self.fromPrefetchCache,
-            fromEarlyHints: self.fromEarlyHints,
-            serviceWorkerRouterInfo: self.serviceWorkerRouterInfo,
-            encodedDataLength: self.encodedDataLength,
+            request_headers: self.request_headers,
+            request_headers_text: self.request_headers_text,
+            connection_reused: self.connection_reused,
+            connection_id: self.connection_id,
+            remote_ip_address: self.remote_ip_address,
+            remote_port: self.remote_port,
+            from_disk_cache: self.from_disk_cache,
+            from_service_worker: self.from_service_worker,
+            from_prefetch_cache: self.from_prefetch_cache,
+            from_early_hints: self.from_early_hints,
+            service_worker_router_info: self.service_worker_router_info,
+            encoded_data_length: self.encoded_data_length,
             timing: self.timing,
-            serviceWorkerResponseSource: self.serviceWorkerResponseSource,
-            responseTime: self.responseTime,
-            cacheStorageCacheName: self.cacheStorageCacheName,
+            service_worker_response_source: self.service_worker_response_source,
+            response_time: self.response_time,
+            cache_storage_cache_name: self.cache_storage_cache_name,
             protocol: self.protocol,
-            alternateProtocolUsage: self.alternateProtocolUsage,
-            securityState: self.securityState,
-            securityDetails: self.securityDetails,
+            alternate_protocol_usage: self.alternate_protocol_usage,
+            security_state: self.security_state,
+            security_details: self.security_details,
         }
     }
 }
@@ -1323,11 +1538,14 @@ pub struct WebSocketRequest {
 }
 
 impl WebSocketRequest {
+    /// Creates a builder for this type with the required parameters:
+    /// * `headers`: HTTP request headers.
     pub fn builder(headers: Headers) -> WebSocketRequestBuilder {
         WebSocketRequestBuilder {
             headers: headers,
         }
     }
+    /// HTTP request headers.
     pub fn headers(&self) -> &Headers { &self.headers }
 }
 
@@ -1352,64 +1570,75 @@ pub struct WebSocketResponse<'a> {
     /// HTTP response status code.
     status: i64,
     /// HTTP response status text.
-    statusText: Cow<'a, str>,
+    #[serde(rename = "statusText")]
+    status_text: Cow<'a, str>,
     /// HTTP response headers.
     headers: Headers,
     /// HTTP response headers text.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    headersText: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "headersText")]
+    headers_text: Option<Cow<'a, str>>,
     /// HTTP request headers.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    requestHeaders: Option<Headers>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "requestHeaders")]
+    request_headers: Option<Headers>,
     /// HTTP request headers text.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    requestHeadersText: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "requestHeadersText")]
+    request_headers_text: Option<Cow<'a, str>>,
 }
 
 impl<'a> WebSocketResponse<'a> {
-    pub fn builder(status: i64, statusText: impl Into<Cow<'a, str>>, headers: Headers) -> WebSocketResponseBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `status`: HTTP response status code.
+    /// * `status_text`: HTTP response status text.
+    /// * `headers`: HTTP response headers.
+    pub fn builder(status: i64, status_text: impl Into<Cow<'a, str>>, headers: Headers) -> WebSocketResponseBuilder<'a> {
         WebSocketResponseBuilder {
             status: status,
-            statusText: statusText.into(),
+            status_text: status_text.into(),
             headers: headers,
-            headersText: None,
-            requestHeaders: None,
-            requestHeadersText: None,
+            headers_text: None,
+            request_headers: None,
+            request_headers_text: None,
         }
     }
+    /// HTTP response status code.
     pub fn status(&self) -> i64 { self.status }
-    pub fn statusText(&self) -> &str { self.statusText.as_ref() }
+    /// HTTP response status text.
+    pub fn status_text(&self) -> &str { self.status_text.as_ref() }
+    /// HTTP response headers.
     pub fn headers(&self) -> &Headers { &self.headers }
-    pub fn headersText(&self) -> Option<&str> { self.headersText.as_deref() }
-    pub fn requestHeaders(&self) -> Option<&Headers> { self.requestHeaders.as_ref() }
-    pub fn requestHeadersText(&self) -> Option<&str> { self.requestHeadersText.as_deref() }
+    /// HTTP response headers text.
+    pub fn headers_text(&self) -> Option<&str> { self.headers_text.as_deref() }
+    /// HTTP request headers.
+    pub fn request_headers(&self) -> Option<&Headers> { self.request_headers.as_ref() }
+    /// HTTP request headers text.
+    pub fn request_headers_text(&self) -> Option<&str> { self.request_headers_text.as_deref() }
 }
 
 
 pub struct WebSocketResponseBuilder<'a> {
     status: i64,
-    statusText: Cow<'a, str>,
+    status_text: Cow<'a, str>,
     headers: Headers,
-    headersText: Option<Cow<'a, str>>,
-    requestHeaders: Option<Headers>,
-    requestHeadersText: Option<Cow<'a, str>>,
+    headers_text: Option<Cow<'a, str>>,
+    request_headers: Option<Headers>,
+    request_headers_text: Option<Cow<'a, str>>,
 }
 
 impl<'a> WebSocketResponseBuilder<'a> {
     /// HTTP response headers text.
-    pub fn headersText(mut self, headersText: impl Into<Cow<'a, str>>) -> Self { self.headersText = Some(headersText.into()); self }
+    pub fn headers_text(mut self, headers_text: impl Into<Cow<'a, str>>) -> Self { self.headers_text = Some(headers_text.into()); self }
     /// HTTP request headers.
-    pub fn requestHeaders(mut self, requestHeaders: Headers) -> Self { self.requestHeaders = Some(requestHeaders); self }
+    pub fn request_headers(mut self, request_headers: Headers) -> Self { self.request_headers = Some(request_headers); self }
     /// HTTP request headers text.
-    pub fn requestHeadersText(mut self, requestHeadersText: impl Into<Cow<'a, str>>) -> Self { self.requestHeadersText = Some(requestHeadersText.into()); self }
+    pub fn request_headers_text(mut self, request_headers_text: impl Into<Cow<'a, str>>) -> Self { self.request_headers_text = Some(request_headers_text.into()); self }
     pub fn build(self) -> WebSocketResponse<'a> {
         WebSocketResponse {
             status: self.status,
-            statusText: self.statusText,
+            status_text: self.status_text,
             headers: self.headers,
-            headersText: self.headersText,
-            requestHeaders: self.requestHeaders,
-            requestHeadersText: self.requestHeadersText,
+            headers_text: self.headers_text,
+            request_headers: self.request_headers,
+            request_headers_text: self.request_headers_text,
         }
     }
 }
@@ -1426,27 +1655,37 @@ pub struct WebSocketFrame<'a> {
     /// WebSocket message payload data.
     /// If the opcode is 1, this is a text message and payloadData is a UTF-8 string.
     /// If the opcode isn't 1, then payloadData is a base64 encoded string representing binary data.
-    payloadData: Cow<'a, str>,
+    #[serde(rename = "payloadData")]
+    payload_data: Cow<'a, str>,
 }
 
 impl<'a> WebSocketFrame<'a> {
-    pub fn builder(opcode: f64, mask: bool, payloadData: impl Into<Cow<'a, str>>) -> WebSocketFrameBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `opcode`: WebSocket message opcode.
+    /// * `mask`: WebSocket message mask.
+    /// * `payload_data`: WebSocket message payload data. If the opcode is 1, this is a text message and payloadData is a UTF-8 string. If the opcode isn't 1, then payloadData is a base64 encoded string representing binary data.
+    pub fn builder(opcode: f64, mask: bool, payload_data: impl Into<Cow<'a, str>>) -> WebSocketFrameBuilder<'a> {
         WebSocketFrameBuilder {
             opcode: opcode,
             mask: mask,
-            payloadData: payloadData.into(),
+            payload_data: payload_data.into(),
         }
     }
+    /// WebSocket message opcode.
     pub fn opcode(&self) -> f64 { self.opcode }
+    /// WebSocket message mask.
     pub fn mask(&self) -> bool { self.mask }
-    pub fn payloadData(&self) -> &str { self.payloadData.as_ref() }
+    /// WebSocket message payload data.
+    /// If the opcode is 1, this is a text message and payloadData is a UTF-8 string.
+    /// If the opcode isn't 1, then payloadData is a base64 encoded string representing binary data.
+    pub fn payload_data(&self) -> &str { self.payload_data.as_ref() }
 }
 
 
 pub struct WebSocketFrameBuilder<'a> {
     opcode: f64,
     mask: bool,
-    payloadData: Cow<'a, str>,
+    payload_data: Cow<'a, str>,
 }
 
 impl<'a> WebSocketFrameBuilder<'a> {
@@ -1454,7 +1693,7 @@ impl<'a> WebSocketFrameBuilder<'a> {
         WebSocketFrame {
             opcode: self.opcode,
             mask: self.mask,
-            payloadData: self.payloadData,
+            payload_data: self.payload_data,
         }
     }
 }
@@ -1473,22 +1712,31 @@ pub struct CachedResource<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     response: Option<Response<'a>>,
     /// Cached response body size.
-    bodySize: f64,
+    #[serde(rename = "bodySize")]
+    body_size: f64,
 }
 
 impl<'a> CachedResource<'a> {
-    pub fn builder(url: impl Into<Cow<'a, str>>, type_: impl Into<ResourceType>, bodySize: f64) -> CachedResourceBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url`: Resource URL. This is the url of the original network request.
+    /// * `type_`: Type of this resource.
+    /// * `body_size`: Cached response body size.
+    pub fn builder(url: impl Into<Cow<'a, str>>, type_: impl Into<ResourceType>, body_size: f64) -> CachedResourceBuilder<'a> {
         CachedResourceBuilder {
             url: url.into(),
             type_: type_.into(),
             response: None,
-            bodySize: bodySize,
+            body_size: body_size,
         }
     }
+    /// Resource URL. This is the url of the original network request.
     pub fn url(&self) -> &str { self.url.as_ref() }
+    /// Type of this resource.
     pub fn type_(&self) -> &ResourceType { &self.type_ }
+    /// Cached response data.
     pub fn response(&self) -> Option<&Response<'a>> { self.response.as_ref() }
-    pub fn bodySize(&self) -> f64 { self.bodySize }
+    /// Cached response body size.
+    pub fn body_size(&self) -> f64 { self.body_size }
 }
 
 
@@ -1496,7 +1744,7 @@ pub struct CachedResourceBuilder<'a> {
     url: Cow<'a, str>,
     type_: ResourceType,
     response: Option<Response<'a>>,
-    bodySize: f64,
+    body_size: f64,
 }
 
 impl<'a> CachedResourceBuilder<'a> {
@@ -1507,7 +1755,7 @@ impl<'a> CachedResourceBuilder<'a> {
             url: self.url,
             type_: self.type_,
             response: self.response,
-            bodySize: self.bodySize,
+            body_size: self.body_size,
         }
     }
 }
@@ -1529,34 +1777,45 @@ pub struct Initiator<'a> {
     url: Option<Cow<'a, str>>,
     /// Initiator line number, set for Parser type or for Script type (when script is importing
     /// module) (0-based).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    lineNumber: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "lineNumber")]
+    line_number: Option<f64>,
     /// Initiator column number, set for Parser type or for Script type (when script is importing
     /// module) (0-based).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    columnNumber: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "columnNumber")]
+    column_number: Option<f64>,
     /// Set if another request triggered this request (e.g. preflight).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    requestId: Option<RequestId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "requestId")]
+    request_id: Option<RequestId<'a>>,
 }
 
 impl<'a> Initiator<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `type_`: Type of this initiator.
     pub fn builder(type_: impl Into<Cow<'a, str>>) -> InitiatorBuilder<'a> {
         InitiatorBuilder {
             type_: type_.into(),
             stack: None,
             url: None,
-            lineNumber: None,
-            columnNumber: None,
-            requestId: None,
+            line_number: None,
+            column_number: None,
+            request_id: None,
         }
     }
+    /// Type of this initiator.
     pub fn type_(&self) -> &str { self.type_.as_ref() }
+    /// Initiator JavaScript stack trace, set for Script only.
+    /// Requires the Debugger domain to be enabled.
     pub fn stack(&self) -> Option<&crate::runtime::StackTrace> { self.stack.as_ref() }
+    /// Initiator URL, set for Parser type or for Script type (when script is importing module) or for SignedExchange type.
     pub fn url(&self) -> Option<&str> { self.url.as_deref() }
-    pub fn lineNumber(&self) -> Option<f64> { self.lineNumber }
-    pub fn columnNumber(&self) -> Option<f64> { self.columnNumber }
-    pub fn requestId(&self) -> Option<&RequestId<'a>> { self.requestId.as_ref() }
+    /// Initiator line number, set for Parser type or for Script type (when script is importing
+    /// module) (0-based).
+    pub fn line_number(&self) -> Option<f64> { self.line_number }
+    /// Initiator column number, set for Parser type or for Script type (when script is importing
+    /// module) (0-based).
+    pub fn column_number(&self) -> Option<f64> { self.column_number }
+    /// Set if another request triggered this request (e.g. preflight).
+    pub fn request_id(&self) -> Option<&RequestId<'a>> { self.request_id.as_ref() }
 }
 
 
@@ -1564,9 +1823,9 @@ pub struct InitiatorBuilder<'a> {
     type_: Cow<'a, str>,
     stack: Option<crate::runtime::StackTrace>,
     url: Option<Cow<'a, str>>,
-    lineNumber: Option<f64>,
-    columnNumber: Option<f64>,
-    requestId: Option<RequestId<'a>>,
+    line_number: Option<f64>,
+    column_number: Option<f64>,
+    request_id: Option<RequestId<'a>>,
 }
 
 impl<'a> InitiatorBuilder<'a> {
@@ -1577,20 +1836,20 @@ impl<'a> InitiatorBuilder<'a> {
     pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
     /// Initiator line number, set for Parser type or for Script type (when script is importing
     /// module) (0-based).
-    pub fn lineNumber(mut self, lineNumber: f64) -> Self { self.lineNumber = Some(lineNumber); self }
+    pub fn line_number(mut self, line_number: f64) -> Self { self.line_number = Some(line_number); self }
     /// Initiator column number, set for Parser type or for Script type (when script is importing
     /// module) (0-based).
-    pub fn columnNumber(mut self, columnNumber: f64) -> Self { self.columnNumber = Some(columnNumber); self }
+    pub fn column_number(mut self, column_number: f64) -> Self { self.column_number = Some(column_number); self }
     /// Set if another request triggered this request (e.g. preflight).
-    pub fn requestId(mut self, requestId: impl Into<RequestId<'a>>) -> Self { self.requestId = Some(requestId.into()); self }
+    pub fn request_id(mut self, request_id: impl Into<RequestId<'a>>) -> Self { self.request_id = Some(request_id.into()); self }
     pub fn build(self) -> Initiator<'a> {
         Initiator {
             type_: self.type_,
             stack: self.stack,
             url: self.url,
-            lineNumber: self.lineNumber,
-            columnNumber: self.columnNumber,
-            requestId: self.requestId,
+            line_number: self.line_number,
+            column_number: self.column_number,
+            request_id: self.request_id,
         }
     }
 }
@@ -1603,33 +1862,41 @@ impl<'a> InitiatorBuilder<'a> {
 pub struct CookiePartitionKey<'a> {
     /// The site of the top-level URL the browser was visiting at the start
     /// of the request to the endpoint that set the cookie.
-    topLevelSite: Cow<'a, str>,
+    #[serde(rename = "topLevelSite")]
+    top_level_site: Cow<'a, str>,
     /// Indicates if the cookie has any ancestors that are cross-site to the topLevelSite.
-    hasCrossSiteAncestor: bool,
+    #[serde(rename = "hasCrossSiteAncestor")]
+    has_cross_site_ancestor: bool,
 }
 
 impl<'a> CookiePartitionKey<'a> {
-    pub fn builder(topLevelSite: impl Into<Cow<'a, str>>, hasCrossSiteAncestor: bool) -> CookiePartitionKeyBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `top_level_site`: The site of the top-level URL the browser was visiting at the start of the request to the endpoint that set the cookie.
+    /// * `has_cross_site_ancestor`: Indicates if the cookie has any ancestors that are cross-site to the topLevelSite.
+    pub fn builder(top_level_site: impl Into<Cow<'a, str>>, has_cross_site_ancestor: bool) -> CookiePartitionKeyBuilder<'a> {
         CookiePartitionKeyBuilder {
-            topLevelSite: topLevelSite.into(),
-            hasCrossSiteAncestor: hasCrossSiteAncestor,
+            top_level_site: top_level_site.into(),
+            has_cross_site_ancestor: has_cross_site_ancestor,
         }
     }
-    pub fn topLevelSite(&self) -> &str { self.topLevelSite.as_ref() }
-    pub fn hasCrossSiteAncestor(&self) -> bool { self.hasCrossSiteAncestor }
+    /// The site of the top-level URL the browser was visiting at the start
+    /// of the request to the endpoint that set the cookie.
+    pub fn top_level_site(&self) -> &str { self.top_level_site.as_ref() }
+    /// Indicates if the cookie has any ancestors that are cross-site to the topLevelSite.
+    pub fn has_cross_site_ancestor(&self) -> bool { self.has_cross_site_ancestor }
 }
 
 
 pub struct CookiePartitionKeyBuilder<'a> {
-    topLevelSite: Cow<'a, str>,
-    hasCrossSiteAncestor: bool,
+    top_level_site: Cow<'a, str>,
+    has_cross_site_ancestor: bool,
 }
 
 impl<'a> CookiePartitionKeyBuilder<'a> {
     pub fn build(self) -> CookiePartitionKey<'a> {
         CookiePartitionKey {
-            topLevelSite: self.topLevelSite,
-            hasCrossSiteAncestor: self.hasCrossSiteAncestor,
+            top_level_site: self.top_level_site,
+            has_cross_site_ancestor: self.has_cross_site_ancestor,
         }
     }
 }
@@ -1655,32 +1922,48 @@ pub struct Cookie<'a> {
     /// Cookie size.
     size: u64,
     /// True if cookie is http-only.
-    httpOnly: bool,
+    #[serde(rename = "httpOnly")]
+    http_only: bool,
     /// True if cookie is secure.
     secure: bool,
     /// True in case of session cookie.
     session: bool,
     /// Cookie SameSite type.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    sameSite: Option<CookieSameSite>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sameSite")]
+    same_site: Option<CookieSameSite>,
     /// Cookie Priority
     priority: CookiePriority,
     /// Cookie source scheme type.
-    sourceScheme: CookieSourceScheme,
-    /// Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port.
+    #[serde(rename = "sourceScheme")]
+    source_scheme: CookieSourceScheme,
+    /// Cookie source port. Valid values are {-1, \[1, 65535\]}, -1 indicates an unspecified port.
     /// An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
     /// This is a temporary ability and it will be removed in the future.
-    sourcePort: i64,
+    #[serde(rename = "sourcePort")]
+    source_port: i64,
     /// Cookie partition key.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    partitionKey: Option<CookiePartitionKey<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "partitionKey")]
+    partition_key: Option<CookiePartitionKey<'a>>,
     /// True if cookie partition key is opaque.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    partitionKeyOpaque: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "partitionKeyOpaque")]
+    partition_key_opaque: Option<bool>,
 }
 
 impl<'a> Cookie<'a> {
-    pub fn builder(name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>, domain: impl Into<Cow<'a, str>>, path: impl Into<Cow<'a, str>>, expires: f64, size: u64, httpOnly: bool, secure: bool, session: bool, priority: impl Into<CookiePriority>, sourceScheme: impl Into<CookieSourceScheme>, sourcePort: i64) -> CookieBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: Cookie name.
+    /// * `value`: Cookie value.
+    /// * `domain`: Cookie domain.
+    /// * `path`: Cookie path.
+    /// * `expires`: Cookie expiration date as the number of seconds since the UNIX epoch. The value is set to -1 if the expiry date is not set. The value can be null for values that cannot be represented in JSON (±Inf).
+    /// * `size`: Cookie size.
+    /// * `http_only`: True if cookie is http-only.
+    /// * `secure`: True if cookie is secure.
+    /// * `session`: True in case of session cookie.
+    /// * `priority`: Cookie Priority
+    /// * `source_scheme`: Cookie source scheme type.
+    /// * `source_port`: Cookie source port. Valid values are {-1, \[1, 65535\]}, -1 indicates an unspecified port. An unspecified port value allows protocol clients to emulate legacy cookie scope for the port. This is a temporary ability and it will be removed in the future.
+    pub fn builder(name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>, domain: impl Into<Cow<'a, str>>, path: impl Into<Cow<'a, str>>, expires: f64, size: u64, http_only: bool, secure: bool, session: bool, priority: impl Into<CookiePriority>, source_scheme: impl Into<CookieSourceScheme>, source_port: i64) -> CookieBuilder<'a> {
         CookieBuilder {
             name: name.into(),
             value: value.into(),
@@ -1688,32 +1971,52 @@ impl<'a> Cookie<'a> {
             path: path.into(),
             expires: expires,
             size: size,
-            httpOnly: httpOnly,
+            http_only: http_only,
             secure: secure,
             session: session,
-            sameSite: None,
+            same_site: None,
             priority: priority.into(),
-            sourceScheme: sourceScheme.into(),
-            sourcePort: sourcePort,
-            partitionKey: None,
-            partitionKeyOpaque: None,
+            source_scheme: source_scheme.into(),
+            source_port: source_port,
+            partition_key: None,
+            partition_key_opaque: None,
         }
     }
+    /// Cookie name.
     pub fn name(&self) -> &str { self.name.as_ref() }
+    /// Cookie value.
     pub fn value(&self) -> &str { self.value.as_ref() }
+    /// Cookie domain.
     pub fn domain(&self) -> &str { self.domain.as_ref() }
+    /// Cookie path.
     pub fn path(&self) -> &str { self.path.as_ref() }
+    /// Cookie expiration date as the number of seconds since the UNIX epoch.
+    /// The value is set to -1 if the expiry date is not set.
+    /// The value can be null for values that cannot be represented in
+    /// JSON (±Inf).
     pub fn expires(&self) -> f64 { self.expires }
+    /// Cookie size.
     pub fn size(&self) -> u64 { self.size }
-    pub fn httpOnly(&self) -> bool { self.httpOnly }
+    /// True if cookie is http-only.
+    pub fn http_only(&self) -> bool { self.http_only }
+    /// True if cookie is secure.
     pub fn secure(&self) -> bool { self.secure }
+    /// True in case of session cookie.
     pub fn session(&self) -> bool { self.session }
-    pub fn sameSite(&self) -> Option<&CookieSameSite> { self.sameSite.as_ref() }
+    /// Cookie SameSite type.
+    pub fn same_site(&self) -> Option<&CookieSameSite> { self.same_site.as_ref() }
+    /// Cookie Priority
     pub fn priority(&self) -> &CookiePriority { &self.priority }
-    pub fn sourceScheme(&self) -> &CookieSourceScheme { &self.sourceScheme }
-    pub fn sourcePort(&self) -> i64 { self.sourcePort }
-    pub fn partitionKey(&self) -> Option<&CookiePartitionKey<'a>> { self.partitionKey.as_ref() }
-    pub fn partitionKeyOpaque(&self) -> Option<bool> { self.partitionKeyOpaque }
+    /// Cookie source scheme type.
+    pub fn source_scheme(&self) -> &CookieSourceScheme { &self.source_scheme }
+    /// Cookie source port. Valid values are {-1, \[1, 65535\]}, -1 indicates an unspecified port.
+    /// An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
+    /// This is a temporary ability and it will be removed in the future.
+    pub fn source_port(&self) -> i64 { self.source_port }
+    /// Cookie partition key.
+    pub fn partition_key(&self) -> Option<&CookiePartitionKey<'a>> { self.partition_key.as_ref() }
+    /// True if cookie partition key is opaque.
+    pub fn partition_key_opaque(&self) -> Option<bool> { self.partition_key_opaque }
 }
 
 
@@ -1724,24 +2027,24 @@ pub struct CookieBuilder<'a> {
     path: Cow<'a, str>,
     expires: f64,
     size: u64,
-    httpOnly: bool,
+    http_only: bool,
     secure: bool,
     session: bool,
-    sameSite: Option<CookieSameSite>,
+    same_site: Option<CookieSameSite>,
     priority: CookiePriority,
-    sourceScheme: CookieSourceScheme,
-    sourcePort: i64,
-    partitionKey: Option<CookiePartitionKey<'a>>,
-    partitionKeyOpaque: Option<bool>,
+    source_scheme: CookieSourceScheme,
+    source_port: i64,
+    partition_key: Option<CookiePartitionKey<'a>>,
+    partition_key_opaque: Option<bool>,
 }
 
 impl<'a> CookieBuilder<'a> {
     /// Cookie SameSite type.
-    pub fn sameSite(mut self, sameSite: impl Into<CookieSameSite>) -> Self { self.sameSite = Some(sameSite.into()); self }
+    pub fn same_site(mut self, same_site: impl Into<CookieSameSite>) -> Self { self.same_site = Some(same_site.into()); self }
     /// Cookie partition key.
-    pub fn partitionKey(mut self, partitionKey: CookiePartitionKey<'a>) -> Self { self.partitionKey = Some(partitionKey); self }
+    pub fn partition_key(mut self, partition_key: CookiePartitionKey<'a>) -> Self { self.partition_key = Some(partition_key); self }
     /// True if cookie partition key is opaque.
-    pub fn partitionKeyOpaque(mut self, partitionKeyOpaque: bool) -> Self { self.partitionKeyOpaque = Some(partitionKeyOpaque); self }
+    pub fn partition_key_opaque(mut self, partition_key_opaque: bool) -> Self { self.partition_key_opaque = Some(partition_key_opaque); self }
     pub fn build(self) -> Cookie<'a> {
         Cookie {
             name: self.name,
@@ -1750,15 +2053,15 @@ impl<'a> CookieBuilder<'a> {
             path: self.path,
             expires: self.expires,
             size: self.size,
-            httpOnly: self.httpOnly,
+            http_only: self.http_only,
             secure: self.secure,
             session: self.session,
-            sameSite: self.sameSite,
+            same_site: self.same_site,
             priority: self.priority,
-            sourceScheme: self.sourceScheme,
-            sourcePort: self.sourcePort,
-            partitionKey: self.partitionKey,
-            partitionKeyOpaque: self.partitionKeyOpaque,
+            source_scheme: self.source_scheme,
+            source_port: self.source_port,
+            partition_key: self.partition_key,
+            partition_key_opaque: self.partition_key_opaque,
         }
     }
 }
@@ -1888,10 +2191,12 @@ pub enum CookieExemptionReason {
 #[serde(rename_all = "camelCase")]
 pub struct BlockedSetCookieWithReason<'a> {
     /// The reason(s) this cookie was blocked.
-    blockedReasons: Vec<SetCookieBlockedReason>,
+    #[serde(rename = "blockedReasons")]
+    blocked_reasons: Vec<SetCookieBlockedReason>,
     /// The string representing this individual cookie as it would appear in the header.
     /// This is not the entire "cookie" or "set-cookie" header which could have multiple cookies.
-    cookieLine: Cow<'a, str>,
+    #[serde(rename = "cookieLine")]
+    cookie_line: Cow<'a, str>,
     /// The cookie object which represents the cookie which was not stored. It is optional because
     /// sometimes complete cookie information is not available, such as in the case of parsing
     /// errors.
@@ -1900,22 +2205,31 @@ pub struct BlockedSetCookieWithReason<'a> {
 }
 
 impl<'a> BlockedSetCookieWithReason<'a> {
-    pub fn builder(blockedReasons: Vec<SetCookieBlockedReason>, cookieLine: impl Into<Cow<'a, str>>) -> BlockedSetCookieWithReasonBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `blocked_reasons`: The reason(s) this cookie was blocked.
+    /// * `cookie_line`: The string representing this individual cookie as it would appear in the header. This is not the entire "cookie" or "set-cookie" header which could have multiple cookies.
+    pub fn builder(blocked_reasons: Vec<SetCookieBlockedReason>, cookie_line: impl Into<Cow<'a, str>>) -> BlockedSetCookieWithReasonBuilder<'a> {
         BlockedSetCookieWithReasonBuilder {
-            blockedReasons: blockedReasons,
-            cookieLine: cookieLine.into(),
+            blocked_reasons: blocked_reasons,
+            cookie_line: cookie_line.into(),
             cookie: None,
         }
     }
-    pub fn blockedReasons(&self) -> &[SetCookieBlockedReason] { &self.blockedReasons }
-    pub fn cookieLine(&self) -> &str { self.cookieLine.as_ref() }
+    /// The reason(s) this cookie was blocked.
+    pub fn blocked_reasons(&self) -> &[SetCookieBlockedReason] { &self.blocked_reasons }
+    /// The string representing this individual cookie as it would appear in the header.
+    /// This is not the entire "cookie" or "set-cookie" header which could have multiple cookies.
+    pub fn cookie_line(&self) -> &str { self.cookie_line.as_ref() }
+    /// The cookie object which represents the cookie which was not stored. It is optional because
+    /// sometimes complete cookie information is not available, such as in the case of parsing
+    /// errors.
     pub fn cookie(&self) -> Option<&Cookie<'a>> { self.cookie.as_ref() }
 }
 
 
 pub struct BlockedSetCookieWithReasonBuilder<'a> {
-    blockedReasons: Vec<SetCookieBlockedReason>,
-    cookieLine: Cow<'a, str>,
+    blocked_reasons: Vec<SetCookieBlockedReason>,
+    cookie_line: Cow<'a, str>,
     cookie: Option<Cookie<'a>>,
 }
 
@@ -1926,8 +2240,8 @@ impl<'a> BlockedSetCookieWithReasonBuilder<'a> {
     pub fn cookie(mut self, cookie: Cookie<'a>) -> Self { self.cookie = Some(cookie); self }
     pub fn build(self) -> BlockedSetCookieWithReason<'a> {
         BlockedSetCookieWithReason {
-            blockedReasons: self.blockedReasons,
-            cookieLine: self.cookieLine,
+            blocked_reasons: self.blocked_reasons,
+            cookie_line: self.cookie_line,
             cookie: self.cookie,
         }
     }
@@ -1940,38 +2254,47 @@ impl<'a> BlockedSetCookieWithReasonBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ExemptedSetCookieWithReason<'a> {
     /// The reason the cookie was exempted.
-    exemptionReason: CookieExemptionReason,
+    #[serde(rename = "exemptionReason")]
+    exemption_reason: CookieExemptionReason,
     /// The string representing this individual cookie as it would appear in the header.
-    cookieLine: Cow<'a, str>,
+    #[serde(rename = "cookieLine")]
+    cookie_line: Cow<'a, str>,
     /// The cookie object representing the cookie.
     cookie: Cookie<'a>,
 }
 
 impl<'a> ExemptedSetCookieWithReason<'a> {
-    pub fn builder(exemptionReason: impl Into<CookieExemptionReason>, cookieLine: impl Into<Cow<'a, str>>, cookie: Cookie<'a>) -> ExemptedSetCookieWithReasonBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `exemption_reason`: The reason the cookie was exempted.
+    /// * `cookie_line`: The string representing this individual cookie as it would appear in the header.
+    /// * `cookie`: The cookie object representing the cookie.
+    pub fn builder(exemption_reason: impl Into<CookieExemptionReason>, cookie_line: impl Into<Cow<'a, str>>, cookie: Cookie<'a>) -> ExemptedSetCookieWithReasonBuilder<'a> {
         ExemptedSetCookieWithReasonBuilder {
-            exemptionReason: exemptionReason.into(),
-            cookieLine: cookieLine.into(),
+            exemption_reason: exemption_reason.into(),
+            cookie_line: cookie_line.into(),
             cookie: cookie,
         }
     }
-    pub fn exemptionReason(&self) -> &CookieExemptionReason { &self.exemptionReason }
-    pub fn cookieLine(&self) -> &str { self.cookieLine.as_ref() }
+    /// The reason the cookie was exempted.
+    pub fn exemption_reason(&self) -> &CookieExemptionReason { &self.exemption_reason }
+    /// The string representing this individual cookie as it would appear in the header.
+    pub fn cookie_line(&self) -> &str { self.cookie_line.as_ref() }
+    /// The cookie object representing the cookie.
     pub fn cookie(&self) -> &Cookie<'a> { &self.cookie }
 }
 
 
 pub struct ExemptedSetCookieWithReasonBuilder<'a> {
-    exemptionReason: CookieExemptionReason,
-    cookieLine: Cow<'a, str>,
+    exemption_reason: CookieExemptionReason,
+    cookie_line: Cow<'a, str>,
     cookie: Cookie<'a>,
 }
 
 impl<'a> ExemptedSetCookieWithReasonBuilder<'a> {
     pub fn build(self) -> ExemptedSetCookieWithReason<'a> {
         ExemptedSetCookieWithReason {
-            exemptionReason: self.exemptionReason,
-            cookieLine: self.cookieLine,
+            exemption_reason: self.exemption_reason,
+            cookie_line: self.cookie_line,
             cookie: self.cookie,
         }
     }
@@ -1986,42 +2309,50 @@ pub struct AssociatedCookie<'a> {
     /// The cookie object representing the cookie which was not sent.
     cookie: Cookie<'a>,
     /// The reason(s) the cookie was blocked. If empty means the cookie is included.
-    blockedReasons: Vec<CookieBlockedReason>,
+    #[serde(rename = "blockedReasons")]
+    blocked_reasons: Vec<CookieBlockedReason>,
     /// The reason the cookie should have been blocked by 3PCD but is exempted. A cookie could
     /// only have at most one exemption reason.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    exemptionReason: Option<CookieExemptionReason>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "exemptionReason")]
+    exemption_reason: Option<CookieExemptionReason>,
 }
 
 impl<'a> AssociatedCookie<'a> {
-    pub fn builder(cookie: Cookie<'a>, blockedReasons: Vec<CookieBlockedReason>) -> AssociatedCookieBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `cookie`: The cookie object representing the cookie which was not sent.
+    /// * `blocked_reasons`: The reason(s) the cookie was blocked. If empty means the cookie is included.
+    pub fn builder(cookie: Cookie<'a>, blocked_reasons: Vec<CookieBlockedReason>) -> AssociatedCookieBuilder<'a> {
         AssociatedCookieBuilder {
             cookie: cookie,
-            blockedReasons: blockedReasons,
-            exemptionReason: None,
+            blocked_reasons: blocked_reasons,
+            exemption_reason: None,
         }
     }
+    /// The cookie object representing the cookie which was not sent.
     pub fn cookie(&self) -> &Cookie<'a> { &self.cookie }
-    pub fn blockedReasons(&self) -> &[CookieBlockedReason] { &self.blockedReasons }
-    pub fn exemptionReason(&self) -> Option<&CookieExemptionReason> { self.exemptionReason.as_ref() }
+    /// The reason(s) the cookie was blocked. If empty means the cookie is included.
+    pub fn blocked_reasons(&self) -> &[CookieBlockedReason] { &self.blocked_reasons }
+    /// The reason the cookie should have been blocked by 3PCD but is exempted. A cookie could
+    /// only have at most one exemption reason.
+    pub fn exemption_reason(&self) -> Option<&CookieExemptionReason> { self.exemption_reason.as_ref() }
 }
 
 
 pub struct AssociatedCookieBuilder<'a> {
     cookie: Cookie<'a>,
-    blockedReasons: Vec<CookieBlockedReason>,
-    exemptionReason: Option<CookieExemptionReason>,
+    blocked_reasons: Vec<CookieBlockedReason>,
+    exemption_reason: Option<CookieExemptionReason>,
 }
 
 impl<'a> AssociatedCookieBuilder<'a> {
     /// The reason the cookie should have been blocked by 3PCD but is exempted. A cookie could
     /// only have at most one exemption reason.
-    pub fn exemptionReason(mut self, exemptionReason: impl Into<CookieExemptionReason>) -> Self { self.exemptionReason = Some(exemptionReason.into()); self }
+    pub fn exemption_reason(mut self, exemption_reason: impl Into<CookieExemptionReason>) -> Self { self.exemption_reason = Some(exemption_reason.into()); self }
     pub fn build(self) -> AssociatedCookie<'a> {
         AssociatedCookie {
             cookie: self.cookie,
-            blockedReasons: self.blockedReasons,
-            exemptionReason: self.exemptionReason,
+            blocked_reasons: self.blocked_reasons,
+            exemption_reason: self.exemption_reason,
         }
     }
 }
@@ -2049,11 +2380,11 @@ pub struct CookieParam<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     secure: Option<bool>,
     /// True if cookie is http-only.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    httpOnly: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "httpOnly")]
+    http_only: Option<bool>,
     /// Cookie SameSite type.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    sameSite: Option<CookieSameSite>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sameSite")]
+    same_site: Option<CookieSameSite>,
     /// Cookie expiration date, session cookie if not set
     #[serde(skip_serializing_if = "Option::is_none")]
     expires: Option<TimeSinceEpoch>,
@@ -2061,19 +2392,22 @@ pub struct CookieParam<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     priority: Option<CookiePriority>,
     /// Cookie source scheme type.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    sourceScheme: Option<CookieSourceScheme>,
-    /// Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port.
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sourceScheme")]
+    source_scheme: Option<CookieSourceScheme>,
+    /// Cookie source port. Valid values are {-1, \[1, 65535\]}, -1 indicates an unspecified port.
     /// An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
     /// This is a temporary ability and it will be removed in the future.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    sourcePort: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sourcePort")]
+    source_port: Option<i64>,
     /// Cookie partition key. If not set, the cookie will be set as not partitioned.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    partitionKey: Option<CookiePartitionKey<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "partitionKey")]
+    partition_key: Option<CookiePartitionKey<'a>>,
 }
 
 impl<'a> CookieParam<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: Cookie name.
+    /// * `value`: Cookie value.
     pub fn builder(name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> CookieParamBuilder<'a> {
         CookieParamBuilder {
             name: name.into(),
@@ -2082,28 +2416,44 @@ impl<'a> CookieParam<'a> {
             domain: None,
             path: None,
             secure: None,
-            httpOnly: None,
-            sameSite: None,
+            http_only: None,
+            same_site: None,
             expires: None,
             priority: None,
-            sourceScheme: None,
-            sourcePort: None,
-            partitionKey: None,
+            source_scheme: None,
+            source_port: None,
+            partition_key: None,
         }
     }
+    /// Cookie name.
     pub fn name(&self) -> &str { self.name.as_ref() }
+    /// Cookie value.
     pub fn value(&self) -> &str { self.value.as_ref() }
+    /// The request-URI to associate with the setting of the cookie. This value can affect the
+    /// default domain, path, source port, and source scheme values of the created cookie.
     pub fn url(&self) -> Option<&str> { self.url.as_deref() }
+    /// Cookie domain.
     pub fn domain(&self) -> Option<&str> { self.domain.as_deref() }
+    /// Cookie path.
     pub fn path(&self) -> Option<&str> { self.path.as_deref() }
+    /// True if cookie is secure.
     pub fn secure(&self) -> Option<bool> { self.secure }
-    pub fn httpOnly(&self) -> Option<bool> { self.httpOnly }
-    pub fn sameSite(&self) -> Option<&CookieSameSite> { self.sameSite.as_ref() }
+    /// True if cookie is http-only.
+    pub fn http_only(&self) -> Option<bool> { self.http_only }
+    /// Cookie SameSite type.
+    pub fn same_site(&self) -> Option<&CookieSameSite> { self.same_site.as_ref() }
+    /// Cookie expiration date, session cookie if not set
     pub fn expires(&self) -> Option<&TimeSinceEpoch> { self.expires.as_ref() }
+    /// Cookie Priority.
     pub fn priority(&self) -> Option<&CookiePriority> { self.priority.as_ref() }
-    pub fn sourceScheme(&self) -> Option<&CookieSourceScheme> { self.sourceScheme.as_ref() }
-    pub fn sourcePort(&self) -> Option<i64> { self.sourcePort }
-    pub fn partitionKey(&self) -> Option<&CookiePartitionKey<'a>> { self.partitionKey.as_ref() }
+    /// Cookie source scheme type.
+    pub fn source_scheme(&self) -> Option<&CookieSourceScheme> { self.source_scheme.as_ref() }
+    /// Cookie source port. Valid values are {-1, \[1, 65535\]}, -1 indicates an unspecified port.
+    /// An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
+    /// This is a temporary ability and it will be removed in the future.
+    pub fn source_port(&self) -> Option<i64> { self.source_port }
+    /// Cookie partition key. If not set, the cookie will be set as not partitioned.
+    pub fn partition_key(&self) -> Option<&CookiePartitionKey<'a>> { self.partition_key.as_ref() }
 }
 
 
@@ -2114,13 +2464,13 @@ pub struct CookieParamBuilder<'a> {
     domain: Option<Cow<'a, str>>,
     path: Option<Cow<'a, str>>,
     secure: Option<bool>,
-    httpOnly: Option<bool>,
-    sameSite: Option<CookieSameSite>,
+    http_only: Option<bool>,
+    same_site: Option<CookieSameSite>,
     expires: Option<TimeSinceEpoch>,
     priority: Option<CookiePriority>,
-    sourceScheme: Option<CookieSourceScheme>,
-    sourcePort: Option<i64>,
-    partitionKey: Option<CookiePartitionKey<'a>>,
+    source_scheme: Option<CookieSourceScheme>,
+    source_port: Option<i64>,
+    partition_key: Option<CookiePartitionKey<'a>>,
 }
 
 impl<'a> CookieParamBuilder<'a> {
@@ -2134,21 +2484,21 @@ impl<'a> CookieParamBuilder<'a> {
     /// True if cookie is secure.
     pub fn secure(mut self, secure: bool) -> Self { self.secure = Some(secure); self }
     /// True if cookie is http-only.
-    pub fn httpOnly(mut self, httpOnly: bool) -> Self { self.httpOnly = Some(httpOnly); self }
+    pub fn http_only(mut self, http_only: bool) -> Self { self.http_only = Some(http_only); self }
     /// Cookie SameSite type.
-    pub fn sameSite(mut self, sameSite: impl Into<CookieSameSite>) -> Self { self.sameSite = Some(sameSite.into()); self }
+    pub fn same_site(mut self, same_site: impl Into<CookieSameSite>) -> Self { self.same_site = Some(same_site.into()); self }
     /// Cookie expiration date, session cookie if not set
     pub fn expires(mut self, expires: TimeSinceEpoch) -> Self { self.expires = Some(expires); self }
     /// Cookie Priority.
     pub fn priority(mut self, priority: impl Into<CookiePriority>) -> Self { self.priority = Some(priority.into()); self }
     /// Cookie source scheme type.
-    pub fn sourceScheme(mut self, sourceScheme: impl Into<CookieSourceScheme>) -> Self { self.sourceScheme = Some(sourceScheme.into()); self }
-    /// Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port.
+    pub fn source_scheme(mut self, source_scheme: impl Into<CookieSourceScheme>) -> Self { self.source_scheme = Some(source_scheme.into()); self }
+    /// Cookie source port. Valid values are {-1, \[1, 65535\]}, -1 indicates an unspecified port.
     /// An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
     /// This is a temporary ability and it will be removed in the future.
-    pub fn sourcePort(mut self, sourcePort: i64) -> Self { self.sourcePort = Some(sourcePort); self }
+    pub fn source_port(mut self, source_port: i64) -> Self { self.source_port = Some(source_port); self }
     /// Cookie partition key. If not set, the cookie will be set as not partitioned.
-    pub fn partitionKey(mut self, partitionKey: CookiePartitionKey<'a>) -> Self { self.partitionKey = Some(partitionKey); self }
+    pub fn partition_key(mut self, partition_key: CookiePartitionKey<'a>) -> Self { self.partition_key = Some(partition_key); self }
     pub fn build(self) -> CookieParam<'a> {
         CookieParam {
             name: self.name,
@@ -2157,13 +2507,13 @@ impl<'a> CookieParamBuilder<'a> {
             domain: self.domain,
             path: self.path,
             secure: self.secure,
-            httpOnly: self.httpOnly,
-            sameSite: self.sameSite,
+            http_only: self.http_only,
+            same_site: self.same_site,
             expires: self.expires,
             priority: self.priority,
-            sourceScheme: self.sourceScheme,
-            sourcePort: self.sourcePort,
-            partitionKey: self.partitionKey,
+            source_scheme: self.source_scheme,
+            source_port: self.source_port,
+            partition_key: self.partition_key,
         }
     }
 }
@@ -2185,6 +2535,10 @@ pub struct AuthChallenge<'a> {
 }
 
 impl<'a> AuthChallenge<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `origin`: Origin of the challenger.
+    /// * `scheme`: The authentication scheme used, such as basic or digest
+    /// * `realm`: The realm of the challenge. May be empty.
     pub fn builder(origin: impl Into<Cow<'a, str>>, scheme: impl Into<Cow<'a, str>>, realm: impl Into<Cow<'a, str>>) -> AuthChallengeBuilder<'a> {
         AuthChallengeBuilder {
             source: None,
@@ -2193,9 +2547,13 @@ impl<'a> AuthChallenge<'a> {
             realm: realm.into(),
         }
     }
+    /// Source of the authentication challenge.
     pub fn source(&self) -> Option<&str> { self.source.as_deref() }
+    /// Origin of the challenger.
     pub fn origin(&self) -> &str { self.origin.as_ref() }
+    /// The authentication scheme used, such as basic or digest
     pub fn scheme(&self) -> &str { self.scheme.as_ref() }
+    /// The realm of the challenge. May be empty.
     pub fn realm(&self) -> &str { self.realm.as_ref() }
 }
 
@@ -2240,6 +2598,8 @@ pub struct AuthChallengeResponse<'a> {
 }
 
 impl<'a> AuthChallengeResponse<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `response`: The decision on what to do in response to the authorization challenge.  Default means deferring to the default behavior of the net stack, which will likely either the Cancel authentication or display a popup dialog box.
     pub fn builder(response: impl Into<Cow<'a, str>>) -> AuthChallengeResponseBuilder<'a> {
         AuthChallengeResponseBuilder {
             response: response.into(),
@@ -2247,8 +2607,15 @@ impl<'a> AuthChallengeResponse<'a> {
             password: None,
         }
     }
+    /// The decision on what to do in response to the authorization challenge.  Default means
+    /// deferring to the default behavior of the net stack, which will likely either the Cancel
+    /// authentication or display a popup dialog box.
     pub fn response(&self) -> &str { self.response.as_ref() }
+    /// The username to provide, possibly empty. Should only be set if response is
+    /// ProvideCredentials.
     pub fn username(&self) -> Option<&str> { self.username.as_deref() }
+    /// The password to provide, possibly empty. Should only be set if response is
+    /// ProvideCredentials.
     pub fn password(&self) -> Option<&str> { self.password.as_deref() }
 }
 
@@ -2292,57 +2659,62 @@ pub enum InterceptionStage {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct RequestPattern<'a> {
-    /// Wildcards (''*'' -> zero or more, ''?'' -> exactly one) are allowed. Escape character is
+    /// Wildcards (''*'' -\> zero or more, ''?'' -\> exactly one) are allowed. Escape character is
     /// backslash. Omitting is equivalent to '"*"'.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    urlPattern: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "urlPattern")]
+    url_pattern: Option<Cow<'a, str>>,
     /// If set, only requests for matching resource types will be intercepted.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    resourceType: Option<ResourceType>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "resourceType")]
+    resource_type: Option<ResourceType>,
     /// Stage at which to begin intercepting requests. Default is Request.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    interceptionStage: Option<InterceptionStage>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "interceptionStage")]
+    interception_stage: Option<InterceptionStage>,
 }
 
 impl<'a> RequestPattern<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> RequestPatternBuilder<'a> {
         RequestPatternBuilder {
-            urlPattern: None,
-            resourceType: None,
-            interceptionStage: None,
+            url_pattern: None,
+            resource_type: None,
+            interception_stage: None,
         }
     }
-    pub fn urlPattern(&self) -> Option<&str> { self.urlPattern.as_deref() }
-    pub fn resourceType(&self) -> Option<&ResourceType> { self.resourceType.as_ref() }
-    pub fn interceptionStage(&self) -> Option<&InterceptionStage> { self.interceptionStage.as_ref() }
+    /// Wildcards (''*'' -\> zero or more, ''?'' -\> exactly one) are allowed. Escape character is
+    /// backslash. Omitting is equivalent to '"*"'.
+    pub fn url_pattern(&self) -> Option<&str> { self.url_pattern.as_deref() }
+    /// If set, only requests for matching resource types will be intercepted.
+    pub fn resource_type(&self) -> Option<&ResourceType> { self.resource_type.as_ref() }
+    /// Stage at which to begin intercepting requests. Default is Request.
+    pub fn interception_stage(&self) -> Option<&InterceptionStage> { self.interception_stage.as_ref() }
 }
 
 #[derive(Default)]
 pub struct RequestPatternBuilder<'a> {
-    urlPattern: Option<Cow<'a, str>>,
-    resourceType: Option<ResourceType>,
-    interceptionStage: Option<InterceptionStage>,
+    url_pattern: Option<Cow<'a, str>>,
+    resource_type: Option<ResourceType>,
+    interception_stage: Option<InterceptionStage>,
 }
 
 impl<'a> RequestPatternBuilder<'a> {
-    /// Wildcards (''*'' -> zero or more, ''?'' -> exactly one) are allowed. Escape character is
+    /// Wildcards (''*'' -\> zero or more, ''?'' -\> exactly one) are allowed. Escape character is
     /// backslash. Omitting is equivalent to '"*"'.
-    pub fn urlPattern(mut self, urlPattern: impl Into<Cow<'a, str>>) -> Self { self.urlPattern = Some(urlPattern.into()); self }
+    pub fn url_pattern(mut self, url_pattern: impl Into<Cow<'a, str>>) -> Self { self.url_pattern = Some(url_pattern.into()); self }
     /// If set, only requests for matching resource types will be intercepted.
-    pub fn resourceType(mut self, resourceType: impl Into<ResourceType>) -> Self { self.resourceType = Some(resourceType.into()); self }
+    pub fn resource_type(mut self, resource_type: impl Into<ResourceType>) -> Self { self.resource_type = Some(resource_type.into()); self }
     /// Stage at which to begin intercepting requests. Default is Request.
-    pub fn interceptionStage(mut self, interceptionStage: impl Into<InterceptionStage>) -> Self { self.interceptionStage = Some(interceptionStage.into()); self }
+    pub fn interception_stage(mut self, interception_stage: impl Into<InterceptionStage>) -> Self { self.interception_stage = Some(interception_stage.into()); self }
     pub fn build(self) -> RequestPattern<'a> {
         RequestPattern {
-            urlPattern: self.urlPattern,
-            resourceType: self.resourceType,
-            interceptionStage: self.interceptionStage,
+            url_pattern: self.url_pattern,
+            resource_type: self.resource_type,
+            interception_stage: self.interception_stage,
         }
     }
 }
 
 /// Information about a signed exchange signature.
-/// https://wicg.github.io/webpackage/draft-yasskin-httpbis-origin-signed-exchanges-impl.html#rfc.section.3.1
+/// <https://wicg.github.io/webpackage/draft-yasskin-httpbis-origin-signed-exchanges-impl.html#rfc.section.3.1>
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -2354,13 +2726,14 @@ pub struct SignedExchangeSignature<'a> {
     /// Signed exchange signature integrity.
     integrity: Cow<'a, str>,
     /// Signed exchange signature cert Url.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    certUrl: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "certUrl")]
+    cert_url: Option<Cow<'a, str>>,
     /// The hex string of signed exchange signature cert sha256.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    certSha256: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "certSha256")]
+    cert_sha256: Option<Cow<'a, str>>,
     /// Signed exchange signature validity Url.
-    validityUrl: Cow<'a, str>,
+    #[serde(rename = "validityUrl")]
+    validity_url: Cow<'a, str>,
     /// Signed exchange signature date.
     date: i64,
     /// Signed exchange signature expires.
@@ -2371,27 +2744,43 @@ pub struct SignedExchangeSignature<'a> {
 }
 
 impl<'a> SignedExchangeSignature<'a> {
-    pub fn builder(label: impl Into<Cow<'a, str>>, signature: impl Into<Cow<'a, str>>, integrity: impl Into<Cow<'a, str>>, validityUrl: impl Into<Cow<'a, str>>, date: i64, expires: i64) -> SignedExchangeSignatureBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `label`: Signed exchange signature label.
+    /// * `signature`: The hex string of signed exchange signature.
+    /// * `integrity`: Signed exchange signature integrity.
+    /// * `validity_url`: Signed exchange signature validity Url.
+    /// * `date`: Signed exchange signature date.
+    /// * `expires`: Signed exchange signature expires.
+    pub fn builder(label: impl Into<Cow<'a, str>>, signature: impl Into<Cow<'a, str>>, integrity: impl Into<Cow<'a, str>>, validity_url: impl Into<Cow<'a, str>>, date: i64, expires: i64) -> SignedExchangeSignatureBuilder<'a> {
         SignedExchangeSignatureBuilder {
             label: label.into(),
             signature: signature.into(),
             integrity: integrity.into(),
-            certUrl: None,
-            certSha256: None,
-            validityUrl: validityUrl.into(),
+            cert_url: None,
+            cert_sha256: None,
+            validity_url: validity_url.into(),
             date: date,
             expires: expires,
             certificates: None,
         }
     }
+    /// Signed exchange signature label.
     pub fn label(&self) -> &str { self.label.as_ref() }
+    /// The hex string of signed exchange signature.
     pub fn signature(&self) -> &str { self.signature.as_ref() }
+    /// Signed exchange signature integrity.
     pub fn integrity(&self) -> &str { self.integrity.as_ref() }
-    pub fn certUrl(&self) -> Option<&str> { self.certUrl.as_deref() }
-    pub fn certSha256(&self) -> Option<&str> { self.certSha256.as_deref() }
-    pub fn validityUrl(&self) -> &str { self.validityUrl.as_ref() }
+    /// Signed exchange signature cert Url.
+    pub fn cert_url(&self) -> Option<&str> { self.cert_url.as_deref() }
+    /// The hex string of signed exchange signature cert sha256.
+    pub fn cert_sha256(&self) -> Option<&str> { self.cert_sha256.as_deref() }
+    /// Signed exchange signature validity Url.
+    pub fn validity_url(&self) -> &str { self.validity_url.as_ref() }
+    /// Signed exchange signature date.
     pub fn date(&self) -> i64 { self.date }
+    /// Signed exchange signature expires.
     pub fn expires(&self) -> i64 { self.expires }
+    /// The encoded certificates.
     pub fn certificates(&self) -> Option<&[Cow<'a, str>]> { self.certificates.as_deref() }
 }
 
@@ -2400,9 +2789,9 @@ pub struct SignedExchangeSignatureBuilder<'a> {
     label: Cow<'a, str>,
     signature: Cow<'a, str>,
     integrity: Cow<'a, str>,
-    certUrl: Option<Cow<'a, str>>,
-    certSha256: Option<Cow<'a, str>>,
-    validityUrl: Cow<'a, str>,
+    cert_url: Option<Cow<'a, str>>,
+    cert_sha256: Option<Cow<'a, str>>,
+    validity_url: Cow<'a, str>,
     date: i64,
     expires: i64,
     certificates: Option<Vec<Cow<'a, str>>>,
@@ -2410,9 +2799,9 @@ pub struct SignedExchangeSignatureBuilder<'a> {
 
 impl<'a> SignedExchangeSignatureBuilder<'a> {
     /// Signed exchange signature cert Url.
-    pub fn certUrl(mut self, certUrl: impl Into<Cow<'a, str>>) -> Self { self.certUrl = Some(certUrl.into()); self }
+    pub fn cert_url(mut self, cert_url: impl Into<Cow<'a, str>>) -> Self { self.cert_url = Some(cert_url.into()); self }
     /// The hex string of signed exchange signature cert sha256.
-    pub fn certSha256(mut self, certSha256: impl Into<Cow<'a, str>>) -> Self { self.certSha256 = Some(certSha256.into()); self }
+    pub fn cert_sha256(mut self, cert_sha256: impl Into<Cow<'a, str>>) -> Self { self.cert_sha256 = Some(cert_sha256.into()); self }
     /// The encoded certificates.
     pub fn certificates(mut self, certificates: Vec<Cow<'a, str>>) -> Self { self.certificates = Some(certificates); self }
     pub fn build(self) -> SignedExchangeSignature<'a> {
@@ -2420,9 +2809,9 @@ impl<'a> SignedExchangeSignatureBuilder<'a> {
             label: self.label,
             signature: self.signature,
             integrity: self.integrity,
-            certUrl: self.certUrl,
-            certSha256: self.certSha256,
-            validityUrl: self.validityUrl,
+            cert_url: self.cert_url,
+            cert_sha256: self.cert_sha256,
+            validity_url: self.validity_url,
             date: self.date,
             expires: self.expires,
             certificates: self.certificates,
@@ -2431,57 +2820,72 @@ impl<'a> SignedExchangeSignatureBuilder<'a> {
 }
 
 /// Information about a signed exchange header.
-/// https://wicg.github.io/webpackage/draft-yasskin-httpbis-origin-signed-exchanges-impl.html#cbor-representation
+/// <https://wicg.github.io/webpackage/draft-yasskin-httpbis-origin-signed-exchanges-impl.html#cbor-representation>
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SignedExchangeHeader<'a> {
     /// Signed exchange request URL.
-    requestUrl: Cow<'a, str>,
+    #[serde(rename = "requestUrl")]
+    request_url: Cow<'a, str>,
     /// Signed exchange response code.
-    responseCode: i64,
+    #[serde(rename = "responseCode")]
+    response_code: i64,
     /// Signed exchange response headers.
-    responseHeaders: Headers,
+    #[serde(rename = "responseHeaders")]
+    response_headers: Headers,
     /// Signed exchange response signature.
     signatures: Vec<SignedExchangeSignature<'a>>,
-    /// Signed exchange header integrity hash in the form of 'sha256-<base64-hash-value>'.
-    headerIntegrity: Cow<'a, str>,
+    /// Signed exchange header integrity hash in the form of 'sha256-\<base64-hash-value\>'.
+    #[serde(rename = "headerIntegrity")]
+    header_integrity: Cow<'a, str>,
 }
 
 impl<'a> SignedExchangeHeader<'a> {
-    pub fn builder(requestUrl: impl Into<Cow<'a, str>>, responseCode: i64, responseHeaders: Headers, signatures: Vec<SignedExchangeSignature<'a>>, headerIntegrity: impl Into<Cow<'a, str>>) -> SignedExchangeHeaderBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_url`: Signed exchange request URL.
+    /// * `response_code`: Signed exchange response code.
+    /// * `response_headers`: Signed exchange response headers.
+    /// * `signatures`: Signed exchange response signature.
+    /// * `header_integrity`: Signed exchange header integrity hash in the form of `sha256-\<base64-hash-value\>`.
+    pub fn builder(request_url: impl Into<Cow<'a, str>>, response_code: i64, response_headers: Headers, signatures: Vec<SignedExchangeSignature<'a>>, header_integrity: impl Into<Cow<'a, str>>) -> SignedExchangeHeaderBuilder<'a> {
         SignedExchangeHeaderBuilder {
-            requestUrl: requestUrl.into(),
-            responseCode: responseCode,
-            responseHeaders: responseHeaders,
+            request_url: request_url.into(),
+            response_code: response_code,
+            response_headers: response_headers,
             signatures: signatures,
-            headerIntegrity: headerIntegrity.into(),
+            header_integrity: header_integrity.into(),
         }
     }
-    pub fn requestUrl(&self) -> &str { self.requestUrl.as_ref() }
-    pub fn responseCode(&self) -> i64 { self.responseCode }
-    pub fn responseHeaders(&self) -> &Headers { &self.responseHeaders }
+    /// Signed exchange request URL.
+    pub fn request_url(&self) -> &str { self.request_url.as_ref() }
+    /// Signed exchange response code.
+    pub fn response_code(&self) -> i64 { self.response_code }
+    /// Signed exchange response headers.
+    pub fn response_headers(&self) -> &Headers { &self.response_headers }
+    /// Signed exchange response signature.
     pub fn signatures(&self) -> &[SignedExchangeSignature<'a>] { &self.signatures }
-    pub fn headerIntegrity(&self) -> &str { self.headerIntegrity.as_ref() }
+    /// Signed exchange header integrity hash in the form of 'sha256-\<base64-hash-value\>'.
+    pub fn header_integrity(&self) -> &str { self.header_integrity.as_ref() }
 }
 
 
 pub struct SignedExchangeHeaderBuilder<'a> {
-    requestUrl: Cow<'a, str>,
-    responseCode: i64,
-    responseHeaders: Headers,
+    request_url: Cow<'a, str>,
+    response_code: i64,
+    response_headers: Headers,
     signatures: Vec<SignedExchangeSignature<'a>>,
-    headerIntegrity: Cow<'a, str>,
+    header_integrity: Cow<'a, str>,
 }
 
 impl<'a> SignedExchangeHeaderBuilder<'a> {
     pub fn build(self) -> SignedExchangeHeader<'a> {
         SignedExchangeHeader {
-            requestUrl: self.requestUrl,
-            responseCode: self.responseCode,
-            responseHeaders: self.responseHeaders,
+            request_url: self.request_url,
+            response_code: self.response_code,
+            response_headers: self.response_headers,
             signatures: self.signatures,
-            headerIntegrity: self.headerIntegrity,
+            header_integrity: self.header_integrity,
         }
     }
 }
@@ -2513,43 +2917,48 @@ pub struct SignedExchangeError<'a> {
     /// Error message.
     message: Cow<'a, str>,
     /// The index of the signature which caused the error.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    signatureIndex: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "signatureIndex")]
+    signature_index: Option<u64>,
     /// The field which caused the error.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    errorField: Option<SignedExchangeErrorField>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "errorField")]
+    error_field: Option<SignedExchangeErrorField>,
 }
 
 impl<'a> SignedExchangeError<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `message`: Error message.
     pub fn builder(message: impl Into<Cow<'a, str>>) -> SignedExchangeErrorBuilder<'a> {
         SignedExchangeErrorBuilder {
             message: message.into(),
-            signatureIndex: None,
-            errorField: None,
+            signature_index: None,
+            error_field: None,
         }
     }
+    /// Error message.
     pub fn message(&self) -> &str { self.message.as_ref() }
-    pub fn signatureIndex(&self) -> Option<u64> { self.signatureIndex }
-    pub fn errorField(&self) -> Option<&SignedExchangeErrorField> { self.errorField.as_ref() }
+    /// The index of the signature which caused the error.
+    pub fn signature_index(&self) -> Option<u64> { self.signature_index }
+    /// The field which caused the error.
+    pub fn error_field(&self) -> Option<&SignedExchangeErrorField> { self.error_field.as_ref() }
 }
 
 
 pub struct SignedExchangeErrorBuilder<'a> {
     message: Cow<'a, str>,
-    signatureIndex: Option<u64>,
-    errorField: Option<SignedExchangeErrorField>,
+    signature_index: Option<u64>,
+    error_field: Option<SignedExchangeErrorField>,
 }
 
 impl<'a> SignedExchangeErrorBuilder<'a> {
     /// The index of the signature which caused the error.
-    pub fn signatureIndex(mut self, signatureIndex: u64) -> Self { self.signatureIndex = Some(signatureIndex); self }
+    pub fn signature_index(mut self, signature_index: u64) -> Self { self.signature_index = Some(signature_index); self }
     /// The field which caused the error.
-    pub fn errorField(mut self, errorField: impl Into<SignedExchangeErrorField>) -> Self { self.errorField = Some(errorField.into()); self }
+    pub fn error_field(mut self, error_field: impl Into<SignedExchangeErrorField>) -> Self { self.error_field = Some(error_field.into()); self }
     pub fn build(self) -> SignedExchangeError<'a> {
         SignedExchangeError {
             message: self.message,
-            signatureIndex: self.signatureIndex,
-            errorField: self.errorField,
+            signature_index: self.signature_index,
+            error_field: self.error_field,
         }
     }
 }
@@ -2560,44 +2969,55 @@ impl<'a> SignedExchangeErrorBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SignedExchangeInfo<'a> {
     /// The outer response of signed HTTP exchange which was received from network.
-    outerResponse: Response<'a>,
+    #[serde(rename = "outerResponse")]
+    outer_response: Response<'a>,
     /// Whether network response for the signed exchange was accompanied by
     /// extra headers.
-    hasExtraInfo: bool,
+    #[serde(rename = "hasExtraInfo")]
+    has_extra_info: bool,
     /// Information about the signed exchange header.
     #[serde(skip_serializing_if = "Option::is_none")]
     header: Option<SignedExchangeHeader<'a>>,
     /// Security details for the signed exchange header.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    securityDetails: Option<SecurityDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "securityDetails")]
+    security_details: Option<SecurityDetails<'a>>,
     /// Errors occurred while handling the signed exchange.
     #[serde(skip_serializing_if = "Option::is_none")]
     errors: Option<Vec<SignedExchangeError<'a>>>,
 }
 
 impl<'a> SignedExchangeInfo<'a> {
-    pub fn builder(outerResponse: Response<'a>, hasExtraInfo: bool) -> SignedExchangeInfoBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `outer_response`: The outer response of signed HTTP exchange which was received from network.
+    /// * `has_extra_info`: Whether network response for the signed exchange was accompanied by extra headers.
+    pub fn builder(outer_response: Response<'a>, has_extra_info: bool) -> SignedExchangeInfoBuilder<'a> {
         SignedExchangeInfoBuilder {
-            outerResponse: outerResponse,
-            hasExtraInfo: hasExtraInfo,
+            outer_response: outer_response,
+            has_extra_info: has_extra_info,
             header: None,
-            securityDetails: None,
+            security_details: None,
             errors: None,
         }
     }
-    pub fn outerResponse(&self) -> &Response<'a> { &self.outerResponse }
-    pub fn hasExtraInfo(&self) -> bool { self.hasExtraInfo }
+    /// The outer response of signed HTTP exchange which was received from network.
+    pub fn outer_response(&self) -> &Response<'a> { &self.outer_response }
+    /// Whether network response for the signed exchange was accompanied by
+    /// extra headers.
+    pub fn has_extra_info(&self) -> bool { self.has_extra_info }
+    /// Information about the signed exchange header.
     pub fn header(&self) -> Option<&SignedExchangeHeader<'a>> { self.header.as_ref() }
-    pub fn securityDetails(&self) -> Option<&SecurityDetails<'a>> { self.securityDetails.as_ref() }
+    /// Security details for the signed exchange header.
+    pub fn security_details(&self) -> Option<&SecurityDetails<'a>> { self.security_details.as_ref() }
+    /// Errors occurred while handling the signed exchange.
     pub fn errors(&self) -> Option<&[SignedExchangeError<'a>]> { self.errors.as_deref() }
 }
 
 
 pub struct SignedExchangeInfoBuilder<'a> {
-    outerResponse: Response<'a>,
-    hasExtraInfo: bool,
+    outer_response: Response<'a>,
+    has_extra_info: bool,
     header: Option<SignedExchangeHeader<'a>>,
-    securityDetails: Option<SecurityDetails<'a>>,
+    security_details: Option<SecurityDetails<'a>>,
     errors: Option<Vec<SignedExchangeError<'a>>>,
 }
 
@@ -2605,15 +3025,15 @@ impl<'a> SignedExchangeInfoBuilder<'a> {
     /// Information about the signed exchange header.
     pub fn header(mut self, header: SignedExchangeHeader<'a>) -> Self { self.header = Some(header); self }
     /// Security details for the signed exchange header.
-    pub fn securityDetails(mut self, securityDetails: SecurityDetails<'a>) -> Self { self.securityDetails = Some(securityDetails); self }
+    pub fn security_details(mut self, security_details: SecurityDetails<'a>) -> Self { self.security_details = Some(security_details); self }
     /// Errors occurred while handling the signed exchange.
     pub fn errors(mut self, errors: Vec<SignedExchangeError<'a>>) -> Self { self.errors = Some(errors); self }
     pub fn build(self) -> SignedExchangeInfo<'a> {
         SignedExchangeInfo {
-            outerResponse: self.outerResponse,
-            hasExtraInfo: self.hasExtraInfo,
+            outer_response: self.outer_response,
+            has_extra_info: self.has_extra_info,
             header: self.header,
-            securityDetails: self.securityDetails,
+            security_details: self.security_details,
             errors: self.errors,
         }
     }
@@ -2639,91 +3059,110 @@ pub enum ContentEncoding {
 #[serde(rename_all = "camelCase")]
 pub struct NetworkConditions<'a> {
     /// Only matching requests will be affected by these conditions. Patterns use the URLPattern constructor string
-    /// syntax (https://urlpattern.spec.whatwg.org/) and must be absolute. If the pattern is empty, all requests are
+    /// syntax (<https://urlpattern.spec.whatwg.org/>) and must be absolute. If the pattern is empty, all requests are
     /// matched (including p2p connections).
-    urlPattern: Cow<'a, str>,
+    #[serde(rename = "urlPattern")]
+    url_pattern: Cow<'a, str>,
     /// Minimum latency from request sent to response headers received (ms).
     latency: f64,
     /// Maximal aggregated download throughput (bytes/sec). -1 disables download throttling.
-    downloadThroughput: f64,
+    #[serde(rename = "downloadThroughput")]
+    download_throughput: f64,
     /// Maximal aggregated upload throughput (bytes/sec).  -1 disables upload throttling.
-    uploadThroughput: f64,
+    #[serde(rename = "uploadThroughput")]
+    upload_throughput: f64,
     /// Connection type if known.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    connectionType: Option<ConnectionType>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "connectionType")]
+    connection_type: Option<ConnectionType>,
     /// WebRTC packet loss (percent, 0-100). 0 disables packet loss emulation, 100 drops all the packets.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    packetLoss: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "packetLoss")]
+    packet_loss: Option<f64>,
     /// WebRTC packet queue length (packet). 0 removes any queue length limitations.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    packetQueueLength: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "packetQueueLength")]
+    packet_queue_length: Option<u64>,
     /// WebRTC packetReordering feature.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    packetReordering: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "packetReordering")]
+    packet_reordering: Option<bool>,
     /// True to emulate internet disconnection.
     #[serde(skip_serializing_if = "Option::is_none")]
     offline: Option<bool>,
 }
 
 impl<'a> NetworkConditions<'a> {
-    pub fn builder(urlPattern: impl Into<Cow<'a, str>>, latency: f64, downloadThroughput: f64, uploadThroughput: f64) -> NetworkConditionsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url_pattern`: Only matching requests will be affected by these conditions. Patterns use the URLPattern constructor string syntax (<https://urlpattern.spec.whatwg.org/>) and must be absolute. If the pattern is empty, all requests are matched (including p2p connections).
+    /// * `latency`: Minimum latency from request sent to response headers received (ms).
+    /// * `download_throughput`: Maximal aggregated download throughput (bytes/sec). -1 disables download throttling.
+    /// * `upload_throughput`: Maximal aggregated upload throughput (bytes/sec).  -1 disables upload throttling.
+    pub fn builder(url_pattern: impl Into<Cow<'a, str>>, latency: f64, download_throughput: f64, upload_throughput: f64) -> NetworkConditionsBuilder<'a> {
         NetworkConditionsBuilder {
-            urlPattern: urlPattern.into(),
+            url_pattern: url_pattern.into(),
             latency: latency,
-            downloadThroughput: downloadThroughput,
-            uploadThroughput: uploadThroughput,
-            connectionType: None,
-            packetLoss: None,
-            packetQueueLength: None,
-            packetReordering: None,
+            download_throughput: download_throughput,
+            upload_throughput: upload_throughput,
+            connection_type: None,
+            packet_loss: None,
+            packet_queue_length: None,
+            packet_reordering: None,
             offline: None,
         }
     }
-    pub fn urlPattern(&self) -> &str { self.urlPattern.as_ref() }
+    /// Only matching requests will be affected by these conditions. Patterns use the URLPattern constructor string
+    /// syntax (<https://urlpattern.spec.whatwg.org/>) and must be absolute. If the pattern is empty, all requests are
+    /// matched (including p2p connections).
+    pub fn url_pattern(&self) -> &str { self.url_pattern.as_ref() }
+    /// Minimum latency from request sent to response headers received (ms).
     pub fn latency(&self) -> f64 { self.latency }
-    pub fn downloadThroughput(&self) -> f64 { self.downloadThroughput }
-    pub fn uploadThroughput(&self) -> f64 { self.uploadThroughput }
-    pub fn connectionType(&self) -> Option<&ConnectionType> { self.connectionType.as_ref() }
-    pub fn packetLoss(&self) -> Option<f64> { self.packetLoss }
-    pub fn packetQueueLength(&self) -> Option<u64> { self.packetQueueLength }
-    pub fn packetReordering(&self) -> Option<bool> { self.packetReordering }
+    /// Maximal aggregated download throughput (bytes/sec). -1 disables download throttling.
+    pub fn download_throughput(&self) -> f64 { self.download_throughput }
+    /// Maximal aggregated upload throughput (bytes/sec).  -1 disables upload throttling.
+    pub fn upload_throughput(&self) -> f64 { self.upload_throughput }
+    /// Connection type if known.
+    pub fn connection_type(&self) -> Option<&ConnectionType> { self.connection_type.as_ref() }
+    /// WebRTC packet loss (percent, 0-100). 0 disables packet loss emulation, 100 drops all the packets.
+    pub fn packet_loss(&self) -> Option<f64> { self.packet_loss }
+    /// WebRTC packet queue length (packet). 0 removes any queue length limitations.
+    pub fn packet_queue_length(&self) -> Option<u64> { self.packet_queue_length }
+    /// WebRTC packetReordering feature.
+    pub fn packet_reordering(&self) -> Option<bool> { self.packet_reordering }
+    /// True to emulate internet disconnection.
     pub fn offline(&self) -> Option<bool> { self.offline }
 }
 
 
 pub struct NetworkConditionsBuilder<'a> {
-    urlPattern: Cow<'a, str>,
+    url_pattern: Cow<'a, str>,
     latency: f64,
-    downloadThroughput: f64,
-    uploadThroughput: f64,
-    connectionType: Option<ConnectionType>,
-    packetLoss: Option<f64>,
-    packetQueueLength: Option<u64>,
-    packetReordering: Option<bool>,
+    download_throughput: f64,
+    upload_throughput: f64,
+    connection_type: Option<ConnectionType>,
+    packet_loss: Option<f64>,
+    packet_queue_length: Option<u64>,
+    packet_reordering: Option<bool>,
     offline: Option<bool>,
 }
 
 impl<'a> NetworkConditionsBuilder<'a> {
     /// Connection type if known.
-    pub fn connectionType(mut self, connectionType: impl Into<ConnectionType>) -> Self { self.connectionType = Some(connectionType.into()); self }
+    pub fn connection_type(mut self, connection_type: impl Into<ConnectionType>) -> Self { self.connection_type = Some(connection_type.into()); self }
     /// WebRTC packet loss (percent, 0-100). 0 disables packet loss emulation, 100 drops all the packets.
-    pub fn packetLoss(mut self, packetLoss: f64) -> Self { self.packetLoss = Some(packetLoss); self }
+    pub fn packet_loss(mut self, packet_loss: f64) -> Self { self.packet_loss = Some(packet_loss); self }
     /// WebRTC packet queue length (packet). 0 removes any queue length limitations.
-    pub fn packetQueueLength(mut self, packetQueueLength: u64) -> Self { self.packetQueueLength = Some(packetQueueLength); self }
+    pub fn packet_queue_length(mut self, packet_queue_length: u64) -> Self { self.packet_queue_length = Some(packet_queue_length); self }
     /// WebRTC packetReordering feature.
-    pub fn packetReordering(mut self, packetReordering: bool) -> Self { self.packetReordering = Some(packetReordering); self }
+    pub fn packet_reordering(mut self, packet_reordering: bool) -> Self { self.packet_reordering = Some(packet_reordering); self }
     /// True to emulate internet disconnection.
     pub fn offline(mut self, offline: bool) -> Self { self.offline = Some(offline); self }
     pub fn build(self) -> NetworkConditions<'a> {
         NetworkConditions {
-            urlPattern: self.urlPattern,
+            url_pattern: self.url_pattern,
             latency: self.latency,
-            downloadThroughput: self.downloadThroughput,
-            uploadThroughput: self.uploadThroughput,
-            connectionType: self.connectionType,
-            packetLoss: self.packetLoss,
-            packetQueueLength: self.packetQueueLength,
-            packetReordering: self.packetReordering,
+            download_throughput: self.download_throughput,
+            upload_throughput: self.upload_throughput,
+            connection_type: self.connection_type,
+            packet_loss: self.packet_loss,
+            packet_queue_length: self.packet_queue_length,
+            packet_reordering: self.packet_reordering,
             offline: self.offline,
         }
     }
@@ -2734,34 +3173,42 @@ impl<'a> NetworkConditionsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct BlockPattern<'a> {
     /// URL pattern to match. Patterns use the URLPattern constructor string syntax
-    /// (https://urlpattern.spec.whatwg.org/) and must be absolute. Example: '*://*:*/*.css'.
-    urlPattern: Cow<'a, str>,
+    /// (<https://urlpattern.spec.whatwg.org/>) and must be absolute. Example: '*://*:*/*.css'.
+    #[serde(rename = "urlPattern")]
+    url_pattern: Cow<'a, str>,
     /// Whether or not to block the pattern. If false, a matching request will not be blocked even if it matches a later
     /// 'BlockPattern'.
     block: bool,
 }
 
 impl<'a> BlockPattern<'a> {
-    pub fn builder(urlPattern: impl Into<Cow<'a, str>>, block: bool) -> BlockPatternBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url_pattern`: URL pattern to match. Patterns use the URLPattern constructor string syntax (<https://urlpattern.spec.whatwg.org/>) and must be absolute. Example: `*://*:*/*.css`.
+    /// * `block`: Whether or not to block the pattern. If false, a matching request will not be blocked even if it matches a later `BlockPattern`.
+    pub fn builder(url_pattern: impl Into<Cow<'a, str>>, block: bool) -> BlockPatternBuilder<'a> {
         BlockPatternBuilder {
-            urlPattern: urlPattern.into(),
+            url_pattern: url_pattern.into(),
             block: block,
         }
     }
-    pub fn urlPattern(&self) -> &str { self.urlPattern.as_ref() }
+    /// URL pattern to match. Patterns use the URLPattern constructor string syntax
+    /// (<https://urlpattern.spec.whatwg.org/>) and must be absolute. Example: '*://*:*/*.css'.
+    pub fn url_pattern(&self) -> &str { self.url_pattern.as_ref() }
+    /// Whether or not to block the pattern. If false, a matching request will not be blocked even if it matches a later
+    /// 'BlockPattern'.
     pub fn block(&self) -> bool { self.block }
 }
 
 
 pub struct BlockPatternBuilder<'a> {
-    urlPattern: Cow<'a, str>,
+    url_pattern: Cow<'a, str>,
     block: bool,
 }
 
 impl<'a> BlockPatternBuilder<'a> {
     pub fn build(self) -> BlockPattern<'a> {
         BlockPattern {
-            urlPattern: self.urlPattern,
+            url_pattern: self.url_pattern,
             block: self.block,
         }
     }
@@ -2782,61 +3229,68 @@ pub enum DirectSocketDnsQueryType {
 #[serde(rename_all = "camelCase")]
 pub struct DirectTCPSocketOptions {
     /// TCP_NODELAY option
-    noDelay: bool,
+    #[serde(rename = "noDelay")]
+    no_delay: bool,
     /// Expected to be unsigned integer.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    keepAliveDelay: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "keepAliveDelay")]
+    keep_alive_delay: Option<f64>,
     /// Expected to be unsigned integer.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    sendBufferSize: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sendBufferSize")]
+    send_buffer_size: Option<f64>,
     /// Expected to be unsigned integer.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    receiveBufferSize: Option<f64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    dnsQueryType: Option<DirectSocketDnsQueryType>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "receiveBufferSize")]
+    receive_buffer_size: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "dnsQueryType")]
+    dns_query_type: Option<DirectSocketDnsQueryType>,
 }
 
 impl DirectTCPSocketOptions {
-    pub fn builder(noDelay: bool) -> DirectTCPSocketOptionsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `no_delay`: TCP_NODELAY option
+    pub fn builder(no_delay: bool) -> DirectTCPSocketOptionsBuilder {
         DirectTCPSocketOptionsBuilder {
-            noDelay: noDelay,
-            keepAliveDelay: None,
-            sendBufferSize: None,
-            receiveBufferSize: None,
-            dnsQueryType: None,
+            no_delay: no_delay,
+            keep_alive_delay: None,
+            send_buffer_size: None,
+            receive_buffer_size: None,
+            dns_query_type: None,
         }
     }
-    pub fn noDelay(&self) -> bool { self.noDelay }
-    pub fn keepAliveDelay(&self) -> Option<f64> { self.keepAliveDelay }
-    pub fn sendBufferSize(&self) -> Option<f64> { self.sendBufferSize }
-    pub fn receiveBufferSize(&self) -> Option<f64> { self.receiveBufferSize }
-    pub fn dnsQueryType(&self) -> Option<&DirectSocketDnsQueryType> { self.dnsQueryType.as_ref() }
+    /// TCP_NODELAY option
+    pub fn no_delay(&self) -> bool { self.no_delay }
+    /// Expected to be unsigned integer.
+    pub fn keep_alive_delay(&self) -> Option<f64> { self.keep_alive_delay }
+    /// Expected to be unsigned integer.
+    pub fn send_buffer_size(&self) -> Option<f64> { self.send_buffer_size }
+    /// Expected to be unsigned integer.
+    pub fn receive_buffer_size(&self) -> Option<f64> { self.receive_buffer_size }
+    pub fn dns_query_type(&self) -> Option<&DirectSocketDnsQueryType> { self.dns_query_type.as_ref() }
 }
 
 
 pub struct DirectTCPSocketOptionsBuilder {
-    noDelay: bool,
-    keepAliveDelay: Option<f64>,
-    sendBufferSize: Option<f64>,
-    receiveBufferSize: Option<f64>,
-    dnsQueryType: Option<DirectSocketDnsQueryType>,
+    no_delay: bool,
+    keep_alive_delay: Option<f64>,
+    send_buffer_size: Option<f64>,
+    receive_buffer_size: Option<f64>,
+    dns_query_type: Option<DirectSocketDnsQueryType>,
 }
 
 impl DirectTCPSocketOptionsBuilder {
     /// Expected to be unsigned integer.
-    pub fn keepAliveDelay(mut self, keepAliveDelay: f64) -> Self { self.keepAliveDelay = Some(keepAliveDelay); self }
+    pub fn keep_alive_delay(mut self, keep_alive_delay: f64) -> Self { self.keep_alive_delay = Some(keep_alive_delay); self }
     /// Expected to be unsigned integer.
-    pub fn sendBufferSize(mut self, sendBufferSize: f64) -> Self { self.sendBufferSize = Some(sendBufferSize); self }
+    pub fn send_buffer_size(mut self, send_buffer_size: f64) -> Self { self.send_buffer_size = Some(send_buffer_size); self }
     /// Expected to be unsigned integer.
-    pub fn receiveBufferSize(mut self, receiveBufferSize: f64) -> Self { self.receiveBufferSize = Some(receiveBufferSize); self }
-    pub fn dnsQueryType(mut self, dnsQueryType: impl Into<DirectSocketDnsQueryType>) -> Self { self.dnsQueryType = Some(dnsQueryType.into()); self }
+    pub fn receive_buffer_size(mut self, receive_buffer_size: f64) -> Self { self.receive_buffer_size = Some(receive_buffer_size); self }
+    pub fn dns_query_type(mut self, dns_query_type: impl Into<DirectSocketDnsQueryType>) -> Self { self.dns_query_type = Some(dns_query_type.into()); self }
     pub fn build(self) -> DirectTCPSocketOptions {
         DirectTCPSocketOptions {
-            noDelay: self.noDelay,
-            keepAliveDelay: self.keepAliveDelay,
-            sendBufferSize: self.sendBufferSize,
-            receiveBufferSize: self.receiveBufferSize,
-            dnsQueryType: self.dnsQueryType,
+            no_delay: self.no_delay,
+            keep_alive_delay: self.keep_alive_delay,
+            send_buffer_size: self.send_buffer_size,
+            receive_buffer_size: self.receive_buffer_size,
+            dns_query_type: self.dns_query_type,
         }
     }
 }
@@ -2845,102 +3299,108 @@ impl DirectTCPSocketOptionsBuilder {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct DirectUDPSocketOptions<'a> {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    remoteAddr: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "remoteAddr")]
+    remote_addr: Option<Cow<'a, str>>,
     /// Unsigned int 16.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    remotePort: Option<i64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    localAddr: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "remotePort")]
+    remote_port: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "localAddr")]
+    local_addr: Option<Cow<'a, str>>,
     /// Unsigned int 16.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    localPort: Option<i64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    dnsQueryType: Option<DirectSocketDnsQueryType>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "localPort")]
+    local_port: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "dnsQueryType")]
+    dns_query_type: Option<DirectSocketDnsQueryType>,
     /// Expected to be unsigned integer.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    sendBufferSize: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sendBufferSize")]
+    send_buffer_size: Option<f64>,
     /// Expected to be unsigned integer.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    receiveBufferSize: Option<f64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    multicastLoopback: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "receiveBufferSize")]
+    receive_buffer_size: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "multicastLoopback")]
+    multicast_loopback: Option<bool>,
     /// Unsigned int 8.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    multicastTimeToLive: Option<i64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    multicastAllowAddressSharing: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "multicastTimeToLive")]
+    multicast_time_to_live: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "multicastAllowAddressSharing")]
+    multicast_allow_address_sharing: Option<bool>,
 }
 
 impl<'a> DirectUDPSocketOptions<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> DirectUDPSocketOptionsBuilder<'a> {
         DirectUDPSocketOptionsBuilder {
-            remoteAddr: None,
-            remotePort: None,
-            localAddr: None,
-            localPort: None,
-            dnsQueryType: None,
-            sendBufferSize: None,
-            receiveBufferSize: None,
-            multicastLoopback: None,
-            multicastTimeToLive: None,
-            multicastAllowAddressSharing: None,
+            remote_addr: None,
+            remote_port: None,
+            local_addr: None,
+            local_port: None,
+            dns_query_type: None,
+            send_buffer_size: None,
+            receive_buffer_size: None,
+            multicast_loopback: None,
+            multicast_time_to_live: None,
+            multicast_allow_address_sharing: None,
         }
     }
-    pub fn remoteAddr(&self) -> Option<&str> { self.remoteAddr.as_deref() }
-    pub fn remotePort(&self) -> Option<i64> { self.remotePort }
-    pub fn localAddr(&self) -> Option<&str> { self.localAddr.as_deref() }
-    pub fn localPort(&self) -> Option<i64> { self.localPort }
-    pub fn dnsQueryType(&self) -> Option<&DirectSocketDnsQueryType> { self.dnsQueryType.as_ref() }
-    pub fn sendBufferSize(&self) -> Option<f64> { self.sendBufferSize }
-    pub fn receiveBufferSize(&self) -> Option<f64> { self.receiveBufferSize }
-    pub fn multicastLoopback(&self) -> Option<bool> { self.multicastLoopback }
-    pub fn multicastTimeToLive(&self) -> Option<i64> { self.multicastTimeToLive }
-    pub fn multicastAllowAddressSharing(&self) -> Option<bool> { self.multicastAllowAddressSharing }
+    pub fn remote_addr(&self) -> Option<&str> { self.remote_addr.as_deref() }
+    /// Unsigned int 16.
+    pub fn remote_port(&self) -> Option<i64> { self.remote_port }
+    pub fn local_addr(&self) -> Option<&str> { self.local_addr.as_deref() }
+    /// Unsigned int 16.
+    pub fn local_port(&self) -> Option<i64> { self.local_port }
+    pub fn dns_query_type(&self) -> Option<&DirectSocketDnsQueryType> { self.dns_query_type.as_ref() }
+    /// Expected to be unsigned integer.
+    pub fn send_buffer_size(&self) -> Option<f64> { self.send_buffer_size }
+    /// Expected to be unsigned integer.
+    pub fn receive_buffer_size(&self) -> Option<f64> { self.receive_buffer_size }
+    pub fn multicast_loopback(&self) -> Option<bool> { self.multicast_loopback }
+    /// Unsigned int 8.
+    pub fn multicast_time_to_live(&self) -> Option<i64> { self.multicast_time_to_live }
+    pub fn multicast_allow_address_sharing(&self) -> Option<bool> { self.multicast_allow_address_sharing }
 }
 
 #[derive(Default)]
 pub struct DirectUDPSocketOptionsBuilder<'a> {
-    remoteAddr: Option<Cow<'a, str>>,
-    remotePort: Option<i64>,
-    localAddr: Option<Cow<'a, str>>,
-    localPort: Option<i64>,
-    dnsQueryType: Option<DirectSocketDnsQueryType>,
-    sendBufferSize: Option<f64>,
-    receiveBufferSize: Option<f64>,
-    multicastLoopback: Option<bool>,
-    multicastTimeToLive: Option<i64>,
-    multicastAllowAddressSharing: Option<bool>,
+    remote_addr: Option<Cow<'a, str>>,
+    remote_port: Option<i64>,
+    local_addr: Option<Cow<'a, str>>,
+    local_port: Option<i64>,
+    dns_query_type: Option<DirectSocketDnsQueryType>,
+    send_buffer_size: Option<f64>,
+    receive_buffer_size: Option<f64>,
+    multicast_loopback: Option<bool>,
+    multicast_time_to_live: Option<i64>,
+    multicast_allow_address_sharing: Option<bool>,
 }
 
 impl<'a> DirectUDPSocketOptionsBuilder<'a> {
-    pub fn remoteAddr(mut self, remoteAddr: impl Into<Cow<'a, str>>) -> Self { self.remoteAddr = Some(remoteAddr.into()); self }
+    pub fn remote_addr(mut self, remote_addr: impl Into<Cow<'a, str>>) -> Self { self.remote_addr = Some(remote_addr.into()); self }
     /// Unsigned int 16.
-    pub fn remotePort(mut self, remotePort: i64) -> Self { self.remotePort = Some(remotePort); self }
-    pub fn localAddr(mut self, localAddr: impl Into<Cow<'a, str>>) -> Self { self.localAddr = Some(localAddr.into()); self }
+    pub fn remote_port(mut self, remote_port: i64) -> Self { self.remote_port = Some(remote_port); self }
+    pub fn local_addr(mut self, local_addr: impl Into<Cow<'a, str>>) -> Self { self.local_addr = Some(local_addr.into()); self }
     /// Unsigned int 16.
-    pub fn localPort(mut self, localPort: i64) -> Self { self.localPort = Some(localPort); self }
-    pub fn dnsQueryType(mut self, dnsQueryType: impl Into<DirectSocketDnsQueryType>) -> Self { self.dnsQueryType = Some(dnsQueryType.into()); self }
+    pub fn local_port(mut self, local_port: i64) -> Self { self.local_port = Some(local_port); self }
+    pub fn dns_query_type(mut self, dns_query_type: impl Into<DirectSocketDnsQueryType>) -> Self { self.dns_query_type = Some(dns_query_type.into()); self }
     /// Expected to be unsigned integer.
-    pub fn sendBufferSize(mut self, sendBufferSize: f64) -> Self { self.sendBufferSize = Some(sendBufferSize); self }
+    pub fn send_buffer_size(mut self, send_buffer_size: f64) -> Self { self.send_buffer_size = Some(send_buffer_size); self }
     /// Expected to be unsigned integer.
-    pub fn receiveBufferSize(mut self, receiveBufferSize: f64) -> Self { self.receiveBufferSize = Some(receiveBufferSize); self }
-    pub fn multicastLoopback(mut self, multicastLoopback: bool) -> Self { self.multicastLoopback = Some(multicastLoopback); self }
+    pub fn receive_buffer_size(mut self, receive_buffer_size: f64) -> Self { self.receive_buffer_size = Some(receive_buffer_size); self }
+    pub fn multicast_loopback(mut self, multicast_loopback: bool) -> Self { self.multicast_loopback = Some(multicast_loopback); self }
     /// Unsigned int 8.
-    pub fn multicastTimeToLive(mut self, multicastTimeToLive: i64) -> Self { self.multicastTimeToLive = Some(multicastTimeToLive); self }
-    pub fn multicastAllowAddressSharing(mut self, multicastAllowAddressSharing: bool) -> Self { self.multicastAllowAddressSharing = Some(multicastAllowAddressSharing); self }
+    pub fn multicast_time_to_live(mut self, multicast_time_to_live: i64) -> Self { self.multicast_time_to_live = Some(multicast_time_to_live); self }
+    pub fn multicast_allow_address_sharing(mut self, multicast_allow_address_sharing: bool) -> Self { self.multicast_allow_address_sharing = Some(multicast_allow_address_sharing); self }
     pub fn build(self) -> DirectUDPSocketOptions<'a> {
         DirectUDPSocketOptions {
-            remoteAddr: self.remoteAddr,
-            remotePort: self.remotePort,
-            localAddr: self.localAddr,
-            localPort: self.localPort,
-            dnsQueryType: self.dnsQueryType,
-            sendBufferSize: self.sendBufferSize,
-            receiveBufferSize: self.receiveBufferSize,
-            multicastLoopback: self.multicastLoopback,
-            multicastTimeToLive: self.multicastTimeToLive,
-            multicastAllowAddressSharing: self.multicastAllowAddressSharing,
+            remote_addr: self.remote_addr,
+            remote_port: self.remote_port,
+            local_addr: self.local_addr,
+            local_port: self.local_port,
+            dns_query_type: self.dns_query_type,
+            send_buffer_size: self.send_buffer_size,
+            receive_buffer_size: self.receive_buffer_size,
+            multicast_loopback: self.multicast_loopback,
+            multicast_time_to_live: self.multicast_time_to_live,
+            multicast_allow_address_sharing: self.multicast_allow_address_sharing,
         }
     }
 }
@@ -2951,45 +3411,50 @@ impl<'a> DirectUDPSocketOptionsBuilder<'a> {
 pub struct DirectUDPMessage<'a> {
     data: Cow<'a, str>,
     /// Null for connected mode.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    remoteAddr: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "remoteAddr")]
+    remote_addr: Option<Cow<'a, str>>,
     /// Null for connected mode.
     /// Expected to be unsigned integer.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    remotePort: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "remotePort")]
+    remote_port: Option<i64>,
 }
 
 impl<'a> DirectUDPMessage<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `data`: 
     pub fn builder(data: impl Into<Cow<'a, str>>) -> DirectUDPMessageBuilder<'a> {
         DirectUDPMessageBuilder {
             data: data.into(),
-            remoteAddr: None,
-            remotePort: None,
+            remote_addr: None,
+            remote_port: None,
         }
     }
     pub fn data(&self) -> &str { self.data.as_ref() }
-    pub fn remoteAddr(&self) -> Option<&str> { self.remoteAddr.as_deref() }
-    pub fn remotePort(&self) -> Option<i64> { self.remotePort }
+    /// Null for connected mode.
+    pub fn remote_addr(&self) -> Option<&str> { self.remote_addr.as_deref() }
+    /// Null for connected mode.
+    /// Expected to be unsigned integer.
+    pub fn remote_port(&self) -> Option<i64> { self.remote_port }
 }
 
 
 pub struct DirectUDPMessageBuilder<'a> {
     data: Cow<'a, str>,
-    remoteAddr: Option<Cow<'a, str>>,
-    remotePort: Option<i64>,
+    remote_addr: Option<Cow<'a, str>>,
+    remote_port: Option<i64>,
 }
 
 impl<'a> DirectUDPMessageBuilder<'a> {
     /// Null for connected mode.
-    pub fn remoteAddr(mut self, remoteAddr: impl Into<Cow<'a, str>>) -> Self { self.remoteAddr = Some(remoteAddr.into()); self }
+    pub fn remote_addr(mut self, remote_addr: impl Into<Cow<'a, str>>) -> Self { self.remote_addr = Some(remote_addr.into()); self }
     /// Null for connected mode.
     /// Expected to be unsigned integer.
-    pub fn remotePort(mut self, remotePort: i64) -> Self { self.remotePort = Some(remotePort); self }
+    pub fn remote_port(mut self, remote_port: i64) -> Self { self.remote_port = Some(remote_port); self }
     pub fn build(self) -> DirectUDPMessage<'a> {
         DirectUDPMessage {
             data: self.data,
-            remoteAddr: self.remoteAddr,
-            remotePort: self.remotePort,
+            remote_addr: self.remote_addr,
+            remote_port: self.remote_port,
         }
     }
 }
@@ -3031,27 +3496,33 @@ pub struct ConnectTiming {
     /// Timing's requestTime is a baseline in seconds, while the other numbers are ticks in
     /// milliseconds relatively to this requestTime. Matches ResourceTiming's requestTime for
     /// the same request (but not for redirected requests).
-    requestTime: f64,
+    #[serde(rename = "requestTime")]
+    request_time: f64,
 }
 
 impl ConnectTiming {
-    pub fn builder(requestTime: f64) -> ConnectTimingBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_time`: Timing's requestTime is a baseline in seconds, while the other numbers are ticks in milliseconds relatively to this requestTime. Matches ResourceTiming's requestTime for the same request (but not for redirected requests).
+    pub fn builder(request_time: f64) -> ConnectTimingBuilder {
         ConnectTimingBuilder {
-            requestTime: requestTime,
+            request_time: request_time,
         }
     }
-    pub fn requestTime(&self) -> f64 { self.requestTime }
+    /// Timing's requestTime is a baseline in seconds, while the other numbers are ticks in
+    /// milliseconds relatively to this requestTime. Matches ResourceTiming's requestTime for
+    /// the same request (but not for redirected requests).
+    pub fn request_time(&self) -> f64 { self.request_time }
 }
 
 
 pub struct ConnectTimingBuilder {
-    requestTime: f64,
+    request_time: f64,
 }
 
 impl ConnectTimingBuilder {
     pub fn build(self) -> ConnectTiming {
         ConnectTiming {
-            requestTime: self.requestTime,
+            request_time: self.request_time,
         }
     }
 }
@@ -3060,37 +3531,44 @@ impl ConnectTimingBuilder {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ClientSecurityState {
-    initiatorIsSecureContext: bool,
-    initiatorIPAddressSpace: IPAddressSpace,
-    localNetworkAccessRequestPolicy: LocalNetworkAccessRequestPolicy,
+    #[serde(rename = "initiatorIsSecureContext")]
+    initiator_is_secure_context: bool,
+    #[serde(rename = "initiatorIPAddressSpace")]
+    initiator_ip_address_space: IPAddressSpace,
+    #[serde(rename = "localNetworkAccessRequestPolicy")]
+    local_network_access_request_policy: LocalNetworkAccessRequestPolicy,
 }
 
 impl ClientSecurityState {
-    pub fn builder(initiatorIsSecureContext: bool, initiatorIPAddressSpace: impl Into<IPAddressSpace>, localNetworkAccessRequestPolicy: impl Into<LocalNetworkAccessRequestPolicy>) -> ClientSecurityStateBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `initiator_is_secure_context`: 
+    /// * `initiator_ip_address_space`: 
+    /// * `local_network_access_request_policy`: 
+    pub fn builder(initiator_is_secure_context: bool, initiator_ip_address_space: impl Into<IPAddressSpace>, local_network_access_request_policy: impl Into<LocalNetworkAccessRequestPolicy>) -> ClientSecurityStateBuilder {
         ClientSecurityStateBuilder {
-            initiatorIsSecureContext: initiatorIsSecureContext,
-            initiatorIPAddressSpace: initiatorIPAddressSpace.into(),
-            localNetworkAccessRequestPolicy: localNetworkAccessRequestPolicy.into(),
+            initiator_is_secure_context: initiator_is_secure_context,
+            initiator_ip_address_space: initiator_ip_address_space.into(),
+            local_network_access_request_policy: local_network_access_request_policy.into(),
         }
     }
-    pub fn initiatorIsSecureContext(&self) -> bool { self.initiatorIsSecureContext }
-    pub fn initiatorIPAddressSpace(&self) -> &IPAddressSpace { &self.initiatorIPAddressSpace }
-    pub fn localNetworkAccessRequestPolicy(&self) -> &LocalNetworkAccessRequestPolicy { &self.localNetworkAccessRequestPolicy }
+    pub fn initiator_is_secure_context(&self) -> bool { self.initiator_is_secure_context }
+    pub fn initiator_ip_address_space(&self) -> &IPAddressSpace { &self.initiator_ip_address_space }
+    pub fn local_network_access_request_policy(&self) -> &LocalNetworkAccessRequestPolicy { &self.local_network_access_request_policy }
 }
 
 
 pub struct ClientSecurityStateBuilder {
-    initiatorIsSecureContext: bool,
-    initiatorIPAddressSpace: IPAddressSpace,
-    localNetworkAccessRequestPolicy: LocalNetworkAccessRequestPolicy,
+    initiator_is_secure_context: bool,
+    initiator_ip_address_space: IPAddressSpace,
+    local_network_access_request_policy: LocalNetworkAccessRequestPolicy,
 }
 
 impl ClientSecurityStateBuilder {
     pub fn build(self) -> ClientSecurityState {
         ClientSecurityState {
-            initiatorIsSecureContext: self.initiatorIsSecureContext,
-            initiatorIPAddressSpace: self.initiatorIPAddressSpace,
-            localNetworkAccessRequestPolicy: self.localNetworkAccessRequestPolicy,
+            initiator_is_secure_context: self.initiator_is_secure_context,
+            initiator_ip_address_space: self.initiator_ip_address_space,
+            local_network_access_request_policy: self.local_network_access_request_policy,
         }
     }
 }
@@ -3104,38 +3582,47 @@ impl ClientSecurityStateBuilder {
 #[serde(rename_all = "camelCase")]
 pub struct AdScriptIdentifier<'a> {
     /// The script's V8 identifier.
-    scriptId: crate::runtime::ScriptId<'a>,
+    #[serde(rename = "scriptId")]
+    script_id: crate::runtime::ScriptId<'a>,
     /// V8's debugging ID for the v8::Context.
-    debuggerId: crate::runtime::UniqueDebuggerId<'a>,
+    #[serde(rename = "debuggerId")]
+    debugger_id: crate::runtime::UniqueDebuggerId<'a>,
     /// The script's url (or generated name based on id if inline script).
     name: Cow<'a, str>,
 }
 
 impl<'a> AdScriptIdentifier<'a> {
-    pub fn builder(scriptId: crate::runtime::ScriptId<'a>, debuggerId: crate::runtime::UniqueDebuggerId<'a>, name: impl Into<Cow<'a, str>>) -> AdScriptIdentifierBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `script_id`: The script's V8 identifier.
+    /// * `debugger_id`: V8's debugging ID for the v8::Context.
+    /// * `name`: The script's url (or generated name based on id if inline script).
+    pub fn builder(script_id: crate::runtime::ScriptId<'a>, debugger_id: crate::runtime::UniqueDebuggerId<'a>, name: impl Into<Cow<'a, str>>) -> AdScriptIdentifierBuilder<'a> {
         AdScriptIdentifierBuilder {
-            scriptId: scriptId,
-            debuggerId: debuggerId,
+            script_id: script_id,
+            debugger_id: debugger_id,
             name: name.into(),
         }
     }
-    pub fn scriptId(&self) -> &crate::runtime::ScriptId<'a> { &self.scriptId }
-    pub fn debuggerId(&self) -> &crate::runtime::UniqueDebuggerId<'a> { &self.debuggerId }
+    /// The script's V8 identifier.
+    pub fn script_id(&self) -> &crate::runtime::ScriptId<'a> { &self.script_id }
+    /// V8's debugging ID for the v8::Context.
+    pub fn debugger_id(&self) -> &crate::runtime::UniqueDebuggerId<'a> { &self.debugger_id }
+    /// The script's url (or generated name based on id if inline script).
     pub fn name(&self) -> &str { self.name.as_ref() }
 }
 
 
 pub struct AdScriptIdentifierBuilder<'a> {
-    scriptId: crate::runtime::ScriptId<'a>,
-    debuggerId: crate::runtime::UniqueDebuggerId<'a>,
+    script_id: crate::runtime::ScriptId<'a>,
+    debugger_id: crate::runtime::UniqueDebuggerId<'a>,
     name: Cow<'a, str>,
 }
 
 impl<'a> AdScriptIdentifierBuilder<'a> {
     pub fn build(self) -> AdScriptIdentifier<'a> {
         AdScriptIdentifier {
-            scriptId: self.scriptId,
-            debuggerId: self.debuggerId,
+            script_id: self.script_id,
+            debugger_id: self.debugger_id,
             name: self.name,
         }
     }
@@ -3151,38 +3638,47 @@ pub struct AdAncestry<'a> {
     /// script that led to the creation of a resource or element. The chain is
     /// ordered from the script itself (lowest level) up to its root ancestor
     /// that was flagged by a filter list.
-    ancestryChain: Vec<AdScriptIdentifier<'a>>,
+    #[serde(rename = "ancestryChain")]
+    ancestry_chain: Vec<AdScriptIdentifier<'a>>,
     /// The filter list rule that caused the root (last) script in
     /// 'ancestryChain' to be tagged as an ad.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    rootScriptFilterlistRule: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "rootScriptFilterlistRule")]
+    root_script_filterlist_rule: Option<Cow<'a, str>>,
 }
 
 impl<'a> AdAncestry<'a> {
-    pub fn builder(ancestryChain: Vec<AdScriptIdentifier<'a>>) -> AdAncestryBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `ancestry_chain`: A chain of `AdScriptIdentifier`s representing the ancestry of an ad script that led to the creation of a resource or element. The chain is ordered from the script itself (lowest level) up to its root ancestor that was flagged by a filter list.
+    pub fn builder(ancestry_chain: Vec<AdScriptIdentifier<'a>>) -> AdAncestryBuilder<'a> {
         AdAncestryBuilder {
-            ancestryChain: ancestryChain,
-            rootScriptFilterlistRule: None,
+            ancestry_chain: ancestry_chain,
+            root_script_filterlist_rule: None,
         }
     }
-    pub fn ancestryChain(&self) -> &[AdScriptIdentifier<'a>] { &self.ancestryChain }
-    pub fn rootScriptFilterlistRule(&self) -> Option<&str> { self.rootScriptFilterlistRule.as_deref() }
+    /// A chain of 'AdScriptIdentifier's representing the ancestry of an ad
+    /// script that led to the creation of a resource or element. The chain is
+    /// ordered from the script itself (lowest level) up to its root ancestor
+    /// that was flagged by a filter list.
+    pub fn ancestry_chain(&self) -> &[AdScriptIdentifier<'a>] { &self.ancestry_chain }
+    /// The filter list rule that caused the root (last) script in
+    /// 'ancestryChain' to be tagged as an ad.
+    pub fn root_script_filterlist_rule(&self) -> Option<&str> { self.root_script_filterlist_rule.as_deref() }
 }
 
 
 pub struct AdAncestryBuilder<'a> {
-    ancestryChain: Vec<AdScriptIdentifier<'a>>,
-    rootScriptFilterlistRule: Option<Cow<'a, str>>,
+    ancestry_chain: Vec<AdScriptIdentifier<'a>>,
+    root_script_filterlist_rule: Option<Cow<'a, str>>,
 }
 
 impl<'a> AdAncestryBuilder<'a> {
     /// The filter list rule that caused the root (last) script in
     /// 'ancestryChain' to be tagged as an ad.
-    pub fn rootScriptFilterlistRule(mut self, rootScriptFilterlistRule: impl Into<Cow<'a, str>>) -> Self { self.rootScriptFilterlistRule = Some(rootScriptFilterlistRule.into()); self }
+    pub fn root_script_filterlist_rule(mut self, root_script_filterlist_rule: impl Into<Cow<'a, str>>) -> Self { self.root_script_filterlist_rule = Some(root_script_filterlist_rule.into()); self }
     pub fn build(self) -> AdAncestry<'a> {
         AdAncestry {
-            ancestryChain: self.ancestryChain,
-            rootScriptFilterlistRule: self.rootScriptFilterlistRule,
+            ancestry_chain: self.ancestry_chain,
+            root_script_filterlist_rule: self.root_script_filterlist_rule,
         }
     }
 }
@@ -3198,39 +3694,42 @@ impl<'a> AdAncestryBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct AdProvenance<'a> {
     /// The filterlist rule that matched, if any.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    filterlistRule: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "filterlistRule")]
+    filterlist_rule: Option<Cow<'a, str>>,
     /// The script ancestry that created the ad, if any.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    adScriptAncestry: Option<AdAncestry<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "adScriptAncestry")]
+    ad_script_ancestry: Option<AdAncestry<'a>>,
 }
 
 impl<'a> AdProvenance<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> AdProvenanceBuilder<'a> {
         AdProvenanceBuilder {
-            filterlistRule: None,
-            adScriptAncestry: None,
+            filterlist_rule: None,
+            ad_script_ancestry: None,
         }
     }
-    pub fn filterlistRule(&self) -> Option<&str> { self.filterlistRule.as_deref() }
-    pub fn adScriptAncestry(&self) -> Option<&AdAncestry<'a>> { self.adScriptAncestry.as_ref() }
+    /// The filterlist rule that matched, if any.
+    pub fn filterlist_rule(&self) -> Option<&str> { self.filterlist_rule.as_deref() }
+    /// The script ancestry that created the ad, if any.
+    pub fn ad_script_ancestry(&self) -> Option<&AdAncestry<'a>> { self.ad_script_ancestry.as_ref() }
 }
 
 #[derive(Default)]
 pub struct AdProvenanceBuilder<'a> {
-    filterlistRule: Option<Cow<'a, str>>,
-    adScriptAncestry: Option<AdAncestry<'a>>,
+    filterlist_rule: Option<Cow<'a, str>>,
+    ad_script_ancestry: Option<AdAncestry<'a>>,
 }
 
 impl<'a> AdProvenanceBuilder<'a> {
     /// The filterlist rule that matched, if any.
-    pub fn filterlistRule(mut self, filterlistRule: impl Into<Cow<'a, str>>) -> Self { self.filterlistRule = Some(filterlistRule.into()); self }
+    pub fn filterlist_rule(mut self, filterlist_rule: impl Into<Cow<'a, str>>) -> Self { self.filterlist_rule = Some(filterlist_rule.into()); self }
     /// The script ancestry that created the ad, if any.
-    pub fn adScriptAncestry(mut self, adScriptAncestry: AdAncestry<'a>) -> Self { self.adScriptAncestry = Some(adScriptAncestry); self }
+    pub fn ad_script_ancestry(mut self, ad_script_ancestry: AdAncestry<'a>) -> Self { self.ad_script_ancestry = Some(ad_script_ancestry); self }
     pub fn build(self) -> AdProvenance<'a> {
         AdProvenance {
-            filterlistRule: self.filterlistRule,
-            adScriptAncestry: self.adScriptAncestry,
+            filterlist_rule: self.filterlist_rule,
+            ad_script_ancestry: self.ad_script_ancestry,
         }
     }
 }
@@ -3260,45 +3759,49 @@ pub enum CrossOriginOpenerPolicyValue {
 #[serde(rename_all = "camelCase")]
 pub struct CrossOriginOpenerPolicyStatus<'a> {
     value: CrossOriginOpenerPolicyValue,
-    reportOnlyValue: CrossOriginOpenerPolicyValue,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    reportingEndpoint: Option<Cow<'a, str>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    reportOnlyReportingEndpoint: Option<Cow<'a, str>>,
+    #[serde(rename = "reportOnlyValue")]
+    report_only_value: CrossOriginOpenerPolicyValue,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "reportingEndpoint")]
+    reporting_endpoint: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "reportOnlyReportingEndpoint")]
+    report_only_reporting_endpoint: Option<Cow<'a, str>>,
 }
 
 impl<'a> CrossOriginOpenerPolicyStatus<'a> {
-    pub fn builder(value: impl Into<CrossOriginOpenerPolicyValue>, reportOnlyValue: impl Into<CrossOriginOpenerPolicyValue>) -> CrossOriginOpenerPolicyStatusBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `value`: 
+    /// * `report_only_value`: 
+    pub fn builder(value: impl Into<CrossOriginOpenerPolicyValue>, report_only_value: impl Into<CrossOriginOpenerPolicyValue>) -> CrossOriginOpenerPolicyStatusBuilder<'a> {
         CrossOriginOpenerPolicyStatusBuilder {
             value: value.into(),
-            reportOnlyValue: reportOnlyValue.into(),
-            reportingEndpoint: None,
-            reportOnlyReportingEndpoint: None,
+            report_only_value: report_only_value.into(),
+            reporting_endpoint: None,
+            report_only_reporting_endpoint: None,
         }
     }
     pub fn value(&self) -> &CrossOriginOpenerPolicyValue { &self.value }
-    pub fn reportOnlyValue(&self) -> &CrossOriginOpenerPolicyValue { &self.reportOnlyValue }
-    pub fn reportingEndpoint(&self) -> Option<&str> { self.reportingEndpoint.as_deref() }
-    pub fn reportOnlyReportingEndpoint(&self) -> Option<&str> { self.reportOnlyReportingEndpoint.as_deref() }
+    pub fn report_only_value(&self) -> &CrossOriginOpenerPolicyValue { &self.report_only_value }
+    pub fn reporting_endpoint(&self) -> Option<&str> { self.reporting_endpoint.as_deref() }
+    pub fn report_only_reporting_endpoint(&self) -> Option<&str> { self.report_only_reporting_endpoint.as_deref() }
 }
 
 
 pub struct CrossOriginOpenerPolicyStatusBuilder<'a> {
     value: CrossOriginOpenerPolicyValue,
-    reportOnlyValue: CrossOriginOpenerPolicyValue,
-    reportingEndpoint: Option<Cow<'a, str>>,
-    reportOnlyReportingEndpoint: Option<Cow<'a, str>>,
+    report_only_value: CrossOriginOpenerPolicyValue,
+    reporting_endpoint: Option<Cow<'a, str>>,
+    report_only_reporting_endpoint: Option<Cow<'a, str>>,
 }
 
 impl<'a> CrossOriginOpenerPolicyStatusBuilder<'a> {
-    pub fn reportingEndpoint(mut self, reportingEndpoint: impl Into<Cow<'a, str>>) -> Self { self.reportingEndpoint = Some(reportingEndpoint.into()); self }
-    pub fn reportOnlyReportingEndpoint(mut self, reportOnlyReportingEndpoint: impl Into<Cow<'a, str>>) -> Self { self.reportOnlyReportingEndpoint = Some(reportOnlyReportingEndpoint.into()); self }
+    pub fn reporting_endpoint(mut self, reporting_endpoint: impl Into<Cow<'a, str>>) -> Self { self.reporting_endpoint = Some(reporting_endpoint.into()); self }
+    pub fn report_only_reporting_endpoint(mut self, report_only_reporting_endpoint: impl Into<Cow<'a, str>>) -> Self { self.report_only_reporting_endpoint = Some(report_only_reporting_endpoint.into()); self }
     pub fn build(self) -> CrossOriginOpenerPolicyStatus<'a> {
         CrossOriginOpenerPolicyStatus {
             value: self.value,
-            reportOnlyValue: self.reportOnlyValue,
-            reportingEndpoint: self.reportingEndpoint,
-            reportOnlyReportingEndpoint: self.reportOnlyReportingEndpoint,
+            report_only_value: self.report_only_value,
+            reporting_endpoint: self.reporting_endpoint,
+            report_only_reporting_endpoint: self.report_only_reporting_endpoint,
         }
     }
 }
@@ -3320,45 +3823,49 @@ pub enum CrossOriginEmbedderPolicyValue {
 #[serde(rename_all = "camelCase")]
 pub struct CrossOriginEmbedderPolicyStatus<'a> {
     value: CrossOriginEmbedderPolicyValue,
-    reportOnlyValue: CrossOriginEmbedderPolicyValue,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    reportingEndpoint: Option<Cow<'a, str>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    reportOnlyReportingEndpoint: Option<Cow<'a, str>>,
+    #[serde(rename = "reportOnlyValue")]
+    report_only_value: CrossOriginEmbedderPolicyValue,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "reportingEndpoint")]
+    reporting_endpoint: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "reportOnlyReportingEndpoint")]
+    report_only_reporting_endpoint: Option<Cow<'a, str>>,
 }
 
 impl<'a> CrossOriginEmbedderPolicyStatus<'a> {
-    pub fn builder(value: impl Into<CrossOriginEmbedderPolicyValue>, reportOnlyValue: impl Into<CrossOriginEmbedderPolicyValue>) -> CrossOriginEmbedderPolicyStatusBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `value`: 
+    /// * `report_only_value`: 
+    pub fn builder(value: impl Into<CrossOriginEmbedderPolicyValue>, report_only_value: impl Into<CrossOriginEmbedderPolicyValue>) -> CrossOriginEmbedderPolicyStatusBuilder<'a> {
         CrossOriginEmbedderPolicyStatusBuilder {
             value: value.into(),
-            reportOnlyValue: reportOnlyValue.into(),
-            reportingEndpoint: None,
-            reportOnlyReportingEndpoint: None,
+            report_only_value: report_only_value.into(),
+            reporting_endpoint: None,
+            report_only_reporting_endpoint: None,
         }
     }
     pub fn value(&self) -> &CrossOriginEmbedderPolicyValue { &self.value }
-    pub fn reportOnlyValue(&self) -> &CrossOriginEmbedderPolicyValue { &self.reportOnlyValue }
-    pub fn reportingEndpoint(&self) -> Option<&str> { self.reportingEndpoint.as_deref() }
-    pub fn reportOnlyReportingEndpoint(&self) -> Option<&str> { self.reportOnlyReportingEndpoint.as_deref() }
+    pub fn report_only_value(&self) -> &CrossOriginEmbedderPolicyValue { &self.report_only_value }
+    pub fn reporting_endpoint(&self) -> Option<&str> { self.reporting_endpoint.as_deref() }
+    pub fn report_only_reporting_endpoint(&self) -> Option<&str> { self.report_only_reporting_endpoint.as_deref() }
 }
 
 
 pub struct CrossOriginEmbedderPolicyStatusBuilder<'a> {
     value: CrossOriginEmbedderPolicyValue,
-    reportOnlyValue: CrossOriginEmbedderPolicyValue,
-    reportingEndpoint: Option<Cow<'a, str>>,
-    reportOnlyReportingEndpoint: Option<Cow<'a, str>>,
+    report_only_value: CrossOriginEmbedderPolicyValue,
+    reporting_endpoint: Option<Cow<'a, str>>,
+    report_only_reporting_endpoint: Option<Cow<'a, str>>,
 }
 
 impl<'a> CrossOriginEmbedderPolicyStatusBuilder<'a> {
-    pub fn reportingEndpoint(mut self, reportingEndpoint: impl Into<Cow<'a, str>>) -> Self { self.reportingEndpoint = Some(reportingEndpoint.into()); self }
-    pub fn reportOnlyReportingEndpoint(mut self, reportOnlyReportingEndpoint: impl Into<Cow<'a, str>>) -> Self { self.reportOnlyReportingEndpoint = Some(reportOnlyReportingEndpoint.into()); self }
+    pub fn reporting_endpoint(mut self, reporting_endpoint: impl Into<Cow<'a, str>>) -> Self { self.reporting_endpoint = Some(reporting_endpoint.into()); self }
+    pub fn report_only_reporting_endpoint(mut self, report_only_reporting_endpoint: impl Into<Cow<'a, str>>) -> Self { self.report_only_reporting_endpoint = Some(report_only_reporting_endpoint.into()); self }
     pub fn build(self) -> CrossOriginEmbedderPolicyStatus<'a> {
         CrossOriginEmbedderPolicyStatus {
             value: self.value,
-            reportOnlyValue: self.reportOnlyValue,
-            reportingEndpoint: self.reportingEndpoint,
-            reportOnlyReportingEndpoint: self.reportOnlyReportingEndpoint,
+            report_only_value: self.report_only_value,
+            reporting_endpoint: self.reporting_endpoint,
+            report_only_reporting_endpoint: self.report_only_reporting_endpoint,
         }
     }
 }
@@ -3377,36 +3884,42 @@ pub enum ContentSecurityPolicySource {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ContentSecurityPolicyStatus<'a> {
-    effectiveDirectives: Cow<'a, str>,
-    isEnforced: bool,
+    #[serde(rename = "effectiveDirectives")]
+    effective_directives: Cow<'a, str>,
+    #[serde(rename = "isEnforced")]
+    is_enforced: bool,
     source: ContentSecurityPolicySource,
 }
 
 impl<'a> ContentSecurityPolicyStatus<'a> {
-    pub fn builder(effectiveDirectives: impl Into<Cow<'a, str>>, isEnforced: bool, source: impl Into<ContentSecurityPolicySource>) -> ContentSecurityPolicyStatusBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `effective_directives`: 
+    /// * `is_enforced`: 
+    /// * `source`: 
+    pub fn builder(effective_directives: impl Into<Cow<'a, str>>, is_enforced: bool, source: impl Into<ContentSecurityPolicySource>) -> ContentSecurityPolicyStatusBuilder<'a> {
         ContentSecurityPolicyStatusBuilder {
-            effectiveDirectives: effectiveDirectives.into(),
-            isEnforced: isEnforced,
+            effective_directives: effective_directives.into(),
+            is_enforced: is_enforced,
             source: source.into(),
         }
     }
-    pub fn effectiveDirectives(&self) -> &str { self.effectiveDirectives.as_ref() }
-    pub fn isEnforced(&self) -> bool { self.isEnforced }
+    pub fn effective_directives(&self) -> &str { self.effective_directives.as_ref() }
+    pub fn is_enforced(&self) -> bool { self.is_enforced }
     pub fn source(&self) -> &ContentSecurityPolicySource { &self.source }
 }
 
 
 pub struct ContentSecurityPolicyStatusBuilder<'a> {
-    effectiveDirectives: Cow<'a, str>,
-    isEnforced: bool,
+    effective_directives: Cow<'a, str>,
+    is_enforced: bool,
     source: ContentSecurityPolicySource,
 }
 
 impl<'a> ContentSecurityPolicyStatusBuilder<'a> {
     pub fn build(self) -> ContentSecurityPolicyStatus<'a> {
         ContentSecurityPolicyStatus {
-            effectiveDirectives: self.effectiveDirectives,
-            isEnforced: self.isEnforced,
+            effective_directives: self.effective_directives,
+            is_enforced: self.is_enforced,
             source: self.source,
         }
     }
@@ -3425,6 +3938,7 @@ pub struct SecurityIsolationStatus<'a> {
 }
 
 impl<'a> SecurityIsolationStatus<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> SecurityIsolationStatusBuilder<'a> {
         SecurityIsolationStatusBuilder {
             coop: None,
@@ -3482,7 +3996,8 @@ pub type ReportId<'a> = Cow<'a, str>;
 pub struct ReportingApiReport<'a> {
     id: ReportId<'a>,
     /// The URL of the document that triggered the report.
-    initiatorUrl: Cow<'a, str>,
+    #[serde(rename = "initiatorUrl")]
+    initiator_url: Cow<'a, str>,
     /// The name of the endpoint group that should be used to deliver the report.
     destination: Cow<'a, str>,
     /// The type of the report (specifies the set of data that is contained in the report body).
@@ -3493,32 +4008,49 @@ pub struct ReportingApiReport<'a> {
     /// How many uploads deep the related request was.
     depth: i64,
     /// The number of delivery attempts made so far, not including an active attempt.
-    completedAttempts: i64,
+    #[serde(rename = "completedAttempts")]
+    completed_attempts: i64,
     body: serde_json::Map<String, JsonValue>,
     status: ReportStatus,
 }
 
 impl<'a> ReportingApiReport<'a> {
-    pub fn builder(id: impl Into<ReportId<'a>>, initiatorUrl: impl Into<Cow<'a, str>>, destination: impl Into<Cow<'a, str>>, type_: impl Into<Cow<'a, str>>, timestamp: crate::network::TimeSinceEpoch, depth: i64, completedAttempts: i64, body: serde_json::Map<String, JsonValue>, status: impl Into<ReportStatus>) -> ReportingApiReportBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `id`: 
+    /// * `initiator_url`: The URL of the document that triggered the report.
+    /// * `destination`: The name of the endpoint group that should be used to deliver the report.
+    /// * `type_`: The type of the report (specifies the set of data that is contained in the report body).
+    /// * `timestamp`: When the report was generated.
+    /// * `depth`: How many uploads deep the related request was.
+    /// * `completed_attempts`: The number of delivery attempts made so far, not including an active attempt.
+    /// * `body`: 
+    /// * `status`: 
+    pub fn builder(id: impl Into<ReportId<'a>>, initiator_url: impl Into<Cow<'a, str>>, destination: impl Into<Cow<'a, str>>, type_: impl Into<Cow<'a, str>>, timestamp: crate::network::TimeSinceEpoch, depth: i64, completed_attempts: i64, body: serde_json::Map<String, JsonValue>, status: impl Into<ReportStatus>) -> ReportingApiReportBuilder<'a> {
         ReportingApiReportBuilder {
             id: id.into(),
-            initiatorUrl: initiatorUrl.into(),
+            initiator_url: initiator_url.into(),
             destination: destination.into(),
             type_: type_.into(),
             timestamp: timestamp,
             depth: depth,
-            completedAttempts: completedAttempts,
+            completed_attempts: completed_attempts,
             body: body,
             status: status.into(),
         }
     }
     pub fn id(&self) -> &ReportId<'a> { &self.id }
-    pub fn initiatorUrl(&self) -> &str { self.initiatorUrl.as_ref() }
+    /// The URL of the document that triggered the report.
+    pub fn initiator_url(&self) -> &str { self.initiator_url.as_ref() }
+    /// The name of the endpoint group that should be used to deliver the report.
     pub fn destination(&self) -> &str { self.destination.as_ref() }
+    /// The type of the report (specifies the set of data that is contained in the report body).
     pub fn type_(&self) -> &str { self.type_.as_ref() }
+    /// When the report was generated.
     pub fn timestamp(&self) -> &crate::network::TimeSinceEpoch { &self.timestamp }
+    /// How many uploads deep the related request was.
     pub fn depth(&self) -> i64 { self.depth }
-    pub fn completedAttempts(&self) -> i64 { self.completedAttempts }
+    /// The number of delivery attempts made so far, not including an active attempt.
+    pub fn completed_attempts(&self) -> i64 { self.completed_attempts }
     pub fn body(&self) -> &serde_json::Map<String, JsonValue> { &self.body }
     pub fn status(&self) -> &ReportStatus { &self.status }
 }
@@ -3526,12 +4058,12 @@ impl<'a> ReportingApiReport<'a> {
 
 pub struct ReportingApiReportBuilder<'a> {
     id: ReportId<'a>,
-    initiatorUrl: Cow<'a, str>,
+    initiator_url: Cow<'a, str>,
     destination: Cow<'a, str>,
     type_: Cow<'a, str>,
     timestamp: crate::network::TimeSinceEpoch,
     depth: i64,
-    completedAttempts: i64,
+    completed_attempts: i64,
     body: serde_json::Map<String, JsonValue>,
     status: ReportStatus,
 }
@@ -3540,12 +4072,12 @@ impl<'a> ReportingApiReportBuilder<'a> {
     pub fn build(self) -> ReportingApiReport<'a> {
         ReportingApiReport {
             id: self.id,
-            initiatorUrl: self.initiatorUrl,
+            initiator_url: self.initiator_url,
             destination: self.destination,
             type_: self.type_,
             timestamp: self.timestamp,
             depth: self.depth,
-            completedAttempts: self.completedAttempts,
+            completed_attempts: self.completed_attempts,
             body: self.body,
             status: self.status,
         }
@@ -3559,31 +4091,37 @@ pub struct ReportingApiEndpoint<'a> {
     /// The URL of the endpoint to which reports may be delivered.
     url: Cow<'a, str>,
     /// Name of the endpoint group.
-    groupName: Cow<'a, str>,
+    #[serde(rename = "groupName")]
+    group_name: Cow<'a, str>,
 }
 
 impl<'a> ReportingApiEndpoint<'a> {
-    pub fn builder(url: impl Into<Cow<'a, str>>, groupName: impl Into<Cow<'a, str>>) -> ReportingApiEndpointBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url`: The URL of the endpoint to which reports may be delivered.
+    /// * `group_name`: Name of the endpoint group.
+    pub fn builder(url: impl Into<Cow<'a, str>>, group_name: impl Into<Cow<'a, str>>) -> ReportingApiEndpointBuilder<'a> {
         ReportingApiEndpointBuilder {
             url: url.into(),
-            groupName: groupName.into(),
+            group_name: group_name.into(),
         }
     }
+    /// The URL of the endpoint to which reports may be delivered.
     pub fn url(&self) -> &str { self.url.as_ref() }
-    pub fn groupName(&self) -> &str { self.groupName.as_ref() }
+    /// Name of the endpoint group.
+    pub fn group_name(&self) -> &str { self.group_name.as_ref() }
 }
 
 
 pub struct ReportingApiEndpointBuilder<'a> {
     url: Cow<'a, str>,
-    groupName: Cow<'a, str>,
+    group_name: Cow<'a, str>,
 }
 
 impl<'a> ReportingApiEndpointBuilder<'a> {
     pub fn build(self) -> ReportingApiEndpoint<'a> {
         ReportingApiEndpoint {
             url: self.url,
-            groupName: self.groupName,
+            group_name: self.group_name,
         }
     }
 }
@@ -3600,13 +4138,18 @@ pub struct DeviceBoundSessionKey<'a> {
 }
 
 impl<'a> DeviceBoundSessionKey<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `site`: The site the session is set up for.
+    /// * `id`: The id of the session.
     pub fn builder(site: impl Into<Cow<'a, str>>, id: impl Into<Cow<'a, str>>) -> DeviceBoundSessionKeyBuilder<'a> {
         DeviceBoundSessionKeyBuilder {
             site: site.into(),
             id: id.into(),
         }
     }
+    /// The site the session is set up for.
     pub fn site(&self) -> &str { self.site.as_ref() }
+    /// The id of the session.
     pub fn id(&self) -> &str { self.id.as_ref() }
 }
 
@@ -3631,32 +4174,38 @@ impl<'a> DeviceBoundSessionKeyBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct DeviceBoundSessionWithUsage<'a> {
     /// The key for the session.
-    sessionKey: DeviceBoundSessionKey<'a>,
+    #[serde(rename = "sessionKey")]
+    session_key: DeviceBoundSessionKey<'a>,
     /// How the session was used (or not used).
     usage: Cow<'a, str>,
 }
 
 impl<'a> DeviceBoundSessionWithUsage<'a> {
-    pub fn builder(sessionKey: DeviceBoundSessionKey<'a>, usage: impl Into<Cow<'a, str>>) -> DeviceBoundSessionWithUsageBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `session_key`: The key for the session.
+    /// * `usage`: How the session was used (or not used).
+    pub fn builder(session_key: DeviceBoundSessionKey<'a>, usage: impl Into<Cow<'a, str>>) -> DeviceBoundSessionWithUsageBuilder<'a> {
         DeviceBoundSessionWithUsageBuilder {
-            sessionKey: sessionKey,
+            session_key: session_key,
             usage: usage.into(),
         }
     }
-    pub fn sessionKey(&self) -> &DeviceBoundSessionKey<'a> { &self.sessionKey }
+    /// The key for the session.
+    pub fn session_key(&self) -> &DeviceBoundSessionKey<'a> { &self.session_key }
+    /// How the session was used (or not used).
     pub fn usage(&self) -> &str { self.usage.as_ref() }
 }
 
 
 pub struct DeviceBoundSessionWithUsageBuilder<'a> {
-    sessionKey: DeviceBoundSessionKey<'a>,
+    session_key: DeviceBoundSessionKey<'a>,
     usage: Cow<'a, str>,
 }
 
 impl<'a> DeviceBoundSessionWithUsageBuilder<'a> {
     pub fn build(self) -> DeviceBoundSessionWithUsage<'a> {
         DeviceBoundSessionWithUsage {
-            sessionKey: self.sessionKey,
+            session_key: self.session_key,
             usage: self.usage,
         }
     }
@@ -3676,29 +4225,42 @@ pub struct DeviceBoundSessionCookieCraving<'a> {
     /// The 'Secure' attribute of the craving attributes.
     secure: bool,
     /// The 'HttpOnly' attribute of the craving attributes.
-    httpOnly: bool,
+    #[serde(rename = "httpOnly")]
+    http_only: bool,
     /// The 'SameSite' attribute of the craving attributes.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    sameSite: Option<CookieSameSite>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sameSite")]
+    same_site: Option<CookieSameSite>,
 }
 
 impl<'a> DeviceBoundSessionCookieCraving<'a> {
-    pub fn builder(name: impl Into<Cow<'a, str>>, domain: impl Into<Cow<'a, str>>, path: impl Into<Cow<'a, str>>, secure: bool, httpOnly: bool) -> DeviceBoundSessionCookieCravingBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: The name of the craving.
+    /// * `domain`: The domain of the craving.
+    /// * `path`: The path of the craving.
+    /// * `secure`: The `Secure` attribute of the craving attributes.
+    /// * `http_only`: The `HttpOnly` attribute of the craving attributes.
+    pub fn builder(name: impl Into<Cow<'a, str>>, domain: impl Into<Cow<'a, str>>, path: impl Into<Cow<'a, str>>, secure: bool, http_only: bool) -> DeviceBoundSessionCookieCravingBuilder<'a> {
         DeviceBoundSessionCookieCravingBuilder {
             name: name.into(),
             domain: domain.into(),
             path: path.into(),
             secure: secure,
-            httpOnly: httpOnly,
-            sameSite: None,
+            http_only: http_only,
+            same_site: None,
         }
     }
+    /// The name of the craving.
     pub fn name(&self) -> &str { self.name.as_ref() }
+    /// The domain of the craving.
     pub fn domain(&self) -> &str { self.domain.as_ref() }
+    /// The path of the craving.
     pub fn path(&self) -> &str { self.path.as_ref() }
+    /// The 'Secure' attribute of the craving attributes.
     pub fn secure(&self) -> bool { self.secure }
-    pub fn httpOnly(&self) -> bool { self.httpOnly }
-    pub fn sameSite(&self) -> Option<&CookieSameSite> { self.sameSite.as_ref() }
+    /// The 'HttpOnly' attribute of the craving attributes.
+    pub fn http_only(&self) -> bool { self.http_only }
+    /// The 'SameSite' attribute of the craving attributes.
+    pub fn same_site(&self) -> Option<&CookieSameSite> { self.same_site.as_ref() }
 }
 
 
@@ -3707,21 +4269,21 @@ pub struct DeviceBoundSessionCookieCravingBuilder<'a> {
     domain: Cow<'a, str>,
     path: Cow<'a, str>,
     secure: bool,
-    httpOnly: bool,
-    sameSite: Option<CookieSameSite>,
+    http_only: bool,
+    same_site: Option<CookieSameSite>,
 }
 
 impl<'a> DeviceBoundSessionCookieCravingBuilder<'a> {
     /// The 'SameSite' attribute of the craving attributes.
-    pub fn sameSite(mut self, sameSite: impl Into<CookieSameSite>) -> Self { self.sameSite = Some(sameSite.into()); self }
+    pub fn same_site(mut self, same_site: impl Into<CookieSameSite>) -> Self { self.same_site = Some(same_site.into()); self }
     pub fn build(self) -> DeviceBoundSessionCookieCraving<'a> {
         DeviceBoundSessionCookieCraving {
             name: self.name,
             domain: self.domain,
             path: self.path,
             secure: self.secure,
-            httpOnly: self.httpOnly,
-            sameSite: self.sameSite,
+            http_only: self.http_only,
+            same_site: self.same_site,
         }
     }
 }
@@ -3732,39 +4294,49 @@ impl<'a> DeviceBoundSessionCookieCravingBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct DeviceBoundSessionUrlRule<'a> {
     /// See comments on 'net::device_bound_sessions::SessionInclusionRules::UrlRule::rule_type'.
-    ruleType: Cow<'a, str>,
+    #[serde(rename = "ruleType")]
+    rule_type: Cow<'a, str>,
     /// See comments on 'net::device_bound_sessions::SessionInclusionRules::UrlRule::host_pattern'.
-    hostPattern: Cow<'a, str>,
+    #[serde(rename = "hostPattern")]
+    host_pattern: Cow<'a, str>,
     /// See comments on 'net::device_bound_sessions::SessionInclusionRules::UrlRule::path_prefix'.
-    pathPrefix: Cow<'a, str>,
+    #[serde(rename = "pathPrefix")]
+    path_prefix: Cow<'a, str>,
 }
 
 impl<'a> DeviceBoundSessionUrlRule<'a> {
-    pub fn builder(ruleType: impl Into<Cow<'a, str>>, hostPattern: impl Into<Cow<'a, str>>, pathPrefix: impl Into<Cow<'a, str>>) -> DeviceBoundSessionUrlRuleBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `rule_type`: See comments on `net::device_bound_sessions::SessionInclusionRules::UrlRule::rule_type`.
+    /// * `host_pattern`: See comments on `net::device_bound_sessions::SessionInclusionRules::UrlRule::host_pattern`.
+    /// * `path_prefix`: See comments on `net::device_bound_sessions::SessionInclusionRules::UrlRule::path_prefix`.
+    pub fn builder(rule_type: impl Into<Cow<'a, str>>, host_pattern: impl Into<Cow<'a, str>>, path_prefix: impl Into<Cow<'a, str>>) -> DeviceBoundSessionUrlRuleBuilder<'a> {
         DeviceBoundSessionUrlRuleBuilder {
-            ruleType: ruleType.into(),
-            hostPattern: hostPattern.into(),
-            pathPrefix: pathPrefix.into(),
+            rule_type: rule_type.into(),
+            host_pattern: host_pattern.into(),
+            path_prefix: path_prefix.into(),
         }
     }
-    pub fn ruleType(&self) -> &str { self.ruleType.as_ref() }
-    pub fn hostPattern(&self) -> &str { self.hostPattern.as_ref() }
-    pub fn pathPrefix(&self) -> &str { self.pathPrefix.as_ref() }
+    /// See comments on 'net::device_bound_sessions::SessionInclusionRules::UrlRule::rule_type'.
+    pub fn rule_type(&self) -> &str { self.rule_type.as_ref() }
+    /// See comments on 'net::device_bound_sessions::SessionInclusionRules::UrlRule::host_pattern'.
+    pub fn host_pattern(&self) -> &str { self.host_pattern.as_ref() }
+    /// See comments on 'net::device_bound_sessions::SessionInclusionRules::UrlRule::path_prefix'.
+    pub fn path_prefix(&self) -> &str { self.path_prefix.as_ref() }
 }
 
 
 pub struct DeviceBoundSessionUrlRuleBuilder<'a> {
-    ruleType: Cow<'a, str>,
-    hostPattern: Cow<'a, str>,
-    pathPrefix: Cow<'a, str>,
+    rule_type: Cow<'a, str>,
+    host_pattern: Cow<'a, str>,
+    path_prefix: Cow<'a, str>,
 }
 
 impl<'a> DeviceBoundSessionUrlRuleBuilder<'a> {
     pub fn build(self) -> DeviceBoundSessionUrlRule<'a> {
         DeviceBoundSessionUrlRule {
-            ruleType: self.ruleType,
-            hostPattern: self.hostPattern,
-            pathPrefix: self.pathPrefix,
+            rule_type: self.rule_type,
+            host_pattern: self.host_pattern,
+            path_prefix: self.path_prefix,
         }
     }
 }
@@ -3779,37 +4351,48 @@ pub struct DeviceBoundSessionInclusionRules<'a> {
     /// Whether the whole site is included. See comments on
     /// 'net::device_bound_sessions::SessionInclusionRules::include_site_' for more
     /// details; this boolean is true if that value is populated.
-    includeSite: bool,
+    #[serde(rename = "includeSite")]
+    include_site: bool,
     /// See comments on 'net::device_bound_sessions::SessionInclusionRules::url_rules_'.
-    urlRules: Vec<DeviceBoundSessionUrlRule<'a>>,
+    #[serde(rename = "urlRules")]
+    url_rules: Vec<DeviceBoundSessionUrlRule<'a>>,
 }
 
 impl<'a> DeviceBoundSessionInclusionRules<'a> {
-    pub fn builder(origin: impl Into<Cow<'a, str>>, includeSite: bool, urlRules: Vec<DeviceBoundSessionUrlRule<'a>>) -> DeviceBoundSessionInclusionRulesBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `origin`: See comments on `net::device_bound_sessions::SessionInclusionRules::origin_`.
+    /// * `include_site`: Whether the whole site is included. See comments on `net::device_bound_sessions::SessionInclusionRules::include_site_` for more details; this boolean is true if that value is populated.
+    /// * `url_rules`: See comments on `net::device_bound_sessions::SessionInclusionRules::url_rules_`.
+    pub fn builder(origin: impl Into<Cow<'a, str>>, include_site: bool, url_rules: Vec<DeviceBoundSessionUrlRule<'a>>) -> DeviceBoundSessionInclusionRulesBuilder<'a> {
         DeviceBoundSessionInclusionRulesBuilder {
             origin: origin.into(),
-            includeSite: includeSite,
-            urlRules: urlRules,
+            include_site: include_site,
+            url_rules: url_rules,
         }
     }
+    /// See comments on 'net::device_bound_sessions::SessionInclusionRules::origin_'.
     pub fn origin(&self) -> &str { self.origin.as_ref() }
-    pub fn includeSite(&self) -> bool { self.includeSite }
-    pub fn urlRules(&self) -> &[DeviceBoundSessionUrlRule<'a>] { &self.urlRules }
+    /// Whether the whole site is included. See comments on
+    /// 'net::device_bound_sessions::SessionInclusionRules::include_site_' for more
+    /// details; this boolean is true if that value is populated.
+    pub fn include_site(&self) -> bool { self.include_site }
+    /// See comments on 'net::device_bound_sessions::SessionInclusionRules::url_rules_'.
+    pub fn url_rules(&self) -> &[DeviceBoundSessionUrlRule<'a>] { &self.url_rules }
 }
 
 
 pub struct DeviceBoundSessionInclusionRulesBuilder<'a> {
     origin: Cow<'a, str>,
-    includeSite: bool,
-    urlRules: Vec<DeviceBoundSessionUrlRule<'a>>,
+    include_site: bool,
+    url_rules: Vec<DeviceBoundSessionUrlRule<'a>>,
 }
 
 impl<'a> DeviceBoundSessionInclusionRulesBuilder<'a> {
     pub fn build(self) -> DeviceBoundSessionInclusionRules<'a> {
         DeviceBoundSessionInclusionRules {
             origin: self.origin,
-            includeSite: self.includeSite,
-            urlRules: self.urlRules,
+            include_site: self.include_site,
+            url_rules: self.url_rules,
         }
     }
 }
@@ -3822,64 +4405,83 @@ pub struct DeviceBoundSession<'a> {
     /// The site and session ID of the session.
     key: DeviceBoundSessionKey<'a>,
     /// See comments on 'net::device_bound_sessions::Session::refresh_url_'.
-    refreshUrl: Cow<'a, str>,
+    #[serde(rename = "refreshUrl")]
+    refresh_url: Cow<'a, str>,
     /// See comments on 'net::device_bound_sessions::Session::inclusion_rules_'.
-    inclusionRules: DeviceBoundSessionInclusionRules<'a>,
+    #[serde(rename = "inclusionRules")]
+    inclusion_rules: DeviceBoundSessionInclusionRules<'a>,
     /// See comments on 'net::device_bound_sessions::Session::cookie_cravings_'.
-    cookieCravings: Vec<DeviceBoundSessionCookieCraving<'a>>,
+    #[serde(rename = "cookieCravings")]
+    cookie_cravings: Vec<DeviceBoundSessionCookieCraving<'a>>,
     /// See comments on 'net::device_bound_sessions::Session::expiry_date_'.
-    expiryDate: crate::network::TimeSinceEpoch,
+    #[serde(rename = "expiryDate")]
+    expiry_date: crate::network::TimeSinceEpoch,
     /// See comments on 'net::device_bound_sessions::Session::cached_challenge__'.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    cachedChallenge: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "cachedChallenge")]
+    cached_challenge: Option<Cow<'a, str>>,
     /// See comments on 'net::device_bound_sessions::Session::allowed_refresh_initiators_'.
-    allowedRefreshInitiators: Vec<Cow<'a, str>>,
+    #[serde(rename = "allowedRefreshInitiators")]
+    allowed_refresh_initiators: Vec<Cow<'a, str>>,
 }
 
 impl<'a> DeviceBoundSession<'a> {
-    pub fn builder(key: DeviceBoundSessionKey<'a>, refreshUrl: impl Into<Cow<'a, str>>, inclusionRules: DeviceBoundSessionInclusionRules<'a>, cookieCravings: Vec<DeviceBoundSessionCookieCraving<'a>>, expiryDate: crate::network::TimeSinceEpoch, allowedRefreshInitiators: Vec<Cow<'a, str>>) -> DeviceBoundSessionBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `key`: The site and session ID of the session.
+    /// * `refresh_url`: See comments on `net::device_bound_sessions::Session::refresh_url_`.
+    /// * `inclusion_rules`: See comments on `net::device_bound_sessions::Session::inclusion_rules_`.
+    /// * `cookie_cravings`: See comments on `net::device_bound_sessions::Session::cookie_cravings_`.
+    /// * `expiry_date`: See comments on `net::device_bound_sessions::Session::expiry_date_`.
+    /// * `allowed_refresh_initiators`: See comments on `net::device_bound_sessions::Session::allowed_refresh_initiators_`.
+    pub fn builder(key: DeviceBoundSessionKey<'a>, refresh_url: impl Into<Cow<'a, str>>, inclusion_rules: DeviceBoundSessionInclusionRules<'a>, cookie_cravings: Vec<DeviceBoundSessionCookieCraving<'a>>, expiry_date: crate::network::TimeSinceEpoch, allowed_refresh_initiators: Vec<Cow<'a, str>>) -> DeviceBoundSessionBuilder<'a> {
         DeviceBoundSessionBuilder {
             key: key,
-            refreshUrl: refreshUrl.into(),
-            inclusionRules: inclusionRules,
-            cookieCravings: cookieCravings,
-            expiryDate: expiryDate,
-            cachedChallenge: None,
-            allowedRefreshInitiators: allowedRefreshInitiators,
+            refresh_url: refresh_url.into(),
+            inclusion_rules: inclusion_rules,
+            cookie_cravings: cookie_cravings,
+            expiry_date: expiry_date,
+            cached_challenge: None,
+            allowed_refresh_initiators: allowed_refresh_initiators,
         }
     }
+    /// The site and session ID of the session.
     pub fn key(&self) -> &DeviceBoundSessionKey<'a> { &self.key }
-    pub fn refreshUrl(&self) -> &str { self.refreshUrl.as_ref() }
-    pub fn inclusionRules(&self) -> &DeviceBoundSessionInclusionRules<'a> { &self.inclusionRules }
-    pub fn cookieCravings(&self) -> &[DeviceBoundSessionCookieCraving<'a>] { &self.cookieCravings }
-    pub fn expiryDate(&self) -> &crate::network::TimeSinceEpoch { &self.expiryDate }
-    pub fn cachedChallenge(&self) -> Option<&str> { self.cachedChallenge.as_deref() }
-    pub fn allowedRefreshInitiators(&self) -> &[Cow<'a, str>] { &self.allowedRefreshInitiators }
+    /// See comments on 'net::device_bound_sessions::Session::refresh_url_'.
+    pub fn refresh_url(&self) -> &str { self.refresh_url.as_ref() }
+    /// See comments on 'net::device_bound_sessions::Session::inclusion_rules_'.
+    pub fn inclusion_rules(&self) -> &DeviceBoundSessionInclusionRules<'a> { &self.inclusion_rules }
+    /// See comments on 'net::device_bound_sessions::Session::cookie_cravings_'.
+    pub fn cookie_cravings(&self) -> &[DeviceBoundSessionCookieCraving<'a>] { &self.cookie_cravings }
+    /// See comments on 'net::device_bound_sessions::Session::expiry_date_'.
+    pub fn expiry_date(&self) -> &crate::network::TimeSinceEpoch { &self.expiry_date }
+    /// See comments on 'net::device_bound_sessions::Session::cached_challenge__'.
+    pub fn cached_challenge(&self) -> Option<&str> { self.cached_challenge.as_deref() }
+    /// See comments on 'net::device_bound_sessions::Session::allowed_refresh_initiators_'.
+    pub fn allowed_refresh_initiators(&self) -> &[Cow<'a, str>] { &self.allowed_refresh_initiators }
 }
 
 
 pub struct DeviceBoundSessionBuilder<'a> {
     key: DeviceBoundSessionKey<'a>,
-    refreshUrl: Cow<'a, str>,
-    inclusionRules: DeviceBoundSessionInclusionRules<'a>,
-    cookieCravings: Vec<DeviceBoundSessionCookieCraving<'a>>,
-    expiryDate: crate::network::TimeSinceEpoch,
-    cachedChallenge: Option<Cow<'a, str>>,
-    allowedRefreshInitiators: Vec<Cow<'a, str>>,
+    refresh_url: Cow<'a, str>,
+    inclusion_rules: DeviceBoundSessionInclusionRules<'a>,
+    cookie_cravings: Vec<DeviceBoundSessionCookieCraving<'a>>,
+    expiry_date: crate::network::TimeSinceEpoch,
+    cached_challenge: Option<Cow<'a, str>>,
+    allowed_refresh_initiators: Vec<Cow<'a, str>>,
 }
 
 impl<'a> DeviceBoundSessionBuilder<'a> {
     /// See comments on 'net::device_bound_sessions::Session::cached_challenge__'.
-    pub fn cachedChallenge(mut self, cachedChallenge: impl Into<Cow<'a, str>>) -> Self { self.cachedChallenge = Some(cachedChallenge.into()); self }
+    pub fn cached_challenge(mut self, cached_challenge: impl Into<Cow<'a, str>>) -> Self { self.cached_challenge = Some(cached_challenge.into()); self }
     pub fn build(self) -> DeviceBoundSession<'a> {
         DeviceBoundSession {
             key: self.key,
-            refreshUrl: self.refreshUrl,
-            inclusionRules: self.inclusionRules,
-            cookieCravings: self.cookieCravings,
-            expiryDate: self.expiryDate,
-            cachedChallenge: self.cachedChallenge,
-            allowedRefreshInitiators: self.allowedRefreshInitiators,
+            refresh_url: self.refresh_url,
+            inclusion_rules: self.inclusion_rules,
+            cookie_cravings: self.cookie_cravings,
+            expiry_date: self.expiry_date,
+            cached_challenge: self.cached_challenge,
+            allowed_refresh_initiators: self.allowed_refresh_initiators,
         }
     }
 }
@@ -4039,58 +4641,67 @@ pub enum DeviceBoundSessionFetchResult {
 #[serde(rename_all = "camelCase")]
 pub struct DeviceBoundSessionFailedRequest<'a> {
     /// The failed request URL.
-    requestUrl: Cow<'a, str>,
+    #[serde(rename = "requestUrl")]
+    request_url: Cow<'a, str>,
     /// The net error of the response if it was not OK.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    netError: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "netError")]
+    net_error: Option<Cow<'a, str>>,
     /// The response code if the net error was OK and the response code was not
     /// 200.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    responseError: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "responseError")]
+    response_error: Option<i64>,
     /// The body of the response if the net error was OK, the response code was
     /// not 200, and the response body was not empty.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    responseErrorBody: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "responseErrorBody")]
+    response_error_body: Option<Cow<'a, str>>,
 }
 
 impl<'a> DeviceBoundSessionFailedRequest<'a> {
-    pub fn builder(requestUrl: impl Into<Cow<'a, str>>) -> DeviceBoundSessionFailedRequestBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_url`: The failed request URL.
+    pub fn builder(request_url: impl Into<Cow<'a, str>>) -> DeviceBoundSessionFailedRequestBuilder<'a> {
         DeviceBoundSessionFailedRequestBuilder {
-            requestUrl: requestUrl.into(),
-            netError: None,
-            responseError: None,
-            responseErrorBody: None,
+            request_url: request_url.into(),
+            net_error: None,
+            response_error: None,
+            response_error_body: None,
         }
     }
-    pub fn requestUrl(&self) -> &str { self.requestUrl.as_ref() }
-    pub fn netError(&self) -> Option<&str> { self.netError.as_deref() }
-    pub fn responseError(&self) -> Option<i64> { self.responseError }
-    pub fn responseErrorBody(&self) -> Option<&str> { self.responseErrorBody.as_deref() }
+    /// The failed request URL.
+    pub fn request_url(&self) -> &str { self.request_url.as_ref() }
+    /// The net error of the response if it was not OK.
+    pub fn net_error(&self) -> Option<&str> { self.net_error.as_deref() }
+    /// The response code if the net error was OK and the response code was not
+    /// 200.
+    pub fn response_error(&self) -> Option<i64> { self.response_error }
+    /// The body of the response if the net error was OK, the response code was
+    /// not 200, and the response body was not empty.
+    pub fn response_error_body(&self) -> Option<&str> { self.response_error_body.as_deref() }
 }
 
 
 pub struct DeviceBoundSessionFailedRequestBuilder<'a> {
-    requestUrl: Cow<'a, str>,
-    netError: Option<Cow<'a, str>>,
-    responseError: Option<i64>,
-    responseErrorBody: Option<Cow<'a, str>>,
+    request_url: Cow<'a, str>,
+    net_error: Option<Cow<'a, str>>,
+    response_error: Option<i64>,
+    response_error_body: Option<Cow<'a, str>>,
 }
 
 impl<'a> DeviceBoundSessionFailedRequestBuilder<'a> {
     /// The net error of the response if it was not OK.
-    pub fn netError(mut self, netError: impl Into<Cow<'a, str>>) -> Self { self.netError = Some(netError.into()); self }
+    pub fn net_error(mut self, net_error: impl Into<Cow<'a, str>>) -> Self { self.net_error = Some(net_error.into()); self }
     /// The response code if the net error was OK and the response code was not
     /// 200.
-    pub fn responseError(mut self, responseError: i64) -> Self { self.responseError = Some(responseError); self }
+    pub fn response_error(mut self, response_error: i64) -> Self { self.response_error = Some(response_error); self }
     /// The body of the response if the net error was OK, the response code was
     /// not 200, and the response body was not empty.
-    pub fn responseErrorBody(mut self, responseErrorBody: impl Into<Cow<'a, str>>) -> Self { self.responseErrorBody = Some(responseErrorBody.into()); self }
+    pub fn response_error_body(mut self, response_error_body: impl Into<Cow<'a, str>>) -> Self { self.response_error_body = Some(response_error_body.into()); self }
     pub fn build(self) -> DeviceBoundSessionFailedRequest<'a> {
         DeviceBoundSessionFailedRequest {
-            requestUrl: self.requestUrl,
-            netError: self.netError,
-            responseError: self.responseError,
-            responseErrorBody: self.responseErrorBody,
+            request_url: self.request_url,
+            net_error: self.net_error,
+            response_error: self.response_error,
+            response_error_body: self.response_error_body,
         }
     }
 }
@@ -4101,49 +4712,57 @@ impl<'a> DeviceBoundSessionFailedRequestBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct CreationEventDetails<'a> {
     /// The result of the fetch attempt.
-    fetchResult: DeviceBoundSessionFetchResult,
+    #[serde(rename = "fetchResult")]
+    fetch_result: DeviceBoundSessionFetchResult,
     /// The session if there was a newly created session. This is populated for
     /// all successful creation events.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    newSession: Option<DeviceBoundSession<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "newSession")]
+    new_session: Option<DeviceBoundSession<'a>>,
     /// Details about a failed device bound session network request if there was
     /// one.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    failedRequest: Option<DeviceBoundSessionFailedRequest<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "failedRequest")]
+    failed_request: Option<DeviceBoundSessionFailedRequest<'a>>,
 }
 
 impl<'a> CreationEventDetails<'a> {
-    pub fn builder(fetchResult: impl Into<DeviceBoundSessionFetchResult>) -> CreationEventDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `fetch_result`: The result of the fetch attempt.
+    pub fn builder(fetch_result: impl Into<DeviceBoundSessionFetchResult>) -> CreationEventDetailsBuilder<'a> {
         CreationEventDetailsBuilder {
-            fetchResult: fetchResult.into(),
-            newSession: None,
-            failedRequest: None,
+            fetch_result: fetch_result.into(),
+            new_session: None,
+            failed_request: None,
         }
     }
-    pub fn fetchResult(&self) -> &DeviceBoundSessionFetchResult { &self.fetchResult }
-    pub fn newSession(&self) -> Option<&DeviceBoundSession<'a>> { self.newSession.as_ref() }
-    pub fn failedRequest(&self) -> Option<&DeviceBoundSessionFailedRequest<'a>> { self.failedRequest.as_ref() }
+    /// The result of the fetch attempt.
+    pub fn fetch_result(&self) -> &DeviceBoundSessionFetchResult { &self.fetch_result }
+    /// The session if there was a newly created session. This is populated for
+    /// all successful creation events.
+    pub fn new_session(&self) -> Option<&DeviceBoundSession<'a>> { self.new_session.as_ref() }
+    /// Details about a failed device bound session network request if there was
+    /// one.
+    pub fn failed_request(&self) -> Option<&DeviceBoundSessionFailedRequest<'a>> { self.failed_request.as_ref() }
 }
 
 
 pub struct CreationEventDetailsBuilder<'a> {
-    fetchResult: DeviceBoundSessionFetchResult,
-    newSession: Option<DeviceBoundSession<'a>>,
-    failedRequest: Option<DeviceBoundSessionFailedRequest<'a>>,
+    fetch_result: DeviceBoundSessionFetchResult,
+    new_session: Option<DeviceBoundSession<'a>>,
+    failed_request: Option<DeviceBoundSessionFailedRequest<'a>>,
 }
 
 impl<'a> CreationEventDetailsBuilder<'a> {
     /// The session if there was a newly created session. This is populated for
     /// all successful creation events.
-    pub fn newSession(mut self, newSession: DeviceBoundSession<'a>) -> Self { self.newSession = Some(newSession); self }
+    pub fn new_session(mut self, new_session: DeviceBoundSession<'a>) -> Self { self.new_session = Some(new_session); self }
     /// Details about a failed device bound session network request if there was
     /// one.
-    pub fn failedRequest(mut self, failedRequest: DeviceBoundSessionFailedRequest<'a>) -> Self { self.failedRequest = Some(failedRequest); self }
+    pub fn failed_request(mut self, failed_request: DeviceBoundSessionFailedRequest<'a>) -> Self { self.failed_request = Some(failed_request); self }
     pub fn build(self) -> CreationEventDetails<'a> {
         CreationEventDetails {
-            fetchResult: self.fetchResult,
-            newSession: self.newSession,
-            failedRequest: self.failedRequest,
+            fetch_result: self.fetch_result,
+            new_session: self.new_session,
+            failed_request: self.failed_request,
         }
     }
 }
@@ -4154,64 +4773,76 @@ impl<'a> CreationEventDetailsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct RefreshEventDetails<'a> {
     /// The result of a refresh.
-    refreshResult: Cow<'a, str>,
+    #[serde(rename = "refreshResult")]
+    refresh_result: Cow<'a, str>,
     /// If there was a fetch attempt, the result of that.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    fetchResult: Option<DeviceBoundSessionFetchResult>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "fetchResult")]
+    fetch_result: Option<DeviceBoundSessionFetchResult>,
     /// The session display if there was a newly created session. This is populated
     /// for any refresh event that modifies the session config.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    newSession: Option<DeviceBoundSession<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "newSession")]
+    new_session: Option<DeviceBoundSession<'a>>,
     /// See comments on 'net::device_bound_sessions::RefreshEventResult::was_fully_proactive_refresh'.
-    wasFullyProactiveRefresh: bool,
+    #[serde(rename = "wasFullyProactiveRefresh")]
+    was_fully_proactive_refresh: bool,
     /// Details about a failed device bound session network request if there was
     /// one.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    failedRequest: Option<DeviceBoundSessionFailedRequest<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "failedRequest")]
+    failed_request: Option<DeviceBoundSessionFailedRequest<'a>>,
 }
 
 impl<'a> RefreshEventDetails<'a> {
-    pub fn builder(refreshResult: impl Into<Cow<'a, str>>, wasFullyProactiveRefresh: bool) -> RefreshEventDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `refresh_result`: The result of a refresh.
+    /// * `was_fully_proactive_refresh`: See comments on `net::device_bound_sessions::RefreshEventResult::was_fully_proactive_refresh`.
+    pub fn builder(refresh_result: impl Into<Cow<'a, str>>, was_fully_proactive_refresh: bool) -> RefreshEventDetailsBuilder<'a> {
         RefreshEventDetailsBuilder {
-            refreshResult: refreshResult.into(),
-            fetchResult: None,
-            newSession: None,
-            wasFullyProactiveRefresh: wasFullyProactiveRefresh,
-            failedRequest: None,
+            refresh_result: refresh_result.into(),
+            fetch_result: None,
+            new_session: None,
+            was_fully_proactive_refresh: was_fully_proactive_refresh,
+            failed_request: None,
         }
     }
-    pub fn refreshResult(&self) -> &str { self.refreshResult.as_ref() }
-    pub fn fetchResult(&self) -> Option<&DeviceBoundSessionFetchResult> { self.fetchResult.as_ref() }
-    pub fn newSession(&self) -> Option<&DeviceBoundSession<'a>> { self.newSession.as_ref() }
-    pub fn wasFullyProactiveRefresh(&self) -> bool { self.wasFullyProactiveRefresh }
-    pub fn failedRequest(&self) -> Option<&DeviceBoundSessionFailedRequest<'a>> { self.failedRequest.as_ref() }
+    /// The result of a refresh.
+    pub fn refresh_result(&self) -> &str { self.refresh_result.as_ref() }
+    /// If there was a fetch attempt, the result of that.
+    pub fn fetch_result(&self) -> Option<&DeviceBoundSessionFetchResult> { self.fetch_result.as_ref() }
+    /// The session display if there was a newly created session. This is populated
+    /// for any refresh event that modifies the session config.
+    pub fn new_session(&self) -> Option<&DeviceBoundSession<'a>> { self.new_session.as_ref() }
+    /// See comments on 'net::device_bound_sessions::RefreshEventResult::was_fully_proactive_refresh'.
+    pub fn was_fully_proactive_refresh(&self) -> bool { self.was_fully_proactive_refresh }
+    /// Details about a failed device bound session network request if there was
+    /// one.
+    pub fn failed_request(&self) -> Option<&DeviceBoundSessionFailedRequest<'a>> { self.failed_request.as_ref() }
 }
 
 
 pub struct RefreshEventDetailsBuilder<'a> {
-    refreshResult: Cow<'a, str>,
-    fetchResult: Option<DeviceBoundSessionFetchResult>,
-    newSession: Option<DeviceBoundSession<'a>>,
-    wasFullyProactiveRefresh: bool,
-    failedRequest: Option<DeviceBoundSessionFailedRequest<'a>>,
+    refresh_result: Cow<'a, str>,
+    fetch_result: Option<DeviceBoundSessionFetchResult>,
+    new_session: Option<DeviceBoundSession<'a>>,
+    was_fully_proactive_refresh: bool,
+    failed_request: Option<DeviceBoundSessionFailedRequest<'a>>,
 }
 
 impl<'a> RefreshEventDetailsBuilder<'a> {
     /// If there was a fetch attempt, the result of that.
-    pub fn fetchResult(mut self, fetchResult: impl Into<DeviceBoundSessionFetchResult>) -> Self { self.fetchResult = Some(fetchResult.into()); self }
+    pub fn fetch_result(mut self, fetch_result: impl Into<DeviceBoundSessionFetchResult>) -> Self { self.fetch_result = Some(fetch_result.into()); self }
     /// The session display if there was a newly created session. This is populated
     /// for any refresh event that modifies the session config.
-    pub fn newSession(mut self, newSession: DeviceBoundSession<'a>) -> Self { self.newSession = Some(newSession); self }
+    pub fn new_session(mut self, new_session: DeviceBoundSession<'a>) -> Self { self.new_session = Some(new_session); self }
     /// Details about a failed device bound session network request if there was
     /// one.
-    pub fn failedRequest(mut self, failedRequest: DeviceBoundSessionFailedRequest<'a>) -> Self { self.failedRequest = Some(failedRequest); self }
+    pub fn failed_request(mut self, failed_request: DeviceBoundSessionFailedRequest<'a>) -> Self { self.failed_request = Some(failed_request); self }
     pub fn build(self) -> RefreshEventDetails<'a> {
         RefreshEventDetails {
-            refreshResult: self.refreshResult,
-            fetchResult: self.fetchResult,
-            newSession: self.newSession,
-            wasFullyProactiveRefresh: self.wasFullyProactiveRefresh,
-            failedRequest: self.failedRequest,
+            refresh_result: self.refresh_result,
+            fetch_result: self.fetch_result,
+            new_session: self.new_session,
+            was_fully_proactive_refresh: self.was_fully_proactive_refresh,
+            failed_request: self.failed_request,
         }
     }
 }
@@ -4222,27 +4853,31 @@ impl<'a> RefreshEventDetailsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct TerminationEventDetails<'a> {
     /// The reason for a session being deleted.
-    deletionReason: Cow<'a, str>,
+    #[serde(rename = "deletionReason")]
+    deletion_reason: Cow<'a, str>,
 }
 
 impl<'a> TerminationEventDetails<'a> {
-    pub fn builder(deletionReason: impl Into<Cow<'a, str>>) -> TerminationEventDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `deletion_reason`: The reason for a session being deleted.
+    pub fn builder(deletion_reason: impl Into<Cow<'a, str>>) -> TerminationEventDetailsBuilder<'a> {
         TerminationEventDetailsBuilder {
-            deletionReason: deletionReason.into(),
+            deletion_reason: deletion_reason.into(),
         }
     }
-    pub fn deletionReason(&self) -> &str { self.deletionReason.as_ref() }
+    /// The reason for a session being deleted.
+    pub fn deletion_reason(&self) -> &str { self.deletion_reason.as_ref() }
 }
 
 
 pub struct TerminationEventDetailsBuilder<'a> {
-    deletionReason: Cow<'a, str>,
+    deletion_reason: Cow<'a, str>,
 }
 
 impl<'a> TerminationEventDetailsBuilder<'a> {
     pub fn build(self) -> TerminationEventDetails<'a> {
         TerminationEventDetails {
-            deletionReason: self.deletionReason,
+            deletion_reason: self.deletion_reason,
         }
     }
 }
@@ -4253,32 +4888,38 @@ impl<'a> TerminationEventDetailsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ChallengeEventDetails<'a> {
     /// The result of a challenge.
-    challengeResult: Cow<'a, str>,
+    #[serde(rename = "challengeResult")]
+    challenge_result: Cow<'a, str>,
     /// The challenge set.
     challenge: Cow<'a, str>,
 }
 
 impl<'a> ChallengeEventDetails<'a> {
-    pub fn builder(challengeResult: impl Into<Cow<'a, str>>, challenge: impl Into<Cow<'a, str>>) -> ChallengeEventDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `challenge_result`: The result of a challenge.
+    /// * `challenge`: The challenge set.
+    pub fn builder(challenge_result: impl Into<Cow<'a, str>>, challenge: impl Into<Cow<'a, str>>) -> ChallengeEventDetailsBuilder<'a> {
         ChallengeEventDetailsBuilder {
-            challengeResult: challengeResult.into(),
+            challenge_result: challenge_result.into(),
             challenge: challenge.into(),
         }
     }
-    pub fn challengeResult(&self) -> &str { self.challengeResult.as_ref() }
+    /// The result of a challenge.
+    pub fn challenge_result(&self) -> &str { self.challenge_result.as_ref() }
+    /// The challenge set.
     pub fn challenge(&self) -> &str { self.challenge.as_ref() }
 }
 
 
 pub struct ChallengeEventDetailsBuilder<'a> {
-    challengeResult: Cow<'a, str>,
+    challenge_result: Cow<'a, str>,
     challenge: Cow<'a, str>,
 }
 
 impl<'a> ChallengeEventDetailsBuilder<'a> {
     pub fn build(self) -> ChallengeEventDetails<'a> {
         ChallengeEventDetails {
-            challengeResult: self.challengeResult,
+            challenge_result: self.challenge_result,
             challenge: self.challenge,
         }
     }
@@ -4291,12 +4932,12 @@ impl<'a> ChallengeEventDetailsBuilder<'a> {
 pub struct LoadNetworkResourcePageResult<'a> {
     success: bool,
     /// Optional values used for error reporting.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    netError: Option<f64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    netErrorName: Option<Cow<'a, str>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    httpStatusCode: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "netError")]
+    net_error: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "netErrorName")]
+    net_error_name: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "httpStatusCode")]
+    http_status_code: Option<f64>,
     /// If successful, one of the following two fields holds the result.
     #[serde(skip_serializing_if = "Option::is_none")]
     stream: Option<crate::io::StreamHandle<'a>>,
@@ -4306,39 +4947,44 @@ pub struct LoadNetworkResourcePageResult<'a> {
 }
 
 impl<'a> LoadNetworkResourcePageResult<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `success`: 
     pub fn builder(success: bool) -> LoadNetworkResourcePageResultBuilder<'a> {
         LoadNetworkResourcePageResultBuilder {
             success: success,
-            netError: None,
-            netErrorName: None,
-            httpStatusCode: None,
+            net_error: None,
+            net_error_name: None,
+            http_status_code: None,
             stream: None,
             headers: None,
         }
     }
     pub fn success(&self) -> bool { self.success }
-    pub fn netError(&self) -> Option<f64> { self.netError }
-    pub fn netErrorName(&self) -> Option<&str> { self.netErrorName.as_deref() }
-    pub fn httpStatusCode(&self) -> Option<f64> { self.httpStatusCode }
+    /// Optional values used for error reporting.
+    pub fn net_error(&self) -> Option<f64> { self.net_error }
+    pub fn net_error_name(&self) -> Option<&str> { self.net_error_name.as_deref() }
+    pub fn http_status_code(&self) -> Option<f64> { self.http_status_code }
+    /// If successful, one of the following two fields holds the result.
     pub fn stream(&self) -> Option<&crate::io::StreamHandle<'a>> { self.stream.as_ref() }
+    /// Response headers.
     pub fn headers(&self) -> Option<&crate::network::Headers> { self.headers.as_ref() }
 }
 
 
 pub struct LoadNetworkResourcePageResultBuilder<'a> {
     success: bool,
-    netError: Option<f64>,
-    netErrorName: Option<Cow<'a, str>>,
-    httpStatusCode: Option<f64>,
+    net_error: Option<f64>,
+    net_error_name: Option<Cow<'a, str>>,
+    http_status_code: Option<f64>,
     stream: Option<crate::io::StreamHandle<'a>>,
     headers: Option<crate::network::Headers>,
 }
 
 impl<'a> LoadNetworkResourcePageResultBuilder<'a> {
     /// Optional values used for error reporting.
-    pub fn netError(mut self, netError: f64) -> Self { self.netError = Some(netError); self }
-    pub fn netErrorName(mut self, netErrorName: impl Into<Cow<'a, str>>) -> Self { self.netErrorName = Some(netErrorName.into()); self }
-    pub fn httpStatusCode(mut self, httpStatusCode: f64) -> Self { self.httpStatusCode = Some(httpStatusCode); self }
+    pub fn net_error(mut self, net_error: f64) -> Self { self.net_error = Some(net_error); self }
+    pub fn net_error_name(mut self, net_error_name: impl Into<Cow<'a, str>>) -> Self { self.net_error_name = Some(net_error_name.into()); self }
+    pub fn http_status_code(mut self, http_status_code: f64) -> Self { self.http_status_code = Some(http_status_code); self }
     /// If successful, one of the following two fields holds the result.
     pub fn stream(mut self, stream: crate::io::StreamHandle<'a>) -> Self { self.stream = Some(stream); self }
     /// Response headers.
@@ -4346,9 +4992,9 @@ impl<'a> LoadNetworkResourcePageResultBuilder<'a> {
     pub fn build(self) -> LoadNetworkResourcePageResult<'a> {
         LoadNetworkResourcePageResult {
             success: self.success,
-            netError: self.netError,
-            netErrorName: self.netErrorName,
-            httpStatusCode: self.httpStatusCode,
+            net_error: self.net_error,
+            net_error_name: self.net_error_name,
+            http_status_code: self.http_status_code,
             stream: self.stream,
             headers: self.headers,
         }
@@ -4361,32 +5007,37 @@ impl<'a> LoadNetworkResourcePageResultBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct LoadNetworkResourceOptions {
-    disableCache: bool,
-    includeCredentials: bool,
+    #[serde(rename = "disableCache")]
+    disable_cache: bool,
+    #[serde(rename = "includeCredentials")]
+    include_credentials: bool,
 }
 
 impl LoadNetworkResourceOptions {
-    pub fn builder(disableCache: bool, includeCredentials: bool) -> LoadNetworkResourceOptionsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `disable_cache`: 
+    /// * `include_credentials`: 
+    pub fn builder(disable_cache: bool, include_credentials: bool) -> LoadNetworkResourceOptionsBuilder {
         LoadNetworkResourceOptionsBuilder {
-            disableCache: disableCache,
-            includeCredentials: includeCredentials,
+            disable_cache: disable_cache,
+            include_credentials: include_credentials,
         }
     }
-    pub fn disableCache(&self) -> bool { self.disableCache }
-    pub fn includeCredentials(&self) -> bool { self.includeCredentials }
+    pub fn disable_cache(&self) -> bool { self.disable_cache }
+    pub fn include_credentials(&self) -> bool { self.include_credentials }
 }
 
 
 pub struct LoadNetworkResourceOptionsBuilder {
-    disableCache: bool,
-    includeCredentials: bool,
+    disable_cache: bool,
+    include_credentials: bool,
 }
 
 impl LoadNetworkResourceOptionsBuilder {
     pub fn build(self) -> LoadNetworkResourceOptions {
         LoadNetworkResourceOptions {
-            disableCache: self.disableCache,
-            includeCredentials: self.includeCredentials,
+            disable_cache: self.disable_cache,
+            include_credentials: self.include_credentials,
         }
     }
 }
@@ -4401,11 +5052,14 @@ pub struct SetAcceptedEncodingsParams {
 }
 
 impl SetAcceptedEncodingsParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `encodings`: List of accepted content encodings.
     pub fn builder(encodings: Vec<ContentEncoding>) -> SetAcceptedEncodingsParamsBuilder {
         SetAcceptedEncodingsParamsBuilder {
             encodings: encodings,
         }
     }
+    /// List of accepted content encodings.
     pub fn encodings(&self) -> &[ContentEncoding] { &self.encodings }
 }
 
@@ -4449,11 +5103,14 @@ pub struct CanClearBrowserCacheReturns {
 }
 
 impl CanClearBrowserCacheReturns {
+    /// Creates a builder for this type with the required parameters:
+    /// * `result`: True if browser cache can be cleared.
     pub fn builder(result: bool) -> CanClearBrowserCacheReturnsBuilder {
         CanClearBrowserCacheReturnsBuilder {
             result: result,
         }
     }
+    /// True if browser cache can be cleared.
     pub fn result(&self) -> bool { self.result }
 }
 
@@ -4490,11 +5147,14 @@ pub struct CanClearBrowserCookiesReturns {
 }
 
 impl CanClearBrowserCookiesReturns {
+    /// Creates a builder for this type with the required parameters:
+    /// * `result`: True if browser cookies can be cleared.
     pub fn builder(result: bool) -> CanClearBrowserCookiesReturnsBuilder {
         CanClearBrowserCookiesReturnsBuilder {
             result: result,
         }
     }
+    /// True if browser cookies can be cleared.
     pub fn result(&self) -> bool { self.result }
 }
 
@@ -4531,11 +5191,14 @@ pub struct CanEmulateNetworkConditionsReturns {
 }
 
 impl CanEmulateNetworkConditionsReturns {
+    /// Creates a builder for this type with the required parameters:
+    /// * `result`: True if emulation of network conditions is supported.
     pub fn builder(result: bool) -> CanEmulateNetworkConditionsReturnsBuilder {
         CanEmulateNetworkConditionsReturnsBuilder {
             result: result,
         }
     }
+    /// True if emulation of network conditions is supported.
     pub fn result(&self) -> bool { self.result }
 }
 
@@ -4591,16 +5254,17 @@ impl<'a> crate::CdpCommand<'a> for ClearBrowserCookiesParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ContinueInterceptedRequestParams<'a> {
-    interceptionId: InterceptionId<'a>,
+    #[serde(rename = "interceptionId")]
+    interception_id: InterceptionId<'a>,
     /// If set this causes the request to fail with the given reason. Passing 'Aborted' for requests
     /// marked with 'isNavigationRequest' also cancels the navigation. Must not be set in response
     /// to an authChallenge.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    errorReason: Option<ErrorReason>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "errorReason")]
+    error_reason: Option<ErrorReason>,
     /// If set the requests completes using with the provided base64 encoded raw response, including
     /// HTTP status line and headers etc... Must not be set in response to an authChallenge. (Encoded as a base64 string when passed over JSON)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    rawResponse: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "rawResponse")]
+    raw_response: Option<Cow<'a, str>>,
     /// If set the request url will be modified in a way that's not observable by page. Must not be
     /// set in response to an authChallenge.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -4610,60 +5274,75 @@ pub struct ContinueInterceptedRequestParams<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     method: Option<Cow<'a, str>>,
     /// If set this allows postData to be set. Must not be set in response to an authChallenge.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    postData: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "postData")]
+    post_data: Option<Cow<'a, str>>,
     /// If set this allows the request headers to be changed. Must not be set in response to an
     /// authChallenge.
     #[serde(skip_serializing_if = "Option::is_none")]
     headers: Option<Headers>,
     /// Response to a requestIntercepted with an authChallenge. Must not be set otherwise.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    authChallengeResponse: Option<AuthChallengeResponse<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "authChallengeResponse")]
+    auth_challenge_response: Option<AuthChallengeResponse<'a>>,
 }
 
 impl<'a> ContinueInterceptedRequestParams<'a> {
-    pub fn builder(interceptionId: impl Into<InterceptionId<'a>>) -> ContinueInterceptedRequestParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `interception_id`: 
+    pub fn builder(interception_id: impl Into<InterceptionId<'a>>) -> ContinueInterceptedRequestParamsBuilder<'a> {
         ContinueInterceptedRequestParamsBuilder {
-            interceptionId: interceptionId.into(),
-            errorReason: None,
-            rawResponse: None,
+            interception_id: interception_id.into(),
+            error_reason: None,
+            raw_response: None,
             url: None,
             method: None,
-            postData: None,
+            post_data: None,
             headers: None,
-            authChallengeResponse: None,
+            auth_challenge_response: None,
         }
     }
-    pub fn interceptionId(&self) -> &InterceptionId<'a> { &self.interceptionId }
-    pub fn errorReason(&self) -> Option<&ErrorReason> { self.errorReason.as_ref() }
-    pub fn rawResponse(&self) -> Option<&str> { self.rawResponse.as_deref() }
+    pub fn interception_id(&self) -> &InterceptionId<'a> { &self.interception_id }
+    /// If set this causes the request to fail with the given reason. Passing 'Aborted' for requests
+    /// marked with 'isNavigationRequest' also cancels the navigation. Must not be set in response
+    /// to an authChallenge.
+    pub fn error_reason(&self) -> Option<&ErrorReason> { self.error_reason.as_ref() }
+    /// If set the requests completes using with the provided base64 encoded raw response, including
+    /// HTTP status line and headers etc... Must not be set in response to an authChallenge. (Encoded as a base64 string when passed over JSON)
+    pub fn raw_response(&self) -> Option<&str> { self.raw_response.as_deref() }
+    /// If set the request url will be modified in a way that's not observable by page. Must not be
+    /// set in response to an authChallenge.
     pub fn url(&self) -> Option<&str> { self.url.as_deref() }
+    /// If set this allows the request method to be overridden. Must not be set in response to an
+    /// authChallenge.
     pub fn method(&self) -> Option<&str> { self.method.as_deref() }
-    pub fn postData(&self) -> Option<&str> { self.postData.as_deref() }
+    /// If set this allows postData to be set. Must not be set in response to an authChallenge.
+    pub fn post_data(&self) -> Option<&str> { self.post_data.as_deref() }
+    /// If set this allows the request headers to be changed. Must not be set in response to an
+    /// authChallenge.
     pub fn headers(&self) -> Option<&Headers> { self.headers.as_ref() }
-    pub fn authChallengeResponse(&self) -> Option<&AuthChallengeResponse<'a>> { self.authChallengeResponse.as_ref() }
+    /// Response to a requestIntercepted with an authChallenge. Must not be set otherwise.
+    pub fn auth_challenge_response(&self) -> Option<&AuthChallengeResponse<'a>> { self.auth_challenge_response.as_ref() }
 }
 
 
 pub struct ContinueInterceptedRequestParamsBuilder<'a> {
-    interceptionId: InterceptionId<'a>,
-    errorReason: Option<ErrorReason>,
-    rawResponse: Option<Cow<'a, str>>,
+    interception_id: InterceptionId<'a>,
+    error_reason: Option<ErrorReason>,
+    raw_response: Option<Cow<'a, str>>,
     url: Option<Cow<'a, str>>,
     method: Option<Cow<'a, str>>,
-    postData: Option<Cow<'a, str>>,
+    post_data: Option<Cow<'a, str>>,
     headers: Option<Headers>,
-    authChallengeResponse: Option<AuthChallengeResponse<'a>>,
+    auth_challenge_response: Option<AuthChallengeResponse<'a>>,
 }
 
 impl<'a> ContinueInterceptedRequestParamsBuilder<'a> {
     /// If set this causes the request to fail with the given reason. Passing 'Aborted' for requests
     /// marked with 'isNavigationRequest' also cancels the navigation. Must not be set in response
     /// to an authChallenge.
-    pub fn errorReason(mut self, errorReason: impl Into<ErrorReason>) -> Self { self.errorReason = Some(errorReason.into()); self }
+    pub fn error_reason(mut self, error_reason: impl Into<ErrorReason>) -> Self { self.error_reason = Some(error_reason.into()); self }
     /// If set the requests completes using with the provided base64 encoded raw response, including
     /// HTTP status line and headers etc... Must not be set in response to an authChallenge. (Encoded as a base64 string when passed over JSON)
-    pub fn rawResponse(mut self, rawResponse: impl Into<Cow<'a, str>>) -> Self { self.rawResponse = Some(rawResponse.into()); self }
+    pub fn raw_response(mut self, raw_response: impl Into<Cow<'a, str>>) -> Self { self.raw_response = Some(raw_response.into()); self }
     /// If set the request url will be modified in a way that's not observable by page. Must not be
     /// set in response to an authChallenge.
     pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
@@ -4671,22 +5350,22 @@ impl<'a> ContinueInterceptedRequestParamsBuilder<'a> {
     /// authChallenge.
     pub fn method(mut self, method: impl Into<Cow<'a, str>>) -> Self { self.method = Some(method.into()); self }
     /// If set this allows postData to be set. Must not be set in response to an authChallenge.
-    pub fn postData(mut self, postData: impl Into<Cow<'a, str>>) -> Self { self.postData = Some(postData.into()); self }
+    pub fn post_data(mut self, post_data: impl Into<Cow<'a, str>>) -> Self { self.post_data = Some(post_data.into()); self }
     /// If set this allows the request headers to be changed. Must not be set in response to an
     /// authChallenge.
     pub fn headers(mut self, headers: Headers) -> Self { self.headers = Some(headers); self }
     /// Response to a requestIntercepted with an authChallenge. Must not be set otherwise.
-    pub fn authChallengeResponse(mut self, authChallengeResponse: AuthChallengeResponse<'a>) -> Self { self.authChallengeResponse = Some(authChallengeResponse); self }
+    pub fn auth_challenge_response(mut self, auth_challenge_response: AuthChallengeResponse<'a>) -> Self { self.auth_challenge_response = Some(auth_challenge_response); self }
     pub fn build(self) -> ContinueInterceptedRequestParams<'a> {
         ContinueInterceptedRequestParams {
-            interceptionId: self.interceptionId,
-            errorReason: self.errorReason,
-            rawResponse: self.rawResponse,
+            interception_id: self.interception_id,
+            error_reason: self.error_reason,
+            raw_response: self.raw_response,
             url: self.url,
             method: self.method,
-            postData: self.postData,
+            post_data: self.post_data,
             headers: self.headers,
-            authChallengeResponse: self.authChallengeResponse,
+            auth_challenge_response: self.auth_challenge_response,
         }
     }
 }
@@ -4717,25 +5396,34 @@ pub struct DeleteCookiesParams<'a> {
     path: Option<Cow<'a, str>>,
     /// If specified, deletes only cookies with the the given name and partitionKey where
     /// all partition key attributes match the cookie partition key attribute.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    partitionKey: Option<CookiePartitionKey<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "partitionKey")]
+    partition_key: Option<CookiePartitionKey<'a>>,
 }
 
 impl<'a> DeleteCookiesParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: Name of the cookies to remove.
     pub fn builder(name: impl Into<Cow<'a, str>>) -> DeleteCookiesParamsBuilder<'a> {
         DeleteCookiesParamsBuilder {
             name: name.into(),
             url: None,
             domain: None,
             path: None,
-            partitionKey: None,
+            partition_key: None,
         }
     }
+    /// Name of the cookies to remove.
     pub fn name(&self) -> &str { self.name.as_ref() }
+    /// If specified, deletes all the cookies with the given name where domain and path match
+    /// provided URL.
     pub fn url(&self) -> Option<&str> { self.url.as_deref() }
+    /// If specified, deletes only cookies with the exact domain.
     pub fn domain(&self) -> Option<&str> { self.domain.as_deref() }
+    /// If specified, deletes only cookies with the exact path.
     pub fn path(&self) -> Option<&str> { self.path.as_deref() }
-    pub fn partitionKey(&self) -> Option<&CookiePartitionKey<'a>> { self.partitionKey.as_ref() }
+    /// If specified, deletes only cookies with the the given name and partitionKey where
+    /// all partition key attributes match the cookie partition key attribute.
+    pub fn partition_key(&self) -> Option<&CookiePartitionKey<'a>> { self.partition_key.as_ref() }
 }
 
 
@@ -4744,7 +5432,7 @@ pub struct DeleteCookiesParamsBuilder<'a> {
     url: Option<Cow<'a, str>>,
     domain: Option<Cow<'a, str>>,
     path: Option<Cow<'a, str>>,
-    partitionKey: Option<CookiePartitionKey<'a>>,
+    partition_key: Option<CookiePartitionKey<'a>>,
 }
 
 impl<'a> DeleteCookiesParamsBuilder<'a> {
@@ -4757,14 +5445,14 @@ impl<'a> DeleteCookiesParamsBuilder<'a> {
     pub fn path(mut self, path: impl Into<Cow<'a, str>>) -> Self { self.path = Some(path.into()); self }
     /// If specified, deletes only cookies with the the given name and partitionKey where
     /// all partition key attributes match the cookie partition key attribute.
-    pub fn partitionKey(mut self, partitionKey: CookiePartitionKey<'a>) -> Self { self.partitionKey = Some(partitionKey); self }
+    pub fn partition_key(mut self, partition_key: CookiePartitionKey<'a>) -> Self { self.partition_key = Some(partition_key); self }
     pub fn build(self) -> DeleteCookiesParams<'a> {
         DeleteCookiesParams {
             name: self.name,
             url: self.url,
             domain: self.domain,
             path: self.path,
-            partitionKey: self.partitionKey,
+            partition_key: self.partition_key,
         }
     }
 }
@@ -4797,77 +5485,92 @@ pub struct EmulateNetworkConditionsParams {
     /// Minimum latency from request sent to response headers received (ms).
     latency: f64,
     /// Maximal aggregated download throughput (bytes/sec). -1 disables download throttling.
-    downloadThroughput: f64,
+    #[serde(rename = "downloadThroughput")]
+    download_throughput: f64,
     /// Maximal aggregated upload throughput (bytes/sec).  -1 disables upload throttling.
-    uploadThroughput: f64,
+    #[serde(rename = "uploadThroughput")]
+    upload_throughput: f64,
     /// Connection type if known.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    connectionType: Option<ConnectionType>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "connectionType")]
+    connection_type: Option<ConnectionType>,
     /// WebRTC packet loss (percent, 0-100). 0 disables packet loss emulation, 100 drops all the packets.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    packetLoss: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "packetLoss")]
+    packet_loss: Option<f64>,
     /// WebRTC packet queue length (packet). 0 removes any queue length limitations.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    packetQueueLength: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "packetQueueLength")]
+    packet_queue_length: Option<u64>,
     /// WebRTC packetReordering feature.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    packetReordering: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "packetReordering")]
+    packet_reordering: Option<bool>,
 }
 
 impl EmulateNetworkConditionsParams {
-    pub fn builder(offline: bool, latency: f64, downloadThroughput: f64, uploadThroughput: f64) -> EmulateNetworkConditionsParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `offline`: True to emulate internet disconnection.
+    /// * `latency`: Minimum latency from request sent to response headers received (ms).
+    /// * `download_throughput`: Maximal aggregated download throughput (bytes/sec). -1 disables download throttling.
+    /// * `upload_throughput`: Maximal aggregated upload throughput (bytes/sec).  -1 disables upload throttling.
+    pub fn builder(offline: bool, latency: f64, download_throughput: f64, upload_throughput: f64) -> EmulateNetworkConditionsParamsBuilder {
         EmulateNetworkConditionsParamsBuilder {
             offline: offline,
             latency: latency,
-            downloadThroughput: downloadThroughput,
-            uploadThroughput: uploadThroughput,
-            connectionType: None,
-            packetLoss: None,
-            packetQueueLength: None,
-            packetReordering: None,
+            download_throughput: download_throughput,
+            upload_throughput: upload_throughput,
+            connection_type: None,
+            packet_loss: None,
+            packet_queue_length: None,
+            packet_reordering: None,
         }
     }
+    /// True to emulate internet disconnection.
     pub fn offline(&self) -> bool { self.offline }
+    /// Minimum latency from request sent to response headers received (ms).
     pub fn latency(&self) -> f64 { self.latency }
-    pub fn downloadThroughput(&self) -> f64 { self.downloadThroughput }
-    pub fn uploadThroughput(&self) -> f64 { self.uploadThroughput }
-    pub fn connectionType(&self) -> Option<&ConnectionType> { self.connectionType.as_ref() }
-    pub fn packetLoss(&self) -> Option<f64> { self.packetLoss }
-    pub fn packetQueueLength(&self) -> Option<u64> { self.packetQueueLength }
-    pub fn packetReordering(&self) -> Option<bool> { self.packetReordering }
+    /// Maximal aggregated download throughput (bytes/sec). -1 disables download throttling.
+    pub fn download_throughput(&self) -> f64 { self.download_throughput }
+    /// Maximal aggregated upload throughput (bytes/sec).  -1 disables upload throttling.
+    pub fn upload_throughput(&self) -> f64 { self.upload_throughput }
+    /// Connection type if known.
+    pub fn connection_type(&self) -> Option<&ConnectionType> { self.connection_type.as_ref() }
+    /// WebRTC packet loss (percent, 0-100). 0 disables packet loss emulation, 100 drops all the packets.
+    pub fn packet_loss(&self) -> Option<f64> { self.packet_loss }
+    /// WebRTC packet queue length (packet). 0 removes any queue length limitations.
+    pub fn packet_queue_length(&self) -> Option<u64> { self.packet_queue_length }
+    /// WebRTC packetReordering feature.
+    pub fn packet_reordering(&self) -> Option<bool> { self.packet_reordering }
 }
 
 
 pub struct EmulateNetworkConditionsParamsBuilder {
     offline: bool,
     latency: f64,
-    downloadThroughput: f64,
-    uploadThroughput: f64,
-    connectionType: Option<ConnectionType>,
-    packetLoss: Option<f64>,
-    packetQueueLength: Option<u64>,
-    packetReordering: Option<bool>,
+    download_throughput: f64,
+    upload_throughput: f64,
+    connection_type: Option<ConnectionType>,
+    packet_loss: Option<f64>,
+    packet_queue_length: Option<u64>,
+    packet_reordering: Option<bool>,
 }
 
 impl EmulateNetworkConditionsParamsBuilder {
     /// Connection type if known.
-    pub fn connectionType(mut self, connectionType: impl Into<ConnectionType>) -> Self { self.connectionType = Some(connectionType.into()); self }
+    pub fn connection_type(mut self, connection_type: impl Into<ConnectionType>) -> Self { self.connection_type = Some(connection_type.into()); self }
     /// WebRTC packet loss (percent, 0-100). 0 disables packet loss emulation, 100 drops all the packets.
-    pub fn packetLoss(mut self, packetLoss: f64) -> Self { self.packetLoss = Some(packetLoss); self }
+    pub fn packet_loss(mut self, packet_loss: f64) -> Self { self.packet_loss = Some(packet_loss); self }
     /// WebRTC packet queue length (packet). 0 removes any queue length limitations.
-    pub fn packetQueueLength(mut self, packetQueueLength: u64) -> Self { self.packetQueueLength = Some(packetQueueLength); self }
+    pub fn packet_queue_length(mut self, packet_queue_length: u64) -> Self { self.packet_queue_length = Some(packet_queue_length); self }
     /// WebRTC packetReordering feature.
-    pub fn packetReordering(mut self, packetReordering: bool) -> Self { self.packetReordering = Some(packetReordering); self }
+    pub fn packet_reordering(mut self, packet_reordering: bool) -> Self { self.packet_reordering = Some(packet_reordering); self }
     pub fn build(self) -> EmulateNetworkConditionsParams {
         EmulateNetworkConditionsParams {
             offline: self.offline,
             latency: self.latency,
-            downloadThroughput: self.downloadThroughput,
-            uploadThroughput: self.uploadThroughput,
-            connectionType: self.connectionType,
-            packetLoss: self.packetLoss,
-            packetQueueLength: self.packetQueueLength,
-            packetReordering: self.packetReordering,
+            download_throughput: self.download_throughput,
+            upload_throughput: self.upload_throughput,
+            connection_type: self.connection_type,
+            packet_loss: self.packet_loss,
+            packet_queue_length: self.packet_queue_length,
+            packet_reordering: self.packet_reordering,
         }
     }
 }
@@ -4891,32 +5594,41 @@ pub struct EmulateNetworkConditionsByRuleParams<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     offline: Option<bool>,
     /// True to emulate offline service worker.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    emulateOfflineServiceWorker: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "emulateOfflineServiceWorker")]
+    emulate_offline_service_worker: Option<bool>,
     /// Configure conditions for matching requests. If multiple entries match a request, the first entry wins.  Global
     /// conditions can be configured by leaving the urlPattern for the conditions empty. These global conditions are
     /// also applied for throttling of p2p connections.
-    matchedNetworkConditions: Vec<NetworkConditions<'a>>,
+    #[serde(rename = "matchedNetworkConditions")]
+    matched_network_conditions: Vec<NetworkConditions<'a>>,
 }
 
 impl<'a> EmulateNetworkConditionsByRuleParams<'a> {
-    pub fn builder(matchedNetworkConditions: Vec<NetworkConditions<'a>>) -> EmulateNetworkConditionsByRuleParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `matched_network_conditions`: Configure conditions for matching requests. If multiple entries match a request, the first entry wins.  Global conditions can be configured by leaving the urlPattern for the conditions empty. These global conditions are also applied for throttling of p2p connections.
+    pub fn builder(matched_network_conditions: Vec<NetworkConditions<'a>>) -> EmulateNetworkConditionsByRuleParamsBuilder<'a> {
         EmulateNetworkConditionsByRuleParamsBuilder {
             offline: None,
-            emulateOfflineServiceWorker: None,
-            matchedNetworkConditions: matchedNetworkConditions,
+            emulate_offline_service_worker: None,
+            matched_network_conditions: matched_network_conditions,
         }
     }
+    /// True to emulate internet disconnection. Deprecated, use the offline property in matchedNetworkConditions
+    /// or emulateOfflineServiceWorker instead.
     pub fn offline(&self) -> Option<bool> { self.offline }
-    pub fn emulateOfflineServiceWorker(&self) -> Option<bool> { self.emulateOfflineServiceWorker }
-    pub fn matchedNetworkConditions(&self) -> &[NetworkConditions<'a>] { &self.matchedNetworkConditions }
+    /// True to emulate offline service worker.
+    pub fn emulate_offline_service_worker(&self) -> Option<bool> { self.emulate_offline_service_worker }
+    /// Configure conditions for matching requests. If multiple entries match a request, the first entry wins.  Global
+    /// conditions can be configured by leaving the urlPattern for the conditions empty. These global conditions are
+    /// also applied for throttling of p2p connections.
+    pub fn matched_network_conditions(&self) -> &[NetworkConditions<'a>] { &self.matched_network_conditions }
 }
 
 
 pub struct EmulateNetworkConditionsByRuleParamsBuilder<'a> {
     offline: Option<bool>,
-    emulateOfflineServiceWorker: Option<bool>,
-    matchedNetworkConditions: Vec<NetworkConditions<'a>>,
+    emulate_offline_service_worker: Option<bool>,
+    matched_network_conditions: Vec<NetworkConditions<'a>>,
 }
 
 impl<'a> EmulateNetworkConditionsByRuleParamsBuilder<'a> {
@@ -4924,12 +5636,12 @@ impl<'a> EmulateNetworkConditionsByRuleParamsBuilder<'a> {
     /// or emulateOfflineServiceWorker instead.
     pub fn offline(mut self, offline: bool) -> Self { self.offline = Some(offline); self }
     /// True to emulate offline service worker.
-    pub fn emulateOfflineServiceWorker(mut self, emulateOfflineServiceWorker: bool) -> Self { self.emulateOfflineServiceWorker = Some(emulateOfflineServiceWorker); self }
+    pub fn emulate_offline_service_worker(mut self, emulate_offline_service_worker: bool) -> Self { self.emulate_offline_service_worker = Some(emulate_offline_service_worker); self }
     pub fn build(self) -> EmulateNetworkConditionsByRuleParams<'a> {
         EmulateNetworkConditionsByRuleParams {
             offline: self.offline,
-            emulateOfflineServiceWorker: self.emulateOfflineServiceWorker,
-            matchedNetworkConditions: self.matchedNetworkConditions,
+            emulate_offline_service_worker: self.emulate_offline_service_worker,
+            matched_network_conditions: self.matched_network_conditions,
         }
     }
 }
@@ -4943,27 +5655,32 @@ impl<'a> EmulateNetworkConditionsByRuleParamsBuilder<'a> {
 pub struct EmulateNetworkConditionsByRuleReturns<'a> {
     /// An id for each entry in matchedNetworkConditions. The id will be included in the requestWillBeSentExtraInfo for
     /// requests affected by a rule.
-    ruleIds: Vec<Cow<'a, str>>,
+    #[serde(rename = "ruleIds")]
+    rule_ids: Vec<Cow<'a, str>>,
 }
 
 impl<'a> EmulateNetworkConditionsByRuleReturns<'a> {
-    pub fn builder(ruleIds: Vec<Cow<'a, str>>) -> EmulateNetworkConditionsByRuleReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `rule_ids`: An id for each entry in matchedNetworkConditions. The id will be included in the requestWillBeSentExtraInfo for requests affected by a rule.
+    pub fn builder(rule_ids: Vec<Cow<'a, str>>) -> EmulateNetworkConditionsByRuleReturnsBuilder<'a> {
         EmulateNetworkConditionsByRuleReturnsBuilder {
-            ruleIds: ruleIds,
+            rule_ids: rule_ids,
         }
     }
-    pub fn ruleIds(&self) -> &[Cow<'a, str>] { &self.ruleIds }
+    /// An id for each entry in matchedNetworkConditions. The id will be included in the requestWillBeSentExtraInfo for
+    /// requests affected by a rule.
+    pub fn rule_ids(&self) -> &[Cow<'a, str>] { &self.rule_ids }
 }
 
 
 pub struct EmulateNetworkConditionsByRuleReturnsBuilder<'a> {
-    ruleIds: Vec<Cow<'a, str>>,
+    rule_ids: Vec<Cow<'a, str>>,
 }
 
 impl<'a> EmulateNetworkConditionsByRuleReturnsBuilder<'a> {
     pub fn build(self) -> EmulateNetworkConditionsByRuleReturns<'a> {
         EmulateNetworkConditionsByRuleReturns {
-            ruleIds: self.ruleIds,
+            rule_ids: self.rule_ids,
         }
     }
 }
@@ -4985,50 +5702,62 @@ pub struct OverrideNetworkStateParams {
     /// Minimum latency from request sent to response headers received (ms).
     latency: f64,
     /// Maximal aggregated download throughput (bytes/sec). -1 disables download throttling.
-    downloadThroughput: f64,
+    #[serde(rename = "downloadThroughput")]
+    download_throughput: f64,
     /// Maximal aggregated upload throughput (bytes/sec).  -1 disables upload throttling.
-    uploadThroughput: f64,
+    #[serde(rename = "uploadThroughput")]
+    upload_throughput: f64,
     /// Connection type if known.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    connectionType: Option<ConnectionType>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "connectionType")]
+    connection_type: Option<ConnectionType>,
 }
 
 impl OverrideNetworkStateParams {
-    pub fn builder(offline: bool, latency: f64, downloadThroughput: f64, uploadThroughput: f64) -> OverrideNetworkStateParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `offline`: True to emulate internet disconnection.
+    /// * `latency`: Minimum latency from request sent to response headers received (ms).
+    /// * `download_throughput`: Maximal aggregated download throughput (bytes/sec). -1 disables download throttling.
+    /// * `upload_throughput`: Maximal aggregated upload throughput (bytes/sec).  -1 disables upload throttling.
+    pub fn builder(offline: bool, latency: f64, download_throughput: f64, upload_throughput: f64) -> OverrideNetworkStateParamsBuilder {
         OverrideNetworkStateParamsBuilder {
             offline: offline,
             latency: latency,
-            downloadThroughput: downloadThroughput,
-            uploadThroughput: uploadThroughput,
-            connectionType: None,
+            download_throughput: download_throughput,
+            upload_throughput: upload_throughput,
+            connection_type: None,
         }
     }
+    /// True to emulate internet disconnection.
     pub fn offline(&self) -> bool { self.offline }
+    /// Minimum latency from request sent to response headers received (ms).
     pub fn latency(&self) -> f64 { self.latency }
-    pub fn downloadThroughput(&self) -> f64 { self.downloadThroughput }
-    pub fn uploadThroughput(&self) -> f64 { self.uploadThroughput }
-    pub fn connectionType(&self) -> Option<&ConnectionType> { self.connectionType.as_ref() }
+    /// Maximal aggregated download throughput (bytes/sec). -1 disables download throttling.
+    pub fn download_throughput(&self) -> f64 { self.download_throughput }
+    /// Maximal aggregated upload throughput (bytes/sec).  -1 disables upload throttling.
+    pub fn upload_throughput(&self) -> f64 { self.upload_throughput }
+    /// Connection type if known.
+    pub fn connection_type(&self) -> Option<&ConnectionType> { self.connection_type.as_ref() }
 }
 
 
 pub struct OverrideNetworkStateParamsBuilder {
     offline: bool,
     latency: f64,
-    downloadThroughput: f64,
-    uploadThroughput: f64,
-    connectionType: Option<ConnectionType>,
+    download_throughput: f64,
+    upload_throughput: f64,
+    connection_type: Option<ConnectionType>,
 }
 
 impl OverrideNetworkStateParamsBuilder {
     /// Connection type if known.
-    pub fn connectionType(mut self, connectionType: impl Into<ConnectionType>) -> Self { self.connectionType = Some(connectionType.into()); self }
+    pub fn connection_type(mut self, connection_type: impl Into<ConnectionType>) -> Self { self.connection_type = Some(connection_type.into()); self }
     pub fn build(self) -> OverrideNetworkStateParams {
         OverrideNetworkStateParams {
             offline: self.offline,
             latency: self.latency,
-            downloadThroughput: self.downloadThroughput,
-            uploadThroughput: self.uploadThroughput,
-            connectionType: self.connectionType,
+            download_throughput: self.download_throughput,
+            upload_throughput: self.upload_throughput,
+            connection_type: self.connection_type,
         }
     }
 }
@@ -5048,76 +5777,88 @@ pub struct EnableParams {
     /// Buffer size in bytes to use when preserving network payloads (XHRs, etc).
     /// This is the maximum number of bytes that will be collected by this
     /// DevTools session.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    maxTotalBufferSize: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "maxTotalBufferSize")]
+    max_total_buffer_size: Option<u64>,
     /// Per-resource buffer size in bytes to use when preserving network payloads (XHRs, etc).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    maxResourceBufferSize: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "maxResourceBufferSize")]
+    max_resource_buffer_size: Option<u64>,
     /// Longest post body size (in bytes) that would be included in requestWillBeSent notification
-    #[serde(skip_serializing_if = "Option::is_none")]
-    maxPostDataSize: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "maxPostDataSize")]
+    max_post_data_size: Option<u64>,
     /// Whether DirectSocket chunk send/receive events should be reported.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    reportDirectSocketTraffic: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "reportDirectSocketTraffic")]
+    report_direct_socket_traffic: Option<bool>,
     /// Enable storing response bodies outside of renderer, so that these survive
     /// a cross-process navigation. Requires maxTotalBufferSize to be set.
     /// Currently defaults to false. This field is being deprecated in favor of the dedicated
     /// configureDurableMessages command, due to the possibility of deadlocks when awaiting
     /// Network.enable before issuing Runtime.runIfWaitingForDebugger.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    enableDurableMessages: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "enableDurableMessages")]
+    enable_durable_messages: Option<bool>,
 }
 
 impl EnableParams {
+    /// Creates a builder for this type.
     pub fn builder() -> EnableParamsBuilder {
         EnableParamsBuilder {
-            maxTotalBufferSize: None,
-            maxResourceBufferSize: None,
-            maxPostDataSize: None,
-            reportDirectSocketTraffic: None,
-            enableDurableMessages: None,
+            max_total_buffer_size: None,
+            max_resource_buffer_size: None,
+            max_post_data_size: None,
+            report_direct_socket_traffic: None,
+            enable_durable_messages: None,
         }
     }
-    pub fn maxTotalBufferSize(&self) -> Option<u64> { self.maxTotalBufferSize }
-    pub fn maxResourceBufferSize(&self) -> Option<u64> { self.maxResourceBufferSize }
-    pub fn maxPostDataSize(&self) -> Option<u64> { self.maxPostDataSize }
-    pub fn reportDirectSocketTraffic(&self) -> Option<bool> { self.reportDirectSocketTraffic }
-    pub fn enableDurableMessages(&self) -> Option<bool> { self.enableDurableMessages }
+    /// Buffer size in bytes to use when preserving network payloads (XHRs, etc).
+    /// This is the maximum number of bytes that will be collected by this
+    /// DevTools session.
+    pub fn max_total_buffer_size(&self) -> Option<u64> { self.max_total_buffer_size }
+    /// Per-resource buffer size in bytes to use when preserving network payloads (XHRs, etc).
+    pub fn max_resource_buffer_size(&self) -> Option<u64> { self.max_resource_buffer_size }
+    /// Longest post body size (in bytes) that would be included in requestWillBeSent notification
+    pub fn max_post_data_size(&self) -> Option<u64> { self.max_post_data_size }
+    /// Whether DirectSocket chunk send/receive events should be reported.
+    pub fn report_direct_socket_traffic(&self) -> Option<bool> { self.report_direct_socket_traffic }
+    /// Enable storing response bodies outside of renderer, so that these survive
+    /// a cross-process navigation. Requires maxTotalBufferSize to be set.
+    /// Currently defaults to false. This field is being deprecated in favor of the dedicated
+    /// configureDurableMessages command, due to the possibility of deadlocks when awaiting
+    /// Network.enable before issuing Runtime.runIfWaitingForDebugger.
+    pub fn enable_durable_messages(&self) -> Option<bool> { self.enable_durable_messages }
 }
 
 #[derive(Default)]
 pub struct EnableParamsBuilder {
-    maxTotalBufferSize: Option<u64>,
-    maxResourceBufferSize: Option<u64>,
-    maxPostDataSize: Option<u64>,
-    reportDirectSocketTraffic: Option<bool>,
-    enableDurableMessages: Option<bool>,
+    max_total_buffer_size: Option<u64>,
+    max_resource_buffer_size: Option<u64>,
+    max_post_data_size: Option<u64>,
+    report_direct_socket_traffic: Option<bool>,
+    enable_durable_messages: Option<bool>,
 }
 
 impl EnableParamsBuilder {
     /// Buffer size in bytes to use when preserving network payloads (XHRs, etc).
     /// This is the maximum number of bytes that will be collected by this
     /// DevTools session.
-    pub fn maxTotalBufferSize(mut self, maxTotalBufferSize: u64) -> Self { self.maxTotalBufferSize = Some(maxTotalBufferSize); self }
+    pub fn max_total_buffer_size(mut self, max_total_buffer_size: u64) -> Self { self.max_total_buffer_size = Some(max_total_buffer_size); self }
     /// Per-resource buffer size in bytes to use when preserving network payloads (XHRs, etc).
-    pub fn maxResourceBufferSize(mut self, maxResourceBufferSize: u64) -> Self { self.maxResourceBufferSize = Some(maxResourceBufferSize); self }
+    pub fn max_resource_buffer_size(mut self, max_resource_buffer_size: u64) -> Self { self.max_resource_buffer_size = Some(max_resource_buffer_size); self }
     /// Longest post body size (in bytes) that would be included in requestWillBeSent notification
-    pub fn maxPostDataSize(mut self, maxPostDataSize: u64) -> Self { self.maxPostDataSize = Some(maxPostDataSize); self }
+    pub fn max_post_data_size(mut self, max_post_data_size: u64) -> Self { self.max_post_data_size = Some(max_post_data_size); self }
     /// Whether DirectSocket chunk send/receive events should be reported.
-    pub fn reportDirectSocketTraffic(mut self, reportDirectSocketTraffic: bool) -> Self { self.reportDirectSocketTraffic = Some(reportDirectSocketTraffic); self }
+    pub fn report_direct_socket_traffic(mut self, report_direct_socket_traffic: bool) -> Self { self.report_direct_socket_traffic = Some(report_direct_socket_traffic); self }
     /// Enable storing response bodies outside of renderer, so that these survive
     /// a cross-process navigation. Requires maxTotalBufferSize to be set.
     /// Currently defaults to false. This field is being deprecated in favor of the dedicated
     /// configureDurableMessages command, due to the possibility of deadlocks when awaiting
     /// Network.enable before issuing Runtime.runIfWaitingForDebugger.
-    pub fn enableDurableMessages(mut self, enableDurableMessages: bool) -> Self { self.enableDurableMessages = Some(enableDurableMessages); self }
+    pub fn enable_durable_messages(mut self, enable_durable_messages: bool) -> Self { self.enable_durable_messages = Some(enable_durable_messages); self }
     pub fn build(self) -> EnableParams {
         EnableParams {
-            maxTotalBufferSize: self.maxTotalBufferSize,
-            maxResourceBufferSize: self.maxResourceBufferSize,
-            maxPostDataSize: self.maxPostDataSize,
-            reportDirectSocketTraffic: self.reportDirectSocketTraffic,
-            enableDurableMessages: self.enableDurableMessages,
+            max_total_buffer_size: self.max_total_buffer_size,
+            max_resource_buffer_size: self.max_resource_buffer_size,
+            max_post_data_size: self.max_post_data_size,
+            report_direct_socket_traffic: self.report_direct_socket_traffic,
+            enable_durable_messages: self.enable_durable_messages,
         }
     }
 }
@@ -5137,39 +5878,42 @@ impl<'a> crate::CdpCommand<'a> for EnableParams {
 #[serde(rename_all = "camelCase")]
 pub struct ConfigureDurableMessagesParams {
     /// Buffer size in bytes to use when preserving network payloads (XHRs, etc).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    maxTotalBufferSize: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "maxTotalBufferSize")]
+    max_total_buffer_size: Option<u64>,
     /// Per-resource buffer size in bytes to use when preserving network payloads (XHRs, etc).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    maxResourceBufferSize: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "maxResourceBufferSize")]
+    max_resource_buffer_size: Option<u64>,
 }
 
 impl ConfigureDurableMessagesParams {
+    /// Creates a builder for this type.
     pub fn builder() -> ConfigureDurableMessagesParamsBuilder {
         ConfigureDurableMessagesParamsBuilder {
-            maxTotalBufferSize: None,
-            maxResourceBufferSize: None,
+            max_total_buffer_size: None,
+            max_resource_buffer_size: None,
         }
     }
-    pub fn maxTotalBufferSize(&self) -> Option<u64> { self.maxTotalBufferSize }
-    pub fn maxResourceBufferSize(&self) -> Option<u64> { self.maxResourceBufferSize }
+    /// Buffer size in bytes to use when preserving network payloads (XHRs, etc).
+    pub fn max_total_buffer_size(&self) -> Option<u64> { self.max_total_buffer_size }
+    /// Per-resource buffer size in bytes to use when preserving network payloads (XHRs, etc).
+    pub fn max_resource_buffer_size(&self) -> Option<u64> { self.max_resource_buffer_size }
 }
 
 #[derive(Default)]
 pub struct ConfigureDurableMessagesParamsBuilder {
-    maxTotalBufferSize: Option<u64>,
-    maxResourceBufferSize: Option<u64>,
+    max_total_buffer_size: Option<u64>,
+    max_resource_buffer_size: Option<u64>,
 }
 
 impl ConfigureDurableMessagesParamsBuilder {
     /// Buffer size in bytes to use when preserving network payloads (XHRs, etc).
-    pub fn maxTotalBufferSize(mut self, maxTotalBufferSize: u64) -> Self { self.maxTotalBufferSize = Some(maxTotalBufferSize); self }
+    pub fn max_total_buffer_size(mut self, max_total_buffer_size: u64) -> Self { self.max_total_buffer_size = Some(max_total_buffer_size); self }
     /// Per-resource buffer size in bytes to use when preserving network payloads (XHRs, etc).
-    pub fn maxResourceBufferSize(mut self, maxResourceBufferSize: u64) -> Self { self.maxResourceBufferSize = Some(maxResourceBufferSize); self }
+    pub fn max_resource_buffer_size(mut self, max_resource_buffer_size: u64) -> Self { self.max_resource_buffer_size = Some(max_resource_buffer_size); self }
     pub fn build(self) -> ConfigureDurableMessagesParams {
         ConfigureDurableMessagesParams {
-            maxTotalBufferSize: self.maxTotalBufferSize,
-            maxResourceBufferSize: self.maxResourceBufferSize,
+            max_total_buffer_size: self.max_total_buffer_size,
+            max_resource_buffer_size: self.max_resource_buffer_size,
         }
     }
 }
@@ -5193,11 +5937,14 @@ pub struct GetAllCookiesReturns<'a> {
 }
 
 impl<'a> GetAllCookiesReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `cookies`: Array of cookie objects.
     pub fn builder(cookies: Vec<Cookie<'a>>) -> GetAllCookiesReturnsBuilder<'a> {
         GetAllCookiesReturnsBuilder {
             cookies: cookies,
         }
     }
+    /// Array of cookie objects.
     pub fn cookies(&self) -> &[Cookie<'a>] { &self.cookies }
 }
 
@@ -5234,11 +5981,14 @@ pub struct GetCertificateParams<'a> {
 }
 
 impl<'a> GetCertificateParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `origin`: Origin to get certificate for.
     pub fn builder(origin: impl Into<Cow<'a, str>>) -> GetCertificateParamsBuilder<'a> {
         GetCertificateParamsBuilder {
             origin: origin.into(),
         }
     }
+    /// Origin to get certificate for.
     pub fn origin(&self) -> &str { self.origin.as_ref() }
 }
 
@@ -5260,27 +6010,30 @@ impl<'a> GetCertificateParamsBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetCertificateReturns<'a> {
-    tableNames: Vec<Cow<'a, str>>,
+    #[serde(rename = "tableNames")]
+    table_names: Vec<Cow<'a, str>>,
 }
 
 impl<'a> GetCertificateReturns<'a> {
-    pub fn builder(tableNames: Vec<Cow<'a, str>>) -> GetCertificateReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `table_names`: 
+    pub fn builder(table_names: Vec<Cow<'a, str>>) -> GetCertificateReturnsBuilder<'a> {
         GetCertificateReturnsBuilder {
-            tableNames: tableNames,
+            table_names: table_names,
         }
     }
-    pub fn tableNames(&self) -> &[Cow<'a, str>] { &self.tableNames }
+    pub fn table_names(&self) -> &[Cow<'a, str>] { &self.table_names }
 }
 
 
 pub struct GetCertificateReturnsBuilder<'a> {
-    tableNames: Vec<Cow<'a, str>>,
+    table_names: Vec<Cow<'a, str>>,
 }
 
 impl<'a> GetCertificateReturnsBuilder<'a> {
     pub fn build(self) -> GetCertificateReturns<'a> {
         GetCertificateReturns {
-            tableNames: self.tableNames,
+            table_names: self.table_names,
         }
     }
 }
@@ -5306,11 +6059,15 @@ pub struct GetCookiesParams<'a> {
 }
 
 impl<'a> GetCookiesParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> GetCookiesParamsBuilder<'a> {
         GetCookiesParamsBuilder {
             urls: None,
         }
     }
+    /// The list of URLs for which applicable cookies will be fetched.
+    /// If not specified, it's assumed to be set to the list containing
+    /// the URLs of the page and all of its subframes.
     pub fn urls(&self) -> Option<&[Cow<'a, str>]> { self.urls.as_deref() }
 }
 
@@ -5342,11 +6099,14 @@ pub struct GetCookiesReturns<'a> {
 }
 
 impl<'a> GetCookiesReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `cookies`: Array of cookie objects.
     pub fn builder(cookies: Vec<Cookie<'a>>) -> GetCookiesReturnsBuilder<'a> {
         GetCookiesReturnsBuilder {
             cookies: cookies,
         }
     }
+    /// Array of cookie objects.
     pub fn cookies(&self) -> &[Cookie<'a>] { &self.cookies }
 }
 
@@ -5376,27 +6136,31 @@ impl<'a> crate::CdpCommand<'a> for GetCookiesParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct GetResponseBodyParams<'a> {
     /// Identifier of the network request to get content for.
-    requestId: RequestId<'a>,
+    #[serde(rename = "requestId")]
+    request_id: RequestId<'a>,
 }
 
 impl<'a> GetResponseBodyParams<'a> {
-    pub fn builder(requestId: impl Into<RequestId<'a>>) -> GetResponseBodyParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_id`: Identifier of the network request to get content for.
+    pub fn builder(request_id: impl Into<RequestId<'a>>) -> GetResponseBodyParamsBuilder<'a> {
         GetResponseBodyParamsBuilder {
-            requestId: requestId.into(),
+            request_id: request_id.into(),
         }
     }
-    pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
+    /// Identifier of the network request to get content for.
+    pub fn request_id(&self) -> &RequestId<'a> { &self.request_id }
 }
 
 
 pub struct GetResponseBodyParamsBuilder<'a> {
-    requestId: RequestId<'a>,
+    request_id: RequestId<'a>,
 }
 
 impl<'a> GetResponseBodyParamsBuilder<'a> {
     pub fn build(self) -> GetResponseBodyParams<'a> {
         GetResponseBodyParams {
-            requestId: self.requestId,
+            request_id: self.request_id,
         }
     }
 }
@@ -5409,31 +6173,37 @@ pub struct GetResponseBodyReturns<'a> {
     /// Response body.
     body: Cow<'a, str>,
     /// True, if content was sent as base64.
-    base64Encoded: bool,
+    #[serde(rename = "base64Encoded")]
+    base64_encoded: bool,
 }
 
 impl<'a> GetResponseBodyReturns<'a> {
-    pub fn builder(body: impl Into<Cow<'a, str>>, base64Encoded: bool) -> GetResponseBodyReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `body`: Response body.
+    /// * `base64_encoded`: True, if content was sent as base64.
+    pub fn builder(body: impl Into<Cow<'a, str>>, base64_encoded: bool) -> GetResponseBodyReturnsBuilder<'a> {
         GetResponseBodyReturnsBuilder {
             body: body.into(),
-            base64Encoded: base64Encoded,
+            base64_encoded: base64_encoded,
         }
     }
+    /// Response body.
     pub fn body(&self) -> &str { self.body.as_ref() }
-    pub fn base64Encoded(&self) -> bool { self.base64Encoded }
+    /// True, if content was sent as base64.
+    pub fn base64_encoded(&self) -> bool { self.base64_encoded }
 }
 
 
 pub struct GetResponseBodyReturnsBuilder<'a> {
     body: Cow<'a, str>,
-    base64Encoded: bool,
+    base64_encoded: bool,
 }
 
 impl<'a> GetResponseBodyReturnsBuilder<'a> {
     pub fn build(self) -> GetResponseBodyReturns<'a> {
         GetResponseBodyReturns {
             body: self.body,
-            base64Encoded: self.base64Encoded,
+            base64_encoded: self.base64_encoded,
         }
     }
 }
@@ -5451,27 +6221,31 @@ impl<'a> crate::CdpCommand<'a> for GetResponseBodyParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct GetRequestPostDataParams<'a> {
     /// Identifier of the network request to get content for.
-    requestId: RequestId<'a>,
+    #[serde(rename = "requestId")]
+    request_id: RequestId<'a>,
 }
 
 impl<'a> GetRequestPostDataParams<'a> {
-    pub fn builder(requestId: impl Into<RequestId<'a>>) -> GetRequestPostDataParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_id`: Identifier of the network request to get content for.
+    pub fn builder(request_id: impl Into<RequestId<'a>>) -> GetRequestPostDataParamsBuilder<'a> {
         GetRequestPostDataParamsBuilder {
-            requestId: requestId.into(),
+            request_id: request_id.into(),
         }
     }
-    pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
+    /// Identifier of the network request to get content for.
+    pub fn request_id(&self) -> &RequestId<'a> { &self.request_id }
 }
 
 
 pub struct GetRequestPostDataParamsBuilder<'a> {
-    requestId: RequestId<'a>,
+    request_id: RequestId<'a>,
 }
 
 impl<'a> GetRequestPostDataParamsBuilder<'a> {
     pub fn build(self) -> GetRequestPostDataParams<'a> {
         GetRequestPostDataParams {
-            requestId: self.requestId,
+            request_id: self.request_id,
         }
     }
 }
@@ -5482,33 +6256,40 @@ impl<'a> GetRequestPostDataParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct GetRequestPostDataReturns<'a> {
     /// Request body string, omitting files from multipart requests
-    postData: Cow<'a, str>,
+    #[serde(rename = "postData")]
+    post_data: Cow<'a, str>,
     /// True, if content was sent as base64.
-    base64Encoded: bool,
+    #[serde(rename = "base64Encoded")]
+    base64_encoded: bool,
 }
 
 impl<'a> GetRequestPostDataReturns<'a> {
-    pub fn builder(postData: impl Into<Cow<'a, str>>, base64Encoded: bool) -> GetRequestPostDataReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `post_data`: Request body string, omitting files from multipart requests
+    /// * `base64_encoded`: True, if content was sent as base64.
+    pub fn builder(post_data: impl Into<Cow<'a, str>>, base64_encoded: bool) -> GetRequestPostDataReturnsBuilder<'a> {
         GetRequestPostDataReturnsBuilder {
-            postData: postData.into(),
-            base64Encoded: base64Encoded,
+            post_data: post_data.into(),
+            base64_encoded: base64_encoded,
         }
     }
-    pub fn postData(&self) -> &str { self.postData.as_ref() }
-    pub fn base64Encoded(&self) -> bool { self.base64Encoded }
+    /// Request body string, omitting files from multipart requests
+    pub fn post_data(&self) -> &str { self.post_data.as_ref() }
+    /// True, if content was sent as base64.
+    pub fn base64_encoded(&self) -> bool { self.base64_encoded }
 }
 
 
 pub struct GetRequestPostDataReturnsBuilder<'a> {
-    postData: Cow<'a, str>,
-    base64Encoded: bool,
+    post_data: Cow<'a, str>,
+    base64_encoded: bool,
 }
 
 impl<'a> GetRequestPostDataReturnsBuilder<'a> {
     pub fn build(self) -> GetRequestPostDataReturns<'a> {
         GetRequestPostDataReturns {
-            postData: self.postData,
-            base64Encoded: self.base64Encoded,
+            post_data: self.post_data,
+            base64_encoded: self.base64_encoded,
         }
     }
 }
@@ -5526,27 +6307,31 @@ impl<'a> crate::CdpCommand<'a> for GetRequestPostDataParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct GetResponseBodyForInterceptionParams<'a> {
     /// Identifier for the intercepted request to get body for.
-    interceptionId: InterceptionId<'a>,
+    #[serde(rename = "interceptionId")]
+    interception_id: InterceptionId<'a>,
 }
 
 impl<'a> GetResponseBodyForInterceptionParams<'a> {
-    pub fn builder(interceptionId: impl Into<InterceptionId<'a>>) -> GetResponseBodyForInterceptionParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `interception_id`: Identifier for the intercepted request to get body for.
+    pub fn builder(interception_id: impl Into<InterceptionId<'a>>) -> GetResponseBodyForInterceptionParamsBuilder<'a> {
         GetResponseBodyForInterceptionParamsBuilder {
-            interceptionId: interceptionId.into(),
+            interception_id: interception_id.into(),
         }
     }
-    pub fn interceptionId(&self) -> &InterceptionId<'a> { &self.interceptionId }
+    /// Identifier for the intercepted request to get body for.
+    pub fn interception_id(&self) -> &InterceptionId<'a> { &self.interception_id }
 }
 
 
 pub struct GetResponseBodyForInterceptionParamsBuilder<'a> {
-    interceptionId: InterceptionId<'a>,
+    interception_id: InterceptionId<'a>,
 }
 
 impl<'a> GetResponseBodyForInterceptionParamsBuilder<'a> {
     pub fn build(self) -> GetResponseBodyForInterceptionParams<'a> {
         GetResponseBodyForInterceptionParams {
-            interceptionId: self.interceptionId,
+            interception_id: self.interception_id,
         }
     }
 }
@@ -5559,31 +6344,37 @@ pub struct GetResponseBodyForInterceptionReturns<'a> {
     /// Response body.
     body: Cow<'a, str>,
     /// True, if content was sent as base64.
-    base64Encoded: bool,
+    #[serde(rename = "base64Encoded")]
+    base64_encoded: bool,
 }
 
 impl<'a> GetResponseBodyForInterceptionReturns<'a> {
-    pub fn builder(body: impl Into<Cow<'a, str>>, base64Encoded: bool) -> GetResponseBodyForInterceptionReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `body`: Response body.
+    /// * `base64_encoded`: True, if content was sent as base64.
+    pub fn builder(body: impl Into<Cow<'a, str>>, base64_encoded: bool) -> GetResponseBodyForInterceptionReturnsBuilder<'a> {
         GetResponseBodyForInterceptionReturnsBuilder {
             body: body.into(),
-            base64Encoded: base64Encoded,
+            base64_encoded: base64_encoded,
         }
     }
+    /// Response body.
     pub fn body(&self) -> &str { self.body.as_ref() }
-    pub fn base64Encoded(&self) -> bool { self.base64Encoded }
+    /// True, if content was sent as base64.
+    pub fn base64_encoded(&self) -> bool { self.base64_encoded }
 }
 
 
 pub struct GetResponseBodyForInterceptionReturnsBuilder<'a> {
     body: Cow<'a, str>,
-    base64Encoded: bool,
+    base64_encoded: bool,
 }
 
 impl<'a> GetResponseBodyForInterceptionReturnsBuilder<'a> {
     pub fn build(self) -> GetResponseBodyForInterceptionReturns<'a> {
         GetResponseBodyForInterceptionReturns {
             body: self.body,
-            base64Encoded: self.base64Encoded,
+            base64_encoded: self.base64_encoded,
         }
     }
 }
@@ -5603,27 +6394,30 @@ impl<'a> crate::CdpCommand<'a> for GetResponseBodyForInterceptionParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct TakeResponseBodyForInterceptionAsStreamParams<'a> {
-    interceptionId: InterceptionId<'a>,
+    #[serde(rename = "interceptionId")]
+    interception_id: InterceptionId<'a>,
 }
 
 impl<'a> TakeResponseBodyForInterceptionAsStreamParams<'a> {
-    pub fn builder(interceptionId: impl Into<InterceptionId<'a>>) -> TakeResponseBodyForInterceptionAsStreamParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `interception_id`: 
+    pub fn builder(interception_id: impl Into<InterceptionId<'a>>) -> TakeResponseBodyForInterceptionAsStreamParamsBuilder<'a> {
         TakeResponseBodyForInterceptionAsStreamParamsBuilder {
-            interceptionId: interceptionId.into(),
+            interception_id: interception_id.into(),
         }
     }
-    pub fn interceptionId(&self) -> &InterceptionId<'a> { &self.interceptionId }
+    pub fn interception_id(&self) -> &InterceptionId<'a> { &self.interception_id }
 }
 
 
 pub struct TakeResponseBodyForInterceptionAsStreamParamsBuilder<'a> {
-    interceptionId: InterceptionId<'a>,
+    interception_id: InterceptionId<'a>,
 }
 
 impl<'a> TakeResponseBodyForInterceptionAsStreamParamsBuilder<'a> {
     pub fn build(self) -> TakeResponseBodyForInterceptionAsStreamParams<'a> {
         TakeResponseBodyForInterceptionAsStreamParams {
-            interceptionId: self.interceptionId,
+            interception_id: self.interception_id,
         }
     }
 }
@@ -5640,6 +6434,8 @@ pub struct TakeResponseBodyForInterceptionAsStreamReturns<'a> {
 }
 
 impl<'a> TakeResponseBodyForInterceptionAsStreamReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `stream`: 
     pub fn builder(stream: crate::io::StreamHandle<'a>) -> TakeResponseBodyForInterceptionAsStreamReturnsBuilder<'a> {
         TakeResponseBodyForInterceptionAsStreamReturnsBuilder {
             stream: stream,
@@ -5676,27 +6472,31 @@ impl<'a> crate::CdpCommand<'a> for TakeResponseBodyForInterceptionAsStreamParams
 #[serde(rename_all = "camelCase")]
 pub struct ReplayXHRParams<'a> {
     /// Identifier of XHR to replay.
-    requestId: RequestId<'a>,
+    #[serde(rename = "requestId")]
+    request_id: RequestId<'a>,
 }
 
 impl<'a> ReplayXHRParams<'a> {
-    pub fn builder(requestId: impl Into<RequestId<'a>>) -> ReplayXHRParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_id`: Identifier of XHR to replay.
+    pub fn builder(request_id: impl Into<RequestId<'a>>) -> ReplayXHRParamsBuilder<'a> {
         ReplayXHRParamsBuilder {
-            requestId: requestId.into(),
+            request_id: request_id.into(),
         }
     }
-    pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
+    /// Identifier of XHR to replay.
+    pub fn request_id(&self) -> &RequestId<'a> { &self.request_id }
 }
 
 
 pub struct ReplayXHRParamsBuilder<'a> {
-    requestId: RequestId<'a>,
+    request_id: RequestId<'a>,
 }
 
 impl<'a> ReplayXHRParamsBuilder<'a> {
     pub fn build(self) -> ReplayXHRParams<'a> {
         ReplayXHRParams {
-            requestId: self.requestId,
+            request_id: self.request_id,
         }
     }
 }
@@ -5714,51 +6514,59 @@ impl<'a> crate::CdpCommand<'a> for ReplayXHRParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SearchInResponseBodyParams<'a> {
     /// Identifier of the network response to search.
-    requestId: RequestId<'a>,
+    #[serde(rename = "requestId")]
+    request_id: RequestId<'a>,
     /// String to search for.
     query: Cow<'a, str>,
     /// If true, search is case sensitive.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    caseSensitive: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "caseSensitive")]
+    case_sensitive: Option<bool>,
     /// If true, treats string parameter as regex.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    isRegex: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "isRegex")]
+    is_regex: Option<bool>,
 }
 
 impl<'a> SearchInResponseBodyParams<'a> {
-    pub fn builder(requestId: impl Into<RequestId<'a>>, query: impl Into<Cow<'a, str>>) -> SearchInResponseBodyParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_id`: Identifier of the network response to search.
+    /// * `query`: String to search for.
+    pub fn builder(request_id: impl Into<RequestId<'a>>, query: impl Into<Cow<'a, str>>) -> SearchInResponseBodyParamsBuilder<'a> {
         SearchInResponseBodyParamsBuilder {
-            requestId: requestId.into(),
+            request_id: request_id.into(),
             query: query.into(),
-            caseSensitive: None,
-            isRegex: None,
+            case_sensitive: None,
+            is_regex: None,
         }
     }
-    pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
+    /// Identifier of the network response to search.
+    pub fn request_id(&self) -> &RequestId<'a> { &self.request_id }
+    /// String to search for.
     pub fn query(&self) -> &str { self.query.as_ref() }
-    pub fn caseSensitive(&self) -> Option<bool> { self.caseSensitive }
-    pub fn isRegex(&self) -> Option<bool> { self.isRegex }
+    /// If true, search is case sensitive.
+    pub fn case_sensitive(&self) -> Option<bool> { self.case_sensitive }
+    /// If true, treats string parameter as regex.
+    pub fn is_regex(&self) -> Option<bool> { self.is_regex }
 }
 
 
 pub struct SearchInResponseBodyParamsBuilder<'a> {
-    requestId: RequestId<'a>,
+    request_id: RequestId<'a>,
     query: Cow<'a, str>,
-    caseSensitive: Option<bool>,
-    isRegex: Option<bool>,
+    case_sensitive: Option<bool>,
+    is_regex: Option<bool>,
 }
 
 impl<'a> SearchInResponseBodyParamsBuilder<'a> {
     /// If true, search is case sensitive.
-    pub fn caseSensitive(mut self, caseSensitive: bool) -> Self { self.caseSensitive = Some(caseSensitive); self }
+    pub fn case_sensitive(mut self, case_sensitive: bool) -> Self { self.case_sensitive = Some(case_sensitive); self }
     /// If true, treats string parameter as regex.
-    pub fn isRegex(mut self, isRegex: bool) -> Self { self.isRegex = Some(isRegex); self }
+    pub fn is_regex(mut self, is_regex: bool) -> Self { self.is_regex = Some(is_regex); self }
     pub fn build(self) -> SearchInResponseBodyParams<'a> {
         SearchInResponseBodyParams {
-            requestId: self.requestId,
+            request_id: self.request_id,
             query: self.query,
-            caseSensitive: self.caseSensitive,
-            isRegex: self.isRegex,
+            case_sensitive: self.case_sensitive,
+            is_regex: self.is_regex,
         }
     }
 }
@@ -5773,11 +6581,14 @@ pub struct SearchInResponseBodyReturns {
 }
 
 impl SearchInResponseBodyReturns {
+    /// Creates a builder for this type with the required parameters:
+    /// * `result`: List of search matches.
     pub fn builder(result: Vec<crate::debugger::SearchMatch>) -> SearchInResponseBodyReturnsBuilder {
         SearchInResponseBodyReturnsBuilder {
             result: result,
         }
     }
+    /// List of search matches.
     pub fn result(&self) -> &[crate::debugger::SearchMatch] { &self.result }
 }
 
@@ -5808,39 +6619,43 @@ impl<'a> crate::CdpCommand<'a> for SearchInResponseBodyParams<'a> {
 pub struct SetBlockedURLsParams<'a> {
     /// Patterns to match in the order in which they are given. These patterns
     /// also take precedence over any wildcard patterns defined in 'urls'.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    urlPatterns: Option<Vec<BlockPattern<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "urlPatterns")]
+    url_patterns: Option<Vec<BlockPattern<'a>>>,
     /// URL patterns to block. Wildcards ('*') are allowed.
     #[serde(skip_serializing_if = "Option::is_none")]
     urls: Option<Vec<Cow<'a, str>>>,
 }
 
 impl<'a> SetBlockedURLsParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> SetBlockedURLsParamsBuilder<'a> {
         SetBlockedURLsParamsBuilder {
-            urlPatterns: None,
+            url_patterns: None,
             urls: None,
         }
     }
-    pub fn urlPatterns(&self) -> Option<&[BlockPattern<'a>]> { self.urlPatterns.as_deref() }
+    /// Patterns to match in the order in which they are given. These patterns
+    /// also take precedence over any wildcard patterns defined in 'urls'.
+    pub fn url_patterns(&self) -> Option<&[BlockPattern<'a>]> { self.url_patterns.as_deref() }
+    /// URL patterns to block. Wildcards ('*') are allowed.
     pub fn urls(&self) -> Option<&[Cow<'a, str>]> { self.urls.as_deref() }
 }
 
 #[derive(Default)]
 pub struct SetBlockedURLsParamsBuilder<'a> {
-    urlPatterns: Option<Vec<BlockPattern<'a>>>,
+    url_patterns: Option<Vec<BlockPattern<'a>>>,
     urls: Option<Vec<Cow<'a, str>>>,
 }
 
 impl<'a> SetBlockedURLsParamsBuilder<'a> {
     /// Patterns to match in the order in which they are given. These patterns
     /// also take precedence over any wildcard patterns defined in 'urls'.
-    pub fn urlPatterns(mut self, urlPatterns: Vec<BlockPattern<'a>>) -> Self { self.urlPatterns = Some(urlPatterns); self }
+    pub fn url_patterns(mut self, url_patterns: Vec<BlockPattern<'a>>) -> Self { self.url_patterns = Some(url_patterns); self }
     /// URL patterns to block. Wildcards ('*') are allowed.
     pub fn urls(mut self, urls: Vec<Cow<'a, str>>) -> Self { self.urls = Some(urls); self }
     pub fn build(self) -> SetBlockedURLsParams<'a> {
         SetBlockedURLsParams {
-            urlPatterns: self.urlPatterns,
+            url_patterns: self.url_patterns,
             urls: self.urls,
         }
     }
@@ -5863,11 +6678,14 @@ pub struct SetBypassServiceWorkerParams {
 }
 
 impl SetBypassServiceWorkerParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `bypass`: Bypass service worker and load from network.
     pub fn builder(bypass: bool) -> SetBypassServiceWorkerParamsBuilder {
         SetBypassServiceWorkerParamsBuilder {
             bypass: bypass,
         }
     }
+    /// Bypass service worker and load from network.
     pub fn bypass(&self) -> bool { self.bypass }
 }
 
@@ -5897,27 +6715,31 @@ impl<'a> crate::CdpCommand<'a> for SetBypassServiceWorkerParams {
 #[serde(rename_all = "camelCase")]
 pub struct SetCacheDisabledParams {
     /// Cache disabled state.
-    cacheDisabled: bool,
+    #[serde(rename = "cacheDisabled")]
+    cache_disabled: bool,
 }
 
 impl SetCacheDisabledParams {
-    pub fn builder(cacheDisabled: bool) -> SetCacheDisabledParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `cache_disabled`: Cache disabled state.
+    pub fn builder(cache_disabled: bool) -> SetCacheDisabledParamsBuilder {
         SetCacheDisabledParamsBuilder {
-            cacheDisabled: cacheDisabled,
+            cache_disabled: cache_disabled,
         }
     }
-    pub fn cacheDisabled(&self) -> bool { self.cacheDisabled }
+    /// Cache disabled state.
+    pub fn cache_disabled(&self) -> bool { self.cache_disabled }
 }
 
 
 pub struct SetCacheDisabledParamsBuilder {
-    cacheDisabled: bool,
+    cache_disabled: bool,
 }
 
 impl SetCacheDisabledParamsBuilder {
     pub fn build(self) -> SetCacheDisabledParams {
         SetCacheDisabledParams {
-            cacheDisabled: self.cacheDisabled,
+            cache_disabled: self.cache_disabled,
         }
     }
 }
@@ -5952,11 +6774,11 @@ pub struct SetCookieParams<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     secure: Option<bool>,
     /// True if cookie is http-only.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    httpOnly: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "httpOnly")]
+    http_only: Option<bool>,
     /// Cookie SameSite type.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    sameSite: Option<CookieSameSite>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sameSite")]
+    same_site: Option<CookieSameSite>,
     /// Cookie expiration date, session cookie if not set
     #[serde(skip_serializing_if = "Option::is_none")]
     expires: Option<TimeSinceEpoch>,
@@ -5964,19 +6786,22 @@ pub struct SetCookieParams<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     priority: Option<CookiePriority>,
     /// Cookie source scheme type.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    sourceScheme: Option<CookieSourceScheme>,
-    /// Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port.
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sourceScheme")]
+    source_scheme: Option<CookieSourceScheme>,
+    /// Cookie source port. Valid values are {-1, \[1, 65535\]}, -1 indicates an unspecified port.
     /// An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
     /// This is a temporary ability and it will be removed in the future.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    sourcePort: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sourcePort")]
+    source_port: Option<i64>,
     /// Cookie partition key. If not set, the cookie will be set as not partitioned.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    partitionKey: Option<CookiePartitionKey<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "partitionKey")]
+    partition_key: Option<CookiePartitionKey<'a>>,
 }
 
 impl<'a> SetCookieParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: Cookie name.
+    /// * `value`: Cookie value.
     pub fn builder(name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> SetCookieParamsBuilder<'a> {
         SetCookieParamsBuilder {
             name: name.into(),
@@ -5985,28 +6810,44 @@ impl<'a> SetCookieParams<'a> {
             domain: None,
             path: None,
             secure: None,
-            httpOnly: None,
-            sameSite: None,
+            http_only: None,
+            same_site: None,
             expires: None,
             priority: None,
-            sourceScheme: None,
-            sourcePort: None,
-            partitionKey: None,
+            source_scheme: None,
+            source_port: None,
+            partition_key: None,
         }
     }
+    /// Cookie name.
     pub fn name(&self) -> &str { self.name.as_ref() }
+    /// Cookie value.
     pub fn value(&self) -> &str { self.value.as_ref() }
+    /// The request-URI to associate with the setting of the cookie. This value can affect the
+    /// default domain, path, source port, and source scheme values of the created cookie.
     pub fn url(&self) -> Option<&str> { self.url.as_deref() }
+    /// Cookie domain.
     pub fn domain(&self) -> Option<&str> { self.domain.as_deref() }
+    /// Cookie path.
     pub fn path(&self) -> Option<&str> { self.path.as_deref() }
+    /// True if cookie is secure.
     pub fn secure(&self) -> Option<bool> { self.secure }
-    pub fn httpOnly(&self) -> Option<bool> { self.httpOnly }
-    pub fn sameSite(&self) -> Option<&CookieSameSite> { self.sameSite.as_ref() }
+    /// True if cookie is http-only.
+    pub fn http_only(&self) -> Option<bool> { self.http_only }
+    /// Cookie SameSite type.
+    pub fn same_site(&self) -> Option<&CookieSameSite> { self.same_site.as_ref() }
+    /// Cookie expiration date, session cookie if not set
     pub fn expires(&self) -> Option<&TimeSinceEpoch> { self.expires.as_ref() }
+    /// Cookie Priority type.
     pub fn priority(&self) -> Option<&CookiePriority> { self.priority.as_ref() }
-    pub fn sourceScheme(&self) -> Option<&CookieSourceScheme> { self.sourceScheme.as_ref() }
-    pub fn sourcePort(&self) -> Option<i64> { self.sourcePort }
-    pub fn partitionKey(&self) -> Option<&CookiePartitionKey<'a>> { self.partitionKey.as_ref() }
+    /// Cookie source scheme type.
+    pub fn source_scheme(&self) -> Option<&CookieSourceScheme> { self.source_scheme.as_ref() }
+    /// Cookie source port. Valid values are {-1, \[1, 65535\]}, -1 indicates an unspecified port.
+    /// An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
+    /// This is a temporary ability and it will be removed in the future.
+    pub fn source_port(&self) -> Option<i64> { self.source_port }
+    /// Cookie partition key. If not set, the cookie will be set as not partitioned.
+    pub fn partition_key(&self) -> Option<&CookiePartitionKey<'a>> { self.partition_key.as_ref() }
 }
 
 
@@ -6017,13 +6858,13 @@ pub struct SetCookieParamsBuilder<'a> {
     domain: Option<Cow<'a, str>>,
     path: Option<Cow<'a, str>>,
     secure: Option<bool>,
-    httpOnly: Option<bool>,
-    sameSite: Option<CookieSameSite>,
+    http_only: Option<bool>,
+    same_site: Option<CookieSameSite>,
     expires: Option<TimeSinceEpoch>,
     priority: Option<CookiePriority>,
-    sourceScheme: Option<CookieSourceScheme>,
-    sourcePort: Option<i64>,
-    partitionKey: Option<CookiePartitionKey<'a>>,
+    source_scheme: Option<CookieSourceScheme>,
+    source_port: Option<i64>,
+    partition_key: Option<CookiePartitionKey<'a>>,
 }
 
 impl<'a> SetCookieParamsBuilder<'a> {
@@ -6037,21 +6878,21 @@ impl<'a> SetCookieParamsBuilder<'a> {
     /// True if cookie is secure.
     pub fn secure(mut self, secure: bool) -> Self { self.secure = Some(secure); self }
     /// True if cookie is http-only.
-    pub fn httpOnly(mut self, httpOnly: bool) -> Self { self.httpOnly = Some(httpOnly); self }
+    pub fn http_only(mut self, http_only: bool) -> Self { self.http_only = Some(http_only); self }
     /// Cookie SameSite type.
-    pub fn sameSite(mut self, sameSite: impl Into<CookieSameSite>) -> Self { self.sameSite = Some(sameSite.into()); self }
+    pub fn same_site(mut self, same_site: impl Into<CookieSameSite>) -> Self { self.same_site = Some(same_site.into()); self }
     /// Cookie expiration date, session cookie if not set
     pub fn expires(mut self, expires: TimeSinceEpoch) -> Self { self.expires = Some(expires); self }
     /// Cookie Priority type.
     pub fn priority(mut self, priority: impl Into<CookiePriority>) -> Self { self.priority = Some(priority.into()); self }
     /// Cookie source scheme type.
-    pub fn sourceScheme(mut self, sourceScheme: impl Into<CookieSourceScheme>) -> Self { self.sourceScheme = Some(sourceScheme.into()); self }
-    /// Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port.
+    pub fn source_scheme(mut self, source_scheme: impl Into<CookieSourceScheme>) -> Self { self.source_scheme = Some(source_scheme.into()); self }
+    /// Cookie source port. Valid values are {-1, \[1, 65535\]}, -1 indicates an unspecified port.
     /// An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
     /// This is a temporary ability and it will be removed in the future.
-    pub fn sourcePort(mut self, sourcePort: i64) -> Self { self.sourcePort = Some(sourcePort); self }
+    pub fn source_port(mut self, source_port: i64) -> Self { self.source_port = Some(source_port); self }
     /// Cookie partition key. If not set, the cookie will be set as not partitioned.
-    pub fn partitionKey(mut self, partitionKey: CookiePartitionKey<'a>) -> Self { self.partitionKey = Some(partitionKey); self }
+    pub fn partition_key(mut self, partition_key: CookiePartitionKey<'a>) -> Self { self.partition_key = Some(partition_key); self }
     pub fn build(self) -> SetCookieParams<'a> {
         SetCookieParams {
             name: self.name,
@@ -6060,13 +6901,13 @@ impl<'a> SetCookieParamsBuilder<'a> {
             domain: self.domain,
             path: self.path,
             secure: self.secure,
-            httpOnly: self.httpOnly,
-            sameSite: self.sameSite,
+            http_only: self.http_only,
+            same_site: self.same_site,
             expires: self.expires,
             priority: self.priority,
-            sourceScheme: self.sourceScheme,
-            sourcePort: self.sourcePort,
-            partitionKey: self.partitionKey,
+            source_scheme: self.source_scheme,
+            source_port: self.source_port,
+            partition_key: self.partition_key,
         }
     }
 }
@@ -6081,11 +6922,14 @@ pub struct SetCookieReturns {
 }
 
 impl SetCookieReturns {
+    /// Creates a builder for this type with the required parameters:
+    /// * `success`: Always set to true. If an error occurs, the response indicates protocol error.
     pub fn builder(success: bool) -> SetCookieReturnsBuilder {
         SetCookieReturnsBuilder {
             success: success,
         }
     }
+    /// Always set to true. If an error occurs, the response indicates protocol error.
     pub fn success(&self) -> bool { self.success }
 }
 
@@ -6119,11 +6963,14 @@ pub struct SetCookiesParams<'a> {
 }
 
 impl<'a> SetCookiesParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `cookies`: Cookies to be set.
     pub fn builder(cookies: Vec<CookieParam<'a>>) -> SetCookiesParamsBuilder<'a> {
         SetCookiesParamsBuilder {
             cookies: cookies,
         }
     }
+    /// Cookies to be set.
     pub fn cookies(&self) -> &[CookieParam<'a>] { &self.cookies }
 }
 
@@ -6157,11 +7004,14 @@ pub struct SetExtraHTTPHeadersParams {
 }
 
 impl SetExtraHTTPHeadersParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `headers`: Map with extra HTTP headers.
     pub fn builder(headers: Headers) -> SetExtraHTTPHeadersParamsBuilder {
         SetExtraHTTPHeadersParamsBuilder {
             headers: headers,
         }
     }
+    /// Map with extra HTTP headers.
     pub fn headers(&self) -> &Headers { &self.headers }
 }
 
@@ -6195,11 +7045,14 @@ pub struct SetAttachDebugStackParams {
 }
 
 impl SetAttachDebugStackParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `enabled`: Whether to attach a page script stack for debugging purpose.
     pub fn builder(enabled: bool) -> SetAttachDebugStackParamsBuilder {
         SetAttachDebugStackParamsBuilder {
             enabled: enabled,
         }
     }
+    /// Whether to attach a page script stack for debugging purpose.
     pub fn enabled(&self) -> bool { self.enabled }
 }
 
@@ -6235,11 +7088,15 @@ pub struct SetRequestInterceptionParams<'a> {
 }
 
 impl<'a> SetRequestInterceptionParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `patterns`: Requests matching any of these patterns will be forwarded and wait for the corresponding continueInterceptedRequest call.
     pub fn builder(patterns: Vec<RequestPattern<'a>>) -> SetRequestInterceptionParamsBuilder<'a> {
         SetRequestInterceptionParamsBuilder {
             patterns: patterns,
         }
     }
+    /// Requests matching any of these patterns will be forwarded and wait for the corresponding
+    /// continueInterceptedRequest call.
     pub fn patterns(&self) -> &[RequestPattern<'a>] { &self.patterns }
 }
 
@@ -6269,54 +7126,61 @@ impl<'a> crate::CdpCommand<'a> for SetRequestInterceptionParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SetUserAgentOverrideParams<'a> {
     /// User agent to use.
-    userAgent: Cow<'a, str>,
+    #[serde(rename = "userAgent")]
+    user_agent: Cow<'a, str>,
     /// Browser language to emulate.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    acceptLanguage: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "acceptLanguage")]
+    accept_language: Option<Cow<'a, str>>,
     /// The platform navigator.platform should return.
     #[serde(skip_serializing_if = "Option::is_none")]
     platform: Option<Cow<'a, str>>,
     /// To be sent in Sec-CH-UA-* headers and returned in navigator.userAgentData
-    #[serde(skip_serializing_if = "Option::is_none")]
-    userAgentMetadata: Option<crate::emulation::UserAgentMetadata<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "userAgentMetadata")]
+    user_agent_metadata: Option<crate::emulation::UserAgentMetadata<'a>>,
 }
 
 impl<'a> SetUserAgentOverrideParams<'a> {
-    pub fn builder(userAgent: impl Into<Cow<'a, str>>) -> SetUserAgentOverrideParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `user_agent`: User agent to use.
+    pub fn builder(user_agent: impl Into<Cow<'a, str>>) -> SetUserAgentOverrideParamsBuilder<'a> {
         SetUserAgentOverrideParamsBuilder {
-            userAgent: userAgent.into(),
-            acceptLanguage: None,
+            user_agent: user_agent.into(),
+            accept_language: None,
             platform: None,
-            userAgentMetadata: None,
+            user_agent_metadata: None,
         }
     }
-    pub fn userAgent(&self) -> &str { self.userAgent.as_ref() }
-    pub fn acceptLanguage(&self) -> Option<&str> { self.acceptLanguage.as_deref() }
+    /// User agent to use.
+    pub fn user_agent(&self) -> &str { self.user_agent.as_ref() }
+    /// Browser language to emulate.
+    pub fn accept_language(&self) -> Option<&str> { self.accept_language.as_deref() }
+    /// The platform navigator.platform should return.
     pub fn platform(&self) -> Option<&str> { self.platform.as_deref() }
-    pub fn userAgentMetadata(&self) -> Option<&crate::emulation::UserAgentMetadata<'a>> { self.userAgentMetadata.as_ref() }
+    /// To be sent in Sec-CH-UA-* headers and returned in navigator.userAgentData
+    pub fn user_agent_metadata(&self) -> Option<&crate::emulation::UserAgentMetadata<'a>> { self.user_agent_metadata.as_ref() }
 }
 
 
 pub struct SetUserAgentOverrideParamsBuilder<'a> {
-    userAgent: Cow<'a, str>,
-    acceptLanguage: Option<Cow<'a, str>>,
+    user_agent: Cow<'a, str>,
+    accept_language: Option<Cow<'a, str>>,
     platform: Option<Cow<'a, str>>,
-    userAgentMetadata: Option<crate::emulation::UserAgentMetadata<'a>>,
+    user_agent_metadata: Option<crate::emulation::UserAgentMetadata<'a>>,
 }
 
 impl<'a> SetUserAgentOverrideParamsBuilder<'a> {
     /// Browser language to emulate.
-    pub fn acceptLanguage(mut self, acceptLanguage: impl Into<Cow<'a, str>>) -> Self { self.acceptLanguage = Some(acceptLanguage.into()); self }
+    pub fn accept_language(mut self, accept_language: impl Into<Cow<'a, str>>) -> Self { self.accept_language = Some(accept_language.into()); self }
     /// The platform navigator.platform should return.
     pub fn platform(mut self, platform: impl Into<Cow<'a, str>>) -> Self { self.platform = Some(platform.into()); self }
     /// To be sent in Sec-CH-UA-* headers and returned in navigator.userAgentData
-    pub fn userAgentMetadata(mut self, userAgentMetadata: crate::emulation::UserAgentMetadata<'a>) -> Self { self.userAgentMetadata = Some(userAgentMetadata); self }
+    pub fn user_agent_metadata(mut self, user_agent_metadata: crate::emulation::UserAgentMetadata<'a>) -> Self { self.user_agent_metadata = Some(user_agent_metadata); self }
     pub fn build(self) -> SetUserAgentOverrideParams<'a> {
         SetUserAgentOverrideParams {
-            userAgent: self.userAgent,
-            acceptLanguage: self.acceptLanguage,
+            user_agent: self.user_agent,
+            accept_language: self.accept_language,
             platform: self.platform,
-            userAgentMetadata: self.userAgentMetadata,
+            user_agent_metadata: self.user_agent_metadata,
         }
     }
 }
@@ -6335,27 +7199,31 @@ impl<'a> crate::CdpCommand<'a> for SetUserAgentOverrideParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct StreamResourceContentParams<'a> {
     /// Identifier of the request to stream.
-    requestId: RequestId<'a>,
+    #[serde(rename = "requestId")]
+    request_id: RequestId<'a>,
 }
 
 impl<'a> StreamResourceContentParams<'a> {
-    pub fn builder(requestId: impl Into<RequestId<'a>>) -> StreamResourceContentParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_id`: Identifier of the request to stream.
+    pub fn builder(request_id: impl Into<RequestId<'a>>) -> StreamResourceContentParamsBuilder<'a> {
         StreamResourceContentParamsBuilder {
-            requestId: requestId.into(),
+            request_id: request_id.into(),
         }
     }
-    pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
+    /// Identifier of the request to stream.
+    pub fn request_id(&self) -> &RequestId<'a> { &self.request_id }
 }
 
 
 pub struct StreamResourceContentParamsBuilder<'a> {
-    requestId: RequestId<'a>,
+    request_id: RequestId<'a>,
 }
 
 impl<'a> StreamResourceContentParamsBuilder<'a> {
     pub fn build(self) -> StreamResourceContentParams<'a> {
         StreamResourceContentParams {
-            requestId: self.requestId,
+            request_id: self.request_id,
         }
     }
 }
@@ -6367,27 +7235,31 @@ impl<'a> StreamResourceContentParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct StreamResourceContentReturns<'a> {
     /// Data that has been buffered until streaming is enabled. (Encoded as a base64 string when passed over JSON)
-    bufferedData: Cow<'a, str>,
+    #[serde(rename = "bufferedData")]
+    buffered_data: Cow<'a, str>,
 }
 
 impl<'a> StreamResourceContentReturns<'a> {
-    pub fn builder(bufferedData: impl Into<Cow<'a, str>>) -> StreamResourceContentReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `buffered_data`: Data that has been buffered until streaming is enabled. (Encoded as a base64 string when passed over JSON)
+    pub fn builder(buffered_data: impl Into<Cow<'a, str>>) -> StreamResourceContentReturnsBuilder<'a> {
         StreamResourceContentReturnsBuilder {
-            bufferedData: bufferedData.into(),
+            buffered_data: buffered_data.into(),
         }
     }
-    pub fn bufferedData(&self) -> &str { self.bufferedData.as_ref() }
+    /// Data that has been buffered until streaming is enabled. (Encoded as a base64 string when passed over JSON)
+    pub fn buffered_data(&self) -> &str { self.buffered_data.as_ref() }
 }
 
 
 pub struct StreamResourceContentReturnsBuilder<'a> {
-    bufferedData: Cow<'a, str>,
+    buffered_data: Cow<'a, str>,
 }
 
 impl<'a> StreamResourceContentReturnsBuilder<'a> {
     pub fn build(self) -> StreamResourceContentReturns<'a> {
         StreamResourceContentReturns {
-            bufferedData: self.bufferedData,
+            buffered_data: self.buffered_data,
         }
     }
 }
@@ -6405,30 +7277,32 @@ impl<'a> crate::CdpCommand<'a> for StreamResourceContentParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct GetSecurityIsolationStatusParams<'a> {
     /// If no frameId is provided, the status of the target is provided.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    frameId: Option<crate::page::FrameId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "frameId")]
+    frame_id: Option<crate::page::FrameId<'a>>,
 }
 
 impl<'a> GetSecurityIsolationStatusParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> GetSecurityIsolationStatusParamsBuilder<'a> {
         GetSecurityIsolationStatusParamsBuilder {
-            frameId: None,
+            frame_id: None,
         }
     }
-    pub fn frameId(&self) -> Option<&crate::page::FrameId<'a>> { self.frameId.as_ref() }
+    /// If no frameId is provided, the status of the target is provided.
+    pub fn frame_id(&self) -> Option<&crate::page::FrameId<'a>> { self.frame_id.as_ref() }
 }
 
 #[derive(Default)]
 pub struct GetSecurityIsolationStatusParamsBuilder<'a> {
-    frameId: Option<crate::page::FrameId<'a>>,
+    frame_id: Option<crate::page::FrameId<'a>>,
 }
 
 impl<'a> GetSecurityIsolationStatusParamsBuilder<'a> {
     /// If no frameId is provided, the status of the target is provided.
-    pub fn frameId(mut self, frameId: crate::page::FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
+    pub fn frame_id(mut self, frame_id: crate::page::FrameId<'a>) -> Self { self.frame_id = Some(frame_id); self }
     pub fn build(self) -> GetSecurityIsolationStatusParams<'a> {
         GetSecurityIsolationStatusParams {
-            frameId: self.frameId,
+            frame_id: self.frame_id,
         }
     }
 }
@@ -6442,6 +7316,8 @@ pub struct GetSecurityIsolationStatusReturns<'a> {
 }
 
 impl<'a> GetSecurityIsolationStatusReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `status`: 
     pub fn builder(status: SecurityIsolationStatus<'a>) -> GetSecurityIsolationStatusReturnsBuilder<'a> {
         GetSecurityIsolationStatusReturnsBuilder {
             status: status,
@@ -6481,11 +7357,14 @@ pub struct EnableReportingApiParams {
 }
 
 impl EnableReportingApiParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `enable`: Whether to enable or disable events for the Reporting API
     pub fn builder(enable: bool) -> EnableReportingApiParamsBuilder {
         EnableReportingApiParamsBuilder {
             enable: enable,
         }
     }
+    /// Whether to enable or disable events for the Reporting API
     pub fn enable(&self) -> bool { self.enable }
 }
 
@@ -6519,11 +7398,14 @@ pub struct EnableDeviceBoundSessionsParams {
 }
 
 impl EnableDeviceBoundSessionsParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `enable`: Whether to enable or disable events.
     pub fn builder(enable: bool) -> EnableDeviceBoundSessionsParamsBuilder {
         EnableDeviceBoundSessionsParamsBuilder {
             enable: enable,
         }
     }
+    /// Whether to enable or disable events.
     pub fn enable(&self) -> bool { self.enable }
 }
 
@@ -6556,6 +7438,8 @@ pub struct DeleteDeviceBoundSessionParams<'a> {
 }
 
 impl<'a> DeleteDeviceBoundSessionParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `key`: 
     pub fn builder(key: DeviceBoundSessionKey<'a>) -> DeleteDeviceBoundSessionParamsBuilder<'a> {
         DeleteDeviceBoundSessionParamsBuilder {
             key: key,
@@ -6594,11 +7478,14 @@ pub struct FetchSchemefulSiteParams<'a> {
 }
 
 impl<'a> FetchSchemefulSiteParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `origin`: The URL origin.
     pub fn builder(origin: impl Into<Cow<'a, str>>) -> FetchSchemefulSiteParamsBuilder<'a> {
         FetchSchemefulSiteParamsBuilder {
             origin: origin.into(),
         }
     }
+    /// The URL origin.
     pub fn origin(&self) -> &str { self.origin.as_ref() }
 }
 
@@ -6621,27 +7508,31 @@ impl<'a> FetchSchemefulSiteParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct FetchSchemefulSiteReturns<'a> {
     /// The corresponding schemeful site.
-    schemefulSite: Cow<'a, str>,
+    #[serde(rename = "schemefulSite")]
+    schemeful_site: Cow<'a, str>,
 }
 
 impl<'a> FetchSchemefulSiteReturns<'a> {
-    pub fn builder(schemefulSite: impl Into<Cow<'a, str>>) -> FetchSchemefulSiteReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `schemeful_site`: The corresponding schemeful site.
+    pub fn builder(schemeful_site: impl Into<Cow<'a, str>>) -> FetchSchemefulSiteReturnsBuilder<'a> {
         FetchSchemefulSiteReturnsBuilder {
-            schemefulSite: schemefulSite.into(),
+            schemeful_site: schemeful_site.into(),
         }
     }
-    pub fn schemefulSite(&self) -> &str { self.schemefulSite.as_ref() }
+    /// The corresponding schemeful site.
+    pub fn schemeful_site(&self) -> &str { self.schemeful_site.as_ref() }
 }
 
 
 pub struct FetchSchemefulSiteReturnsBuilder<'a> {
-    schemefulSite: Cow<'a, str>,
+    schemeful_site: Cow<'a, str>,
 }
 
 impl<'a> FetchSchemefulSiteReturnsBuilder<'a> {
     pub fn build(self) -> FetchSchemefulSiteReturns<'a> {
         FetchSchemefulSiteReturns {
-            schemefulSite: self.schemefulSite,
+            schemeful_site: self.schemeful_site,
         }
     }
 }
@@ -6660,8 +7551,8 @@ impl<'a> crate::CdpCommand<'a> for FetchSchemefulSiteParams<'a> {
 pub struct LoadNetworkResourceParams<'a> {
     /// Frame id to get the resource for. Mandatory for frame targets, and
     /// should be omitted for worker targets.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    frameId: Option<crate::page::FrameId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "frameId")]
+    frame_id: Option<crate::page::FrameId<'a>>,
     /// URL of the resource to get content for.
     url: Cow<'a, str>,
     /// Options for the request.
@@ -6669,21 +7560,28 @@ pub struct LoadNetworkResourceParams<'a> {
 }
 
 impl<'a> LoadNetworkResourceParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url`: URL of the resource to get content for.
+    /// * `options`: Options for the request.
     pub fn builder(url: impl Into<Cow<'a, str>>, options: LoadNetworkResourceOptions) -> LoadNetworkResourceParamsBuilder<'a> {
         LoadNetworkResourceParamsBuilder {
-            frameId: None,
+            frame_id: None,
             url: url.into(),
             options: options,
         }
     }
-    pub fn frameId(&self) -> Option<&crate::page::FrameId<'a>> { self.frameId.as_ref() }
+    /// Frame id to get the resource for. Mandatory for frame targets, and
+    /// should be omitted for worker targets.
+    pub fn frame_id(&self) -> Option<&crate::page::FrameId<'a>> { self.frame_id.as_ref() }
+    /// URL of the resource to get content for.
     pub fn url(&self) -> &str { self.url.as_ref() }
+    /// Options for the request.
     pub fn options(&self) -> &LoadNetworkResourceOptions { &self.options }
 }
 
 
 pub struct LoadNetworkResourceParamsBuilder<'a> {
-    frameId: Option<crate::page::FrameId<'a>>,
+    frame_id: Option<crate::page::FrameId<'a>>,
     url: Cow<'a, str>,
     options: LoadNetworkResourceOptions,
 }
@@ -6691,10 +7589,10 @@ pub struct LoadNetworkResourceParamsBuilder<'a> {
 impl<'a> LoadNetworkResourceParamsBuilder<'a> {
     /// Frame id to get the resource for. Mandatory for frame targets, and
     /// should be omitted for worker targets.
-    pub fn frameId(mut self, frameId: crate::page::FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
+    pub fn frame_id(mut self, frame_id: crate::page::FrameId<'a>) -> Self { self.frame_id = Some(frame_id); self }
     pub fn build(self) -> LoadNetworkResourceParams<'a> {
         LoadNetworkResourceParams {
-            frameId: self.frameId,
+            frame_id: self.frame_id,
             url: self.url,
             options: self.options,
         }
@@ -6710,6 +7608,8 @@ pub struct LoadNetworkResourceReturns<'a> {
 }
 
 impl<'a> LoadNetworkResourceReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `resource`: 
     pub fn builder(resource: LoadNetworkResourcePageResult<'a>) -> LoadNetworkResourceReturnsBuilder<'a> {
         LoadNetworkResourceReturnsBuilder {
             resource: resource,
@@ -6745,27 +7645,31 @@ impl<'a> crate::CdpCommand<'a> for LoadNetworkResourceParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SetCookieControlsParams {
     /// Whether 3pc restriction is enabled.
-    enableThirdPartyCookieRestriction: bool,
+    #[serde(rename = "enableThirdPartyCookieRestriction")]
+    enable_third_party_cookie_restriction: bool,
 }
 
 impl SetCookieControlsParams {
-    pub fn builder(enableThirdPartyCookieRestriction: bool) -> SetCookieControlsParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `enable_third_party_cookie_restriction`: Whether 3pc restriction is enabled.
+    pub fn builder(enable_third_party_cookie_restriction: bool) -> SetCookieControlsParamsBuilder {
         SetCookieControlsParamsBuilder {
-            enableThirdPartyCookieRestriction: enableThirdPartyCookieRestriction,
+            enable_third_party_cookie_restriction: enable_third_party_cookie_restriction,
         }
     }
-    pub fn enableThirdPartyCookieRestriction(&self) -> bool { self.enableThirdPartyCookieRestriction }
+    /// Whether 3pc restriction is enabled.
+    pub fn enable_third_party_cookie_restriction(&self) -> bool { self.enable_third_party_cookie_restriction }
 }
 
 
 pub struct SetCookieControlsParamsBuilder {
-    enableThirdPartyCookieRestriction: bool,
+    enable_third_party_cookie_restriction: bool,
 }
 
 impl SetCookieControlsParamsBuilder {
     pub fn build(self) -> SetCookieControlsParams {
         SetCookieControlsParams {
-            enableThirdPartyCookieRestriction: self.enableThirdPartyCookieRestriction,
+            enable_third_party_cookie_restriction: self.enable_third_party_cookie_restriction,
         }
     }
 }

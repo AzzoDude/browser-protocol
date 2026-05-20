@@ -1,73 +1,82 @@
 //! Reporting of performance timeline events, as specified in
-//! https://w3c.github.io/performance-timeline/#dom-performanceobserver.
+//! <https://w3c.github.io/performance-timeline/#dom-performanceobserver>.
 
 
 use serde::{Serialize, Deserialize};
 use serde_json::Value as JsonValue;
 use std::borrow::Cow;
 
-/// See https://github.com/WICG/LargestContentfulPaint and largest_contentful_paint.idl
+/// See <https://github.com/WICG/LargestContentfulPaint> and largest_contentful_paint.idl
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct LargestContentfulPaint<'a> {
-    renderTime: crate::network::TimeSinceEpoch,
-    loadTime: crate::network::TimeSinceEpoch,
+    #[serde(rename = "renderTime")]
+    render_time: crate::network::TimeSinceEpoch,
+    #[serde(rename = "loadTime")]
+    load_time: crate::network::TimeSinceEpoch,
     /// The number of pixels being painted.
     size: f64,
     /// The id attribute of the element, if available.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    elementId: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "elementId")]
+    element_id: Option<Cow<'a, str>>,
     /// The URL of the image (may be trimmed).
     #[serde(skip_serializing_if = "Option::is_none")]
     url: Option<Cow<'a, str>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    nodeId: Option<crate::dom::BackendNodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "nodeId")]
+    node_id: Option<crate::dom::BackendNodeId>,
 }
 
 impl<'a> LargestContentfulPaint<'a> {
-    pub fn builder(renderTime: crate::network::TimeSinceEpoch, loadTime: crate::network::TimeSinceEpoch, size: f64) -> LargestContentfulPaintBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `render_time`: 
+    /// * `load_time`: 
+    /// * `size`: The number of pixels being painted.
+    pub fn builder(render_time: crate::network::TimeSinceEpoch, load_time: crate::network::TimeSinceEpoch, size: f64) -> LargestContentfulPaintBuilder<'a> {
         LargestContentfulPaintBuilder {
-            renderTime: renderTime,
-            loadTime: loadTime,
+            render_time: render_time,
+            load_time: load_time,
             size: size,
-            elementId: None,
+            element_id: None,
             url: None,
-            nodeId: None,
+            node_id: None,
         }
     }
-    pub fn renderTime(&self) -> &crate::network::TimeSinceEpoch { &self.renderTime }
-    pub fn loadTime(&self) -> &crate::network::TimeSinceEpoch { &self.loadTime }
+    pub fn render_time(&self) -> &crate::network::TimeSinceEpoch { &self.render_time }
+    pub fn load_time(&self) -> &crate::network::TimeSinceEpoch { &self.load_time }
+    /// The number of pixels being painted.
     pub fn size(&self) -> f64 { self.size }
-    pub fn elementId(&self) -> Option<&str> { self.elementId.as_deref() }
+    /// The id attribute of the element, if available.
+    pub fn element_id(&self) -> Option<&str> { self.element_id.as_deref() }
+    /// The URL of the image (may be trimmed).
     pub fn url(&self) -> Option<&str> { self.url.as_deref() }
-    pub fn nodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.nodeId.as_ref() }
+    pub fn node_id(&self) -> Option<&crate::dom::BackendNodeId> { self.node_id.as_ref() }
 }
 
 
 pub struct LargestContentfulPaintBuilder<'a> {
-    renderTime: crate::network::TimeSinceEpoch,
-    loadTime: crate::network::TimeSinceEpoch,
+    render_time: crate::network::TimeSinceEpoch,
+    load_time: crate::network::TimeSinceEpoch,
     size: f64,
-    elementId: Option<Cow<'a, str>>,
+    element_id: Option<Cow<'a, str>>,
     url: Option<Cow<'a, str>>,
-    nodeId: Option<crate::dom::BackendNodeId>,
+    node_id: Option<crate::dom::BackendNodeId>,
 }
 
 impl<'a> LargestContentfulPaintBuilder<'a> {
     /// The id attribute of the element, if available.
-    pub fn elementId(mut self, elementId: impl Into<Cow<'a, str>>) -> Self { self.elementId = Some(elementId.into()); self }
+    pub fn element_id(mut self, element_id: impl Into<Cow<'a, str>>) -> Self { self.element_id = Some(element_id.into()); self }
     /// The URL of the image (may be trimmed).
     pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
-    pub fn nodeId(mut self, nodeId: crate::dom::BackendNodeId) -> Self { self.nodeId = Some(nodeId); self }
+    pub fn node_id(mut self, node_id: crate::dom::BackendNodeId) -> Self { self.node_id = Some(node_id); self }
     pub fn build(self) -> LargestContentfulPaint<'a> {
         LargestContentfulPaint {
-            renderTime: self.renderTime,
-            loadTime: self.loadTime,
+            render_time: self.render_time,
+            load_time: self.load_time,
             size: self.size,
-            elementId: self.elementId,
+            element_id: self.element_id,
             url: self.url,
-            nodeId: self.nodeId,
+            node_id: self.node_id,
         }
     }
 }
@@ -76,75 +85,88 @@ impl<'a> LargestContentfulPaintBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct LayoutShiftAttribution {
-    previousRect: crate::dom::Rect,
-    currentRect: crate::dom::Rect,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    nodeId: Option<crate::dom::BackendNodeId>,
+    #[serde(rename = "previousRect")]
+    previous_rect: crate::dom::Rect,
+    #[serde(rename = "currentRect")]
+    current_rect: crate::dom::Rect,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "nodeId")]
+    node_id: Option<crate::dom::BackendNodeId>,
 }
 
 impl LayoutShiftAttribution {
-    pub fn builder(previousRect: crate::dom::Rect, currentRect: crate::dom::Rect) -> LayoutShiftAttributionBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `previous_rect`: 
+    /// * `current_rect`: 
+    pub fn builder(previous_rect: crate::dom::Rect, current_rect: crate::dom::Rect) -> LayoutShiftAttributionBuilder {
         LayoutShiftAttributionBuilder {
-            previousRect: previousRect,
-            currentRect: currentRect,
-            nodeId: None,
+            previous_rect: previous_rect,
+            current_rect: current_rect,
+            node_id: None,
         }
     }
-    pub fn previousRect(&self) -> &crate::dom::Rect { &self.previousRect }
-    pub fn currentRect(&self) -> &crate::dom::Rect { &self.currentRect }
-    pub fn nodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.nodeId.as_ref() }
+    pub fn previous_rect(&self) -> &crate::dom::Rect { &self.previous_rect }
+    pub fn current_rect(&self) -> &crate::dom::Rect { &self.current_rect }
+    pub fn node_id(&self) -> Option<&crate::dom::BackendNodeId> { self.node_id.as_ref() }
 }
 
 
 pub struct LayoutShiftAttributionBuilder {
-    previousRect: crate::dom::Rect,
-    currentRect: crate::dom::Rect,
-    nodeId: Option<crate::dom::BackendNodeId>,
+    previous_rect: crate::dom::Rect,
+    current_rect: crate::dom::Rect,
+    node_id: Option<crate::dom::BackendNodeId>,
 }
 
 impl LayoutShiftAttributionBuilder {
-    pub fn nodeId(mut self, nodeId: crate::dom::BackendNodeId) -> Self { self.nodeId = Some(nodeId); self }
+    pub fn node_id(mut self, node_id: crate::dom::BackendNodeId) -> Self { self.node_id = Some(node_id); self }
     pub fn build(self) -> LayoutShiftAttribution {
         LayoutShiftAttribution {
-            previousRect: self.previousRect,
-            currentRect: self.currentRect,
-            nodeId: self.nodeId,
+            previous_rect: self.previous_rect,
+            current_rect: self.current_rect,
+            node_id: self.node_id,
         }
     }
 }
 
-/// See https://wicg.github.io/layout-instability/#sec-layout-shift and layout_shift.idl
+/// See <https://wicg.github.io/layout-instability/#sec-layout-shift> and layout_shift.idl
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct LayoutShift {
     /// Score increment produced by this event.
     value: f64,
-    hadRecentInput: bool,
-    lastInputTime: crate::network::TimeSinceEpoch,
+    #[serde(rename = "hadRecentInput")]
+    had_recent_input: bool,
+    #[serde(rename = "lastInputTime")]
+    last_input_time: crate::network::TimeSinceEpoch,
     sources: Vec<LayoutShiftAttribution>,
 }
 
 impl LayoutShift {
-    pub fn builder(value: f64, hadRecentInput: bool, lastInputTime: crate::network::TimeSinceEpoch, sources: Vec<LayoutShiftAttribution>) -> LayoutShiftBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `value`: Score increment produced by this event.
+    /// * `had_recent_input`: 
+    /// * `last_input_time`: 
+    /// * `sources`: 
+    pub fn builder(value: f64, had_recent_input: bool, last_input_time: crate::network::TimeSinceEpoch, sources: Vec<LayoutShiftAttribution>) -> LayoutShiftBuilder {
         LayoutShiftBuilder {
             value: value,
-            hadRecentInput: hadRecentInput,
-            lastInputTime: lastInputTime,
+            had_recent_input: had_recent_input,
+            last_input_time: last_input_time,
             sources: sources,
         }
     }
+    /// Score increment produced by this event.
     pub fn value(&self) -> f64 { self.value }
-    pub fn hadRecentInput(&self) -> bool { self.hadRecentInput }
-    pub fn lastInputTime(&self) -> &crate::network::TimeSinceEpoch { &self.lastInputTime }
+    pub fn had_recent_input(&self) -> bool { self.had_recent_input }
+    pub fn last_input_time(&self) -> &crate::network::TimeSinceEpoch { &self.last_input_time }
     pub fn sources(&self) -> &[LayoutShiftAttribution] { &self.sources }
 }
 
 
 pub struct LayoutShiftBuilder {
     value: f64,
-    hadRecentInput: bool,
-    lastInputTime: crate::network::TimeSinceEpoch,
+    had_recent_input: bool,
+    last_input_time: crate::network::TimeSinceEpoch,
     sources: Vec<LayoutShiftAttribution>,
 }
 
@@ -152,8 +174,8 @@ impl LayoutShiftBuilder {
     pub fn build(self) -> LayoutShift {
         LayoutShift {
             value: self.value,
-            hadRecentInput: self.hadRecentInput,
-            lastInputTime: self.lastInputTime,
+            had_recent_input: self.had_recent_input,
+            last_input_time: self.last_input_time,
             sources: self.sources,
         }
     }
@@ -164,8 +186,9 @@ impl LayoutShiftBuilder {
 #[serde(rename_all = "camelCase")]
 pub struct TimelineEvent<'a> {
     /// Identifies the frame that this event is related to. Empty for non-frame targets.
-    frameId: crate::page::FrameId<'a>,
-    /// The event type, as specified in https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype
+    #[serde(rename = "frameId")]
+    frame_id: crate::page::FrameId<'a>,
+    /// The event type, as specified in <https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype>
     /// This determines which of the optional "details" fields is present.
     #[serde(rename = "type")]
     type_: Cow<'a, str>,
@@ -176,58 +199,69 @@ pub struct TimelineEvent<'a> {
     /// Event duration, if applicable.
     #[serde(skip_serializing_if = "Option::is_none")]
     duration: Option<f64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    lcpDetails: Option<LargestContentfulPaint<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    layoutShiftDetails: Option<LayoutShift>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "lcpDetails")]
+    lcp_details: Option<LargestContentfulPaint<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "layoutShiftDetails")]
+    layout_shift_details: Option<LayoutShift>,
 }
 
 impl<'a> TimelineEvent<'a> {
-    pub fn builder(frameId: crate::page::FrameId<'a>, type_: impl Into<Cow<'a, str>>, name: impl Into<Cow<'a, str>>, time: crate::network::TimeSinceEpoch) -> TimelineEventBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `frame_id`: Identifies the frame that this event is related to. Empty for non-frame targets.
+    /// * `type_`: The event type, as specified in <https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype> This determines which of the optional "details" fields is present.
+    /// * `name`: Name may be empty depending on the type.
+    /// * `time`: Time in seconds since Epoch, monotonically increasing within document lifetime.
+    pub fn builder(frame_id: crate::page::FrameId<'a>, type_: impl Into<Cow<'a, str>>, name: impl Into<Cow<'a, str>>, time: crate::network::TimeSinceEpoch) -> TimelineEventBuilder<'a> {
         TimelineEventBuilder {
-            frameId: frameId,
+            frame_id: frame_id,
             type_: type_.into(),
             name: name.into(),
             time: time,
             duration: None,
-            lcpDetails: None,
-            layoutShiftDetails: None,
+            lcp_details: None,
+            layout_shift_details: None,
         }
     }
-    pub fn frameId(&self) -> &crate::page::FrameId<'a> { &self.frameId }
+    /// Identifies the frame that this event is related to. Empty for non-frame targets.
+    pub fn frame_id(&self) -> &crate::page::FrameId<'a> { &self.frame_id }
+    /// The event type, as specified in <https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype>
+    /// This determines which of the optional "details" fields is present.
     pub fn type_(&self) -> &str { self.type_.as_ref() }
+    /// Name may be empty depending on the type.
     pub fn name(&self) -> &str { self.name.as_ref() }
+    /// Time in seconds since Epoch, monotonically increasing within document lifetime.
     pub fn time(&self) -> &crate::network::TimeSinceEpoch { &self.time }
+    /// Event duration, if applicable.
     pub fn duration(&self) -> Option<f64> { self.duration }
-    pub fn lcpDetails(&self) -> Option<&LargestContentfulPaint<'a>> { self.lcpDetails.as_ref() }
-    pub fn layoutShiftDetails(&self) -> Option<&LayoutShift> { self.layoutShiftDetails.as_ref() }
+    pub fn lcp_details(&self) -> Option<&LargestContentfulPaint<'a>> { self.lcp_details.as_ref() }
+    pub fn layout_shift_details(&self) -> Option<&LayoutShift> { self.layout_shift_details.as_ref() }
 }
 
 
 pub struct TimelineEventBuilder<'a> {
-    frameId: crate::page::FrameId<'a>,
+    frame_id: crate::page::FrameId<'a>,
     type_: Cow<'a, str>,
     name: Cow<'a, str>,
     time: crate::network::TimeSinceEpoch,
     duration: Option<f64>,
-    lcpDetails: Option<LargestContentfulPaint<'a>>,
-    layoutShiftDetails: Option<LayoutShift>,
+    lcp_details: Option<LargestContentfulPaint<'a>>,
+    layout_shift_details: Option<LayoutShift>,
 }
 
 impl<'a> TimelineEventBuilder<'a> {
     /// Event duration, if applicable.
     pub fn duration(mut self, duration: f64) -> Self { self.duration = Some(duration); self }
-    pub fn lcpDetails(mut self, lcpDetails: LargestContentfulPaint<'a>) -> Self { self.lcpDetails = Some(lcpDetails); self }
-    pub fn layoutShiftDetails(mut self, layoutShiftDetails: LayoutShift) -> Self { self.layoutShiftDetails = Some(layoutShiftDetails); self }
+    pub fn lcp_details(mut self, lcp_details: LargestContentfulPaint<'a>) -> Self { self.lcp_details = Some(lcp_details); self }
+    pub fn layout_shift_details(mut self, layout_shift_details: LayoutShift) -> Self { self.layout_shift_details = Some(layout_shift_details); self }
     pub fn build(self) -> TimelineEvent<'a> {
         TimelineEvent {
-            frameId: self.frameId,
+            frame_id: self.frame_id,
             type_: self.type_,
             name: self.name,
             time: self.time,
             duration: self.duration,
-            lcpDetails: self.lcpDetails,
-            layoutShiftDetails: self.layoutShiftDetails,
+            lcp_details: self.lcp_details,
+            layout_shift_details: self.layout_shift_details,
         }
     }
 }
@@ -239,31 +273,39 @@ impl<'a> TimelineEventBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct EnableParams<'a> {
     /// The types of event to report, as specified in
-    /// https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype
+    /// <https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype>
     /// The specified filter overrides any previous filters, passing empty
     /// filter disables recording.
     /// Note that not all types exposed to the web platform are currently supported.
-    eventTypes: Vec<Cow<'a, str>>,
+    #[serde(rename = "eventTypes")]
+    event_types: Vec<Cow<'a, str>>,
 }
 
 impl<'a> EnableParams<'a> {
-    pub fn builder(eventTypes: Vec<Cow<'a, str>>) -> EnableParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `event_types`: The types of event to report, as specified in <https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype> The specified filter overrides any previous filters, passing empty filter disables recording. Note that not all types exposed to the web platform are currently supported.
+    pub fn builder(event_types: Vec<Cow<'a, str>>) -> EnableParamsBuilder<'a> {
         EnableParamsBuilder {
-            eventTypes: eventTypes,
+            event_types: event_types,
         }
     }
-    pub fn eventTypes(&self) -> &[Cow<'a, str>] { &self.eventTypes }
+    /// The types of event to report, as specified in
+    /// <https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype>
+    /// The specified filter overrides any previous filters, passing empty
+    /// filter disables recording.
+    /// Note that not all types exposed to the web platform are currently supported.
+    pub fn event_types(&self) -> &[Cow<'a, str>] { &self.event_types }
 }
 
 
 pub struct EnableParamsBuilder<'a> {
-    eventTypes: Vec<Cow<'a, str>>,
+    event_types: Vec<Cow<'a, str>>,
 }
 
 impl<'a> EnableParamsBuilder<'a> {
     pub fn build(self) -> EnableParams<'a> {
         EnableParams {
-            eventTypes: self.eventTypes,
+            event_types: self.event_types,
         }
     }
 }

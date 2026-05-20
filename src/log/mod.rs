@@ -24,23 +24,28 @@ pub struct LogEntry<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     url: Option<Cow<'a, str>>,
     /// Line number in the resource.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    lineNumber: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "lineNumber")]
+    line_number: Option<i64>,
     /// JavaScript stack trace.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    stackTrace: Option<crate::runtime::StackTrace>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "stackTrace")]
+    stack_trace: Option<crate::runtime::StackTrace>,
     /// Identifier of the network request associated with this entry.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    networkRequestId: Option<crate::network::RequestId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "networkRequestId")]
+    network_request_id: Option<crate::network::RequestId<'a>>,
     /// Identifier of the worker associated with this entry.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    workerId: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "workerId")]
+    worker_id: Option<Cow<'a, str>>,
     /// Call arguments.
     #[serde(skip_serializing_if = "Option::is_none")]
     args: Option<Vec<crate::runtime::RemoteObject>>,
 }
 
 impl<'a> LogEntry<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `source`: Log entry source.
+    /// * `level`: Log entry severity.
+    /// * `text`: Logged text.
+    /// * `timestamp`: Timestamp when this entry was added.
     pub fn builder(source: impl Into<Cow<'a, str>>, level: impl Into<Cow<'a, str>>, text: impl Into<Cow<'a, str>>, timestamp: crate::runtime::Timestamp) -> LogEntryBuilder<'a> {
         LogEntryBuilder {
             source: source.into(),
@@ -49,23 +54,33 @@ impl<'a> LogEntry<'a> {
             category: None,
             timestamp: timestamp,
             url: None,
-            lineNumber: None,
-            stackTrace: None,
-            networkRequestId: None,
-            workerId: None,
+            line_number: None,
+            stack_trace: None,
+            network_request_id: None,
+            worker_id: None,
             args: None,
         }
     }
+    /// Log entry source.
     pub fn source(&self) -> &str { self.source.as_ref() }
+    /// Log entry severity.
     pub fn level(&self) -> &str { self.level.as_ref() }
+    /// Logged text.
     pub fn text(&self) -> &str { self.text.as_ref() }
     pub fn category(&self) -> Option<&str> { self.category.as_deref() }
+    /// Timestamp when this entry was added.
     pub fn timestamp(&self) -> &crate::runtime::Timestamp { &self.timestamp }
+    /// URL of the resource if known.
     pub fn url(&self) -> Option<&str> { self.url.as_deref() }
-    pub fn lineNumber(&self) -> Option<i64> { self.lineNumber }
-    pub fn stackTrace(&self) -> Option<&crate::runtime::StackTrace> { self.stackTrace.as_ref() }
-    pub fn networkRequestId(&self) -> Option<&crate::network::RequestId<'a>> { self.networkRequestId.as_ref() }
-    pub fn workerId(&self) -> Option<&str> { self.workerId.as_deref() }
+    /// Line number in the resource.
+    pub fn line_number(&self) -> Option<i64> { self.line_number }
+    /// JavaScript stack trace.
+    pub fn stack_trace(&self) -> Option<&crate::runtime::StackTrace> { self.stack_trace.as_ref() }
+    /// Identifier of the network request associated with this entry.
+    pub fn network_request_id(&self) -> Option<&crate::network::RequestId<'a>> { self.network_request_id.as_ref() }
+    /// Identifier of the worker associated with this entry.
+    pub fn worker_id(&self) -> Option<&str> { self.worker_id.as_deref() }
+    /// Call arguments.
     pub fn args(&self) -> Option<&[crate::runtime::RemoteObject]> { self.args.as_deref() }
 }
 
@@ -77,10 +92,10 @@ pub struct LogEntryBuilder<'a> {
     category: Option<Cow<'a, str>>,
     timestamp: crate::runtime::Timestamp,
     url: Option<Cow<'a, str>>,
-    lineNumber: Option<i64>,
-    stackTrace: Option<crate::runtime::StackTrace>,
-    networkRequestId: Option<crate::network::RequestId<'a>>,
-    workerId: Option<Cow<'a, str>>,
+    line_number: Option<i64>,
+    stack_trace: Option<crate::runtime::StackTrace>,
+    network_request_id: Option<crate::network::RequestId<'a>>,
+    worker_id: Option<Cow<'a, str>>,
     args: Option<Vec<crate::runtime::RemoteObject>>,
 }
 
@@ -89,13 +104,13 @@ impl<'a> LogEntryBuilder<'a> {
     /// URL of the resource if known.
     pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
     /// Line number in the resource.
-    pub fn lineNumber(mut self, lineNumber: i64) -> Self { self.lineNumber = Some(lineNumber); self }
+    pub fn line_number(mut self, line_number: i64) -> Self { self.line_number = Some(line_number); self }
     /// JavaScript stack trace.
-    pub fn stackTrace(mut self, stackTrace: crate::runtime::StackTrace) -> Self { self.stackTrace = Some(stackTrace); self }
+    pub fn stack_trace(mut self, stack_trace: crate::runtime::StackTrace) -> Self { self.stack_trace = Some(stack_trace); self }
     /// Identifier of the network request associated with this entry.
-    pub fn networkRequestId(mut self, networkRequestId: crate::network::RequestId<'a>) -> Self { self.networkRequestId = Some(networkRequestId); self }
+    pub fn network_request_id(mut self, network_request_id: crate::network::RequestId<'a>) -> Self { self.network_request_id = Some(network_request_id); self }
     /// Identifier of the worker associated with this entry.
-    pub fn workerId(mut self, workerId: impl Into<Cow<'a, str>>) -> Self { self.workerId = Some(workerId.into()); self }
+    pub fn worker_id(mut self, worker_id: impl Into<Cow<'a, str>>) -> Self { self.worker_id = Some(worker_id.into()); self }
     /// Call arguments.
     pub fn args(mut self, args: Vec<crate::runtime::RemoteObject>) -> Self { self.args = Some(args); self }
     pub fn build(self) -> LogEntry<'a> {
@@ -106,10 +121,10 @@ impl<'a> LogEntryBuilder<'a> {
             category: self.category,
             timestamp: self.timestamp,
             url: self.url,
-            lineNumber: self.lineNumber,
-            stackTrace: self.stackTrace,
-            networkRequestId: self.networkRequestId,
-            workerId: self.workerId,
+            line_number: self.line_number,
+            stack_trace: self.stack_trace,
+            network_request_id: self.network_request_id,
+            worker_id: self.worker_id,
             args: self.args,
         }
     }
@@ -127,13 +142,18 @@ pub struct ViolationSetting<'a> {
 }
 
 impl<'a> ViolationSetting<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: Violation type.
+    /// * `threshold`: Time threshold to trigger upon.
     pub fn builder(name: impl Into<Cow<'a, str>>, threshold: f64) -> ViolationSettingBuilder<'a> {
         ViolationSettingBuilder {
             name: name.into(),
             threshold: threshold,
         }
     }
+    /// Violation type.
     pub fn name(&self) -> &str { self.name.as_ref() }
+    /// Time threshold to trigger upon.
     pub fn threshold(&self) -> f64 { self.threshold }
 }
 
@@ -192,11 +212,14 @@ pub struct StartViolationsReportParams<'a> {
 }
 
 impl<'a> StartViolationsReportParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `config`: Configuration for violations.
     pub fn builder(config: Vec<ViolationSetting<'a>>) -> StartViolationsReportParamsBuilder<'a> {
         StartViolationsReportParamsBuilder {
             config: config,
         }
     }
+    /// Configuration for violations.
     pub fn config(&self) -> &[ViolationSetting<'a>] { &self.config }
 }
 

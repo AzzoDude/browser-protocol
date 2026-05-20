@@ -36,6 +36,9 @@ pub struct EventMetadata<'a> {
 }
 
 impl<'a> EventMetadata<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `key`: 
+    /// * `value`: 
     pub fn builder(key: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> EventMetadataBuilder<'a> {
         EventMetadataBuilder {
             key: key.into(),
@@ -70,52 +73,74 @@ pub struct BackgroundServiceEvent<'a> {
     /// The origin this event belongs to.
     origin: Cow<'a, str>,
     /// The Service Worker ID that initiated the event.
-    serviceWorkerRegistrationId: crate::serviceworker::RegistrationID<'a>,
+    #[serde(rename = "serviceWorkerRegistrationId")]
+    service_worker_registration_id: crate::serviceworker::RegistrationID<'a>,
     /// The Background Service this event belongs to.
     service: ServiceName,
     /// A description of the event.
-    eventName: Cow<'a, str>,
+    #[serde(rename = "eventName")]
+    event_name: Cow<'a, str>,
     /// An identifier that groups related events together.
-    instanceId: Cow<'a, str>,
+    #[serde(rename = "instanceId")]
+    instance_id: Cow<'a, str>,
     /// A list of event-specific information.
-    eventMetadata: Vec<EventMetadata<'a>>,
+    #[serde(rename = "eventMetadata")]
+    event_metadata: Vec<EventMetadata<'a>>,
     /// Storage key this event belongs to.
-    storageKey: Cow<'a, str>,
+    #[serde(rename = "storageKey")]
+    storage_key: Cow<'a, str>,
 }
 
 impl<'a> BackgroundServiceEvent<'a> {
-    pub fn builder(timestamp: crate::network::TimeSinceEpoch, origin: impl Into<Cow<'a, str>>, serviceWorkerRegistrationId: crate::serviceworker::RegistrationID<'a>, service: impl Into<ServiceName>, eventName: impl Into<Cow<'a, str>>, instanceId: impl Into<Cow<'a, str>>, eventMetadata: Vec<EventMetadata<'a>>, storageKey: impl Into<Cow<'a, str>>) -> BackgroundServiceEventBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `timestamp`: Timestamp of the event (in seconds).
+    /// * `origin`: The origin this event belongs to.
+    /// * `service_worker_registration_id`: The Service Worker ID that initiated the event.
+    /// * `service`: The Background Service this event belongs to.
+    /// * `event_name`: A description of the event.
+    /// * `instance_id`: An identifier that groups related events together.
+    /// * `event_metadata`: A list of event-specific information.
+    /// * `storage_key`: Storage key this event belongs to.
+    pub fn builder(timestamp: crate::network::TimeSinceEpoch, origin: impl Into<Cow<'a, str>>, service_worker_registration_id: crate::serviceworker::RegistrationID<'a>, service: impl Into<ServiceName>, event_name: impl Into<Cow<'a, str>>, instance_id: impl Into<Cow<'a, str>>, event_metadata: Vec<EventMetadata<'a>>, storage_key: impl Into<Cow<'a, str>>) -> BackgroundServiceEventBuilder<'a> {
         BackgroundServiceEventBuilder {
             timestamp: timestamp,
             origin: origin.into(),
-            serviceWorkerRegistrationId: serviceWorkerRegistrationId,
+            service_worker_registration_id: service_worker_registration_id,
             service: service.into(),
-            eventName: eventName.into(),
-            instanceId: instanceId.into(),
-            eventMetadata: eventMetadata,
-            storageKey: storageKey.into(),
+            event_name: event_name.into(),
+            instance_id: instance_id.into(),
+            event_metadata: event_metadata,
+            storage_key: storage_key.into(),
         }
     }
+    /// Timestamp of the event (in seconds).
     pub fn timestamp(&self) -> &crate::network::TimeSinceEpoch { &self.timestamp }
+    /// The origin this event belongs to.
     pub fn origin(&self) -> &str { self.origin.as_ref() }
-    pub fn serviceWorkerRegistrationId(&self) -> &crate::serviceworker::RegistrationID<'a> { &self.serviceWorkerRegistrationId }
+    /// The Service Worker ID that initiated the event.
+    pub fn service_worker_registration_id(&self) -> &crate::serviceworker::RegistrationID<'a> { &self.service_worker_registration_id }
+    /// The Background Service this event belongs to.
     pub fn service(&self) -> &ServiceName { &self.service }
-    pub fn eventName(&self) -> &str { self.eventName.as_ref() }
-    pub fn instanceId(&self) -> &str { self.instanceId.as_ref() }
-    pub fn eventMetadata(&self) -> &[EventMetadata<'a>] { &self.eventMetadata }
-    pub fn storageKey(&self) -> &str { self.storageKey.as_ref() }
+    /// A description of the event.
+    pub fn event_name(&self) -> &str { self.event_name.as_ref() }
+    /// An identifier that groups related events together.
+    pub fn instance_id(&self) -> &str { self.instance_id.as_ref() }
+    /// A list of event-specific information.
+    pub fn event_metadata(&self) -> &[EventMetadata<'a>] { &self.event_metadata }
+    /// Storage key this event belongs to.
+    pub fn storage_key(&self) -> &str { self.storage_key.as_ref() }
 }
 
 
 pub struct BackgroundServiceEventBuilder<'a> {
     timestamp: crate::network::TimeSinceEpoch,
     origin: Cow<'a, str>,
-    serviceWorkerRegistrationId: crate::serviceworker::RegistrationID<'a>,
+    service_worker_registration_id: crate::serviceworker::RegistrationID<'a>,
     service: ServiceName,
-    eventName: Cow<'a, str>,
-    instanceId: Cow<'a, str>,
-    eventMetadata: Vec<EventMetadata<'a>>,
-    storageKey: Cow<'a, str>,
+    event_name: Cow<'a, str>,
+    instance_id: Cow<'a, str>,
+    event_metadata: Vec<EventMetadata<'a>>,
+    storage_key: Cow<'a, str>,
 }
 
 impl<'a> BackgroundServiceEventBuilder<'a> {
@@ -123,12 +148,12 @@ impl<'a> BackgroundServiceEventBuilder<'a> {
         BackgroundServiceEvent {
             timestamp: self.timestamp,
             origin: self.origin,
-            serviceWorkerRegistrationId: self.serviceWorkerRegistrationId,
+            service_worker_registration_id: self.service_worker_registration_id,
             service: self.service,
-            eventName: self.eventName,
-            instanceId: self.instanceId,
-            eventMetadata: self.eventMetadata,
-            storageKey: self.storageKey,
+            event_name: self.event_name,
+            instance_id: self.instance_id,
+            event_metadata: self.event_metadata,
+            storage_key: self.storage_key,
         }
     }
 }
@@ -142,6 +167,8 @@ pub struct StartObservingParams {
 }
 
 impl StartObservingParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `service`: 
     pub fn builder(service: impl Into<ServiceName>) -> StartObservingParamsBuilder {
         StartObservingParamsBuilder {
             service: service.into(),
@@ -179,6 +206,8 @@ pub struct StopObservingParams {
 }
 
 impl StopObservingParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `service`: 
     pub fn builder(service: impl Into<ServiceName>) -> StopObservingParamsBuilder {
         StopObservingParamsBuilder {
             service: service.into(),
@@ -212,31 +241,35 @@ impl<'a> crate::CdpCommand<'a> for StopObservingParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetRecordingParams {
-    shouldRecord: bool,
+    #[serde(rename = "shouldRecord")]
+    should_record: bool,
     service: ServiceName,
 }
 
 impl SetRecordingParams {
-    pub fn builder(shouldRecord: bool, service: impl Into<ServiceName>) -> SetRecordingParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `should_record`: 
+    /// * `service`: 
+    pub fn builder(should_record: bool, service: impl Into<ServiceName>) -> SetRecordingParamsBuilder {
         SetRecordingParamsBuilder {
-            shouldRecord: shouldRecord,
+            should_record: should_record,
             service: service.into(),
         }
     }
-    pub fn shouldRecord(&self) -> bool { self.shouldRecord }
+    pub fn should_record(&self) -> bool { self.should_record }
     pub fn service(&self) -> &ServiceName { &self.service }
 }
 
 
 pub struct SetRecordingParamsBuilder {
-    shouldRecord: bool,
+    should_record: bool,
     service: ServiceName,
 }
 
 impl SetRecordingParamsBuilder {
     pub fn build(self) -> SetRecordingParams {
         SetRecordingParams {
-            shouldRecord: self.shouldRecord,
+            should_record: self.should_record,
             service: self.service,
         }
     }
@@ -258,6 +291,8 @@ pub struct ClearEventsParams {
 }
 
 impl ClearEventsParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `service`: 
     pub fn builder(service: impl Into<ServiceName>) -> ClearEventsParamsBuilder {
         ClearEventsParamsBuilder {
             service: service.into(),

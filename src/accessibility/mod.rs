@@ -108,48 +108,59 @@ pub struct AXValueSource<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     attribute: Option<Cow<'a, str>>,
     /// The value of the relevant attribute, if any.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    attributeValue: Option<AXValue<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "attributeValue")]
+    attribute_value: Option<AXValue<'a>>,
     /// Whether this source is superseded by a higher priority source.
     #[serde(skip_serializing_if = "Option::is_none")]
     superseded: Option<bool>,
-    /// The native markup source for this value, e.g. a '<label>' element.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    nativeSource: Option<AXValueNativeSourceType>,
+    /// The native markup source for this value, e.g. a '\<label\>' element.
+    #[serde(skip_serializing_if = "Option::is_none", rename = "nativeSource")]
+    native_source: Option<AXValueNativeSourceType>,
     /// The value, such as a node or node list, of the native source.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    nativeSourceValue: Option<AXValue<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "nativeSourceValue")]
+    native_source_value: Option<AXValue<'a>>,
     /// Whether the value for this property is invalid.
     #[serde(skip_serializing_if = "Option::is_none")]
     invalid: Option<bool>,
     /// Reason for the value being invalid, if it is.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    invalidReason: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "invalidReason")]
+    invalid_reason: Option<Cow<'a, str>>,
 }
 
 impl<'a> AXValueSource<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `type_`: What type of source this is.
     pub fn builder(type_: impl Into<AXValueSourceType>) -> AXValueSourceBuilder<'a> {
         AXValueSourceBuilder {
             type_: type_.into(),
             value: None,
             attribute: None,
-            attributeValue: None,
+            attribute_value: None,
             superseded: None,
-            nativeSource: None,
-            nativeSourceValue: None,
+            native_source: None,
+            native_source_value: None,
             invalid: None,
-            invalidReason: None,
+            invalid_reason: None,
         }
     }
+    /// What type of source this is.
     pub fn type_(&self) -> &AXValueSourceType { &self.type_ }
+    /// The value of this property source.
     pub fn value(&self) -> Option<&AXValue<'a>> { self.value.as_ref() }
+    /// The name of the relevant attribute, if any.
     pub fn attribute(&self) -> Option<&str> { self.attribute.as_deref() }
-    pub fn attributeValue(&self) -> Option<&AXValue<'a>> { self.attributeValue.as_ref() }
+    /// The value of the relevant attribute, if any.
+    pub fn attribute_value(&self) -> Option<&AXValue<'a>> { self.attribute_value.as_ref() }
+    /// Whether this source is superseded by a higher priority source.
     pub fn superseded(&self) -> Option<bool> { self.superseded }
-    pub fn nativeSource(&self) -> Option<&AXValueNativeSourceType> { self.nativeSource.as_ref() }
-    pub fn nativeSourceValue(&self) -> Option<&AXValue<'a>> { self.nativeSourceValue.as_ref() }
+    /// The native markup source for this value, e.g. a '\<label\>' element.
+    pub fn native_source(&self) -> Option<&AXValueNativeSourceType> { self.native_source.as_ref() }
+    /// The value, such as a node or node list, of the native source.
+    pub fn native_source_value(&self) -> Option<&AXValue<'a>> { self.native_source_value.as_ref() }
+    /// Whether the value for this property is invalid.
     pub fn invalid(&self) -> Option<bool> { self.invalid }
-    pub fn invalidReason(&self) -> Option<&str> { self.invalidReason.as_deref() }
+    /// Reason for the value being invalid, if it is.
+    pub fn invalid_reason(&self) -> Option<&str> { self.invalid_reason.as_deref() }
 }
 
 
@@ -157,12 +168,12 @@ pub struct AXValueSourceBuilder<'a> {
     type_: AXValueSourceType,
     value: Option<AXValue<'a>>,
     attribute: Option<Cow<'a, str>>,
-    attributeValue: Option<AXValue<'a>>,
+    attribute_value: Option<AXValue<'a>>,
     superseded: Option<bool>,
-    nativeSource: Option<AXValueNativeSourceType>,
-    nativeSourceValue: Option<AXValue<'a>>,
+    native_source: Option<AXValueNativeSourceType>,
+    native_source_value: Option<AXValue<'a>>,
     invalid: Option<bool>,
-    invalidReason: Option<Cow<'a, str>>,
+    invalid_reason: Option<Cow<'a, str>>,
 }
 
 impl<'a> AXValueSourceBuilder<'a> {
@@ -171,28 +182,28 @@ impl<'a> AXValueSourceBuilder<'a> {
     /// The name of the relevant attribute, if any.
     pub fn attribute(mut self, attribute: impl Into<Cow<'a, str>>) -> Self { self.attribute = Some(attribute.into()); self }
     /// The value of the relevant attribute, if any.
-    pub fn attributeValue(mut self, attributeValue: AXValue<'a>) -> Self { self.attributeValue = Some(attributeValue); self }
+    pub fn attribute_value(mut self, attribute_value: AXValue<'a>) -> Self { self.attribute_value = Some(attribute_value); self }
     /// Whether this source is superseded by a higher priority source.
     pub fn superseded(mut self, superseded: bool) -> Self { self.superseded = Some(superseded); self }
-    /// The native markup source for this value, e.g. a '<label>' element.
-    pub fn nativeSource(mut self, nativeSource: impl Into<AXValueNativeSourceType>) -> Self { self.nativeSource = Some(nativeSource.into()); self }
+    /// The native markup source for this value, e.g. a '\<label\>' element.
+    pub fn native_source(mut self, native_source: impl Into<AXValueNativeSourceType>) -> Self { self.native_source = Some(native_source.into()); self }
     /// The value, such as a node or node list, of the native source.
-    pub fn nativeSourceValue(mut self, nativeSourceValue: AXValue<'a>) -> Self { self.nativeSourceValue = Some(nativeSourceValue); self }
+    pub fn native_source_value(mut self, native_source_value: AXValue<'a>) -> Self { self.native_source_value = Some(native_source_value); self }
     /// Whether the value for this property is invalid.
     pub fn invalid(mut self, invalid: bool) -> Self { self.invalid = Some(invalid); self }
     /// Reason for the value being invalid, if it is.
-    pub fn invalidReason(mut self, invalidReason: impl Into<Cow<'a, str>>) -> Self { self.invalidReason = Some(invalidReason.into()); self }
+    pub fn invalid_reason(mut self, invalid_reason: impl Into<Cow<'a, str>>) -> Self { self.invalid_reason = Some(invalid_reason.into()); self }
     pub fn build(self) -> AXValueSource<'a> {
         AXValueSource {
             type_: self.type_,
             value: self.value,
             attribute: self.attribute,
-            attributeValue: self.attributeValue,
+            attribute_value: self.attribute_value,
             superseded: self.superseded,
-            nativeSource: self.nativeSource,
-            nativeSourceValue: self.nativeSourceValue,
+            native_source: self.native_source,
+            native_source_value: self.native_source_value,
             invalid: self.invalid,
-            invalidReason: self.invalidReason,
+            invalid_reason: self.invalid_reason,
         }
     }
 }
@@ -202,7 +213,8 @@ impl<'a> AXValueSourceBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct AXRelatedNode<'a> {
     /// The BackendNodeId of the related DOM node.
-    backendDOMNodeId: crate::dom::BackendNodeId,
+    #[serde(rename = "backendDOMNodeId")]
+    backend_dom_node_id: crate::dom::BackendNodeId,
     /// The IDRef value provided, if any.
     #[serde(skip_serializing_if = "Option::is_none")]
     idref: Option<Cow<'a, str>>,
@@ -212,21 +224,26 @@ pub struct AXRelatedNode<'a> {
 }
 
 impl<'a> AXRelatedNode<'a> {
-    pub fn builder(backendDOMNodeId: crate::dom::BackendNodeId) -> AXRelatedNodeBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `backend_dom_node_id`: The BackendNodeId of the related DOM node.
+    pub fn builder(backend_dom_node_id: crate::dom::BackendNodeId) -> AXRelatedNodeBuilder<'a> {
         AXRelatedNodeBuilder {
-            backendDOMNodeId: backendDOMNodeId,
+            backend_dom_node_id: backend_dom_node_id,
             idref: None,
             text: None,
         }
     }
-    pub fn backendDOMNodeId(&self) -> &crate::dom::BackendNodeId { &self.backendDOMNodeId }
+    /// The BackendNodeId of the related DOM node.
+    pub fn backend_dom_node_id(&self) -> &crate::dom::BackendNodeId { &self.backend_dom_node_id }
+    /// The IDRef value provided, if any.
     pub fn idref(&self) -> Option<&str> { self.idref.as_deref() }
+    /// The text alternative of this node in the current context.
     pub fn text(&self) -> Option<&str> { self.text.as_deref() }
 }
 
 
 pub struct AXRelatedNodeBuilder<'a> {
-    backendDOMNodeId: crate::dom::BackendNodeId,
+    backend_dom_node_id: crate::dom::BackendNodeId,
     idref: Option<Cow<'a, str>>,
     text: Option<Cow<'a, str>>,
 }
@@ -238,7 +255,7 @@ impl<'a> AXRelatedNodeBuilder<'a> {
     pub fn text(mut self, text: impl Into<Cow<'a, str>>) -> Self { self.text = Some(text.into()); self }
     pub fn build(self) -> AXRelatedNode<'a> {
         AXRelatedNode {
-            backendDOMNodeId: self.backendDOMNodeId,
+            backend_dom_node_id: self.backend_dom_node_id,
             idref: self.idref,
             text: self.text,
         }
@@ -256,13 +273,18 @@ pub struct AXProperty<'a> {
 }
 
 impl<'a> AXProperty<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: The name of this property.
+    /// * `value`: The value of this property.
     pub fn builder(name: impl Into<AXPropertyName>, value: AXValue<'a>) -> AXPropertyBuilder<'a> {
         AXPropertyBuilder {
             name: name.into(),
             value: value,
         }
     }
+    /// The name of this property.
     pub fn name(&self) -> &AXPropertyName { &self.name }
+    /// The value of this property.
     pub fn value(&self) -> &AXValue<'a> { &self.value }
 }
 
@@ -293,25 +315,31 @@ pub struct AXValue<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     value: Option<JsonValue>,
     /// One or more related nodes, if applicable.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    relatedNodes: Option<Vec<AXRelatedNode<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "relatedNodes")]
+    related_nodes: Option<Vec<AXRelatedNode<'a>>>,
     /// The sources which contributed to the computation of this property.
     #[serde(skip_serializing_if = "Option::is_none")]
     sources: Option<Vec<AXValueSource<'a>>>,
 }
 
 impl<'a> AXValue<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `type_`: The type of this value.
     pub fn builder(type_: impl Into<AXValueType>) -> AXValueBuilder<'a> {
         AXValueBuilder {
             type_: type_.into(),
             value: None,
-            relatedNodes: None,
+            related_nodes: None,
             sources: None,
         }
     }
+    /// The type of this value.
     pub fn type_(&self) -> &AXValueType { &self.type_ }
+    /// The computed value of this property.
     pub fn value(&self) -> Option<&JsonValue> { self.value.as_ref() }
-    pub fn relatedNodes(&self) -> Option<&[AXRelatedNode<'a>]> { self.relatedNodes.as_deref() }
+    /// One or more related nodes, if applicable.
+    pub fn related_nodes(&self) -> Option<&[AXRelatedNode<'a>]> { self.related_nodes.as_deref() }
+    /// The sources which contributed to the computation of this property.
     pub fn sources(&self) -> Option<&[AXValueSource<'a>]> { self.sources.as_deref() }
 }
 
@@ -319,7 +347,7 @@ impl<'a> AXValue<'a> {
 pub struct AXValueBuilder<'a> {
     type_: AXValueType,
     value: Option<JsonValue>,
-    relatedNodes: Option<Vec<AXRelatedNode<'a>>>,
+    related_nodes: Option<Vec<AXRelatedNode<'a>>>,
     sources: Option<Vec<AXValueSource<'a>>>,
 }
 
@@ -327,14 +355,14 @@ impl<'a> AXValueBuilder<'a> {
     /// The computed value of this property.
     pub fn value(mut self, value: JsonValue) -> Self { self.value = Some(value); self }
     /// One or more related nodes, if applicable.
-    pub fn relatedNodes(mut self, relatedNodes: Vec<AXRelatedNode<'a>>) -> Self { self.relatedNodes = Some(relatedNodes); self }
+    pub fn related_nodes(mut self, related_nodes: Vec<AXRelatedNode<'a>>) -> Self { self.related_nodes = Some(related_nodes); self }
     /// The sources which contributed to the computation of this property.
     pub fn sources(mut self, sources: Vec<AXValueSource<'a>>) -> Self { self.sources = Some(sources); self }
     pub fn build(self) -> AXValue<'a> {
         AXValue {
             type_: self.type_,
             value: self.value,
-            relatedNodes: self.relatedNodes,
+            related_nodes: self.related_nodes,
             sources: self.sources,
         }
     }
@@ -475,18 +503,19 @@ pub enum AXPropertyName {
 #[serde(rename_all = "camelCase")]
 pub struct AXNode<'a> {
     /// Unique identifier for this node.
-    nodeId: AXNodeId<'a>,
+    #[serde(rename = "nodeId")]
+    node_id: AXNodeId<'a>,
     /// Whether this node is ignored for accessibility
     ignored: bool,
     /// Collection of reasons why this node is hidden.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    ignoredReasons: Option<Vec<AXProperty<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "ignoredReasons")]
+    ignored_reasons: Option<Vec<AXProperty<'a>>>,
     /// This 'Node''s role, whether explicit or implicit.
     #[serde(skip_serializing_if = "Option::is_none")]
     role: Option<AXValue<'a>>,
     /// This 'Node''s Chrome raw role.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    chromeRole: Option<AXValue<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "chromeRole")]
+    chrome_role: Option<AXValue<'a>>,
     /// The accessible name for this 'Node'.
     #[serde(skip_serializing_if = "Option::is_none")]
     name: Option<AXValue<'a>>,
@@ -500,76 +529,92 @@ pub struct AXNode<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     properties: Option<Vec<AXProperty<'a>>>,
     /// ID for this node's parent.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    parentId: Option<AXNodeId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "parentId")]
+    parent_id: Option<AXNodeId<'a>>,
     /// IDs for each of this node's child nodes.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    childIds: Option<Vec<AXNodeId<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "childIds")]
+    child_ids: Option<Vec<AXNodeId<'a>>>,
     /// The backend ID for the associated DOM node, if any.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    backendDOMNodeId: Option<crate::dom::BackendNodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "backendDOMNodeId")]
+    backend_dom_node_id: Option<crate::dom::BackendNodeId>,
     /// The frame ID for the frame associated with this nodes document.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    frameId: Option<crate::page::FrameId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "frameId")]
+    frame_id: Option<crate::page::FrameId<'a>>,
 }
 
 impl<'a> AXNode<'a> {
-    pub fn builder(nodeId: impl Into<AXNodeId<'a>>, ignored: bool) -> AXNodeBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `node_id`: Unique identifier for this node.
+    /// * `ignored`: Whether this node is ignored for accessibility
+    pub fn builder(node_id: impl Into<AXNodeId<'a>>, ignored: bool) -> AXNodeBuilder<'a> {
         AXNodeBuilder {
-            nodeId: nodeId.into(),
+            node_id: node_id.into(),
             ignored: ignored,
-            ignoredReasons: None,
+            ignored_reasons: None,
             role: None,
-            chromeRole: None,
+            chrome_role: None,
             name: None,
             description: None,
             value: None,
             properties: None,
-            parentId: None,
-            childIds: None,
-            backendDOMNodeId: None,
-            frameId: None,
+            parent_id: None,
+            child_ids: None,
+            backend_dom_node_id: None,
+            frame_id: None,
         }
     }
-    pub fn nodeId(&self) -> &AXNodeId<'a> { &self.nodeId }
+    /// Unique identifier for this node.
+    pub fn node_id(&self) -> &AXNodeId<'a> { &self.node_id }
+    /// Whether this node is ignored for accessibility
     pub fn ignored(&self) -> bool { self.ignored }
-    pub fn ignoredReasons(&self) -> Option<&[AXProperty<'a>]> { self.ignoredReasons.as_deref() }
+    /// Collection of reasons why this node is hidden.
+    pub fn ignored_reasons(&self) -> Option<&[AXProperty<'a>]> { self.ignored_reasons.as_deref() }
+    /// This 'Node''s role, whether explicit or implicit.
     pub fn role(&self) -> Option<&AXValue<'a>> { self.role.as_ref() }
-    pub fn chromeRole(&self) -> Option<&AXValue<'a>> { self.chromeRole.as_ref() }
+    /// This 'Node''s Chrome raw role.
+    pub fn chrome_role(&self) -> Option<&AXValue<'a>> { self.chrome_role.as_ref() }
+    /// The accessible name for this 'Node'.
     pub fn name(&self) -> Option<&AXValue<'a>> { self.name.as_ref() }
+    /// The accessible description for this 'Node'.
     pub fn description(&self) -> Option<&AXValue<'a>> { self.description.as_ref() }
+    /// The value for this 'Node'.
     pub fn value(&self) -> Option<&AXValue<'a>> { self.value.as_ref() }
+    /// All other properties
     pub fn properties(&self) -> Option<&[AXProperty<'a>]> { self.properties.as_deref() }
-    pub fn parentId(&self) -> Option<&AXNodeId<'a>> { self.parentId.as_ref() }
-    pub fn childIds(&self) -> Option<&[AXNodeId<'a>]> { self.childIds.as_deref() }
-    pub fn backendDOMNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.backendDOMNodeId.as_ref() }
-    pub fn frameId(&self) -> Option<&crate::page::FrameId<'a>> { self.frameId.as_ref() }
+    /// ID for this node's parent.
+    pub fn parent_id(&self) -> Option<&AXNodeId<'a>> { self.parent_id.as_ref() }
+    /// IDs for each of this node's child nodes.
+    pub fn child_ids(&self) -> Option<&[AXNodeId<'a>]> { self.child_ids.as_deref() }
+    /// The backend ID for the associated DOM node, if any.
+    pub fn backend_dom_node_id(&self) -> Option<&crate::dom::BackendNodeId> { self.backend_dom_node_id.as_ref() }
+    /// The frame ID for the frame associated with this nodes document.
+    pub fn frame_id(&self) -> Option<&crate::page::FrameId<'a>> { self.frame_id.as_ref() }
 }
 
 
 pub struct AXNodeBuilder<'a> {
-    nodeId: AXNodeId<'a>,
+    node_id: AXNodeId<'a>,
     ignored: bool,
-    ignoredReasons: Option<Vec<AXProperty<'a>>>,
+    ignored_reasons: Option<Vec<AXProperty<'a>>>,
     role: Option<AXValue<'a>>,
-    chromeRole: Option<AXValue<'a>>,
+    chrome_role: Option<AXValue<'a>>,
     name: Option<AXValue<'a>>,
     description: Option<AXValue<'a>>,
     value: Option<AXValue<'a>>,
     properties: Option<Vec<AXProperty<'a>>>,
-    parentId: Option<AXNodeId<'a>>,
-    childIds: Option<Vec<AXNodeId<'a>>>,
-    backendDOMNodeId: Option<crate::dom::BackendNodeId>,
-    frameId: Option<crate::page::FrameId<'a>>,
+    parent_id: Option<AXNodeId<'a>>,
+    child_ids: Option<Vec<AXNodeId<'a>>>,
+    backend_dom_node_id: Option<crate::dom::BackendNodeId>,
+    frame_id: Option<crate::page::FrameId<'a>>,
 }
 
 impl<'a> AXNodeBuilder<'a> {
     /// Collection of reasons why this node is hidden.
-    pub fn ignoredReasons(mut self, ignoredReasons: Vec<AXProperty<'a>>) -> Self { self.ignoredReasons = Some(ignoredReasons); self }
+    pub fn ignored_reasons(mut self, ignored_reasons: Vec<AXProperty<'a>>) -> Self { self.ignored_reasons = Some(ignored_reasons); self }
     /// This 'Node''s role, whether explicit or implicit.
     pub fn role(mut self, role: AXValue<'a>) -> Self { self.role = Some(role); self }
     /// This 'Node''s Chrome raw role.
-    pub fn chromeRole(mut self, chromeRole: AXValue<'a>) -> Self { self.chromeRole = Some(chromeRole); self }
+    pub fn chrome_role(mut self, chrome_role: AXValue<'a>) -> Self { self.chrome_role = Some(chrome_role); self }
     /// The accessible name for this 'Node'.
     pub fn name(mut self, name: AXValue<'a>) -> Self { self.name = Some(name); self }
     /// The accessible description for this 'Node'.
@@ -579,28 +624,28 @@ impl<'a> AXNodeBuilder<'a> {
     /// All other properties
     pub fn properties(mut self, properties: Vec<AXProperty<'a>>) -> Self { self.properties = Some(properties); self }
     /// ID for this node's parent.
-    pub fn parentId(mut self, parentId: impl Into<AXNodeId<'a>>) -> Self { self.parentId = Some(parentId.into()); self }
+    pub fn parent_id(mut self, parent_id: impl Into<AXNodeId<'a>>) -> Self { self.parent_id = Some(parent_id.into()); self }
     /// IDs for each of this node's child nodes.
-    pub fn childIds(mut self, childIds: Vec<AXNodeId<'a>>) -> Self { self.childIds = Some(childIds); self }
+    pub fn child_ids(mut self, child_ids: Vec<AXNodeId<'a>>) -> Self { self.child_ids = Some(child_ids); self }
     /// The backend ID for the associated DOM node, if any.
-    pub fn backendDOMNodeId(mut self, backendDOMNodeId: crate::dom::BackendNodeId) -> Self { self.backendDOMNodeId = Some(backendDOMNodeId); self }
+    pub fn backend_dom_node_id(mut self, backend_dom_node_id: crate::dom::BackendNodeId) -> Self { self.backend_dom_node_id = Some(backend_dom_node_id); self }
     /// The frame ID for the frame associated with this nodes document.
-    pub fn frameId(mut self, frameId: crate::page::FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
+    pub fn frame_id(mut self, frame_id: crate::page::FrameId<'a>) -> Self { self.frame_id = Some(frame_id); self }
     pub fn build(self) -> AXNode<'a> {
         AXNode {
-            nodeId: self.nodeId,
+            node_id: self.node_id,
             ignored: self.ignored,
-            ignoredReasons: self.ignoredReasons,
+            ignored_reasons: self.ignored_reasons,
             role: self.role,
-            chromeRole: self.chromeRole,
+            chrome_role: self.chrome_role,
             name: self.name,
             description: self.description,
             value: self.value,
             properties: self.properties,
-            parentId: self.parentId,
-            childIds: self.childIds,
-            backendDOMNodeId: self.backendDOMNodeId,
-            frameId: self.frameId,
+            parent_id: self.parent_id,
+            child_ids: self.child_ids,
+            backend_dom_node_id: self.backend_dom_node_id,
+            frame_id: self.frame_id,
         }
     }
 }
@@ -631,57 +676,62 @@ impl<'a> crate::CdpCommand<'a> for EnableParams {
 #[serde(rename_all = "camelCase")]
 pub struct GetPartialAXTreeParams<'a> {
     /// Identifier of the node to get the partial accessibility tree for.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    nodeId: Option<crate::dom::NodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "nodeId")]
+    node_id: Option<crate::dom::NodeId>,
     /// Identifier of the backend node to get the partial accessibility tree for.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    backendNodeId: Option<crate::dom::BackendNodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "backendNodeId")]
+    backend_node_id: Option<crate::dom::BackendNodeId>,
     /// JavaScript object id of the node wrapper to get the partial accessibility tree for.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    objectId: Option<crate::runtime::RemoteObjectId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "objectId")]
+    object_id: Option<crate::runtime::RemoteObjectId<'a>>,
     /// Whether to fetch this node's ancestors, siblings and children. Defaults to true.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    fetchRelatives: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "fetchRelatives")]
+    fetch_relatives: Option<bool>,
 }
 
 impl<'a> GetPartialAXTreeParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> GetPartialAXTreeParamsBuilder<'a> {
         GetPartialAXTreeParamsBuilder {
-            nodeId: None,
-            backendNodeId: None,
-            objectId: None,
-            fetchRelatives: None,
+            node_id: None,
+            backend_node_id: None,
+            object_id: None,
+            fetch_relatives: None,
         }
     }
-    pub fn nodeId(&self) -> Option<&crate::dom::NodeId> { self.nodeId.as_ref() }
-    pub fn backendNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.backendNodeId.as_ref() }
-    pub fn objectId(&self) -> Option<&crate::runtime::RemoteObjectId<'a>> { self.objectId.as_ref() }
-    pub fn fetchRelatives(&self) -> Option<bool> { self.fetchRelatives }
+    /// Identifier of the node to get the partial accessibility tree for.
+    pub fn node_id(&self) -> Option<&crate::dom::NodeId> { self.node_id.as_ref() }
+    /// Identifier of the backend node to get the partial accessibility tree for.
+    pub fn backend_node_id(&self) -> Option<&crate::dom::BackendNodeId> { self.backend_node_id.as_ref() }
+    /// JavaScript object id of the node wrapper to get the partial accessibility tree for.
+    pub fn object_id(&self) -> Option<&crate::runtime::RemoteObjectId<'a>> { self.object_id.as_ref() }
+    /// Whether to fetch this node's ancestors, siblings and children. Defaults to true.
+    pub fn fetch_relatives(&self) -> Option<bool> { self.fetch_relatives }
 }
 
 #[derive(Default)]
 pub struct GetPartialAXTreeParamsBuilder<'a> {
-    nodeId: Option<crate::dom::NodeId>,
-    backendNodeId: Option<crate::dom::BackendNodeId>,
-    objectId: Option<crate::runtime::RemoteObjectId<'a>>,
-    fetchRelatives: Option<bool>,
+    node_id: Option<crate::dom::NodeId>,
+    backend_node_id: Option<crate::dom::BackendNodeId>,
+    object_id: Option<crate::runtime::RemoteObjectId<'a>>,
+    fetch_relatives: Option<bool>,
 }
 
 impl<'a> GetPartialAXTreeParamsBuilder<'a> {
     /// Identifier of the node to get the partial accessibility tree for.
-    pub fn nodeId(mut self, nodeId: crate::dom::NodeId) -> Self { self.nodeId = Some(nodeId); self }
+    pub fn node_id(mut self, node_id: crate::dom::NodeId) -> Self { self.node_id = Some(node_id); self }
     /// Identifier of the backend node to get the partial accessibility tree for.
-    pub fn backendNodeId(mut self, backendNodeId: crate::dom::BackendNodeId) -> Self { self.backendNodeId = Some(backendNodeId); self }
+    pub fn backend_node_id(mut self, backend_node_id: crate::dom::BackendNodeId) -> Self { self.backend_node_id = Some(backend_node_id); self }
     /// JavaScript object id of the node wrapper to get the partial accessibility tree for.
-    pub fn objectId(mut self, objectId: crate::runtime::RemoteObjectId<'a>) -> Self { self.objectId = Some(objectId); self }
+    pub fn object_id(mut self, object_id: crate::runtime::RemoteObjectId<'a>) -> Self { self.object_id = Some(object_id); self }
     /// Whether to fetch this node's ancestors, siblings and children. Defaults to true.
-    pub fn fetchRelatives(mut self, fetchRelatives: bool) -> Self { self.fetchRelatives = Some(fetchRelatives); self }
+    pub fn fetch_relatives(mut self, fetch_relatives: bool) -> Self { self.fetch_relatives = Some(fetch_relatives); self }
     pub fn build(self) -> GetPartialAXTreeParams<'a> {
         GetPartialAXTreeParams {
-            nodeId: self.nodeId,
-            backendNodeId: self.backendNodeId,
-            objectId: self.objectId,
-            fetchRelatives: self.fetchRelatives,
+            node_id: self.node_id,
+            backend_node_id: self.backend_node_id,
+            object_id: self.object_id,
+            fetch_relatives: self.fetch_relatives,
         }
     }
 }
@@ -697,11 +747,15 @@ pub struct GetPartialAXTreeReturns<'a> {
 }
 
 impl<'a> GetPartialAXTreeReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `nodes`: The `Accessibility.AXNode` for this DOM node, if it exists, plus its ancestors, siblings and children, if requested.
     pub fn builder(nodes: Vec<AXNode<'a>>) -> GetPartialAXTreeReturnsBuilder<'a> {
         GetPartialAXTreeReturnsBuilder {
             nodes: nodes,
         }
     }
+    /// The 'Accessibility.AXNode' for this DOM node, if it exists, plus its ancestors, siblings and
+    /// children, if requested.
     pub fn nodes(&self) -> &[AXNode<'a>] { &self.nodes }
 }
 
@@ -736,25 +790,30 @@ pub struct GetFullAXTreeParams<'a> {
     depth: Option<i64>,
     /// The frame for whose document the AX tree should be retrieved.
     /// If omitted, the root frame is used.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    frameId: Option<crate::page::FrameId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "frameId")]
+    frame_id: Option<crate::page::FrameId<'a>>,
 }
 
 impl<'a> GetFullAXTreeParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> GetFullAXTreeParamsBuilder<'a> {
         GetFullAXTreeParamsBuilder {
             depth: None,
-            frameId: None,
+            frame_id: None,
         }
     }
+    /// The maximum depth at which descendants of the root node should be retrieved.
+    /// If omitted, the full tree is returned.
     pub fn depth(&self) -> Option<i64> { self.depth }
-    pub fn frameId(&self) -> Option<&crate::page::FrameId<'a>> { self.frameId.as_ref() }
+    /// The frame for whose document the AX tree should be retrieved.
+    /// If omitted, the root frame is used.
+    pub fn frame_id(&self) -> Option<&crate::page::FrameId<'a>> { self.frame_id.as_ref() }
 }
 
 #[derive(Default)]
 pub struct GetFullAXTreeParamsBuilder<'a> {
     depth: Option<i64>,
-    frameId: Option<crate::page::FrameId<'a>>,
+    frame_id: Option<crate::page::FrameId<'a>>,
 }
 
 impl<'a> GetFullAXTreeParamsBuilder<'a> {
@@ -763,11 +822,11 @@ impl<'a> GetFullAXTreeParamsBuilder<'a> {
     pub fn depth(mut self, depth: i64) -> Self { self.depth = Some(depth); self }
     /// The frame for whose document the AX tree should be retrieved.
     /// If omitted, the root frame is used.
-    pub fn frameId(mut self, frameId: crate::page::FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
+    pub fn frame_id(mut self, frame_id: crate::page::FrameId<'a>) -> Self { self.frame_id = Some(frame_id); self }
     pub fn build(self) -> GetFullAXTreeParams<'a> {
         GetFullAXTreeParams {
             depth: self.depth,
-            frameId: self.frameId,
+            frame_id: self.frame_id,
         }
     }
 }
@@ -781,6 +840,8 @@ pub struct GetFullAXTreeReturns<'a> {
 }
 
 impl<'a> GetFullAXTreeReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `nodes`: 
     pub fn builder(nodes: Vec<AXNode<'a>>) -> GetFullAXTreeReturnsBuilder<'a> {
         GetFullAXTreeReturnsBuilder {
             nodes: nodes,
@@ -817,31 +878,34 @@ impl<'a> crate::CdpCommand<'a> for GetFullAXTreeParams<'a> {
 pub struct GetRootAXNodeParams<'a> {
     /// The frame in whose document the node resides.
     /// If omitted, the root frame is used.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    frameId: Option<crate::page::FrameId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "frameId")]
+    frame_id: Option<crate::page::FrameId<'a>>,
 }
 
 impl<'a> GetRootAXNodeParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> GetRootAXNodeParamsBuilder<'a> {
         GetRootAXNodeParamsBuilder {
-            frameId: None,
+            frame_id: None,
         }
     }
-    pub fn frameId(&self) -> Option<&crate::page::FrameId<'a>> { self.frameId.as_ref() }
+    /// The frame in whose document the node resides.
+    /// If omitted, the root frame is used.
+    pub fn frame_id(&self) -> Option<&crate::page::FrameId<'a>> { self.frame_id.as_ref() }
 }
 
 #[derive(Default)]
 pub struct GetRootAXNodeParamsBuilder<'a> {
-    frameId: Option<crate::page::FrameId<'a>>,
+    frame_id: Option<crate::page::FrameId<'a>>,
 }
 
 impl<'a> GetRootAXNodeParamsBuilder<'a> {
     /// The frame in whose document the node resides.
     /// If omitted, the root frame is used.
-    pub fn frameId(mut self, frameId: crate::page::FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
+    pub fn frame_id(mut self, frame_id: crate::page::FrameId<'a>) -> Self { self.frame_id = Some(frame_id); self }
     pub fn build(self) -> GetRootAXNodeParams<'a> {
         GetRootAXNodeParams {
-            frameId: self.frameId,
+            frame_id: self.frame_id,
         }
     }
 }
@@ -856,6 +920,8 @@ pub struct GetRootAXNodeReturns<'a> {
 }
 
 impl<'a> GetRootAXNodeReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `node`: 
     pub fn builder(node: AXNode<'a>) -> GetRootAXNodeReturnsBuilder<'a> {
         GetRootAXNodeReturnsBuilder {
             node: node,
@@ -891,48 +957,52 @@ impl<'a> crate::CdpCommand<'a> for GetRootAXNodeParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct GetAXNodeAndAncestorsParams<'a> {
     /// Identifier of the node to get.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    nodeId: Option<crate::dom::NodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "nodeId")]
+    node_id: Option<crate::dom::NodeId>,
     /// Identifier of the backend node to get.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    backendNodeId: Option<crate::dom::BackendNodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "backendNodeId")]
+    backend_node_id: Option<crate::dom::BackendNodeId>,
     /// JavaScript object id of the node wrapper to get.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    objectId: Option<crate::runtime::RemoteObjectId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "objectId")]
+    object_id: Option<crate::runtime::RemoteObjectId<'a>>,
 }
 
 impl<'a> GetAXNodeAndAncestorsParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> GetAXNodeAndAncestorsParamsBuilder<'a> {
         GetAXNodeAndAncestorsParamsBuilder {
-            nodeId: None,
-            backendNodeId: None,
-            objectId: None,
+            node_id: None,
+            backend_node_id: None,
+            object_id: None,
         }
     }
-    pub fn nodeId(&self) -> Option<&crate::dom::NodeId> { self.nodeId.as_ref() }
-    pub fn backendNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.backendNodeId.as_ref() }
-    pub fn objectId(&self) -> Option<&crate::runtime::RemoteObjectId<'a>> { self.objectId.as_ref() }
+    /// Identifier of the node to get.
+    pub fn node_id(&self) -> Option<&crate::dom::NodeId> { self.node_id.as_ref() }
+    /// Identifier of the backend node to get.
+    pub fn backend_node_id(&self) -> Option<&crate::dom::BackendNodeId> { self.backend_node_id.as_ref() }
+    /// JavaScript object id of the node wrapper to get.
+    pub fn object_id(&self) -> Option<&crate::runtime::RemoteObjectId<'a>> { self.object_id.as_ref() }
 }
 
 #[derive(Default)]
 pub struct GetAXNodeAndAncestorsParamsBuilder<'a> {
-    nodeId: Option<crate::dom::NodeId>,
-    backendNodeId: Option<crate::dom::BackendNodeId>,
-    objectId: Option<crate::runtime::RemoteObjectId<'a>>,
+    node_id: Option<crate::dom::NodeId>,
+    backend_node_id: Option<crate::dom::BackendNodeId>,
+    object_id: Option<crate::runtime::RemoteObjectId<'a>>,
 }
 
 impl<'a> GetAXNodeAndAncestorsParamsBuilder<'a> {
     /// Identifier of the node to get.
-    pub fn nodeId(mut self, nodeId: crate::dom::NodeId) -> Self { self.nodeId = Some(nodeId); self }
+    pub fn node_id(mut self, node_id: crate::dom::NodeId) -> Self { self.node_id = Some(node_id); self }
     /// Identifier of the backend node to get.
-    pub fn backendNodeId(mut self, backendNodeId: crate::dom::BackendNodeId) -> Self { self.backendNodeId = Some(backendNodeId); self }
+    pub fn backend_node_id(mut self, backend_node_id: crate::dom::BackendNodeId) -> Self { self.backend_node_id = Some(backend_node_id); self }
     /// JavaScript object id of the node wrapper to get.
-    pub fn objectId(mut self, objectId: crate::runtime::RemoteObjectId<'a>) -> Self { self.objectId = Some(objectId); self }
+    pub fn object_id(mut self, object_id: crate::runtime::RemoteObjectId<'a>) -> Self { self.object_id = Some(object_id); self }
     pub fn build(self) -> GetAXNodeAndAncestorsParams<'a> {
         GetAXNodeAndAncestorsParams {
-            nodeId: self.nodeId,
-            backendNodeId: self.backendNodeId,
-            objectId: self.objectId,
+            node_id: self.node_id,
+            backend_node_id: self.backend_node_id,
+            object_id: self.object_id,
         }
     }
 }
@@ -947,6 +1017,8 @@ pub struct GetAXNodeAndAncestorsReturns<'a> {
 }
 
 impl<'a> GetAXNodeAndAncestorsReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `nodes`: 
     pub fn builder(nodes: Vec<AXNode<'a>>) -> GetAXNodeAndAncestorsReturnsBuilder<'a> {
         GetAXNodeAndAncestorsReturnsBuilder {
             nodes: nodes,
@@ -984,35 +1056,39 @@ pub struct GetChildAXNodesParams<'a> {
     id: AXNodeId<'a>,
     /// The frame in whose document the node resides.
     /// If omitted, the root frame is used.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    frameId: Option<crate::page::FrameId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "frameId")]
+    frame_id: Option<crate::page::FrameId<'a>>,
 }
 
 impl<'a> GetChildAXNodesParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `id`: 
     pub fn builder(id: impl Into<AXNodeId<'a>>) -> GetChildAXNodesParamsBuilder<'a> {
         GetChildAXNodesParamsBuilder {
             id: id.into(),
-            frameId: None,
+            frame_id: None,
         }
     }
     pub fn id(&self) -> &AXNodeId<'a> { &self.id }
-    pub fn frameId(&self) -> Option<&crate::page::FrameId<'a>> { self.frameId.as_ref() }
+    /// The frame in whose document the node resides.
+    /// If omitted, the root frame is used.
+    pub fn frame_id(&self) -> Option<&crate::page::FrameId<'a>> { self.frame_id.as_ref() }
 }
 
 
 pub struct GetChildAXNodesParamsBuilder<'a> {
     id: AXNodeId<'a>,
-    frameId: Option<crate::page::FrameId<'a>>,
+    frame_id: Option<crate::page::FrameId<'a>>,
 }
 
 impl<'a> GetChildAXNodesParamsBuilder<'a> {
     /// The frame in whose document the node resides.
     /// If omitted, the root frame is used.
-    pub fn frameId(mut self, frameId: crate::page::FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
+    pub fn frame_id(mut self, frame_id: crate::page::FrameId<'a>) -> Self { self.frame_id = Some(frame_id); self }
     pub fn build(self) -> GetChildAXNodesParams<'a> {
         GetChildAXNodesParams {
             id: self.id,
-            frameId: self.frameId,
+            frame_id: self.frame_id,
         }
     }
 }
@@ -1027,6 +1103,8 @@ pub struct GetChildAXNodesReturns<'a> {
 }
 
 impl<'a> GetChildAXNodesReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `nodes`: 
     pub fn builder(nodes: Vec<AXNode<'a>>) -> GetChildAXNodesReturnsBuilder<'a> {
         GetChildAXNodesReturnsBuilder {
             nodes: nodes,
@@ -1065,65 +1143,71 @@ impl<'a> crate::CdpCommand<'a> for GetChildAXNodesParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct QueryAXTreeParams<'a> {
     /// Identifier of the node for the root to query.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    nodeId: Option<crate::dom::NodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "nodeId")]
+    node_id: Option<crate::dom::NodeId>,
     /// Identifier of the backend node for the root to query.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    backendNodeId: Option<crate::dom::BackendNodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "backendNodeId")]
+    backend_node_id: Option<crate::dom::BackendNodeId>,
     /// JavaScript object id of the node wrapper for the root to query.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    objectId: Option<crate::runtime::RemoteObjectId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "objectId")]
+    object_id: Option<crate::runtime::RemoteObjectId<'a>>,
     /// Find nodes with this computed name.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    accessibleName: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "accessibleName")]
+    accessible_name: Option<Cow<'a, str>>,
     /// Find nodes with this computed role.
     #[serde(skip_serializing_if = "Option::is_none")]
     role: Option<Cow<'a, str>>,
 }
 
 impl<'a> QueryAXTreeParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> QueryAXTreeParamsBuilder<'a> {
         QueryAXTreeParamsBuilder {
-            nodeId: None,
-            backendNodeId: None,
-            objectId: None,
-            accessibleName: None,
+            node_id: None,
+            backend_node_id: None,
+            object_id: None,
+            accessible_name: None,
             role: None,
         }
     }
-    pub fn nodeId(&self) -> Option<&crate::dom::NodeId> { self.nodeId.as_ref() }
-    pub fn backendNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.backendNodeId.as_ref() }
-    pub fn objectId(&self) -> Option<&crate::runtime::RemoteObjectId<'a>> { self.objectId.as_ref() }
-    pub fn accessibleName(&self) -> Option<&str> { self.accessibleName.as_deref() }
+    /// Identifier of the node for the root to query.
+    pub fn node_id(&self) -> Option<&crate::dom::NodeId> { self.node_id.as_ref() }
+    /// Identifier of the backend node for the root to query.
+    pub fn backend_node_id(&self) -> Option<&crate::dom::BackendNodeId> { self.backend_node_id.as_ref() }
+    /// JavaScript object id of the node wrapper for the root to query.
+    pub fn object_id(&self) -> Option<&crate::runtime::RemoteObjectId<'a>> { self.object_id.as_ref() }
+    /// Find nodes with this computed name.
+    pub fn accessible_name(&self) -> Option<&str> { self.accessible_name.as_deref() }
+    /// Find nodes with this computed role.
     pub fn role(&self) -> Option<&str> { self.role.as_deref() }
 }
 
 #[derive(Default)]
 pub struct QueryAXTreeParamsBuilder<'a> {
-    nodeId: Option<crate::dom::NodeId>,
-    backendNodeId: Option<crate::dom::BackendNodeId>,
-    objectId: Option<crate::runtime::RemoteObjectId<'a>>,
-    accessibleName: Option<Cow<'a, str>>,
+    node_id: Option<crate::dom::NodeId>,
+    backend_node_id: Option<crate::dom::BackendNodeId>,
+    object_id: Option<crate::runtime::RemoteObjectId<'a>>,
+    accessible_name: Option<Cow<'a, str>>,
     role: Option<Cow<'a, str>>,
 }
 
 impl<'a> QueryAXTreeParamsBuilder<'a> {
     /// Identifier of the node for the root to query.
-    pub fn nodeId(mut self, nodeId: crate::dom::NodeId) -> Self { self.nodeId = Some(nodeId); self }
+    pub fn node_id(mut self, node_id: crate::dom::NodeId) -> Self { self.node_id = Some(node_id); self }
     /// Identifier of the backend node for the root to query.
-    pub fn backendNodeId(mut self, backendNodeId: crate::dom::BackendNodeId) -> Self { self.backendNodeId = Some(backendNodeId); self }
+    pub fn backend_node_id(mut self, backend_node_id: crate::dom::BackendNodeId) -> Self { self.backend_node_id = Some(backend_node_id); self }
     /// JavaScript object id of the node wrapper for the root to query.
-    pub fn objectId(mut self, objectId: crate::runtime::RemoteObjectId<'a>) -> Self { self.objectId = Some(objectId); self }
+    pub fn object_id(mut self, object_id: crate::runtime::RemoteObjectId<'a>) -> Self { self.object_id = Some(object_id); self }
     /// Find nodes with this computed name.
-    pub fn accessibleName(mut self, accessibleName: impl Into<Cow<'a, str>>) -> Self { self.accessibleName = Some(accessibleName.into()); self }
+    pub fn accessible_name(mut self, accessible_name: impl Into<Cow<'a, str>>) -> Self { self.accessible_name = Some(accessible_name.into()); self }
     /// Find nodes with this computed role.
     pub fn role(mut self, role: impl Into<Cow<'a, str>>) -> Self { self.role = Some(role.into()); self }
     pub fn build(self) -> QueryAXTreeParams<'a> {
         QueryAXTreeParams {
-            nodeId: self.nodeId,
-            backendNodeId: self.backendNodeId,
-            objectId: self.objectId,
-            accessibleName: self.accessibleName,
+            node_id: self.node_id,
+            backend_node_id: self.backend_node_id,
+            object_id: self.object_id,
+            accessible_name: self.accessible_name,
             role: self.role,
         }
     }
@@ -1144,11 +1228,15 @@ pub struct QueryAXTreeReturns<'a> {
 }
 
 impl<'a> QueryAXTreeReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `nodes`: A list of `Accessibility.AXNode` matching the specified attributes, including nodes that are ignored for accessibility.
     pub fn builder(nodes: Vec<AXNode<'a>>) -> QueryAXTreeReturnsBuilder<'a> {
         QueryAXTreeReturnsBuilder {
             nodes: nodes,
         }
     }
+    /// A list of 'Accessibility.AXNode' matching the specified attributes,
+    /// including nodes that are ignored for accessibility.
     pub fn nodes(&self) -> &[AXNode<'a>] { &self.nodes }
 }
 

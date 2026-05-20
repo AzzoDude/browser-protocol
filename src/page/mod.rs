@@ -39,25 +39,28 @@ pub enum AdFrameExplanation {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct AdFrameStatus {
-    adFrameType: AdFrameType,
+    #[serde(rename = "adFrameType")]
+    ad_frame_type: AdFrameType,
     #[serde(skip_serializing_if = "Option::is_none")]
     explanations: Option<Vec<AdFrameExplanation>>,
 }
 
 impl AdFrameStatus {
-    pub fn builder(adFrameType: impl Into<AdFrameType>) -> AdFrameStatusBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `ad_frame_type`: 
+    pub fn builder(ad_frame_type: impl Into<AdFrameType>) -> AdFrameStatusBuilder {
         AdFrameStatusBuilder {
-            adFrameType: adFrameType.into(),
+            ad_frame_type: ad_frame_type.into(),
             explanations: None,
         }
     }
-    pub fn adFrameType(&self) -> &AdFrameType { &self.adFrameType }
+    pub fn ad_frame_type(&self) -> &AdFrameType { &self.ad_frame_type }
     pub fn explanations(&self) -> Option<&[AdFrameExplanation]> { self.explanations.as_deref() }
 }
 
 
 pub struct AdFrameStatusBuilder {
-    adFrameType: AdFrameType,
+    ad_frame_type: AdFrameType,
     explanations: Option<Vec<AdFrameExplanation>>,
 }
 
@@ -65,7 +68,7 @@ impl AdFrameStatusBuilder {
     pub fn explanations(mut self, explanations: Vec<AdFrameExplanation>) -> Self { self.explanations = Some(explanations); self }
     pub fn build(self) -> AdFrameStatus {
         AdFrameStatus {
-            adFrameType: self.adFrameType,
+            ad_frame_type: self.ad_frame_type,
             explanations: self.explanations,
         }
     }
@@ -361,32 +364,37 @@ pub enum PermissionsPolicyBlockReason {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct PermissionsPolicyBlockLocator<'a> {
-    frameId: FrameId<'a>,
-    blockReason: PermissionsPolicyBlockReason,
+    #[serde(rename = "frameId")]
+    frame_id: FrameId<'a>,
+    #[serde(rename = "blockReason")]
+    block_reason: PermissionsPolicyBlockReason,
 }
 
 impl<'a> PermissionsPolicyBlockLocator<'a> {
-    pub fn builder(frameId: impl Into<FrameId<'a>>, blockReason: impl Into<PermissionsPolicyBlockReason>) -> PermissionsPolicyBlockLocatorBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `frame_id`: 
+    /// * `block_reason`: 
+    pub fn builder(frame_id: impl Into<FrameId<'a>>, block_reason: impl Into<PermissionsPolicyBlockReason>) -> PermissionsPolicyBlockLocatorBuilder<'a> {
         PermissionsPolicyBlockLocatorBuilder {
-            frameId: frameId.into(),
-            blockReason: blockReason.into(),
+            frame_id: frame_id.into(),
+            block_reason: block_reason.into(),
         }
     }
-    pub fn frameId(&self) -> &FrameId<'a> { &self.frameId }
-    pub fn blockReason(&self) -> &PermissionsPolicyBlockReason { &self.blockReason }
+    pub fn frame_id(&self) -> &FrameId<'a> { &self.frame_id }
+    pub fn block_reason(&self) -> &PermissionsPolicyBlockReason { &self.block_reason }
 }
 
 
 pub struct PermissionsPolicyBlockLocatorBuilder<'a> {
-    frameId: FrameId<'a>,
-    blockReason: PermissionsPolicyBlockReason,
+    frame_id: FrameId<'a>,
+    block_reason: PermissionsPolicyBlockReason,
 }
 
 impl<'a> PermissionsPolicyBlockLocatorBuilder<'a> {
     pub fn build(self) -> PermissionsPolicyBlockLocator<'a> {
         PermissionsPolicyBlockLocator {
-            frameId: self.frameId,
-            blockReason: self.blockReason,
+            frame_id: self.frame_id,
+            block_reason: self.block_reason,
         }
     }
 }
@@ -402,6 +410,9 @@ pub struct PermissionsPolicyFeatureState<'a> {
 }
 
 impl<'a> PermissionsPolicyFeatureState<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `feature`: 
+    /// * `allowed`: 
     pub fn builder(feature: impl Into<PermissionsPolicyFeature>, allowed: bool) -> PermissionsPolicyFeatureStateBuilder<'a> {
         PermissionsPolicyFeatureStateBuilder {
             feature: feature.into(),
@@ -432,7 +443,7 @@ impl<'a> PermissionsPolicyFeatureStateBuilder<'a> {
     }
 }
 
-/// Origin Trial(https://www.chromium.org/blink/origin-trials) support.
+/// Origin Trial(<https://www.chromium.org/blink/origin-trials>) support.
 /// Status for an Origin Trial token.
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
@@ -494,51 +505,63 @@ pub enum OriginTrialUsageRestriction {
 #[serde(rename_all = "camelCase")]
 pub struct OriginTrialToken<'a> {
     origin: Cow<'a, str>,
-    matchSubDomains: bool,
-    trialName: Cow<'a, str>,
-    expiryTime: crate::network::TimeSinceEpoch,
-    isThirdParty: bool,
-    usageRestriction: OriginTrialUsageRestriction,
+    #[serde(rename = "matchSubDomains")]
+    match_sub_domains: bool,
+    #[serde(rename = "trialName")]
+    trial_name: Cow<'a, str>,
+    #[serde(rename = "expiryTime")]
+    expiry_time: crate::network::TimeSinceEpoch,
+    #[serde(rename = "isThirdParty")]
+    is_third_party: bool,
+    #[serde(rename = "usageRestriction")]
+    usage_restriction: OriginTrialUsageRestriction,
 }
 
 impl<'a> OriginTrialToken<'a> {
-    pub fn builder(origin: impl Into<Cow<'a, str>>, matchSubDomains: bool, trialName: impl Into<Cow<'a, str>>, expiryTime: crate::network::TimeSinceEpoch, isThirdParty: bool, usageRestriction: impl Into<OriginTrialUsageRestriction>) -> OriginTrialTokenBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `origin`: 
+    /// * `match_sub_domains`: 
+    /// * `trial_name`: 
+    /// * `expiry_time`: 
+    /// * `is_third_party`: 
+    /// * `usage_restriction`: 
+    pub fn builder(origin: impl Into<Cow<'a, str>>, match_sub_domains: bool, trial_name: impl Into<Cow<'a, str>>, expiry_time: crate::network::TimeSinceEpoch, is_third_party: bool, usage_restriction: impl Into<OriginTrialUsageRestriction>) -> OriginTrialTokenBuilder<'a> {
         OriginTrialTokenBuilder {
             origin: origin.into(),
-            matchSubDomains: matchSubDomains,
-            trialName: trialName.into(),
-            expiryTime: expiryTime,
-            isThirdParty: isThirdParty,
-            usageRestriction: usageRestriction.into(),
+            match_sub_domains: match_sub_domains,
+            trial_name: trial_name.into(),
+            expiry_time: expiry_time,
+            is_third_party: is_third_party,
+            usage_restriction: usage_restriction.into(),
         }
     }
     pub fn origin(&self) -> &str { self.origin.as_ref() }
-    pub fn matchSubDomains(&self) -> bool { self.matchSubDomains }
-    pub fn trialName(&self) -> &str { self.trialName.as_ref() }
-    pub fn expiryTime(&self) -> &crate::network::TimeSinceEpoch { &self.expiryTime }
-    pub fn isThirdParty(&self) -> bool { self.isThirdParty }
-    pub fn usageRestriction(&self) -> &OriginTrialUsageRestriction { &self.usageRestriction }
+    pub fn match_sub_domains(&self) -> bool { self.match_sub_domains }
+    pub fn trial_name(&self) -> &str { self.trial_name.as_ref() }
+    pub fn expiry_time(&self) -> &crate::network::TimeSinceEpoch { &self.expiry_time }
+    pub fn is_third_party(&self) -> bool { self.is_third_party }
+    pub fn usage_restriction(&self) -> &OriginTrialUsageRestriction { &self.usage_restriction }
 }
 
 
 pub struct OriginTrialTokenBuilder<'a> {
     origin: Cow<'a, str>,
-    matchSubDomains: bool,
-    trialName: Cow<'a, str>,
-    expiryTime: crate::network::TimeSinceEpoch,
-    isThirdParty: bool,
-    usageRestriction: OriginTrialUsageRestriction,
+    match_sub_domains: bool,
+    trial_name: Cow<'a, str>,
+    expiry_time: crate::network::TimeSinceEpoch,
+    is_third_party: bool,
+    usage_restriction: OriginTrialUsageRestriction,
 }
 
 impl<'a> OriginTrialTokenBuilder<'a> {
     pub fn build(self) -> OriginTrialToken<'a> {
         OriginTrialToken {
             origin: self.origin,
-            matchSubDomains: self.matchSubDomains,
-            trialName: self.trialName,
-            expiryTime: self.expiryTime,
-            isThirdParty: self.isThirdParty,
-            usageRestriction: self.usageRestriction,
+            match_sub_domains: self.match_sub_domains,
+            trial_name: self.trial_name,
+            expiry_time: self.expiry_time,
+            is_third_party: self.is_third_party,
+            usage_restriction: self.usage_restriction,
         }
     }
 }
@@ -547,42 +570,48 @@ impl<'a> OriginTrialTokenBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct OriginTrialTokenWithStatus<'a> {
-    rawTokenText: Cow<'a, str>,
+    #[serde(rename = "rawTokenText")]
+    raw_token_text: Cow<'a, str>,
     /// 'parsedToken' is present only when the token is extractable and
     /// parsable.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    parsedToken: Option<OriginTrialToken<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "parsedToken")]
+    parsed_token: Option<OriginTrialToken<'a>>,
     status: OriginTrialTokenStatus,
 }
 
 impl<'a> OriginTrialTokenWithStatus<'a> {
-    pub fn builder(rawTokenText: impl Into<Cow<'a, str>>, status: impl Into<OriginTrialTokenStatus>) -> OriginTrialTokenWithStatusBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `raw_token_text`: 
+    /// * `status`: 
+    pub fn builder(raw_token_text: impl Into<Cow<'a, str>>, status: impl Into<OriginTrialTokenStatus>) -> OriginTrialTokenWithStatusBuilder<'a> {
         OriginTrialTokenWithStatusBuilder {
-            rawTokenText: rawTokenText.into(),
-            parsedToken: None,
+            raw_token_text: raw_token_text.into(),
+            parsed_token: None,
             status: status.into(),
         }
     }
-    pub fn rawTokenText(&self) -> &str { self.rawTokenText.as_ref() }
-    pub fn parsedToken(&self) -> Option<&OriginTrialToken<'a>> { self.parsedToken.as_ref() }
+    pub fn raw_token_text(&self) -> &str { self.raw_token_text.as_ref() }
+    /// 'parsedToken' is present only when the token is extractable and
+    /// parsable.
+    pub fn parsed_token(&self) -> Option<&OriginTrialToken<'a>> { self.parsed_token.as_ref() }
     pub fn status(&self) -> &OriginTrialTokenStatus { &self.status }
 }
 
 
 pub struct OriginTrialTokenWithStatusBuilder<'a> {
-    rawTokenText: Cow<'a, str>,
-    parsedToken: Option<OriginTrialToken<'a>>,
+    raw_token_text: Cow<'a, str>,
+    parsed_token: Option<OriginTrialToken<'a>>,
     status: OriginTrialTokenStatus,
 }
 
 impl<'a> OriginTrialTokenWithStatusBuilder<'a> {
     /// 'parsedToken' is present only when the token is extractable and
     /// parsable.
-    pub fn parsedToken(mut self, parsedToken: OriginTrialToken<'a>) -> Self { self.parsedToken = Some(parsedToken); self }
+    pub fn parsed_token(mut self, parsed_token: OriginTrialToken<'a>) -> Self { self.parsed_token = Some(parsed_token); self }
     pub fn build(self) -> OriginTrialTokenWithStatus<'a> {
         OriginTrialTokenWithStatus {
-            rawTokenText: self.rawTokenText,
-            parsedToken: self.parsedToken,
+            raw_token_text: self.raw_token_text,
+            parsed_token: self.parsed_token,
             status: self.status,
         }
     }
@@ -592,37 +621,43 @@ impl<'a> OriginTrialTokenWithStatusBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct OriginTrial<'a> {
-    trialName: Cow<'a, str>,
+    #[serde(rename = "trialName")]
+    trial_name: Cow<'a, str>,
     status: OriginTrialStatus,
-    tokensWithStatus: Vec<OriginTrialTokenWithStatus<'a>>,
+    #[serde(rename = "tokensWithStatus")]
+    tokens_with_status: Vec<OriginTrialTokenWithStatus<'a>>,
 }
 
 impl<'a> OriginTrial<'a> {
-    pub fn builder(trialName: impl Into<Cow<'a, str>>, status: impl Into<OriginTrialStatus>, tokensWithStatus: Vec<OriginTrialTokenWithStatus<'a>>) -> OriginTrialBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `trial_name`: 
+    /// * `status`: 
+    /// * `tokens_with_status`: 
+    pub fn builder(trial_name: impl Into<Cow<'a, str>>, status: impl Into<OriginTrialStatus>, tokens_with_status: Vec<OriginTrialTokenWithStatus<'a>>) -> OriginTrialBuilder<'a> {
         OriginTrialBuilder {
-            trialName: trialName.into(),
+            trial_name: trial_name.into(),
             status: status.into(),
-            tokensWithStatus: tokensWithStatus,
+            tokens_with_status: tokens_with_status,
         }
     }
-    pub fn trialName(&self) -> &str { self.trialName.as_ref() }
+    pub fn trial_name(&self) -> &str { self.trial_name.as_ref() }
     pub fn status(&self) -> &OriginTrialStatus { &self.status }
-    pub fn tokensWithStatus(&self) -> &[OriginTrialTokenWithStatus<'a>] { &self.tokensWithStatus }
+    pub fn tokens_with_status(&self) -> &[OriginTrialTokenWithStatus<'a>] { &self.tokens_with_status }
 }
 
 
 pub struct OriginTrialBuilder<'a> {
-    trialName: Cow<'a, str>,
+    trial_name: Cow<'a, str>,
     status: OriginTrialStatus,
-    tokensWithStatus: Vec<OriginTrialTokenWithStatus<'a>>,
+    tokens_with_status: Vec<OriginTrialTokenWithStatus<'a>>,
 }
 
 impl<'a> OriginTrialBuilder<'a> {
     pub fn build(self) -> OriginTrial<'a> {
         OriginTrial {
-            trialName: self.trialName,
+            trial_name: self.trial_name,
             status: self.status,
-            tokensWithStatus: self.tokensWithStatus,
+            tokens_with_status: self.tokens_with_status,
         }
     }
 }
@@ -635,27 +670,33 @@ pub struct SecurityOriginDetails {
     /// Indicates whether the frame document's security origin is one
     /// of the local hostnames (e.g. "localhost") or IP addresses (IPv4
     /// 127.0.0.0/8 or IPv6 ::1).
-    isLocalhost: bool,
+    #[serde(rename = "isLocalhost")]
+    is_localhost: bool,
 }
 
 impl SecurityOriginDetails {
-    pub fn builder(isLocalhost: bool) -> SecurityOriginDetailsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `is_localhost`: Indicates whether the frame document's security origin is one of the local hostnames (e.g. "localhost") or IP addresses (IPv4 127.0.0.0/8 or IPv6 ::1).
+    pub fn builder(is_localhost: bool) -> SecurityOriginDetailsBuilder {
         SecurityOriginDetailsBuilder {
-            isLocalhost: isLocalhost,
+            is_localhost: is_localhost,
         }
     }
-    pub fn isLocalhost(&self) -> bool { self.isLocalhost }
+    /// Indicates whether the frame document's security origin is one
+    /// of the local hostnames (e.g. "localhost") or IP addresses (IPv4
+    /// 127.0.0.0/8 or IPv6 ::1).
+    pub fn is_localhost(&self) -> bool { self.is_localhost }
 }
 
 
 pub struct SecurityOriginDetailsBuilder {
-    isLocalhost: bool,
+    is_localhost: bool,
 }
 
 impl SecurityOriginDetailsBuilder {
     pub fn build(self) -> SecurityOriginDetails {
         SecurityOriginDetails {
-            isLocalhost: self.isLocalhost,
+            is_localhost: self.is_localhost,
         }
     }
 }
@@ -668,130 +709,165 @@ pub struct Frame<'a> {
     /// Frame unique identifier.
     id: FrameId<'a>,
     /// Parent frame identifier.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    parentId: Option<FrameId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "parentId")]
+    parent_id: Option<FrameId<'a>>,
     /// Identifier of the loader associated with this frame.
-    loaderId: crate::network::LoaderId<'a>,
+    #[serde(rename = "loaderId")]
+    loader_id: crate::network::LoaderId<'a>,
     /// Frame's name as specified in the tag.
     #[serde(skip_serializing_if = "Option::is_none")]
     name: Option<Cow<'a, str>>,
     /// Frame document's URL without fragment.
     url: Cow<'a, str>,
     /// Frame document's URL fragment including the '#'.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    urlFragment: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "urlFragment")]
+    url_fragment: Option<Cow<'a, str>>,
     /// Frame document's registered domain, taking the public suffixes list into account.
     /// Extracted from the Frame's url.
-    /// Example URLs: http://www.google.com/file.html -> "google.com"
-    /// http://a.b.co.uk/file.html      -> "b.co.uk"
-    domainAndRegistry: Cow<'a, str>,
+    /// Example URLs: <http://www.google.com/file.html> -\> "google.com"
+    /// <http://a.b.co.uk/file.html>      -\> "b.co.uk"
+    #[serde(rename = "domainAndRegistry")]
+    domain_and_registry: Cow<'a, str>,
     /// Frame document's security origin.
-    securityOrigin: Cow<'a, str>,
+    #[serde(rename = "securityOrigin")]
+    security_origin: Cow<'a, str>,
     /// Additional details about the frame document's security origin.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    securityOriginDetails: Option<SecurityOriginDetails>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "securityOriginDetails")]
+    security_origin_details: Option<SecurityOriginDetails>,
     /// Frame document's mimeType as determined by the browser.
-    mimeType: Cow<'a, str>,
+    #[serde(rename = "mimeType")]
+    mime_type: Cow<'a, str>,
     /// If the frame failed to load, this contains the URL that could not be loaded. Note that unlike url above, this URL may contain a fragment.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    unreachableUrl: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "unreachableUrl")]
+    unreachable_url: Option<Cow<'a, str>>,
     /// Indicates whether this frame was tagged as an ad and why.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    adFrameStatus: Option<AdFrameStatus>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "adFrameStatus")]
+    ad_frame_status: Option<AdFrameStatus>,
     /// Indicates whether the main document is a secure context and explains why that is the case.
-    secureContextType: SecureContextType,
+    #[serde(rename = "secureContextType")]
+    secure_context_type: SecureContextType,
     /// Indicates whether this is a cross origin isolated context.
-    crossOriginIsolatedContextType: CrossOriginIsolatedContextType,
+    #[serde(rename = "crossOriginIsolatedContextType")]
+    cross_origin_isolated_context_type: CrossOriginIsolatedContextType,
     /// Indicated which gated APIs / features are available.
-    gatedAPIFeatures: Vec<GatedAPIFeatures>,
+    #[serde(rename = "gatedAPIFeatures")]
+    gated_api_features: Vec<GatedAPIFeatures>,
 }
 
 impl<'a> Frame<'a> {
-    pub fn builder(id: impl Into<FrameId<'a>>, loaderId: crate::network::LoaderId<'a>, url: impl Into<Cow<'a, str>>, domainAndRegistry: impl Into<Cow<'a, str>>, securityOrigin: impl Into<Cow<'a, str>>, mimeType: impl Into<Cow<'a, str>>, secureContextType: impl Into<SecureContextType>, crossOriginIsolatedContextType: impl Into<CrossOriginIsolatedContextType>, gatedAPIFeatures: Vec<GatedAPIFeatures>) -> FrameBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `id`: Frame unique identifier.
+    /// * `loader_id`: Identifier of the loader associated with this frame.
+    /// * `url`: Frame document's URL without fragment.
+    /// * `domain_and_registry`: Frame document's registered domain, taking the public suffixes list into account. Extracted from the Frame's url. Example URLs: <http://www.google.com/file.html> -\> "google.com"               <http://a.b.co.uk/file.html>      -\> "b.co.uk"
+    /// * `security_origin`: Frame document's security origin.
+    /// * `mime_type`: Frame document's mimeType as determined by the browser.
+    /// * `secure_context_type`: Indicates whether the main document is a secure context and explains why that is the case.
+    /// * `cross_origin_isolated_context_type`: Indicates whether this is a cross origin isolated context.
+    /// * `gated_api_features`: Indicated which gated APIs / features are available.
+    pub fn builder(id: impl Into<FrameId<'a>>, loader_id: crate::network::LoaderId<'a>, url: impl Into<Cow<'a, str>>, domain_and_registry: impl Into<Cow<'a, str>>, security_origin: impl Into<Cow<'a, str>>, mime_type: impl Into<Cow<'a, str>>, secure_context_type: impl Into<SecureContextType>, cross_origin_isolated_context_type: impl Into<CrossOriginIsolatedContextType>, gated_api_features: Vec<GatedAPIFeatures>) -> FrameBuilder<'a> {
         FrameBuilder {
             id: id.into(),
-            parentId: None,
-            loaderId: loaderId,
+            parent_id: None,
+            loader_id: loader_id,
             name: None,
             url: url.into(),
-            urlFragment: None,
-            domainAndRegistry: domainAndRegistry.into(),
-            securityOrigin: securityOrigin.into(),
-            securityOriginDetails: None,
-            mimeType: mimeType.into(),
-            unreachableUrl: None,
-            adFrameStatus: None,
-            secureContextType: secureContextType.into(),
-            crossOriginIsolatedContextType: crossOriginIsolatedContextType.into(),
-            gatedAPIFeatures: gatedAPIFeatures,
+            url_fragment: None,
+            domain_and_registry: domain_and_registry.into(),
+            security_origin: security_origin.into(),
+            security_origin_details: None,
+            mime_type: mime_type.into(),
+            unreachable_url: None,
+            ad_frame_status: None,
+            secure_context_type: secure_context_type.into(),
+            cross_origin_isolated_context_type: cross_origin_isolated_context_type.into(),
+            gated_api_features: gated_api_features,
         }
     }
+    /// Frame unique identifier.
     pub fn id(&self) -> &FrameId<'a> { &self.id }
-    pub fn parentId(&self) -> Option<&FrameId<'a>> { self.parentId.as_ref() }
-    pub fn loaderId(&self) -> &crate::network::LoaderId<'a> { &self.loaderId }
+    /// Parent frame identifier.
+    pub fn parent_id(&self) -> Option<&FrameId<'a>> { self.parent_id.as_ref() }
+    /// Identifier of the loader associated with this frame.
+    pub fn loader_id(&self) -> &crate::network::LoaderId<'a> { &self.loader_id }
+    /// Frame's name as specified in the tag.
     pub fn name(&self) -> Option<&str> { self.name.as_deref() }
+    /// Frame document's URL without fragment.
     pub fn url(&self) -> &str { self.url.as_ref() }
-    pub fn urlFragment(&self) -> Option<&str> { self.urlFragment.as_deref() }
-    pub fn domainAndRegistry(&self) -> &str { self.domainAndRegistry.as_ref() }
-    pub fn securityOrigin(&self) -> &str { self.securityOrigin.as_ref() }
-    pub fn securityOriginDetails(&self) -> Option<&SecurityOriginDetails> { self.securityOriginDetails.as_ref() }
-    pub fn mimeType(&self) -> &str { self.mimeType.as_ref() }
-    pub fn unreachableUrl(&self) -> Option<&str> { self.unreachableUrl.as_deref() }
-    pub fn adFrameStatus(&self) -> Option<&AdFrameStatus> { self.adFrameStatus.as_ref() }
-    pub fn secureContextType(&self) -> &SecureContextType { &self.secureContextType }
-    pub fn crossOriginIsolatedContextType(&self) -> &CrossOriginIsolatedContextType { &self.crossOriginIsolatedContextType }
-    pub fn gatedAPIFeatures(&self) -> &[GatedAPIFeatures] { &self.gatedAPIFeatures }
+    /// Frame document's URL fragment including the '#'.
+    pub fn url_fragment(&self) -> Option<&str> { self.url_fragment.as_deref() }
+    /// Frame document's registered domain, taking the public suffixes list into account.
+    /// Extracted from the Frame's url.
+    /// Example URLs: <http://www.google.com/file.html> -\> "google.com"
+    /// <http://a.b.co.uk/file.html>      -\> "b.co.uk"
+    pub fn domain_and_registry(&self) -> &str { self.domain_and_registry.as_ref() }
+    /// Frame document's security origin.
+    pub fn security_origin(&self) -> &str { self.security_origin.as_ref() }
+    /// Additional details about the frame document's security origin.
+    pub fn security_origin_details(&self) -> Option<&SecurityOriginDetails> { self.security_origin_details.as_ref() }
+    /// Frame document's mimeType as determined by the browser.
+    pub fn mime_type(&self) -> &str { self.mime_type.as_ref() }
+    /// If the frame failed to load, this contains the URL that could not be loaded. Note that unlike url above, this URL may contain a fragment.
+    pub fn unreachable_url(&self) -> Option<&str> { self.unreachable_url.as_deref() }
+    /// Indicates whether this frame was tagged as an ad and why.
+    pub fn ad_frame_status(&self) -> Option<&AdFrameStatus> { self.ad_frame_status.as_ref() }
+    /// Indicates whether the main document is a secure context and explains why that is the case.
+    pub fn secure_context_type(&self) -> &SecureContextType { &self.secure_context_type }
+    /// Indicates whether this is a cross origin isolated context.
+    pub fn cross_origin_isolated_context_type(&self) -> &CrossOriginIsolatedContextType { &self.cross_origin_isolated_context_type }
+    /// Indicated which gated APIs / features are available.
+    pub fn gated_api_features(&self) -> &[GatedAPIFeatures] { &self.gated_api_features }
 }
 
 
 pub struct FrameBuilder<'a> {
     id: FrameId<'a>,
-    parentId: Option<FrameId<'a>>,
-    loaderId: crate::network::LoaderId<'a>,
+    parent_id: Option<FrameId<'a>>,
+    loader_id: crate::network::LoaderId<'a>,
     name: Option<Cow<'a, str>>,
     url: Cow<'a, str>,
-    urlFragment: Option<Cow<'a, str>>,
-    domainAndRegistry: Cow<'a, str>,
-    securityOrigin: Cow<'a, str>,
-    securityOriginDetails: Option<SecurityOriginDetails>,
-    mimeType: Cow<'a, str>,
-    unreachableUrl: Option<Cow<'a, str>>,
-    adFrameStatus: Option<AdFrameStatus>,
-    secureContextType: SecureContextType,
-    crossOriginIsolatedContextType: CrossOriginIsolatedContextType,
-    gatedAPIFeatures: Vec<GatedAPIFeatures>,
+    url_fragment: Option<Cow<'a, str>>,
+    domain_and_registry: Cow<'a, str>,
+    security_origin: Cow<'a, str>,
+    security_origin_details: Option<SecurityOriginDetails>,
+    mime_type: Cow<'a, str>,
+    unreachable_url: Option<Cow<'a, str>>,
+    ad_frame_status: Option<AdFrameStatus>,
+    secure_context_type: SecureContextType,
+    cross_origin_isolated_context_type: CrossOriginIsolatedContextType,
+    gated_api_features: Vec<GatedAPIFeatures>,
 }
 
 impl<'a> FrameBuilder<'a> {
     /// Parent frame identifier.
-    pub fn parentId(mut self, parentId: impl Into<FrameId<'a>>) -> Self { self.parentId = Some(parentId.into()); self }
+    pub fn parent_id(mut self, parent_id: impl Into<FrameId<'a>>) -> Self { self.parent_id = Some(parent_id.into()); self }
     /// Frame's name as specified in the tag.
     pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
     /// Frame document's URL fragment including the '#'.
-    pub fn urlFragment(mut self, urlFragment: impl Into<Cow<'a, str>>) -> Self { self.urlFragment = Some(urlFragment.into()); self }
+    pub fn url_fragment(mut self, url_fragment: impl Into<Cow<'a, str>>) -> Self { self.url_fragment = Some(url_fragment.into()); self }
     /// Additional details about the frame document's security origin.
-    pub fn securityOriginDetails(mut self, securityOriginDetails: SecurityOriginDetails) -> Self { self.securityOriginDetails = Some(securityOriginDetails); self }
+    pub fn security_origin_details(mut self, security_origin_details: SecurityOriginDetails) -> Self { self.security_origin_details = Some(security_origin_details); self }
     /// If the frame failed to load, this contains the URL that could not be loaded. Note that unlike url above, this URL may contain a fragment.
-    pub fn unreachableUrl(mut self, unreachableUrl: impl Into<Cow<'a, str>>) -> Self { self.unreachableUrl = Some(unreachableUrl.into()); self }
+    pub fn unreachable_url(mut self, unreachable_url: impl Into<Cow<'a, str>>) -> Self { self.unreachable_url = Some(unreachable_url.into()); self }
     /// Indicates whether this frame was tagged as an ad and why.
-    pub fn adFrameStatus(mut self, adFrameStatus: AdFrameStatus) -> Self { self.adFrameStatus = Some(adFrameStatus); self }
+    pub fn ad_frame_status(mut self, ad_frame_status: AdFrameStatus) -> Self { self.ad_frame_status = Some(ad_frame_status); self }
     pub fn build(self) -> Frame<'a> {
         Frame {
             id: self.id,
-            parentId: self.parentId,
-            loaderId: self.loaderId,
+            parent_id: self.parent_id,
+            loader_id: self.loader_id,
             name: self.name,
             url: self.url,
-            urlFragment: self.urlFragment,
-            domainAndRegistry: self.domainAndRegistry,
-            securityOrigin: self.securityOrigin,
-            securityOriginDetails: self.securityOriginDetails,
-            mimeType: self.mimeType,
-            unreachableUrl: self.unreachableUrl,
-            adFrameStatus: self.adFrameStatus,
-            secureContextType: self.secureContextType,
-            crossOriginIsolatedContextType: self.crossOriginIsolatedContextType,
-            gatedAPIFeatures: self.gatedAPIFeatures,
+            url_fragment: self.url_fragment,
+            domain_and_registry: self.domain_and_registry,
+            security_origin: self.security_origin,
+            security_origin_details: self.security_origin_details,
+            mime_type: self.mime_type,
+            unreachable_url: self.unreachable_url,
+            ad_frame_status: self.ad_frame_status,
+            secure_context_type: self.secure_context_type,
+            cross_origin_isolated_context_type: self.cross_origin_isolated_context_type,
+            gated_api_features: self.gated_api_features,
         }
     }
 }
@@ -807,13 +883,14 @@ pub struct FrameResource<'a> {
     #[serde(rename = "type")]
     type_: crate::network::ResourceType,
     /// Resource mimeType as determined by the browser.
-    mimeType: Cow<'a, str>,
+    #[serde(rename = "mimeType")]
+    mime_type: Cow<'a, str>,
     /// last-modified timestamp as reported by server.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    lastModified: Option<crate::network::TimeSinceEpoch>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "lastModified")]
+    last_modified: Option<crate::network::TimeSinceEpoch>,
     /// Resource content size.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    contentSize: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "contentSize")]
+    content_size: Option<f64>,
     /// True if the resource failed to load.
     #[serde(skip_serializing_if = "Option::is_none")]
     failed: Option<bool>,
@@ -823,23 +900,34 @@ pub struct FrameResource<'a> {
 }
 
 impl<'a> FrameResource<'a> {
-    pub fn builder(url: impl Into<Cow<'a, str>>, type_: crate::network::ResourceType, mimeType: impl Into<Cow<'a, str>>) -> FrameResourceBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url`: Resource URL.
+    /// * `type_`: Type of this resource.
+    /// * `mime_type`: Resource mimeType as determined by the browser.
+    pub fn builder(url: impl Into<Cow<'a, str>>, type_: crate::network::ResourceType, mime_type: impl Into<Cow<'a, str>>) -> FrameResourceBuilder<'a> {
         FrameResourceBuilder {
             url: url.into(),
             type_: type_,
-            mimeType: mimeType.into(),
-            lastModified: None,
-            contentSize: None,
+            mime_type: mime_type.into(),
+            last_modified: None,
+            content_size: None,
             failed: None,
             canceled: None,
         }
     }
+    /// Resource URL.
     pub fn url(&self) -> &str { self.url.as_ref() }
+    /// Type of this resource.
     pub fn type_(&self) -> &crate::network::ResourceType { &self.type_ }
-    pub fn mimeType(&self) -> &str { self.mimeType.as_ref() }
-    pub fn lastModified(&self) -> Option<&crate::network::TimeSinceEpoch> { self.lastModified.as_ref() }
-    pub fn contentSize(&self) -> Option<f64> { self.contentSize }
+    /// Resource mimeType as determined by the browser.
+    pub fn mime_type(&self) -> &str { self.mime_type.as_ref() }
+    /// last-modified timestamp as reported by server.
+    pub fn last_modified(&self) -> Option<&crate::network::TimeSinceEpoch> { self.last_modified.as_ref() }
+    /// Resource content size.
+    pub fn content_size(&self) -> Option<f64> { self.content_size }
+    /// True if the resource failed to load.
     pub fn failed(&self) -> Option<bool> { self.failed }
+    /// True if the resource was canceled during loading.
     pub fn canceled(&self) -> Option<bool> { self.canceled }
 }
 
@@ -847,18 +935,18 @@ impl<'a> FrameResource<'a> {
 pub struct FrameResourceBuilder<'a> {
     url: Cow<'a, str>,
     type_: crate::network::ResourceType,
-    mimeType: Cow<'a, str>,
-    lastModified: Option<crate::network::TimeSinceEpoch>,
-    contentSize: Option<f64>,
+    mime_type: Cow<'a, str>,
+    last_modified: Option<crate::network::TimeSinceEpoch>,
+    content_size: Option<f64>,
     failed: Option<bool>,
     canceled: Option<bool>,
 }
 
 impl<'a> FrameResourceBuilder<'a> {
     /// last-modified timestamp as reported by server.
-    pub fn lastModified(mut self, lastModified: crate::network::TimeSinceEpoch) -> Self { self.lastModified = Some(lastModified); self }
+    pub fn last_modified(mut self, last_modified: crate::network::TimeSinceEpoch) -> Self { self.last_modified = Some(last_modified); self }
     /// Resource content size.
-    pub fn contentSize(mut self, contentSize: f64) -> Self { self.contentSize = Some(contentSize); self }
+    pub fn content_size(mut self, content_size: f64) -> Self { self.content_size = Some(content_size); self }
     /// True if the resource failed to load.
     pub fn failed(mut self, failed: bool) -> Self { self.failed = Some(failed); self }
     /// True if the resource was canceled during loading.
@@ -867,9 +955,9 @@ impl<'a> FrameResourceBuilder<'a> {
         FrameResource {
             url: self.url,
             type_: self.type_,
-            mimeType: self.mimeType,
-            lastModified: self.lastModified,
-            contentSize: self.contentSize,
+            mime_type: self.mime_type,
+            last_modified: self.last_modified,
+            content_size: self.content_size,
             failed: self.failed,
             canceled: self.canceled,
         }
@@ -884,39 +972,45 @@ pub struct FrameResourceTree<'a> {
     /// Frame information for this tree item.
     frame: Frame<'a>,
     /// Child frames.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    childFrames: Option<Vec<Box<FrameResourceTree<'a>>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "childFrames")]
+    child_frames: Option<Vec<Box<FrameResourceTree<'a>>>>,
     /// Information about frame resources.
     resources: Vec<FrameResource<'a>>,
 }
 
 impl<'a> FrameResourceTree<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `frame`: Frame information for this tree item.
+    /// * `resources`: Information about frame resources.
     pub fn builder(frame: Frame<'a>, resources: Vec<FrameResource<'a>>) -> FrameResourceTreeBuilder<'a> {
         FrameResourceTreeBuilder {
             frame: frame,
-            childFrames: None,
+            child_frames: None,
             resources: resources,
         }
     }
+    /// Frame information for this tree item.
     pub fn frame(&self) -> &Frame<'a> { &self.frame }
-    pub fn childFrames(&self) -> Option<&[Box<FrameResourceTree<'a>>]> { self.childFrames.as_deref() }
+    /// Child frames.
+    pub fn child_frames(&self) -> Option<&[Box<FrameResourceTree<'a>>]> { self.child_frames.as_deref() }
+    /// Information about frame resources.
     pub fn resources(&self) -> &[FrameResource<'a>] { &self.resources }
 }
 
 
 pub struct FrameResourceTreeBuilder<'a> {
     frame: Frame<'a>,
-    childFrames: Option<Vec<Box<FrameResourceTree<'a>>>>,
+    child_frames: Option<Vec<Box<FrameResourceTree<'a>>>>,
     resources: Vec<FrameResource<'a>>,
 }
 
 impl<'a> FrameResourceTreeBuilder<'a> {
     /// Child frames.
-    pub fn childFrames(mut self, childFrames: Vec<Box<FrameResourceTree<'a>>>) -> Self { self.childFrames = Some(childFrames); self }
+    pub fn child_frames(mut self, child_frames: Vec<Box<FrameResourceTree<'a>>>) -> Self { self.child_frames = Some(child_frames); self }
     pub fn build(self) -> FrameResourceTree<'a> {
         FrameResourceTree {
             frame: self.frame,
-            childFrames: self.childFrames,
+            child_frames: self.child_frames,
             resources: self.resources,
         }
     }
@@ -930,34 +1024,38 @@ pub struct FrameTree<'a> {
     /// Frame information for this tree item.
     frame: Frame<'a>,
     /// Child frames.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    childFrames: Option<Vec<Box<FrameTree<'a>>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "childFrames")]
+    child_frames: Option<Vec<Box<FrameTree<'a>>>>,
 }
 
 impl<'a> FrameTree<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `frame`: Frame information for this tree item.
     pub fn builder(frame: Frame<'a>) -> FrameTreeBuilder<'a> {
         FrameTreeBuilder {
             frame: frame,
-            childFrames: None,
+            child_frames: None,
         }
     }
+    /// Frame information for this tree item.
     pub fn frame(&self) -> &Frame<'a> { &self.frame }
-    pub fn childFrames(&self) -> Option<&[Box<FrameTree<'a>>]> { self.childFrames.as_deref() }
+    /// Child frames.
+    pub fn child_frames(&self) -> Option<&[Box<FrameTree<'a>>]> { self.child_frames.as_deref() }
 }
 
 
 pub struct FrameTreeBuilder<'a> {
     frame: Frame<'a>,
-    childFrames: Option<Vec<Box<FrameTree<'a>>>>,
+    child_frames: Option<Vec<Box<FrameTree<'a>>>>,
 }
 
 impl<'a> FrameTreeBuilder<'a> {
     /// Child frames.
-    pub fn childFrames(mut self, childFrames: Vec<Box<FrameTree<'a>>>) -> Self { self.childFrames = Some(childFrames); self }
+    pub fn child_frames(mut self, child_frames: Vec<Box<FrameTree<'a>>>) -> Self { self.child_frames = Some(child_frames); self }
     pub fn build(self) -> FrameTree<'a> {
         FrameTree {
             frame: self.frame,
-            childFrames: self.childFrames,
+            child_frames: self.child_frames,
         }
     }
 }
@@ -1009,37 +1107,50 @@ pub struct NavigationEntry<'a> {
     /// URL of the navigation history entry.
     url: Cow<'a, str>,
     /// URL that the user typed in the url bar.
-    userTypedURL: Cow<'a, str>,
+    #[serde(rename = "userTypedURL")]
+    user_typed_url: Cow<'a, str>,
     /// Title of the navigation history entry.
     title: Cow<'a, str>,
     /// Transition type.
-    transitionType: TransitionType,
+    #[serde(rename = "transitionType")]
+    transition_type: TransitionType,
 }
 
 impl<'a> NavigationEntry<'a> {
-    pub fn builder(id: u64, url: impl Into<Cow<'a, str>>, userTypedURL: impl Into<Cow<'a, str>>, title: impl Into<Cow<'a, str>>, transitionType: impl Into<TransitionType>) -> NavigationEntryBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `id`: Unique id of the navigation history entry.
+    /// * `url`: URL of the navigation history entry.
+    /// * `user_typed_url`: URL that the user typed in the url bar.
+    /// * `title`: Title of the navigation history entry.
+    /// * `transition_type`: Transition type.
+    pub fn builder(id: u64, url: impl Into<Cow<'a, str>>, user_typed_url: impl Into<Cow<'a, str>>, title: impl Into<Cow<'a, str>>, transition_type: impl Into<TransitionType>) -> NavigationEntryBuilder<'a> {
         NavigationEntryBuilder {
             id: id,
             url: url.into(),
-            userTypedURL: userTypedURL.into(),
+            user_typed_url: user_typed_url.into(),
             title: title.into(),
-            transitionType: transitionType.into(),
+            transition_type: transition_type.into(),
         }
     }
+    /// Unique id of the navigation history entry.
     pub fn id(&self) -> u64 { self.id }
+    /// URL of the navigation history entry.
     pub fn url(&self) -> &str { self.url.as_ref() }
-    pub fn userTypedURL(&self) -> &str { self.userTypedURL.as_ref() }
+    /// URL that the user typed in the url bar.
+    pub fn user_typed_url(&self) -> &str { self.user_typed_url.as_ref() }
+    /// Title of the navigation history entry.
     pub fn title(&self) -> &str { self.title.as_ref() }
-    pub fn transitionType(&self) -> &TransitionType { &self.transitionType }
+    /// Transition type.
+    pub fn transition_type(&self) -> &TransitionType { &self.transition_type }
 }
 
 
 pub struct NavigationEntryBuilder<'a> {
     id: u64,
     url: Cow<'a, str>,
-    userTypedURL: Cow<'a, str>,
+    user_typed_url: Cow<'a, str>,
     title: Cow<'a, str>,
-    transitionType: TransitionType,
+    transition_type: TransitionType,
 }
 
 impl<'a> NavigationEntryBuilder<'a> {
@@ -1047,9 +1158,9 @@ impl<'a> NavigationEntryBuilder<'a> {
         NavigationEntry {
             id: self.id,
             url: self.url,
-            userTypedURL: self.userTypedURL,
+            user_typed_url: self.user_typed_url,
             title: self.title,
-            transitionType: self.transitionType,
+            transition_type: self.transition_type,
         }
     }
 }
@@ -1060,51 +1171,71 @@ impl<'a> NavigationEntryBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ScreencastFrameMetadata {
     /// Top offset in DIP.
-    offsetTop: f64,
+    #[serde(rename = "offsetTop")]
+    offset_top: f64,
     /// Page scale factor.
-    pageScaleFactor: f64,
+    #[serde(rename = "pageScaleFactor")]
+    page_scale_factor: f64,
     /// Device screen width in DIP.
-    deviceWidth: f64,
+    #[serde(rename = "deviceWidth")]
+    device_width: f64,
     /// Device screen height in DIP.
-    deviceHeight: f64,
+    #[serde(rename = "deviceHeight")]
+    device_height: f64,
     /// Position of horizontal scroll in CSS pixels.
-    scrollOffsetX: f64,
+    #[serde(rename = "scrollOffsetX")]
+    scroll_offset_x: f64,
     /// Position of vertical scroll in CSS pixels.
-    scrollOffsetY: f64,
+    #[serde(rename = "scrollOffsetY")]
+    scroll_offset_y: f64,
     /// Frame swap timestamp.
     #[serde(skip_serializing_if = "Option::is_none")]
     timestamp: Option<crate::network::TimeSinceEpoch>,
 }
 
 impl ScreencastFrameMetadata {
-    pub fn builder(offsetTop: f64, pageScaleFactor: f64, deviceWidth: f64, deviceHeight: f64, scrollOffsetX: f64, scrollOffsetY: f64) -> ScreencastFrameMetadataBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `offset_top`: Top offset in DIP.
+    /// * `page_scale_factor`: Page scale factor.
+    /// * `device_width`: Device screen width in DIP.
+    /// * `device_height`: Device screen height in DIP.
+    /// * `scroll_offset_x`: Position of horizontal scroll in CSS pixels.
+    /// * `scroll_offset_y`: Position of vertical scroll in CSS pixels.
+    pub fn builder(offset_top: f64, page_scale_factor: f64, device_width: f64, device_height: f64, scroll_offset_x: f64, scroll_offset_y: f64) -> ScreencastFrameMetadataBuilder {
         ScreencastFrameMetadataBuilder {
-            offsetTop: offsetTop,
-            pageScaleFactor: pageScaleFactor,
-            deviceWidth: deviceWidth,
-            deviceHeight: deviceHeight,
-            scrollOffsetX: scrollOffsetX,
-            scrollOffsetY: scrollOffsetY,
+            offset_top: offset_top,
+            page_scale_factor: page_scale_factor,
+            device_width: device_width,
+            device_height: device_height,
+            scroll_offset_x: scroll_offset_x,
+            scroll_offset_y: scroll_offset_y,
             timestamp: None,
         }
     }
-    pub fn offsetTop(&self) -> f64 { self.offsetTop }
-    pub fn pageScaleFactor(&self) -> f64 { self.pageScaleFactor }
-    pub fn deviceWidth(&self) -> f64 { self.deviceWidth }
-    pub fn deviceHeight(&self) -> f64 { self.deviceHeight }
-    pub fn scrollOffsetX(&self) -> f64 { self.scrollOffsetX }
-    pub fn scrollOffsetY(&self) -> f64 { self.scrollOffsetY }
+    /// Top offset in DIP.
+    pub fn offset_top(&self) -> f64 { self.offset_top }
+    /// Page scale factor.
+    pub fn page_scale_factor(&self) -> f64 { self.page_scale_factor }
+    /// Device screen width in DIP.
+    pub fn device_width(&self) -> f64 { self.device_width }
+    /// Device screen height in DIP.
+    pub fn device_height(&self) -> f64 { self.device_height }
+    /// Position of horizontal scroll in CSS pixels.
+    pub fn scroll_offset_x(&self) -> f64 { self.scroll_offset_x }
+    /// Position of vertical scroll in CSS pixels.
+    pub fn scroll_offset_y(&self) -> f64 { self.scroll_offset_y }
+    /// Frame swap timestamp.
     pub fn timestamp(&self) -> Option<&crate::network::TimeSinceEpoch> { self.timestamp.as_ref() }
 }
 
 
 pub struct ScreencastFrameMetadataBuilder {
-    offsetTop: f64,
-    pageScaleFactor: f64,
-    deviceWidth: f64,
-    deviceHeight: f64,
-    scrollOffsetX: f64,
-    scrollOffsetY: f64,
+    offset_top: f64,
+    page_scale_factor: f64,
+    device_width: f64,
+    device_height: f64,
+    scroll_offset_x: f64,
+    scroll_offset_y: f64,
     timestamp: Option<crate::network::TimeSinceEpoch>,
 }
 
@@ -1113,12 +1244,12 @@ impl ScreencastFrameMetadataBuilder {
     pub fn timestamp(mut self, timestamp: crate::network::TimeSinceEpoch) -> Self { self.timestamp = Some(timestamp); self }
     pub fn build(self) -> ScreencastFrameMetadata {
         ScreencastFrameMetadata {
-            offsetTop: self.offsetTop,
-            pageScaleFactor: self.pageScaleFactor,
-            deviceWidth: self.deviceWidth,
-            deviceHeight: self.deviceHeight,
-            scrollOffsetX: self.scrollOffsetX,
-            scrollOffsetY: self.scrollOffsetY,
+            offset_top: self.offset_top,
+            page_scale_factor: self.page_scale_factor,
+            device_width: self.device_width,
+            device_height: self.device_height,
+            scroll_offset_x: self.scroll_offset_x,
+            scroll_offset_y: self.scroll_offset_y,
             timestamp: self.timestamp,
         }
     }
@@ -1155,6 +1286,11 @@ pub struct AppManifestError<'a> {
 }
 
 impl<'a> AppManifestError<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `message`: Error message.
+    /// * `critical`: If critical, this is a non-recoverable parse error.
+    /// * `line`: Error line.
+    /// * `column`: Error column.
     pub fn builder(message: impl Into<Cow<'a, str>>, critical: i64, line: i64, column: i64) -> AppManifestErrorBuilder<'a> {
         AppManifestErrorBuilder {
             message: message.into(),
@@ -1163,9 +1299,13 @@ impl<'a> AppManifestError<'a> {
             column: column,
         }
     }
+    /// Error message.
     pub fn message(&self) -> &str { self.message.as_ref() }
+    /// If critical, this is a non-recoverable parse error.
     pub fn critical(&self) -> i64 { self.critical }
+    /// Error line.
     pub fn line(&self) -> i64 { self.line }
+    /// Error column.
     pub fn column(&self) -> i64 { self.column }
 }
 
@@ -1198,11 +1338,14 @@ pub struct AppManifestParsedProperties<'a> {
 }
 
 impl<'a> AppManifestParsedProperties<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `scope`: Computed scope value
     pub fn builder(scope: impl Into<Cow<'a, str>>) -> AppManifestParsedPropertiesBuilder<'a> {
         AppManifestParsedPropertiesBuilder {
             scope: scope.into(),
         }
     }
+    /// Computed scope value
     pub fn scope(&self) -> &str { self.scope.as_ref() }
 }
 
@@ -1225,45 +1368,58 @@ impl<'a> AppManifestParsedPropertiesBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct LayoutViewport {
     /// Horizontal offset relative to the document (CSS pixels).
-    pageX: i64,
+    #[serde(rename = "pageX")]
+    page_x: i64,
     /// Vertical offset relative to the document (CSS pixels).
-    pageY: i64,
+    #[serde(rename = "pageY")]
+    page_y: i64,
     /// Width (CSS pixels), excludes scrollbar if present.
-    clientWidth: u64,
+    #[serde(rename = "clientWidth")]
+    client_width: u64,
     /// Height (CSS pixels), excludes scrollbar if present.
-    clientHeight: i64,
+    #[serde(rename = "clientHeight")]
+    client_height: i64,
 }
 
 impl LayoutViewport {
-    pub fn builder(pageX: i64, pageY: i64, clientWidth: u64, clientHeight: i64) -> LayoutViewportBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `page_x`: Horizontal offset relative to the document (CSS pixels).
+    /// * `page_y`: Vertical offset relative to the document (CSS pixels).
+    /// * `client_width`: Width (CSS pixels), excludes scrollbar if present.
+    /// * `client_height`: Height (CSS pixels), excludes scrollbar if present.
+    pub fn builder(page_x: i64, page_y: i64, client_width: u64, client_height: i64) -> LayoutViewportBuilder {
         LayoutViewportBuilder {
-            pageX: pageX,
-            pageY: pageY,
-            clientWidth: clientWidth,
-            clientHeight: clientHeight,
+            page_x: page_x,
+            page_y: page_y,
+            client_width: client_width,
+            client_height: client_height,
         }
     }
-    pub fn pageX(&self) -> i64 { self.pageX }
-    pub fn pageY(&self) -> i64 { self.pageY }
-    pub fn clientWidth(&self) -> u64 { self.clientWidth }
-    pub fn clientHeight(&self) -> i64 { self.clientHeight }
+    /// Horizontal offset relative to the document (CSS pixels).
+    pub fn page_x(&self) -> i64 { self.page_x }
+    /// Vertical offset relative to the document (CSS pixels).
+    pub fn page_y(&self) -> i64 { self.page_y }
+    /// Width (CSS pixels), excludes scrollbar if present.
+    pub fn client_width(&self) -> u64 { self.client_width }
+    /// Height (CSS pixels), excludes scrollbar if present.
+    pub fn client_height(&self) -> i64 { self.client_height }
 }
 
 
 pub struct LayoutViewportBuilder {
-    pageX: i64,
-    pageY: i64,
-    clientWidth: u64,
-    clientHeight: i64,
+    page_x: i64,
+    page_y: i64,
+    client_width: u64,
+    client_height: i64,
 }
 
 impl LayoutViewportBuilder {
     pub fn build(self) -> LayoutViewport {
         LayoutViewport {
-            pageX: self.pageX,
-            pageY: self.pageY,
-            clientWidth: self.clientWidth,
-            clientHeight: self.clientHeight,
+            page_x: self.page_x,
+            page_y: self.page_y,
+            client_width: self.client_width,
+            client_height: self.client_height,
         }
     }
 }
@@ -1274,17 +1430,23 @@ impl LayoutViewportBuilder {
 #[serde(rename_all = "camelCase")]
 pub struct VisualViewport {
     /// Horizontal offset relative to the layout viewport (CSS pixels).
-    offsetX: f64,
+    #[serde(rename = "offsetX")]
+    offset_x: f64,
     /// Vertical offset relative to the layout viewport (CSS pixels).
-    offsetY: f64,
+    #[serde(rename = "offsetY")]
+    offset_y: f64,
     /// Horizontal offset relative to the document (CSS pixels).
-    pageX: f64,
+    #[serde(rename = "pageX")]
+    page_x: f64,
     /// Vertical offset relative to the document (CSS pixels).
-    pageY: f64,
+    #[serde(rename = "pageY")]
+    page_y: f64,
     /// Width (CSS pixels), excludes scrollbar if present.
-    clientWidth: f64,
+    #[serde(rename = "clientWidth")]
+    client_width: f64,
     /// Height (CSS pixels), excludes scrollbar if present.
-    clientHeight: f64,
+    #[serde(rename = "clientHeight")]
+    client_height: f64,
     /// Scale relative to the ideal viewport (size at width=device-width).
     scale: f64,
     /// Page zoom factor (CSS to device independent pixels ratio).
@@ -1293,36 +1455,52 @@ pub struct VisualViewport {
 }
 
 impl VisualViewport {
-    pub fn builder(offsetX: f64, offsetY: f64, pageX: f64, pageY: f64, clientWidth: f64, clientHeight: f64, scale: f64) -> VisualViewportBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `offset_x`: Horizontal offset relative to the layout viewport (CSS pixels).
+    /// * `offset_y`: Vertical offset relative to the layout viewport (CSS pixels).
+    /// * `page_x`: Horizontal offset relative to the document (CSS pixels).
+    /// * `page_y`: Vertical offset relative to the document (CSS pixels).
+    /// * `client_width`: Width (CSS pixels), excludes scrollbar if present.
+    /// * `client_height`: Height (CSS pixels), excludes scrollbar if present.
+    /// * `scale`: Scale relative to the ideal viewport (size at width=device-width).
+    pub fn builder(offset_x: f64, offset_y: f64, page_x: f64, page_y: f64, client_width: f64, client_height: f64, scale: f64) -> VisualViewportBuilder {
         VisualViewportBuilder {
-            offsetX: offsetX,
-            offsetY: offsetY,
-            pageX: pageX,
-            pageY: pageY,
-            clientWidth: clientWidth,
-            clientHeight: clientHeight,
+            offset_x: offset_x,
+            offset_y: offset_y,
+            page_x: page_x,
+            page_y: page_y,
+            client_width: client_width,
+            client_height: client_height,
             scale: scale,
             zoom: None,
         }
     }
-    pub fn offsetX(&self) -> f64 { self.offsetX }
-    pub fn offsetY(&self) -> f64 { self.offsetY }
-    pub fn pageX(&self) -> f64 { self.pageX }
-    pub fn pageY(&self) -> f64 { self.pageY }
-    pub fn clientWidth(&self) -> f64 { self.clientWidth }
-    pub fn clientHeight(&self) -> f64 { self.clientHeight }
+    /// Horizontal offset relative to the layout viewport (CSS pixels).
+    pub fn offset_x(&self) -> f64 { self.offset_x }
+    /// Vertical offset relative to the layout viewport (CSS pixels).
+    pub fn offset_y(&self) -> f64 { self.offset_y }
+    /// Horizontal offset relative to the document (CSS pixels).
+    pub fn page_x(&self) -> f64 { self.page_x }
+    /// Vertical offset relative to the document (CSS pixels).
+    pub fn page_y(&self) -> f64 { self.page_y }
+    /// Width (CSS pixels), excludes scrollbar if present.
+    pub fn client_width(&self) -> f64 { self.client_width }
+    /// Height (CSS pixels), excludes scrollbar if present.
+    pub fn client_height(&self) -> f64 { self.client_height }
+    /// Scale relative to the ideal viewport (size at width=device-width).
     pub fn scale(&self) -> f64 { self.scale }
+    /// Page zoom factor (CSS to device independent pixels ratio).
     pub fn zoom(&self) -> Option<f64> { self.zoom }
 }
 
 
 pub struct VisualViewportBuilder {
-    offsetX: f64,
-    offsetY: f64,
-    pageX: f64,
-    pageY: f64,
-    clientWidth: f64,
-    clientHeight: f64,
+    offset_x: f64,
+    offset_y: f64,
+    page_x: f64,
+    page_y: f64,
+    client_width: f64,
+    client_height: f64,
     scale: f64,
     zoom: Option<f64>,
 }
@@ -1332,12 +1510,12 @@ impl VisualViewportBuilder {
     pub fn zoom(mut self, zoom: f64) -> Self { self.zoom = Some(zoom); self }
     pub fn build(self) -> VisualViewport {
         VisualViewport {
-            offsetX: self.offsetX,
-            offsetY: self.offsetY,
-            pageX: self.pageX,
-            pageY: self.pageY,
-            clientWidth: self.clientWidth,
-            clientHeight: self.clientHeight,
+            offset_x: self.offset_x,
+            offset_y: self.offset_y,
+            page_x: self.page_x,
+            page_y: self.page_y,
+            client_width: self.client_width,
+            client_height: self.client_height,
             scale: self.scale,
             zoom: self.zoom,
         }
@@ -1362,6 +1540,12 @@ pub struct Viewport {
 }
 
 impl Viewport {
+    /// Creates a builder for this type with the required parameters:
+    /// * `x`: X offset in device independent pixels (dip).
+    /// * `y`: Y offset in device independent pixels (dip).
+    /// * `width`: Rectangle width in device independent pixels (dip).
+    /// * `height`: Rectangle height in device independent pixels (dip).
+    /// * `scale`: Page scale factor.
     pub fn builder(x: f64, y: f64, width: f64, height: f64, scale: f64) -> ViewportBuilder {
         ViewportBuilder {
             x: x,
@@ -1371,10 +1555,15 @@ impl Viewport {
             scale: scale,
         }
     }
+    /// X offset in device independent pixels (dip).
     pub fn x(&self) -> f64 { self.x }
+    /// Y offset in device independent pixels (dip).
     pub fn y(&self) -> f64 { self.y }
+    /// Rectangle width in device independent pixels (dip).
     pub fn width(&self) -> f64 { self.width }
+    /// Rectangle height in device independent pixels (dip).
     pub fn height(&self) -> f64 { self.height }
+    /// Page scale factor.
     pub fn scale(&self) -> f64 { self.scale }
 }
 
@@ -1414,8 +1603,8 @@ pub struct FontFamilies<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     serif: Option<Cow<'a, str>>,
     /// The sansSerif font-family.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    sansSerif: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sansSerif")]
+    sans_serif: Option<Cow<'a, str>>,
     /// The cursive font-family.
     #[serde(skip_serializing_if = "Option::is_none")]
     cursive: Option<Cow<'a, str>>,
@@ -1428,23 +1617,31 @@ pub struct FontFamilies<'a> {
 }
 
 impl<'a> FontFamilies<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> FontFamiliesBuilder<'a> {
         FontFamiliesBuilder {
             standard: None,
             fixed: None,
             serif: None,
-            sansSerif: None,
+            sans_serif: None,
             cursive: None,
             fantasy: None,
             math: None,
         }
     }
+    /// The standard font-family.
     pub fn standard(&self) -> Option<&str> { self.standard.as_deref() }
+    /// The fixed font-family.
     pub fn fixed(&self) -> Option<&str> { self.fixed.as_deref() }
+    /// The serif font-family.
     pub fn serif(&self) -> Option<&str> { self.serif.as_deref() }
-    pub fn sansSerif(&self) -> Option<&str> { self.sansSerif.as_deref() }
+    /// The sansSerif font-family.
+    pub fn sans_serif(&self) -> Option<&str> { self.sans_serif.as_deref() }
+    /// The cursive font-family.
     pub fn cursive(&self) -> Option<&str> { self.cursive.as_deref() }
+    /// The fantasy font-family.
     pub fn fantasy(&self) -> Option<&str> { self.fantasy.as_deref() }
+    /// The math font-family.
     pub fn math(&self) -> Option<&str> { self.math.as_deref() }
 }
 
@@ -1453,7 +1650,7 @@ pub struct FontFamiliesBuilder<'a> {
     standard: Option<Cow<'a, str>>,
     fixed: Option<Cow<'a, str>>,
     serif: Option<Cow<'a, str>>,
-    sansSerif: Option<Cow<'a, str>>,
+    sans_serif: Option<Cow<'a, str>>,
     cursive: Option<Cow<'a, str>>,
     fantasy: Option<Cow<'a, str>>,
     math: Option<Cow<'a, str>>,
@@ -1467,7 +1664,7 @@ impl<'a> FontFamiliesBuilder<'a> {
     /// The serif font-family.
     pub fn serif(mut self, serif: impl Into<Cow<'a, str>>) -> Self { self.serif = Some(serif.into()); self }
     /// The sansSerif font-family.
-    pub fn sansSerif(mut self, sansSerif: impl Into<Cow<'a, str>>) -> Self { self.sansSerif = Some(sansSerif.into()); self }
+    pub fn sans_serif(mut self, sans_serif: impl Into<Cow<'a, str>>) -> Self { self.sans_serif = Some(sans_serif.into()); self }
     /// The cursive font-family.
     pub fn cursive(mut self, cursive: impl Into<Cow<'a, str>>) -> Self { self.cursive = Some(cursive.into()); self }
     /// The fantasy font-family.
@@ -1479,7 +1676,7 @@ impl<'a> FontFamiliesBuilder<'a> {
             standard: self.standard,
             fixed: self.fixed,
             serif: self.serif,
-            sansSerif: self.sansSerif,
+            sans_serif: self.sans_serif,
             cursive: self.cursive,
             fantasy: self.fantasy,
             math: self.math,
@@ -1495,31 +1692,37 @@ pub struct ScriptFontFamilies<'a> {
     /// Name of the script which these font families are defined for.
     script: Cow<'a, str>,
     /// Generic font families collection for the script.
-    fontFamilies: FontFamilies<'a>,
+    #[serde(rename = "fontFamilies")]
+    font_families: FontFamilies<'a>,
 }
 
 impl<'a> ScriptFontFamilies<'a> {
-    pub fn builder(script: impl Into<Cow<'a, str>>, fontFamilies: FontFamilies<'a>) -> ScriptFontFamiliesBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `script`: Name of the script which these font families are defined for.
+    /// * `font_families`: Generic font families collection for the script.
+    pub fn builder(script: impl Into<Cow<'a, str>>, font_families: FontFamilies<'a>) -> ScriptFontFamiliesBuilder<'a> {
         ScriptFontFamiliesBuilder {
             script: script.into(),
-            fontFamilies: fontFamilies,
+            font_families: font_families,
         }
     }
+    /// Name of the script which these font families are defined for.
     pub fn script(&self) -> &str { self.script.as_ref() }
-    pub fn fontFamilies(&self) -> &FontFamilies<'a> { &self.fontFamilies }
+    /// Generic font families collection for the script.
+    pub fn font_families(&self) -> &FontFamilies<'a> { &self.font_families }
 }
 
 
 pub struct ScriptFontFamiliesBuilder<'a> {
     script: Cow<'a, str>,
-    fontFamilies: FontFamilies<'a>,
+    font_families: FontFamilies<'a>,
 }
 
 impl<'a> ScriptFontFamiliesBuilder<'a> {
     pub fn build(self) -> ScriptFontFamilies<'a> {
         ScriptFontFamilies {
             script: self.script,
-            fontFamilies: self.fontFamilies,
+            font_families: self.font_families,
         }
     }
 }
@@ -1538,13 +1741,16 @@ pub struct FontSizes {
 }
 
 impl FontSizes {
+    /// Creates a builder for this type.
     pub fn builder() -> FontSizesBuilder {
         FontSizesBuilder {
             standard: None,
             fixed: None,
         }
     }
+    /// Default standard font size.
     pub fn standard(&self) -> Option<i64> { self.standard }
+    /// Default fixed font size.
     pub fn fixed(&self) -> Option<i64> { self.fixed }
 }
 
@@ -1618,13 +1824,18 @@ pub struct InstallabilityErrorArgument<'a> {
 }
 
 impl<'a> InstallabilityErrorArgument<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: Argument name (e.g. name:'minimum-icon-size-in-pixels').
+    /// * `value`: Argument value (e.g. value:'64').
     pub fn builder(name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> InstallabilityErrorArgumentBuilder<'a> {
         InstallabilityErrorArgumentBuilder {
             name: name.into(),
             value: value.into(),
         }
     }
+    /// Argument name (e.g. name:'minimum-icon-size-in-pixels').
     pub fn name(&self) -> &str { self.name.as_ref() }
+    /// Argument value (e.g. value:'64').
     pub fn value(&self) -> &str { self.value.as_ref() }
 }
 
@@ -1649,33 +1860,40 @@ impl<'a> InstallabilityErrorArgumentBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct InstallabilityError<'a> {
     /// The error id (e.g. 'manifest-missing-suitable-icon').
-    errorId: Cow<'a, str>,
+    #[serde(rename = "errorId")]
+    error_id: Cow<'a, str>,
     /// The list of error arguments (e.g. {name:'minimum-icon-size-in-pixels', value:'64'}).
-    errorArguments: Vec<InstallabilityErrorArgument<'a>>,
+    #[serde(rename = "errorArguments")]
+    error_arguments: Vec<InstallabilityErrorArgument<'a>>,
 }
 
 impl<'a> InstallabilityError<'a> {
-    pub fn builder(errorId: impl Into<Cow<'a, str>>, errorArguments: Vec<InstallabilityErrorArgument<'a>>) -> InstallabilityErrorBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `error_id`: The error id (e.g. 'manifest-missing-suitable-icon').
+    /// * `error_arguments`: The list of error arguments (e.g. {name:'minimum-icon-size-in-pixels', value:'64'}).
+    pub fn builder(error_id: impl Into<Cow<'a, str>>, error_arguments: Vec<InstallabilityErrorArgument<'a>>) -> InstallabilityErrorBuilder<'a> {
         InstallabilityErrorBuilder {
-            errorId: errorId.into(),
-            errorArguments: errorArguments,
+            error_id: error_id.into(),
+            error_arguments: error_arguments,
         }
     }
-    pub fn errorId(&self) -> &str { self.errorId.as_ref() }
-    pub fn errorArguments(&self) -> &[InstallabilityErrorArgument<'a>] { &self.errorArguments }
+    /// The error id (e.g. 'manifest-missing-suitable-icon').
+    pub fn error_id(&self) -> &str { self.error_id.as_ref() }
+    /// The list of error arguments (e.g. {name:'minimum-icon-size-in-pixels', value:'64'}).
+    pub fn error_arguments(&self) -> &[InstallabilityErrorArgument<'a>] { &self.error_arguments }
 }
 
 
 pub struct InstallabilityErrorBuilder<'a> {
-    errorId: Cow<'a, str>,
-    errorArguments: Vec<InstallabilityErrorArgument<'a>>,
+    error_id: Cow<'a, str>,
+    error_arguments: Vec<InstallabilityErrorArgument<'a>>,
 }
 
 impl<'a> InstallabilityErrorBuilder<'a> {
     pub fn build(self) -> InstallabilityError<'a> {
         InstallabilityError {
-            errorId: self.errorId,
-            errorArguments: self.errorArguments,
+            error_id: self.error_id,
+            error_arguments: self.error_arguments,
         }
     }
 }
@@ -1717,13 +1935,18 @@ pub struct CompilationCacheParams<'a> {
 }
 
 impl<'a> CompilationCacheParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url`: The URL of the script to produce a compilation cache entry for.
     pub fn builder(url: impl Into<Cow<'a, str>>) -> CompilationCacheParamsBuilder<'a> {
         CompilationCacheParamsBuilder {
             url: url.into(),
             eager: None,
         }
     }
+    /// The URL of the script to produce a compilation cache entry for.
     pub fn url(&self) -> &str { self.url.as_ref() }
+    /// A hint to the backend whether eager compilation is recommended.
+    /// (the actual compilation mode used is upon backend discretion).
     pub fn eager(&self) -> Option<bool> { self.eager }
 }
 
@@ -1756,6 +1979,7 @@ pub struct FileFilter<'a> {
 }
 
 impl<'a> FileFilter<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> FileFilterBuilder<'a> {
         FileFilterBuilder {
             name: None,
@@ -1796,24 +2020,32 @@ pub struct FileHandler<'a> {
     accepts: Option<Vec<FileFilter<'a>>>,
     /// Won't repeat the enums, using string for easy comparison. Same as the
     /// other enums below.
-    launchType: Cow<'a, str>,
+    #[serde(rename = "launchType")]
+    launch_type: Cow<'a, str>,
 }
 
 impl<'a> FileHandler<'a> {
-    pub fn builder(action: impl Into<Cow<'a, str>>, name: impl Into<Cow<'a, str>>, launchType: impl Into<Cow<'a, str>>) -> FileHandlerBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `action`: 
+    /// * `name`: 
+    /// * `launch_type`: Won't repeat the enums, using string for easy comparison. Same as the other enums below.
+    pub fn builder(action: impl Into<Cow<'a, str>>, name: impl Into<Cow<'a, str>>, launch_type: impl Into<Cow<'a, str>>) -> FileHandlerBuilder<'a> {
         FileHandlerBuilder {
             action: action.into(),
             name: name.into(),
             icons: None,
             accepts: None,
-            launchType: launchType.into(),
+            launch_type: launch_type.into(),
         }
     }
     pub fn action(&self) -> &str { self.action.as_ref() }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn icons(&self) -> Option<&[ImageResource<'a>]> { self.icons.as_deref() }
+    /// Mimic a map, name is the key, accepts is the value.
     pub fn accepts(&self) -> Option<&[FileFilter<'a>]> { self.accepts.as_deref() }
-    pub fn launchType(&self) -> &str { self.launchType.as_ref() }
+    /// Won't repeat the enums, using string for easy comparison. Same as the
+    /// other enums below.
+    pub fn launch_type(&self) -> &str { self.launch_type.as_ref() }
 }
 
 
@@ -1822,7 +2054,7 @@ pub struct FileHandlerBuilder<'a> {
     name: Cow<'a, str>,
     icons: Option<Vec<ImageResource<'a>>>,
     accepts: Option<Vec<FileFilter<'a>>>,
-    launchType: Cow<'a, str>,
+    launch_type: Cow<'a, str>,
 }
 
 impl<'a> FileHandlerBuilder<'a> {
@@ -1835,7 +2067,7 @@ impl<'a> FileHandlerBuilder<'a> {
             name: self.name,
             icons: self.icons,
             accepts: self.accepts,
-            launchType: self.launchType,
+            launch_type: self.launch_type,
         }
     }
 }
@@ -1855,6 +2087,8 @@ pub struct ImageResource<'a> {
 }
 
 impl<'a> ImageResource<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url`: The src field in the definition, but changing to url in favor of consistency.
     pub fn builder(url: impl Into<Cow<'a, str>>) -> ImageResourceBuilder<'a> {
         ImageResourceBuilder {
             url: url.into(),
@@ -1862,6 +2096,8 @@ impl<'a> ImageResource<'a> {
             type_: None,
         }
     }
+    /// The src field in the definition, but changing to url in favor of
+    /// consistency.
     pub fn url(&self) -> &str { self.url.as_ref() }
     pub fn sizes(&self) -> Option<&str> { self.sizes.as_deref() }
     pub fn type_(&self) -> Option<&str> { self.type_.as_deref() }
@@ -1890,27 +2126,30 @@ impl<'a> ImageResourceBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct LaunchHandler<'a> {
-    clientMode: Cow<'a, str>,
+    #[serde(rename = "clientMode")]
+    client_mode: Cow<'a, str>,
 }
 
 impl<'a> LaunchHandler<'a> {
-    pub fn builder(clientMode: impl Into<Cow<'a, str>>) -> LaunchHandlerBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `client_mode`: 
+    pub fn builder(client_mode: impl Into<Cow<'a, str>>) -> LaunchHandlerBuilder<'a> {
         LaunchHandlerBuilder {
-            clientMode: clientMode.into(),
+            client_mode: client_mode.into(),
         }
     }
-    pub fn clientMode(&self) -> &str { self.clientMode.as_ref() }
+    pub fn client_mode(&self) -> &str { self.client_mode.as_ref() }
 }
 
 
 pub struct LaunchHandlerBuilder<'a> {
-    clientMode: Cow<'a, str>,
+    client_mode: Cow<'a, str>,
 }
 
 impl<'a> LaunchHandlerBuilder<'a> {
     pub fn build(self) -> LaunchHandler<'a> {
         LaunchHandler {
-            clientMode: self.clientMode,
+            client_mode: self.client_mode,
         }
     }
 }
@@ -1924,6 +2163,9 @@ pub struct ProtocolHandler<'a> {
 }
 
 impl<'a> ProtocolHandler<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `protocol`: 
+    /// * `url`: 
     pub fn builder(protocol: impl Into<Cow<'a, str>>, url: impl Into<Cow<'a, str>>) -> ProtocolHandlerBuilder<'a> {
         ProtocolHandlerBuilder {
             protocol: protocol.into(),
@@ -1959,6 +2201,8 @@ pub struct RelatedApplication<'a> {
 }
 
 impl<'a> RelatedApplication<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url`: 
     pub fn builder(url: impl Into<Cow<'a, str>>) -> RelatedApplicationBuilder<'a> {
         RelatedApplicationBuilder {
             id: None,
@@ -1992,31 +2236,37 @@ pub struct ScopeExtension<'a> {
     /// Instead of using tuple, this field always returns the serialized string
     /// for easy understanding and comparison.
     origin: Cow<'a, str>,
-    hasOriginWildcard: bool,
+    #[serde(rename = "hasOriginWildcard")]
+    has_origin_wildcard: bool,
 }
 
 impl<'a> ScopeExtension<'a> {
-    pub fn builder(origin: impl Into<Cow<'a, str>>, hasOriginWildcard: bool) -> ScopeExtensionBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `origin`: Instead of using tuple, this field always returns the serialized string for easy understanding and comparison.
+    /// * `has_origin_wildcard`: 
+    pub fn builder(origin: impl Into<Cow<'a, str>>, has_origin_wildcard: bool) -> ScopeExtensionBuilder<'a> {
         ScopeExtensionBuilder {
             origin: origin.into(),
-            hasOriginWildcard: hasOriginWildcard,
+            has_origin_wildcard: has_origin_wildcard,
         }
     }
+    /// Instead of using tuple, this field always returns the serialized string
+    /// for easy understanding and comparison.
     pub fn origin(&self) -> &str { self.origin.as_ref() }
-    pub fn hasOriginWildcard(&self) -> bool { self.hasOriginWildcard }
+    pub fn has_origin_wildcard(&self) -> bool { self.has_origin_wildcard }
 }
 
 
 pub struct ScopeExtensionBuilder<'a> {
     origin: Cow<'a, str>,
-    hasOriginWildcard: bool,
+    has_origin_wildcard: bool,
 }
 
 impl<'a> ScopeExtensionBuilder<'a> {
     pub fn build(self) -> ScopeExtension<'a> {
         ScopeExtension {
             origin: self.origin,
-            hasOriginWildcard: self.hasOriginWildcard,
+            has_origin_wildcard: self.has_origin_wildcard,
         }
     }
 }
@@ -2026,28 +2276,32 @@ impl<'a> ScopeExtensionBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct Screenshot<'a> {
     image: ImageResource<'a>,
-    formFactor: Cow<'a, str>,
+    #[serde(rename = "formFactor")]
+    form_factor: Cow<'a, str>,
     #[serde(skip_serializing_if = "Option::is_none")]
     label: Option<Cow<'a, str>>,
 }
 
 impl<'a> Screenshot<'a> {
-    pub fn builder(image: ImageResource<'a>, formFactor: impl Into<Cow<'a, str>>) -> ScreenshotBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `image`: 
+    /// * `form_factor`: 
+    pub fn builder(image: ImageResource<'a>, form_factor: impl Into<Cow<'a, str>>) -> ScreenshotBuilder<'a> {
         ScreenshotBuilder {
             image: image,
-            formFactor: formFactor.into(),
+            form_factor: form_factor.into(),
             label: None,
         }
     }
     pub fn image(&self) -> &ImageResource<'a> { &self.image }
-    pub fn formFactor(&self) -> &str { self.formFactor.as_ref() }
+    pub fn form_factor(&self) -> &str { self.form_factor.as_ref() }
     pub fn label(&self) -> Option<&str> { self.label.as_deref() }
 }
 
 
 pub struct ScreenshotBuilder<'a> {
     image: ImageResource<'a>,
-    formFactor: Cow<'a, str>,
+    form_factor: Cow<'a, str>,
     label: Option<Cow<'a, str>>,
 }
 
@@ -2056,7 +2310,7 @@ impl<'a> ScreenshotBuilder<'a> {
     pub fn build(self) -> Screenshot<'a> {
         Screenshot {
             image: self.image,
-            formFactor: self.formFactor,
+            form_factor: self.form_factor,
             label: self.label,
         }
     }
@@ -2081,6 +2335,10 @@ pub struct ShareTarget<'a> {
 }
 
 impl<'a> ShareTarget<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `action`: 
+    /// * `method`: 
+    /// * `enctype`: 
     pub fn builder(action: impl Into<Cow<'a, str>>, method: impl Into<Cow<'a, str>>, enctype: impl Into<Cow<'a, str>>) -> ShareTargetBuilder<'a> {
         ShareTargetBuilder {
             action: action.into(),
@@ -2095,6 +2353,7 @@ impl<'a> ShareTarget<'a> {
     pub fn action(&self) -> &str { self.action.as_ref() }
     pub fn method(&self) -> &str { self.method.as_ref() }
     pub fn enctype(&self) -> &str { self.enctype.as_ref() }
+    /// Embed the ShareTargetParams
     pub fn title(&self) -> Option<&str> { self.title.as_deref() }
     pub fn text(&self) -> Option<&str> { self.text.as_deref() }
     pub fn url(&self) -> Option<&str> { self.url.as_deref() }
@@ -2140,6 +2399,9 @@ pub struct Shortcut<'a> {
 }
 
 impl<'a> Shortcut<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: 
+    /// * `url`: 
     pub fn builder(name: impl Into<Cow<'a, str>>, url: impl Into<Cow<'a, str>>) -> ShortcutBuilder<'a> {
         ShortcutBuilder {
             name: name.into(),
@@ -2169,8 +2431,8 @@ impl<'a> ShortcutBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct WebAppManifest<'a> {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    backgroundColor: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "backgroundColor")]
+    background_color: Option<Cow<'a, str>>,
     /// The extra description provided by the manifest.
     #[serde(skip_serializing_if = "Option::is_none")]
     description: Option<Cow<'a, str>>,
@@ -2179,11 +2441,11 @@ pub struct WebAppManifest<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     display: Option<Cow<'a, str>>,
     /// The overrided display mode controlled by the user.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    displayOverrides: Option<Vec<Cow<'a, str>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "displayOverrides")]
+    display_overrides: Option<Vec<Cow<'a, str>>>,
     /// The handlers to open files.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    fileHandlers: Option<Vec<FileHandler<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "fileHandlers")]
+    file_handlers: Option<Vec<FileHandler<'a>>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     icons: Option<Vec<ImageResource<'a>>>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -2192,180 +2454,191 @@ pub struct WebAppManifest<'a> {
     lang: Option<Cow<'a, str>>,
     /// TODO(crbug.com/1231886): This field is non-standard and part of a Chrome
     /// experiment. See:
-    /// https://github.com/WICG/web-app-launch/blob/main/launch_handler.md
-    #[serde(skip_serializing_if = "Option::is_none")]
-    launchHandler: Option<LaunchHandler<'a>>,
+    /// <https://github.com/WICG/web-app-launch/blob/main/launch_handler.md>
+    #[serde(skip_serializing_if = "Option::is_none", rename = "launchHandler")]
+    launch_handler: Option<LaunchHandler<'a>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     name: Option<Cow<'a, str>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     orientation: Option<Cow<'a, str>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    preferRelatedApplications: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "preferRelatedApplications")]
+    prefer_related_applications: Option<bool>,
     /// The handlers to open protocols.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    protocolHandlers: Option<Vec<ProtocolHandler<'a>>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    relatedApplications: Option<Vec<RelatedApplication<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "protocolHandlers")]
+    protocol_handlers: Option<Vec<ProtocolHandler<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "relatedApplications")]
+    related_applications: Option<Vec<RelatedApplication<'a>>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     scope: Option<Cow<'a, str>>,
     /// Non-standard, see
-    /// https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
-    #[serde(skip_serializing_if = "Option::is_none")]
-    scopeExtensions: Option<Vec<ScopeExtension<'a>>>,
+    /// <https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md>
+    #[serde(skip_serializing_if = "Option::is_none", rename = "scopeExtensions")]
+    scope_extensions: Option<Vec<ScopeExtension<'a>>>,
     /// The screenshots used by chromium.
     #[serde(skip_serializing_if = "Option::is_none")]
     screenshots: Option<Vec<Screenshot<'a>>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    shareTarget: Option<ShareTarget<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    shortName: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "shareTarget")]
+    share_target: Option<ShareTarget<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "shortName")]
+    short_name: Option<Cow<'a, str>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     shortcuts: Option<Vec<Shortcut<'a>>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    startUrl: Option<Cow<'a, str>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    themeColor: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "startUrl")]
+    start_url: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "themeColor")]
+    theme_color: Option<Cow<'a, str>>,
 }
 
 impl<'a> WebAppManifest<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> WebAppManifestBuilder<'a> {
         WebAppManifestBuilder {
-            backgroundColor: None,
+            background_color: None,
             description: None,
             dir: None,
             display: None,
-            displayOverrides: None,
-            fileHandlers: None,
+            display_overrides: None,
+            file_handlers: None,
             icons: None,
             id: None,
             lang: None,
-            launchHandler: None,
+            launch_handler: None,
             name: None,
             orientation: None,
-            preferRelatedApplications: None,
-            protocolHandlers: None,
-            relatedApplications: None,
+            prefer_related_applications: None,
+            protocol_handlers: None,
+            related_applications: None,
             scope: None,
-            scopeExtensions: None,
+            scope_extensions: None,
             screenshots: None,
-            shareTarget: None,
-            shortName: None,
+            share_target: None,
+            short_name: None,
             shortcuts: None,
-            startUrl: None,
-            themeColor: None,
+            start_url: None,
+            theme_color: None,
         }
     }
-    pub fn backgroundColor(&self) -> Option<&str> { self.backgroundColor.as_deref() }
+    pub fn background_color(&self) -> Option<&str> { self.background_color.as_deref() }
+    /// The extra description provided by the manifest.
     pub fn description(&self) -> Option<&str> { self.description.as_deref() }
     pub fn dir(&self) -> Option<&str> { self.dir.as_deref() }
     pub fn display(&self) -> Option<&str> { self.display.as_deref() }
-    pub fn displayOverrides(&self) -> Option<&[Cow<'a, str>]> { self.displayOverrides.as_deref() }
-    pub fn fileHandlers(&self) -> Option<&[FileHandler<'a>]> { self.fileHandlers.as_deref() }
+    /// The overrided display mode controlled by the user.
+    pub fn display_overrides(&self) -> Option<&[Cow<'a, str>]> { self.display_overrides.as_deref() }
+    /// The handlers to open files.
+    pub fn file_handlers(&self) -> Option<&[FileHandler<'a>]> { self.file_handlers.as_deref() }
     pub fn icons(&self) -> Option<&[ImageResource<'a>]> { self.icons.as_deref() }
     pub fn id(&self) -> Option<&str> { self.id.as_deref() }
     pub fn lang(&self) -> Option<&str> { self.lang.as_deref() }
-    pub fn launchHandler(&self) -> Option<&LaunchHandler<'a>> { self.launchHandler.as_ref() }
+    /// TODO(crbug.com/1231886): This field is non-standard and part of a Chrome
+    /// experiment. See:
+    /// <https://github.com/WICG/web-app-launch/blob/main/launch_handler.md>
+    pub fn launch_handler(&self) -> Option<&LaunchHandler<'a>> { self.launch_handler.as_ref() }
     pub fn name(&self) -> Option<&str> { self.name.as_deref() }
     pub fn orientation(&self) -> Option<&str> { self.orientation.as_deref() }
-    pub fn preferRelatedApplications(&self) -> Option<bool> { self.preferRelatedApplications }
-    pub fn protocolHandlers(&self) -> Option<&[ProtocolHandler<'a>]> { self.protocolHandlers.as_deref() }
-    pub fn relatedApplications(&self) -> Option<&[RelatedApplication<'a>]> { self.relatedApplications.as_deref() }
+    pub fn prefer_related_applications(&self) -> Option<bool> { self.prefer_related_applications }
+    /// The handlers to open protocols.
+    pub fn protocol_handlers(&self) -> Option<&[ProtocolHandler<'a>]> { self.protocol_handlers.as_deref() }
+    pub fn related_applications(&self) -> Option<&[RelatedApplication<'a>]> { self.related_applications.as_deref() }
     pub fn scope(&self) -> Option<&str> { self.scope.as_deref() }
-    pub fn scopeExtensions(&self) -> Option<&[ScopeExtension<'a>]> { self.scopeExtensions.as_deref() }
+    /// Non-standard, see
+    /// <https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md>
+    pub fn scope_extensions(&self) -> Option<&[ScopeExtension<'a>]> { self.scope_extensions.as_deref() }
+    /// The screenshots used by chromium.
     pub fn screenshots(&self) -> Option<&[Screenshot<'a>]> { self.screenshots.as_deref() }
-    pub fn shareTarget(&self) -> Option<&ShareTarget<'a>> { self.shareTarget.as_ref() }
-    pub fn shortName(&self) -> Option<&str> { self.shortName.as_deref() }
+    pub fn share_target(&self) -> Option<&ShareTarget<'a>> { self.share_target.as_ref() }
+    pub fn short_name(&self) -> Option<&str> { self.short_name.as_deref() }
     pub fn shortcuts(&self) -> Option<&[Shortcut<'a>]> { self.shortcuts.as_deref() }
-    pub fn startUrl(&self) -> Option<&str> { self.startUrl.as_deref() }
-    pub fn themeColor(&self) -> Option<&str> { self.themeColor.as_deref() }
+    pub fn start_url(&self) -> Option<&str> { self.start_url.as_deref() }
+    pub fn theme_color(&self) -> Option<&str> { self.theme_color.as_deref() }
 }
 
 #[derive(Default)]
 pub struct WebAppManifestBuilder<'a> {
-    backgroundColor: Option<Cow<'a, str>>,
+    background_color: Option<Cow<'a, str>>,
     description: Option<Cow<'a, str>>,
     dir: Option<Cow<'a, str>>,
     display: Option<Cow<'a, str>>,
-    displayOverrides: Option<Vec<Cow<'a, str>>>,
-    fileHandlers: Option<Vec<FileHandler<'a>>>,
+    display_overrides: Option<Vec<Cow<'a, str>>>,
+    file_handlers: Option<Vec<FileHandler<'a>>>,
     icons: Option<Vec<ImageResource<'a>>>,
     id: Option<Cow<'a, str>>,
     lang: Option<Cow<'a, str>>,
-    launchHandler: Option<LaunchHandler<'a>>,
+    launch_handler: Option<LaunchHandler<'a>>,
     name: Option<Cow<'a, str>>,
     orientation: Option<Cow<'a, str>>,
-    preferRelatedApplications: Option<bool>,
-    protocolHandlers: Option<Vec<ProtocolHandler<'a>>>,
-    relatedApplications: Option<Vec<RelatedApplication<'a>>>,
+    prefer_related_applications: Option<bool>,
+    protocol_handlers: Option<Vec<ProtocolHandler<'a>>>,
+    related_applications: Option<Vec<RelatedApplication<'a>>>,
     scope: Option<Cow<'a, str>>,
-    scopeExtensions: Option<Vec<ScopeExtension<'a>>>,
+    scope_extensions: Option<Vec<ScopeExtension<'a>>>,
     screenshots: Option<Vec<Screenshot<'a>>>,
-    shareTarget: Option<ShareTarget<'a>>,
-    shortName: Option<Cow<'a, str>>,
+    share_target: Option<ShareTarget<'a>>,
+    short_name: Option<Cow<'a, str>>,
     shortcuts: Option<Vec<Shortcut<'a>>>,
-    startUrl: Option<Cow<'a, str>>,
-    themeColor: Option<Cow<'a, str>>,
+    start_url: Option<Cow<'a, str>>,
+    theme_color: Option<Cow<'a, str>>,
 }
 
 impl<'a> WebAppManifestBuilder<'a> {
-    pub fn backgroundColor(mut self, backgroundColor: impl Into<Cow<'a, str>>) -> Self { self.backgroundColor = Some(backgroundColor.into()); self }
+    pub fn background_color(mut self, background_color: impl Into<Cow<'a, str>>) -> Self { self.background_color = Some(background_color.into()); self }
     /// The extra description provided by the manifest.
     pub fn description(mut self, description: impl Into<Cow<'a, str>>) -> Self { self.description = Some(description.into()); self }
     pub fn dir(mut self, dir: impl Into<Cow<'a, str>>) -> Self { self.dir = Some(dir.into()); self }
     pub fn display(mut self, display: impl Into<Cow<'a, str>>) -> Self { self.display = Some(display.into()); self }
     /// The overrided display mode controlled by the user.
-    pub fn displayOverrides(mut self, displayOverrides: Vec<Cow<'a, str>>) -> Self { self.displayOverrides = Some(displayOverrides); self }
+    pub fn display_overrides(mut self, display_overrides: Vec<Cow<'a, str>>) -> Self { self.display_overrides = Some(display_overrides); self }
     /// The handlers to open files.
-    pub fn fileHandlers(mut self, fileHandlers: Vec<FileHandler<'a>>) -> Self { self.fileHandlers = Some(fileHandlers); self }
+    pub fn file_handlers(mut self, file_handlers: Vec<FileHandler<'a>>) -> Self { self.file_handlers = Some(file_handlers); self }
     pub fn icons(mut self, icons: Vec<ImageResource<'a>>) -> Self { self.icons = Some(icons); self }
     pub fn id(mut self, id: impl Into<Cow<'a, str>>) -> Self { self.id = Some(id.into()); self }
     pub fn lang(mut self, lang: impl Into<Cow<'a, str>>) -> Self { self.lang = Some(lang.into()); self }
     /// TODO(crbug.com/1231886): This field is non-standard and part of a Chrome
     /// experiment. See:
-    /// https://github.com/WICG/web-app-launch/blob/main/launch_handler.md
-    pub fn launchHandler(mut self, launchHandler: LaunchHandler<'a>) -> Self { self.launchHandler = Some(launchHandler); self }
+    /// <https://github.com/WICG/web-app-launch/blob/main/launch_handler.md>
+    pub fn launch_handler(mut self, launch_handler: LaunchHandler<'a>) -> Self { self.launch_handler = Some(launch_handler); self }
     pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
     pub fn orientation(mut self, orientation: impl Into<Cow<'a, str>>) -> Self { self.orientation = Some(orientation.into()); self }
-    pub fn preferRelatedApplications(mut self, preferRelatedApplications: bool) -> Self { self.preferRelatedApplications = Some(preferRelatedApplications); self }
+    pub fn prefer_related_applications(mut self, prefer_related_applications: bool) -> Self { self.prefer_related_applications = Some(prefer_related_applications); self }
     /// The handlers to open protocols.
-    pub fn protocolHandlers(mut self, protocolHandlers: Vec<ProtocolHandler<'a>>) -> Self { self.protocolHandlers = Some(protocolHandlers); self }
-    pub fn relatedApplications(mut self, relatedApplications: Vec<RelatedApplication<'a>>) -> Self { self.relatedApplications = Some(relatedApplications); self }
+    pub fn protocol_handlers(mut self, protocol_handlers: Vec<ProtocolHandler<'a>>) -> Self { self.protocol_handlers = Some(protocol_handlers); self }
+    pub fn related_applications(mut self, related_applications: Vec<RelatedApplication<'a>>) -> Self { self.related_applications = Some(related_applications); self }
     pub fn scope(mut self, scope: impl Into<Cow<'a, str>>) -> Self { self.scope = Some(scope.into()); self }
     /// Non-standard, see
-    /// https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
-    pub fn scopeExtensions(mut self, scopeExtensions: Vec<ScopeExtension<'a>>) -> Self { self.scopeExtensions = Some(scopeExtensions); self }
+    /// <https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md>
+    pub fn scope_extensions(mut self, scope_extensions: Vec<ScopeExtension<'a>>) -> Self { self.scope_extensions = Some(scope_extensions); self }
     /// The screenshots used by chromium.
     pub fn screenshots(mut self, screenshots: Vec<Screenshot<'a>>) -> Self { self.screenshots = Some(screenshots); self }
-    pub fn shareTarget(mut self, shareTarget: ShareTarget<'a>) -> Self { self.shareTarget = Some(shareTarget); self }
-    pub fn shortName(mut self, shortName: impl Into<Cow<'a, str>>) -> Self { self.shortName = Some(shortName.into()); self }
+    pub fn share_target(mut self, share_target: ShareTarget<'a>) -> Self { self.share_target = Some(share_target); self }
+    pub fn short_name(mut self, short_name: impl Into<Cow<'a, str>>) -> Self { self.short_name = Some(short_name.into()); self }
     pub fn shortcuts(mut self, shortcuts: Vec<Shortcut<'a>>) -> Self { self.shortcuts = Some(shortcuts); self }
-    pub fn startUrl(mut self, startUrl: impl Into<Cow<'a, str>>) -> Self { self.startUrl = Some(startUrl.into()); self }
-    pub fn themeColor(mut self, themeColor: impl Into<Cow<'a, str>>) -> Self { self.themeColor = Some(themeColor.into()); self }
+    pub fn start_url(mut self, start_url: impl Into<Cow<'a, str>>) -> Self { self.start_url = Some(start_url.into()); self }
+    pub fn theme_color(mut self, theme_color: impl Into<Cow<'a, str>>) -> Self { self.theme_color = Some(theme_color.into()); self }
     pub fn build(self) -> WebAppManifest<'a> {
         WebAppManifest {
-            backgroundColor: self.backgroundColor,
+            background_color: self.background_color,
             description: self.description,
             dir: self.dir,
             display: self.display,
-            displayOverrides: self.displayOverrides,
-            fileHandlers: self.fileHandlers,
+            display_overrides: self.display_overrides,
+            file_handlers: self.file_handlers,
             icons: self.icons,
             id: self.id,
             lang: self.lang,
-            launchHandler: self.launchHandler,
+            launch_handler: self.launch_handler,
             name: self.name,
             orientation: self.orientation,
-            preferRelatedApplications: self.preferRelatedApplications,
-            protocolHandlers: self.protocolHandlers,
-            relatedApplications: self.relatedApplications,
+            prefer_related_applications: self.prefer_related_applications,
+            protocol_handlers: self.protocol_handlers,
+            related_applications: self.related_applications,
             scope: self.scope,
-            scopeExtensions: self.scopeExtensions,
+            scope_extensions: self.scope_extensions,
             screenshots: self.screenshots,
-            shareTarget: self.shareTarget,
-            shortName: self.shortName,
+            share_target: self.share_target,
+            short_name: self.short_name,
             shortcuts: self.shortcuts,
-            startUrl: self.startUrl,
-            themeColor: self.themeColor,
+            start_url: self.start_url,
+            theme_color: self.theme_color,
         }
     }
 }
@@ -2708,32 +2981,41 @@ pub struct BackForwardCacheBlockingDetails<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     function: Option<Cow<'a, str>>,
     /// Line number in the script (0-based).
-    lineNumber: i64,
+    #[serde(rename = "lineNumber")]
+    line_number: i64,
     /// Column number in the script (0-based).
-    columnNumber: i64,
+    #[serde(rename = "columnNumber")]
+    column_number: i64,
 }
 
 impl<'a> BackForwardCacheBlockingDetails<'a> {
-    pub fn builder(lineNumber: i64, columnNumber: i64) -> BackForwardCacheBlockingDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `line_number`: Line number in the script (0-based).
+    /// * `column_number`: Column number in the script (0-based).
+    pub fn builder(line_number: i64, column_number: i64) -> BackForwardCacheBlockingDetailsBuilder<'a> {
         BackForwardCacheBlockingDetailsBuilder {
             url: None,
             function: None,
-            lineNumber: lineNumber,
-            columnNumber: columnNumber,
+            line_number: line_number,
+            column_number: column_number,
         }
     }
+    /// Url of the file where blockage happened. Optional because of tests.
     pub fn url(&self) -> Option<&str> { self.url.as_deref() }
+    /// Function name where blockage happened. Optional because of anonymous functions and tests.
     pub fn function(&self) -> Option<&str> { self.function.as_deref() }
-    pub fn lineNumber(&self) -> i64 { self.lineNumber }
-    pub fn columnNumber(&self) -> i64 { self.columnNumber }
+    /// Line number in the script (0-based).
+    pub fn line_number(&self) -> i64 { self.line_number }
+    /// Column number in the script (0-based).
+    pub fn column_number(&self) -> i64 { self.column_number }
 }
 
 
 pub struct BackForwardCacheBlockingDetailsBuilder<'a> {
     url: Option<Cow<'a, str>>,
     function: Option<Cow<'a, str>>,
-    lineNumber: i64,
-    columnNumber: i64,
+    line_number: i64,
+    column_number: i64,
 }
 
 impl<'a> BackForwardCacheBlockingDetailsBuilder<'a> {
@@ -2745,8 +3027,8 @@ impl<'a> BackForwardCacheBlockingDetailsBuilder<'a> {
         BackForwardCacheBlockingDetails {
             url: self.url,
             function: self.function,
-            lineNumber: self.lineNumber,
-            columnNumber: self.columnNumber,
+            line_number: self.line_number,
+            column_number: self.column_number,
         }
     }
 }
@@ -2770,6 +3052,9 @@ pub struct BackForwardCacheNotRestoredExplanation<'a> {
 }
 
 impl<'a> BackForwardCacheNotRestoredExplanation<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `type_`: Type of the reason
+    /// * `reason`: Not restored reason
     pub fn builder(type_: impl Into<BackForwardCacheNotRestoredReasonType>, reason: impl Into<BackForwardCacheNotRestoredReason>) -> BackForwardCacheNotRestoredExplanationBuilder<'a> {
         BackForwardCacheNotRestoredExplanationBuilder {
             type_: type_.into(),
@@ -2778,8 +3063,13 @@ impl<'a> BackForwardCacheNotRestoredExplanation<'a> {
             details: None,
         }
     }
+    /// Type of the reason
     pub fn type_(&self) -> &BackForwardCacheNotRestoredReasonType { &self.type_ }
+    /// Not restored reason
     pub fn reason(&self) -> &BackForwardCacheNotRestoredReason { &self.reason }
+    /// Context associated with the reason. The meaning of this context is
+    /// dependent on the reason:
+    /// - EmbedderExtensionSentMessageToCachedFrame: the extension ID.
     pub fn context(&self) -> Option<&str> { self.context.as_deref() }
     pub fn details(&self) -> Option<&[BackForwardCacheBlockingDetails<'a>]> { self.details.as_deref() }
 }
@@ -2821,6 +3111,10 @@ pub struct BackForwardCacheNotRestoredExplanationTree<'a> {
 }
 
 impl<'a> BackForwardCacheNotRestoredExplanationTree<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url`: URL of each frame
+    /// * `explanations`: Not restored reasons of each frame
+    /// * `children`: Array of children frame
     pub fn builder(url: impl Into<Cow<'a, str>>, explanations: Vec<BackForwardCacheNotRestoredExplanation<'a>>, children: Vec<Box<BackForwardCacheNotRestoredExplanationTree<'a>>>) -> BackForwardCacheNotRestoredExplanationTreeBuilder<'a> {
         BackForwardCacheNotRestoredExplanationTreeBuilder {
             url: url.into(),
@@ -2828,8 +3122,11 @@ impl<'a> BackForwardCacheNotRestoredExplanationTree<'a> {
             children: children,
         }
     }
+    /// URL of each frame
     pub fn url(&self) -> &str { self.url.as_ref() }
+    /// Not restored reasons of each frame
     pub fn explanations(&self) -> &[BackForwardCacheNotRestoredExplanation<'a>] { &self.explanations }
+    /// Array of children frame
     pub fn children(&self) -> &[Box<BackForwardCacheNotRestoredExplanationTree<'a>>] { &self.children }
 }
 
@@ -2855,27 +3152,30 @@ impl<'a> BackForwardCacheNotRestoredExplanationTreeBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct AddScriptToEvaluateOnLoadParams<'a> {
-    scriptSource: Cow<'a, str>,
+    #[serde(rename = "scriptSource")]
+    script_source: Cow<'a, str>,
 }
 
 impl<'a> AddScriptToEvaluateOnLoadParams<'a> {
-    pub fn builder(scriptSource: impl Into<Cow<'a, str>>) -> AddScriptToEvaluateOnLoadParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `script_source`: 
+    pub fn builder(script_source: impl Into<Cow<'a, str>>) -> AddScriptToEvaluateOnLoadParamsBuilder<'a> {
         AddScriptToEvaluateOnLoadParamsBuilder {
-            scriptSource: scriptSource.into(),
+            script_source: script_source.into(),
         }
     }
-    pub fn scriptSource(&self) -> &str { self.scriptSource.as_ref() }
+    pub fn script_source(&self) -> &str { self.script_source.as_ref() }
 }
 
 
 pub struct AddScriptToEvaluateOnLoadParamsBuilder<'a> {
-    scriptSource: Cow<'a, str>,
+    script_source: Cow<'a, str>,
 }
 
 impl<'a> AddScriptToEvaluateOnLoadParamsBuilder<'a> {
     pub fn build(self) -> AddScriptToEvaluateOnLoadParams<'a> {
         AddScriptToEvaluateOnLoadParams {
-            scriptSource: self.scriptSource,
+            script_source: self.script_source,
         }
     }
 }
@@ -2890,11 +3190,14 @@ pub struct AddScriptToEvaluateOnLoadReturns<'a> {
 }
 
 impl<'a> AddScriptToEvaluateOnLoadReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `identifier`: Identifier of the added script.
     pub fn builder(identifier: impl Into<ScriptIdentifier<'a>>) -> AddScriptToEvaluateOnLoadReturnsBuilder<'a> {
         AddScriptToEvaluateOnLoadReturnsBuilder {
             identifier: identifier.into(),
         }
     }
+    /// Identifier of the added script.
     pub fn identifier(&self) -> &ScriptIdentifier<'a> { &self.identifier }
 }
 
@@ -2927,58 +3230,67 @@ pub struct AddScriptToEvaluateOnNewDocumentParams<'a> {
     /// If specified, creates an isolated world with the given name and evaluates given script in it.
     /// This world name will be used as the ExecutionContextDescription::name when the corresponding
     /// event is emitted.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    worldName: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "worldName")]
+    world_name: Option<Cow<'a, str>>,
     /// Specifies whether command line API should be available to the script, defaults
     /// to false.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    includeCommandLineAPI: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "includeCommandLineAPI")]
+    include_command_line_api: Option<bool>,
     /// If true, runs the script immediately on existing execution contexts or worlds.
     /// Default: false.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    runImmediately: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "runImmediately")]
+    run_immediately: Option<bool>,
 }
 
 impl<'a> AddScriptToEvaluateOnNewDocumentParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `source`: 
     pub fn builder(source: impl Into<Cow<'a, str>>) -> AddScriptToEvaluateOnNewDocumentParamsBuilder<'a> {
         AddScriptToEvaluateOnNewDocumentParamsBuilder {
             source: source.into(),
-            worldName: None,
-            includeCommandLineAPI: None,
-            runImmediately: None,
+            world_name: None,
+            include_command_line_api: None,
+            run_immediately: None,
         }
     }
     pub fn source(&self) -> &str { self.source.as_ref() }
-    pub fn worldName(&self) -> Option<&str> { self.worldName.as_deref() }
-    pub fn includeCommandLineAPI(&self) -> Option<bool> { self.includeCommandLineAPI }
-    pub fn runImmediately(&self) -> Option<bool> { self.runImmediately }
+    /// If specified, creates an isolated world with the given name and evaluates given script in it.
+    /// This world name will be used as the ExecutionContextDescription::name when the corresponding
+    /// event is emitted.
+    pub fn world_name(&self) -> Option<&str> { self.world_name.as_deref() }
+    /// Specifies whether command line API should be available to the script, defaults
+    /// to false.
+    pub fn include_command_line_api(&self) -> Option<bool> { self.include_command_line_api }
+    /// If true, runs the script immediately on existing execution contexts or worlds.
+    /// Default: false.
+    pub fn run_immediately(&self) -> Option<bool> { self.run_immediately }
 }
 
 
 pub struct AddScriptToEvaluateOnNewDocumentParamsBuilder<'a> {
     source: Cow<'a, str>,
-    worldName: Option<Cow<'a, str>>,
-    includeCommandLineAPI: Option<bool>,
-    runImmediately: Option<bool>,
+    world_name: Option<Cow<'a, str>>,
+    include_command_line_api: Option<bool>,
+    run_immediately: Option<bool>,
 }
 
 impl<'a> AddScriptToEvaluateOnNewDocumentParamsBuilder<'a> {
     /// If specified, creates an isolated world with the given name and evaluates given script in it.
     /// This world name will be used as the ExecutionContextDescription::name when the corresponding
     /// event is emitted.
-    pub fn worldName(mut self, worldName: impl Into<Cow<'a, str>>) -> Self { self.worldName = Some(worldName.into()); self }
+    pub fn world_name(mut self, world_name: impl Into<Cow<'a, str>>) -> Self { self.world_name = Some(world_name.into()); self }
     /// Specifies whether command line API should be available to the script, defaults
     /// to false.
-    pub fn includeCommandLineAPI(mut self, includeCommandLineAPI: bool) -> Self { self.includeCommandLineAPI = Some(includeCommandLineAPI); self }
+    pub fn include_command_line_api(mut self, include_command_line_api: bool) -> Self { self.include_command_line_api = Some(include_command_line_api); self }
     /// If true, runs the script immediately on existing execution contexts or worlds.
     /// Default: false.
-    pub fn runImmediately(mut self, runImmediately: bool) -> Self { self.runImmediately = Some(runImmediately); self }
+    pub fn run_immediately(mut self, run_immediately: bool) -> Self { self.run_immediately = Some(run_immediately); self }
     pub fn build(self) -> AddScriptToEvaluateOnNewDocumentParams<'a> {
         AddScriptToEvaluateOnNewDocumentParams {
             source: self.source,
-            worldName: self.worldName,
-            includeCommandLineAPI: self.includeCommandLineAPI,
-            runImmediately: self.runImmediately,
+            world_name: self.world_name,
+            include_command_line_api: self.include_command_line_api,
+            run_immediately: self.run_immediately,
         }
     }
 }
@@ -2993,11 +3305,14 @@ pub struct AddScriptToEvaluateOnNewDocumentReturns<'a> {
 }
 
 impl<'a> AddScriptToEvaluateOnNewDocumentReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `identifier`: Identifier of the added script.
     pub fn builder(identifier: impl Into<ScriptIdentifier<'a>>) -> AddScriptToEvaluateOnNewDocumentReturnsBuilder<'a> {
         AddScriptToEvaluateOnNewDocumentReturnsBuilder {
             identifier: identifier.into(),
         }
     }
+    /// Identifier of the added script.
     pub fn identifier(&self) -> &ScriptIdentifier<'a> { &self.identifier }
 }
 
@@ -3039,40 +3354,47 @@ pub struct CaptureScreenshotParams<'a> {
     /// Image compression format (defaults to png).
     #[serde(skip_serializing_if = "Option::is_none")]
     format: Option<Cow<'a, str>>,
-    /// Compression quality from range [0..100] (jpeg only).
+    /// Compression quality from range \[0..100\] (jpeg only).
     #[serde(skip_serializing_if = "Option::is_none")]
     quality: Option<i64>,
     /// Capture the screenshot of a given region only.
     #[serde(skip_serializing_if = "Option::is_none")]
     clip: Option<Viewport>,
     /// Capture the screenshot from the surface, rather than the view. Defaults to true.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    fromSurface: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "fromSurface")]
+    from_surface: Option<bool>,
     /// Capture the screenshot beyond the viewport. Defaults to false.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    captureBeyondViewport: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "captureBeyondViewport")]
+    capture_beyond_viewport: Option<bool>,
     /// Optimize image encoding for speed, not for resulting size (defaults to false)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    optimizeForSpeed: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "optimizeForSpeed")]
+    optimize_for_speed: Option<bool>,
 }
 
 impl<'a> CaptureScreenshotParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> CaptureScreenshotParamsBuilder<'a> {
         CaptureScreenshotParamsBuilder {
             format: None,
             quality: None,
             clip: None,
-            fromSurface: None,
-            captureBeyondViewport: None,
-            optimizeForSpeed: None,
+            from_surface: None,
+            capture_beyond_viewport: None,
+            optimize_for_speed: None,
         }
     }
+    /// Image compression format (defaults to png).
     pub fn format(&self) -> Option<&str> { self.format.as_deref() }
+    /// Compression quality from range \[0..100\] (jpeg only).
     pub fn quality(&self) -> Option<i64> { self.quality }
+    /// Capture the screenshot of a given region only.
     pub fn clip(&self) -> Option<&Viewport> { self.clip.as_ref() }
-    pub fn fromSurface(&self) -> Option<bool> { self.fromSurface }
-    pub fn captureBeyondViewport(&self) -> Option<bool> { self.captureBeyondViewport }
-    pub fn optimizeForSpeed(&self) -> Option<bool> { self.optimizeForSpeed }
+    /// Capture the screenshot from the surface, rather than the view. Defaults to true.
+    pub fn from_surface(&self) -> Option<bool> { self.from_surface }
+    /// Capture the screenshot beyond the viewport. Defaults to false.
+    pub fn capture_beyond_viewport(&self) -> Option<bool> { self.capture_beyond_viewport }
+    /// Optimize image encoding for speed, not for resulting size (defaults to false)
+    pub fn optimize_for_speed(&self) -> Option<bool> { self.optimize_for_speed }
 }
 
 #[derive(Default)]
@@ -3080,32 +3402,32 @@ pub struct CaptureScreenshotParamsBuilder<'a> {
     format: Option<Cow<'a, str>>,
     quality: Option<i64>,
     clip: Option<Viewport>,
-    fromSurface: Option<bool>,
-    captureBeyondViewport: Option<bool>,
-    optimizeForSpeed: Option<bool>,
+    from_surface: Option<bool>,
+    capture_beyond_viewport: Option<bool>,
+    optimize_for_speed: Option<bool>,
 }
 
 impl<'a> CaptureScreenshotParamsBuilder<'a> {
     /// Image compression format (defaults to png).
     pub fn format(mut self, format: impl Into<Cow<'a, str>>) -> Self { self.format = Some(format.into()); self }
-    /// Compression quality from range [0..100] (jpeg only).
+    /// Compression quality from range \[0..100\] (jpeg only).
     pub fn quality(mut self, quality: i64) -> Self { self.quality = Some(quality); self }
     /// Capture the screenshot of a given region only.
     pub fn clip(mut self, clip: Viewport) -> Self { self.clip = Some(clip); self }
     /// Capture the screenshot from the surface, rather than the view. Defaults to true.
-    pub fn fromSurface(mut self, fromSurface: bool) -> Self { self.fromSurface = Some(fromSurface); self }
+    pub fn from_surface(mut self, from_surface: bool) -> Self { self.from_surface = Some(from_surface); self }
     /// Capture the screenshot beyond the viewport. Defaults to false.
-    pub fn captureBeyondViewport(mut self, captureBeyondViewport: bool) -> Self { self.captureBeyondViewport = Some(captureBeyondViewport); self }
+    pub fn capture_beyond_viewport(mut self, capture_beyond_viewport: bool) -> Self { self.capture_beyond_viewport = Some(capture_beyond_viewport); self }
     /// Optimize image encoding for speed, not for resulting size (defaults to false)
-    pub fn optimizeForSpeed(mut self, optimizeForSpeed: bool) -> Self { self.optimizeForSpeed = Some(optimizeForSpeed); self }
+    pub fn optimize_for_speed(mut self, optimize_for_speed: bool) -> Self { self.optimize_for_speed = Some(optimize_for_speed); self }
     pub fn build(self) -> CaptureScreenshotParams<'a> {
         CaptureScreenshotParams {
             format: self.format,
             quality: self.quality,
             clip: self.clip,
-            fromSurface: self.fromSurface,
-            captureBeyondViewport: self.captureBeyondViewport,
-            optimizeForSpeed: self.optimizeForSpeed,
+            from_surface: self.from_surface,
+            capture_beyond_viewport: self.capture_beyond_viewport,
+            optimize_for_speed: self.optimize_for_speed,
         }
     }
 }
@@ -3120,11 +3442,14 @@ pub struct CaptureScreenshotReturns<'a> {
 }
 
 impl<'a> CaptureScreenshotReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `data`: Base64-encoded image data. (Encoded as a base64 string when passed over JSON)
     pub fn builder(data: impl Into<Cow<'a, str>>) -> CaptureScreenshotReturnsBuilder<'a> {
         CaptureScreenshotReturnsBuilder {
             data: data.into(),
         }
     }
+    /// Base64-encoded image data. (Encoded as a base64 string when passed over JSON)
     pub fn data(&self) -> &str { self.data.as_ref() }
 }
 
@@ -3160,11 +3485,13 @@ pub struct CaptureSnapshotParams<'a> {
 }
 
 impl<'a> CaptureSnapshotParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> CaptureSnapshotParamsBuilder<'a> {
         CaptureSnapshotParamsBuilder {
             format: None,
         }
     }
+    /// Format (defaults to mhtml).
     pub fn format(&self) -> Option<&str> { self.format.as_deref() }
 }
 
@@ -3194,11 +3521,14 @@ pub struct CaptureSnapshotReturns<'a> {
 }
 
 impl<'a> CaptureSnapshotReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `data`: Serialized page data.
     pub fn builder(data: impl Into<Cow<'a, str>>) -> CaptureSnapshotReturnsBuilder<'a> {
         CaptureSnapshotReturnsBuilder {
             data: data.into(),
         }
     }
+    /// Serialized page data.
     pub fn data(&self) -> &str { self.data.as_ref() }
 }
 
@@ -3258,47 +3588,54 @@ impl<'a> crate::CdpCommand<'a> for ClearGeolocationOverrideParams {
 #[serde(rename_all = "camelCase")]
 pub struct CreateIsolatedWorldParams<'a> {
     /// Id of the frame in which the isolated world should be created.
-    frameId: FrameId<'a>,
+    #[serde(rename = "frameId")]
+    frame_id: FrameId<'a>,
     /// An optional name which is reported in the Execution Context.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    worldName: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "worldName")]
+    world_name: Option<Cow<'a, str>>,
     /// Whether or not universal access should be granted to the isolated world. This is a powerful
     /// option, use with caution.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    grantUniveralAccess: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "grantUniveralAccess")]
+    grant_univeral_access: Option<bool>,
 }
 
 impl<'a> CreateIsolatedWorldParams<'a> {
-    pub fn builder(frameId: impl Into<FrameId<'a>>) -> CreateIsolatedWorldParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `frame_id`: Id of the frame in which the isolated world should be created.
+    pub fn builder(frame_id: impl Into<FrameId<'a>>) -> CreateIsolatedWorldParamsBuilder<'a> {
         CreateIsolatedWorldParamsBuilder {
-            frameId: frameId.into(),
-            worldName: None,
-            grantUniveralAccess: None,
+            frame_id: frame_id.into(),
+            world_name: None,
+            grant_univeral_access: None,
         }
     }
-    pub fn frameId(&self) -> &FrameId<'a> { &self.frameId }
-    pub fn worldName(&self) -> Option<&str> { self.worldName.as_deref() }
-    pub fn grantUniveralAccess(&self) -> Option<bool> { self.grantUniveralAccess }
+    /// Id of the frame in which the isolated world should be created.
+    pub fn frame_id(&self) -> &FrameId<'a> { &self.frame_id }
+    /// An optional name which is reported in the Execution Context.
+    pub fn world_name(&self) -> Option<&str> { self.world_name.as_deref() }
+    /// Whether or not universal access should be granted to the isolated world. This is a powerful
+    /// option, use with caution.
+    pub fn grant_univeral_access(&self) -> Option<bool> { self.grant_univeral_access }
 }
 
 
 pub struct CreateIsolatedWorldParamsBuilder<'a> {
-    frameId: FrameId<'a>,
-    worldName: Option<Cow<'a, str>>,
-    grantUniveralAccess: Option<bool>,
+    frame_id: FrameId<'a>,
+    world_name: Option<Cow<'a, str>>,
+    grant_univeral_access: Option<bool>,
 }
 
 impl<'a> CreateIsolatedWorldParamsBuilder<'a> {
     /// An optional name which is reported in the Execution Context.
-    pub fn worldName(mut self, worldName: impl Into<Cow<'a, str>>) -> Self { self.worldName = Some(worldName.into()); self }
+    pub fn world_name(mut self, world_name: impl Into<Cow<'a, str>>) -> Self { self.world_name = Some(world_name.into()); self }
     /// Whether or not universal access should be granted to the isolated world. This is a powerful
     /// option, use with caution.
-    pub fn grantUniveralAccess(mut self, grantUniveralAccess: bool) -> Self { self.grantUniveralAccess = Some(grantUniveralAccess); self }
+    pub fn grant_univeral_access(mut self, grant_univeral_access: bool) -> Self { self.grant_univeral_access = Some(grant_univeral_access); self }
     pub fn build(self) -> CreateIsolatedWorldParams<'a> {
         CreateIsolatedWorldParams {
-            frameId: self.frameId,
-            worldName: self.worldName,
-            grantUniveralAccess: self.grantUniveralAccess,
+            frame_id: self.frame_id,
+            world_name: self.world_name,
+            grant_univeral_access: self.grant_univeral_access,
         }
     }
 }
@@ -3309,27 +3646,31 @@ impl<'a> CreateIsolatedWorldParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct CreateIsolatedWorldReturns {
     /// Execution context of the isolated world.
-    executionContextId: crate::runtime::ExecutionContextId,
+    #[serde(rename = "executionContextId")]
+    execution_context_id: crate::runtime::ExecutionContextId,
 }
 
 impl CreateIsolatedWorldReturns {
-    pub fn builder(executionContextId: crate::runtime::ExecutionContextId) -> CreateIsolatedWorldReturnsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `execution_context_id`: Execution context of the isolated world.
+    pub fn builder(execution_context_id: crate::runtime::ExecutionContextId) -> CreateIsolatedWorldReturnsBuilder {
         CreateIsolatedWorldReturnsBuilder {
-            executionContextId: executionContextId,
+            execution_context_id: execution_context_id,
         }
     }
-    pub fn executionContextId(&self) -> &crate::runtime::ExecutionContextId { &self.executionContextId }
+    /// Execution context of the isolated world.
+    pub fn execution_context_id(&self) -> &crate::runtime::ExecutionContextId { &self.execution_context_id }
 }
 
 
 pub struct CreateIsolatedWorldReturnsBuilder {
-    executionContextId: crate::runtime::ExecutionContextId,
+    execution_context_id: crate::runtime::ExecutionContextId,
 }
 
 impl CreateIsolatedWorldReturnsBuilder {
     pub fn build(self) -> CreateIsolatedWorldReturns {
         CreateIsolatedWorldReturns {
-            executionContextId: self.executionContextId,
+            execution_context_id: self.execution_context_id,
         }
     }
 }
@@ -3347,32 +3688,38 @@ impl<'a> crate::CdpCommand<'a> for CreateIsolatedWorldParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct DeleteCookieParams<'a> {
     /// Name of the cookie to remove.
-    cookieName: Cow<'a, str>,
+    #[serde(rename = "cookieName")]
+    cookie_name: Cow<'a, str>,
     /// URL to match cooke domain and path.
     url: Cow<'a, str>,
 }
 
 impl<'a> DeleteCookieParams<'a> {
-    pub fn builder(cookieName: impl Into<Cow<'a, str>>, url: impl Into<Cow<'a, str>>) -> DeleteCookieParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `cookie_name`: Name of the cookie to remove.
+    /// * `url`: URL to match cooke domain and path.
+    pub fn builder(cookie_name: impl Into<Cow<'a, str>>, url: impl Into<Cow<'a, str>>) -> DeleteCookieParamsBuilder<'a> {
         DeleteCookieParamsBuilder {
-            cookieName: cookieName.into(),
+            cookie_name: cookie_name.into(),
             url: url.into(),
         }
     }
-    pub fn cookieName(&self) -> &str { self.cookieName.as_ref() }
+    /// Name of the cookie to remove.
+    pub fn cookie_name(&self) -> &str { self.cookie_name.as_ref() }
+    /// URL to match cooke domain and path.
     pub fn url(&self) -> &str { self.url.as_ref() }
 }
 
 
 pub struct DeleteCookieParamsBuilder<'a> {
-    cookieName: Cow<'a, str>,
+    cookie_name: Cow<'a, str>,
     url: Cow<'a, str>,
 }
 
 impl<'a> DeleteCookieParamsBuilder<'a> {
     pub fn build(self) -> DeleteCookieParams<'a> {
         DeleteCookieParams {
-            cookieName: self.cookieName,
+            cookie_name: self.cookie_name,
             url: self.url,
         }
     }
@@ -3402,31 +3749,34 @@ impl<'a> crate::CdpCommand<'a> for DisableParams {
 pub struct EnableParams {
     /// If true, the 'Page.fileChooserOpened' event will be emitted regardless of the state set by
     /// 'Page.setInterceptFileChooserDialog' command (default: false).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    enableFileChooserOpenedEvent: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "enableFileChooserOpenedEvent")]
+    enable_file_chooser_opened_event: Option<bool>,
 }
 
 impl EnableParams {
+    /// Creates a builder for this type.
     pub fn builder() -> EnableParamsBuilder {
         EnableParamsBuilder {
-            enableFileChooserOpenedEvent: None,
+            enable_file_chooser_opened_event: None,
         }
     }
-    pub fn enableFileChooserOpenedEvent(&self) -> Option<bool> { self.enableFileChooserOpenedEvent }
+    /// If true, the 'Page.fileChooserOpened' event will be emitted regardless of the state set by
+    /// 'Page.setInterceptFileChooserDialog' command (default: false).
+    pub fn enable_file_chooser_opened_event(&self) -> Option<bool> { self.enable_file_chooser_opened_event }
 }
 
 #[derive(Default)]
 pub struct EnableParamsBuilder {
-    enableFileChooserOpenedEvent: Option<bool>,
+    enable_file_chooser_opened_event: Option<bool>,
 }
 
 impl EnableParamsBuilder {
     /// If true, the 'Page.fileChooserOpened' event will be emitted regardless of the state set by
     /// 'Page.setInterceptFileChooserDialog' command (default: false).
-    pub fn enableFileChooserOpenedEvent(mut self, enableFileChooserOpenedEvent: bool) -> Self { self.enableFileChooserOpenedEvent = Some(enableFileChooserOpenedEvent); self }
+    pub fn enable_file_chooser_opened_event(mut self, enable_file_chooser_opened_event: bool) -> Self { self.enable_file_chooser_opened_event = Some(enable_file_chooser_opened_event); self }
     pub fn build(self) -> EnableParams {
         EnableParams {
-            enableFileChooserOpenedEvent: self.enableFileChooserOpenedEvent,
+            enable_file_chooser_opened_event: self.enable_file_chooser_opened_event,
         }
     }
 }
@@ -3447,29 +3797,30 @@ impl<'a> crate::CdpCommand<'a> for EnableParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetAppManifestParams<'a> {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    manifestId: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "manifestId")]
+    manifest_id: Option<Cow<'a, str>>,
 }
 
 impl<'a> GetAppManifestParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> GetAppManifestParamsBuilder<'a> {
         GetAppManifestParamsBuilder {
-            manifestId: None,
+            manifest_id: None,
         }
     }
-    pub fn manifestId(&self) -> Option<&str> { self.manifestId.as_deref() }
+    pub fn manifest_id(&self) -> Option<&str> { self.manifest_id.as_deref() }
 }
 
 #[derive(Default)]
 pub struct GetAppManifestParamsBuilder<'a> {
-    manifestId: Option<Cow<'a, str>>,
+    manifest_id: Option<Cow<'a, str>>,
 }
 
 impl<'a> GetAppManifestParamsBuilder<'a> {
-    pub fn manifestId(mut self, manifestId: impl Into<Cow<'a, str>>) -> Self { self.manifestId = Some(manifestId.into()); self }
+    pub fn manifest_id(mut self, manifest_id: impl Into<Cow<'a, str>>) -> Self { self.manifest_id = Some(manifest_id.into()); self }
     pub fn build(self) -> GetAppManifestParams<'a> {
         GetAppManifestParams {
-            manifestId: self.manifestId,
+            manifest_id: self.manifest_id,
         }
     }
 }
@@ -3496,6 +3847,10 @@ pub struct GetAppManifestReturns<'a> {
 }
 
 impl<'a> GetAppManifestReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url`: Manifest location.
+    /// * `errors`: 
+    /// * `manifest`: 
     pub fn builder(url: impl Into<Cow<'a, str>>, errors: Vec<AppManifestError<'a>>, manifest: WebAppManifest<'a>) -> GetAppManifestReturnsBuilder<'a> {
         GetAppManifestReturnsBuilder {
             url: url.into(),
@@ -3505,9 +3860,12 @@ impl<'a> GetAppManifestReturns<'a> {
             manifest: manifest,
         }
     }
+    /// Manifest location.
     pub fn url(&self) -> &str { self.url.as_ref() }
     pub fn errors(&self) -> &[AppManifestError<'a>] { &self.errors }
+    /// Manifest content.
     pub fn data(&self) -> Option<&str> { self.data.as_deref() }
+    /// Parsed manifest properties. Deprecated, use manifest instead.
     pub fn parsed(&self) -> Option<&AppManifestParsedProperties<'a>> { self.parsed.as_ref() }
     pub fn manifest(&self) -> &WebAppManifest<'a> { &self.manifest }
 }
@@ -3548,27 +3906,30 @@ impl<'a> crate::CdpCommand<'a> for GetAppManifestParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetInstallabilityErrorsReturns<'a> {
-    installabilityErrors: Vec<InstallabilityError<'a>>,
+    #[serde(rename = "installabilityErrors")]
+    installability_errors: Vec<InstallabilityError<'a>>,
 }
 
 impl<'a> GetInstallabilityErrorsReturns<'a> {
-    pub fn builder(installabilityErrors: Vec<InstallabilityError<'a>>) -> GetInstallabilityErrorsReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `installability_errors`: 
+    pub fn builder(installability_errors: Vec<InstallabilityError<'a>>) -> GetInstallabilityErrorsReturnsBuilder<'a> {
         GetInstallabilityErrorsReturnsBuilder {
-            installabilityErrors: installabilityErrors,
+            installability_errors: installability_errors,
         }
     }
-    pub fn installabilityErrors(&self) -> &[InstallabilityError<'a>] { &self.installabilityErrors }
+    pub fn installability_errors(&self) -> &[InstallabilityError<'a>] { &self.installability_errors }
 }
 
 
 pub struct GetInstallabilityErrorsReturnsBuilder<'a> {
-    installabilityErrors: Vec<InstallabilityError<'a>>,
+    installability_errors: Vec<InstallabilityError<'a>>,
 }
 
 impl<'a> GetInstallabilityErrorsReturnsBuilder<'a> {
     pub fn build(self) -> GetInstallabilityErrorsReturns<'a> {
         GetInstallabilityErrorsReturns {
-            installabilityErrors: self.installabilityErrors,
+            installability_errors: self.installability_errors,
         }
     }
 }
@@ -3588,29 +3949,30 @@ impl<'a> crate::CdpCommand<'a> for GetInstallabilityErrorsParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetManifestIconsReturns<'a> {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    primaryIcon: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "primaryIcon")]
+    primary_icon: Option<Cow<'a, str>>,
 }
 
 impl<'a> GetManifestIconsReturns<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> GetManifestIconsReturnsBuilder<'a> {
         GetManifestIconsReturnsBuilder {
-            primaryIcon: None,
+            primary_icon: None,
         }
     }
-    pub fn primaryIcon(&self) -> Option<&str> { self.primaryIcon.as_deref() }
+    pub fn primary_icon(&self) -> Option<&str> { self.primary_icon.as_deref() }
 }
 
 #[derive(Default)]
 pub struct GetManifestIconsReturnsBuilder<'a> {
-    primaryIcon: Option<Cow<'a, str>>,
+    primary_icon: Option<Cow<'a, str>>,
 }
 
 impl<'a> GetManifestIconsReturnsBuilder<'a> {
-    pub fn primaryIcon(mut self, primaryIcon: impl Into<Cow<'a, str>>) -> Self { self.primaryIcon = Some(primaryIcon.into()); self }
+    pub fn primary_icon(mut self, primary_icon: impl Into<Cow<'a, str>>) -> Self { self.primary_icon = Some(primary_icon.into()); self }
     pub fn build(self) -> GetManifestIconsReturns<'a> {
         GetManifestIconsReturns {
-            primaryIcon: self.primaryIcon,
+            primary_icon: self.primary_icon,
         }
     }
 }
@@ -3632,39 +3994,42 @@ impl<'a> crate::CdpCommand<'a> for GetManifestIconsParams {
 #[serde(rename_all = "camelCase")]
 pub struct GetAppIdReturns<'a> {
     /// App id, either from manifest's id attribute or computed from start_url
-    #[serde(skip_serializing_if = "Option::is_none")]
-    appId: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "appId")]
+    app_id: Option<Cow<'a, str>>,
     /// Recommendation for manifest's id attribute to match current id computed from start_url
-    #[serde(skip_serializing_if = "Option::is_none")]
-    recommendedId: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "recommendedId")]
+    recommended_id: Option<Cow<'a, str>>,
 }
 
 impl<'a> GetAppIdReturns<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> GetAppIdReturnsBuilder<'a> {
         GetAppIdReturnsBuilder {
-            appId: None,
-            recommendedId: None,
+            app_id: None,
+            recommended_id: None,
         }
     }
-    pub fn appId(&self) -> Option<&str> { self.appId.as_deref() }
-    pub fn recommendedId(&self) -> Option<&str> { self.recommendedId.as_deref() }
+    /// App id, either from manifest's id attribute or computed from start_url
+    pub fn app_id(&self) -> Option<&str> { self.app_id.as_deref() }
+    /// Recommendation for manifest's id attribute to match current id computed from start_url
+    pub fn recommended_id(&self) -> Option<&str> { self.recommended_id.as_deref() }
 }
 
 #[derive(Default)]
 pub struct GetAppIdReturnsBuilder<'a> {
-    appId: Option<Cow<'a, str>>,
-    recommendedId: Option<Cow<'a, str>>,
+    app_id: Option<Cow<'a, str>>,
+    recommended_id: Option<Cow<'a, str>>,
 }
 
 impl<'a> GetAppIdReturnsBuilder<'a> {
     /// App id, either from manifest's id attribute or computed from start_url
-    pub fn appId(mut self, appId: impl Into<Cow<'a, str>>) -> Self { self.appId = Some(appId.into()); self }
+    pub fn app_id(mut self, app_id: impl Into<Cow<'a, str>>) -> Self { self.app_id = Some(app_id.into()); self }
     /// Recommendation for manifest's id attribute to match current id computed from start_url
-    pub fn recommendedId(mut self, recommendedId: impl Into<Cow<'a, str>>) -> Self { self.recommendedId = Some(recommendedId.into()); self }
+    pub fn recommended_id(mut self, recommended_id: impl Into<Cow<'a, str>>) -> Self { self.recommended_id = Some(recommended_id.into()); self }
     pub fn build(self) -> GetAppIdReturns<'a> {
         GetAppIdReturns {
-            appId: self.appId,
-            recommendedId: self.recommendedId,
+            app_id: self.app_id,
+            recommended_id: self.recommended_id,
         }
     }
 }
@@ -3683,27 +4048,30 @@ impl<'a> crate::CdpCommand<'a> for GetAppIdParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetAdScriptAncestryParams<'a> {
-    frameId: FrameId<'a>,
+    #[serde(rename = "frameId")]
+    frame_id: FrameId<'a>,
 }
 
 impl<'a> GetAdScriptAncestryParams<'a> {
-    pub fn builder(frameId: impl Into<FrameId<'a>>) -> GetAdScriptAncestryParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `frame_id`: 
+    pub fn builder(frame_id: impl Into<FrameId<'a>>) -> GetAdScriptAncestryParamsBuilder<'a> {
         GetAdScriptAncestryParamsBuilder {
-            frameId: frameId.into(),
+            frame_id: frame_id.into(),
         }
     }
-    pub fn frameId(&self) -> &FrameId<'a> { &self.frameId }
+    pub fn frame_id(&self) -> &FrameId<'a> { &self.frame_id }
 }
 
 
 pub struct GetAdScriptAncestryParamsBuilder<'a> {
-    frameId: FrameId<'a>,
+    frame_id: FrameId<'a>,
 }
 
 impl<'a> GetAdScriptAncestryParamsBuilder<'a> {
     pub fn build(self) -> GetAdScriptAncestryParams<'a> {
         GetAdScriptAncestryParams {
-            frameId: self.frameId,
+            frame_id: self.frame_id,
         }
     }
 }
@@ -3717,22 +4085,28 @@ pub struct GetAdScriptAncestryReturns<'a> {
     /// chain is ordered from the most immediate script (in the frame creation
     /// stack) to more distant ancestors (that created the immediately preceding
     /// script). Only sent if frame is labelled as an ad and ids are available.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    adScriptAncestry: Option<crate::network::AdAncestry<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "adScriptAncestry")]
+    ad_script_ancestry: Option<crate::network::AdAncestry<'a>>,
 }
 
 impl<'a> GetAdScriptAncestryReturns<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> GetAdScriptAncestryReturnsBuilder<'a> {
         GetAdScriptAncestryReturnsBuilder {
-            adScriptAncestry: None,
+            ad_script_ancestry: None,
         }
     }
-    pub fn adScriptAncestry(&self) -> Option<&crate::network::AdAncestry<'a>> { self.adScriptAncestry.as_ref() }
+    /// The ancestry chain of ad script identifiers leading to this frame's
+    /// creation, along with the root script's filterlist rule. The ancestry
+    /// chain is ordered from the most immediate script (in the frame creation
+    /// stack) to more distant ancestors (that created the immediately preceding
+    /// script). Only sent if frame is labelled as an ad and ids are available.
+    pub fn ad_script_ancestry(&self) -> Option<&crate::network::AdAncestry<'a>> { self.ad_script_ancestry.as_ref() }
 }
 
 #[derive(Default)]
 pub struct GetAdScriptAncestryReturnsBuilder<'a> {
-    adScriptAncestry: Option<crate::network::AdAncestry<'a>>,
+    ad_script_ancestry: Option<crate::network::AdAncestry<'a>>,
 }
 
 impl<'a> GetAdScriptAncestryReturnsBuilder<'a> {
@@ -3741,10 +4115,10 @@ impl<'a> GetAdScriptAncestryReturnsBuilder<'a> {
     /// chain is ordered from the most immediate script (in the frame creation
     /// stack) to more distant ancestors (that created the immediately preceding
     /// script). Only sent if frame is labelled as an ad and ids are available.
-    pub fn adScriptAncestry(mut self, adScriptAncestry: crate::network::AdAncestry<'a>) -> Self { self.adScriptAncestry = Some(adScriptAncestry); self }
+    pub fn ad_script_ancestry(mut self, ad_script_ancestry: crate::network::AdAncestry<'a>) -> Self { self.ad_script_ancestry = Some(ad_script_ancestry); self }
     pub fn build(self) -> GetAdScriptAncestryReturns<'a> {
         GetAdScriptAncestryReturns {
-            adScriptAncestry: self.adScriptAncestry,
+            ad_script_ancestry: self.ad_script_ancestry,
         }
     }
 }
@@ -3762,27 +4136,31 @@ impl<'a> crate::CdpCommand<'a> for GetAdScriptAncestryParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct GetFrameTreeReturns<'a> {
     /// Present frame tree structure.
-    frameTree: FrameTree<'a>,
+    #[serde(rename = "frameTree")]
+    frame_tree: FrameTree<'a>,
 }
 
 impl<'a> GetFrameTreeReturns<'a> {
-    pub fn builder(frameTree: FrameTree<'a>) -> GetFrameTreeReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `frame_tree`: Present frame tree structure.
+    pub fn builder(frame_tree: FrameTree<'a>) -> GetFrameTreeReturnsBuilder<'a> {
         GetFrameTreeReturnsBuilder {
-            frameTree: frameTree,
+            frame_tree: frame_tree,
         }
     }
-    pub fn frameTree(&self) -> &FrameTree<'a> { &self.frameTree }
+    /// Present frame tree structure.
+    pub fn frame_tree(&self) -> &FrameTree<'a> { &self.frame_tree }
 }
 
 
 pub struct GetFrameTreeReturnsBuilder<'a> {
-    frameTree: FrameTree<'a>,
+    frame_tree: FrameTree<'a>,
 }
 
 impl<'a> GetFrameTreeReturnsBuilder<'a> {
     pub fn build(self) -> GetFrameTreeReturns<'a> {
         GetFrameTreeReturns {
-            frameTree: self.frameTree,
+            frame_tree: self.frame_tree,
         }
     }
 }
@@ -3803,57 +4181,76 @@ impl<'a> crate::CdpCommand<'a> for GetFrameTreeParams {
 #[serde(rename_all = "camelCase")]
 pub struct GetLayoutMetricsReturns {
     /// Deprecated metrics relating to the layout viewport. Is in device pixels. Use 'cssLayoutViewport' instead.
-    layoutViewport: LayoutViewport,
+    #[serde(rename = "layoutViewport")]
+    layout_viewport: LayoutViewport,
     /// Deprecated metrics relating to the visual viewport. Is in device pixels. Use 'cssVisualViewport' instead.
-    visualViewport: VisualViewport,
+    #[serde(rename = "visualViewport")]
+    visual_viewport: VisualViewport,
     /// Deprecated size of scrollable area. Is in DP. Use 'cssContentSize' instead.
-    contentSize: crate::dom::Rect,
+    #[serde(rename = "contentSize")]
+    content_size: crate::dom::Rect,
     /// Metrics relating to the layout viewport in CSS pixels.
-    cssLayoutViewport: LayoutViewport,
+    #[serde(rename = "cssLayoutViewport")]
+    css_layout_viewport: LayoutViewport,
     /// Metrics relating to the visual viewport in CSS pixels.
-    cssVisualViewport: VisualViewport,
+    #[serde(rename = "cssVisualViewport")]
+    css_visual_viewport: VisualViewport,
     /// Size of scrollable area in CSS pixels.
-    cssContentSize: crate::dom::Rect,
+    #[serde(rename = "cssContentSize")]
+    css_content_size: crate::dom::Rect,
 }
 
 impl GetLayoutMetricsReturns {
-    pub fn builder(layoutViewport: LayoutViewport, visualViewport: VisualViewport, contentSize: crate::dom::Rect, cssLayoutViewport: LayoutViewport, cssVisualViewport: VisualViewport, cssContentSize: crate::dom::Rect) -> GetLayoutMetricsReturnsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `layout_viewport`: Deprecated metrics relating to the layout viewport. Is in device pixels. Use `cssLayoutViewport` instead.
+    /// * `visual_viewport`: Deprecated metrics relating to the visual viewport. Is in device pixels. Use `cssVisualViewport` instead.
+    /// * `content_size`: Deprecated size of scrollable area. Is in DP. Use `cssContentSize` instead.
+    /// * `css_layout_viewport`: Metrics relating to the layout viewport in CSS pixels.
+    /// * `css_visual_viewport`: Metrics relating to the visual viewport in CSS pixels.
+    /// * `css_content_size`: Size of scrollable area in CSS pixels.
+    pub fn builder(layout_viewport: LayoutViewport, visual_viewport: VisualViewport, content_size: crate::dom::Rect, css_layout_viewport: LayoutViewport, css_visual_viewport: VisualViewport, css_content_size: crate::dom::Rect) -> GetLayoutMetricsReturnsBuilder {
         GetLayoutMetricsReturnsBuilder {
-            layoutViewport: layoutViewport,
-            visualViewport: visualViewport,
-            contentSize: contentSize,
-            cssLayoutViewport: cssLayoutViewport,
-            cssVisualViewport: cssVisualViewport,
-            cssContentSize: cssContentSize,
+            layout_viewport: layout_viewport,
+            visual_viewport: visual_viewport,
+            content_size: content_size,
+            css_layout_viewport: css_layout_viewport,
+            css_visual_viewport: css_visual_viewport,
+            css_content_size: css_content_size,
         }
     }
-    pub fn layoutViewport(&self) -> &LayoutViewport { &self.layoutViewport }
-    pub fn visualViewport(&self) -> &VisualViewport { &self.visualViewport }
-    pub fn contentSize(&self) -> &crate::dom::Rect { &self.contentSize }
-    pub fn cssLayoutViewport(&self) -> &LayoutViewport { &self.cssLayoutViewport }
-    pub fn cssVisualViewport(&self) -> &VisualViewport { &self.cssVisualViewport }
-    pub fn cssContentSize(&self) -> &crate::dom::Rect { &self.cssContentSize }
+    /// Deprecated metrics relating to the layout viewport. Is in device pixels. Use 'cssLayoutViewport' instead.
+    pub fn layout_viewport(&self) -> &LayoutViewport { &self.layout_viewport }
+    /// Deprecated metrics relating to the visual viewport. Is in device pixels. Use 'cssVisualViewport' instead.
+    pub fn visual_viewport(&self) -> &VisualViewport { &self.visual_viewport }
+    /// Deprecated size of scrollable area. Is in DP. Use 'cssContentSize' instead.
+    pub fn content_size(&self) -> &crate::dom::Rect { &self.content_size }
+    /// Metrics relating to the layout viewport in CSS pixels.
+    pub fn css_layout_viewport(&self) -> &LayoutViewport { &self.css_layout_viewport }
+    /// Metrics relating to the visual viewport in CSS pixels.
+    pub fn css_visual_viewport(&self) -> &VisualViewport { &self.css_visual_viewport }
+    /// Size of scrollable area in CSS pixels.
+    pub fn css_content_size(&self) -> &crate::dom::Rect { &self.css_content_size }
 }
 
 
 pub struct GetLayoutMetricsReturnsBuilder {
-    layoutViewport: LayoutViewport,
-    visualViewport: VisualViewport,
-    contentSize: crate::dom::Rect,
-    cssLayoutViewport: LayoutViewport,
-    cssVisualViewport: VisualViewport,
-    cssContentSize: crate::dom::Rect,
+    layout_viewport: LayoutViewport,
+    visual_viewport: VisualViewport,
+    content_size: crate::dom::Rect,
+    css_layout_viewport: LayoutViewport,
+    css_visual_viewport: VisualViewport,
+    css_content_size: crate::dom::Rect,
 }
 
 impl GetLayoutMetricsReturnsBuilder {
     pub fn build(self) -> GetLayoutMetricsReturns {
         GetLayoutMetricsReturns {
-            layoutViewport: self.layoutViewport,
-            visualViewport: self.visualViewport,
-            contentSize: self.contentSize,
-            cssLayoutViewport: self.cssLayoutViewport,
-            cssVisualViewport: self.cssVisualViewport,
-            cssContentSize: self.cssContentSize,
+            layout_viewport: self.layout_viewport,
+            visual_viewport: self.visual_viewport,
+            content_size: self.content_size,
+            css_layout_viewport: self.css_layout_viewport,
+            css_visual_viewport: self.css_visual_viewport,
+            css_content_size: self.css_content_size,
         }
     }
 }
@@ -3874,32 +4271,38 @@ impl<'a> crate::CdpCommand<'a> for GetLayoutMetricsParams {
 #[serde(rename_all = "camelCase")]
 pub struct GetNavigationHistoryReturns<'a> {
     /// Index of the current navigation history entry.
-    currentIndex: u64,
+    #[serde(rename = "currentIndex")]
+    current_index: u64,
     /// Array of navigation history entries.
     entries: Vec<NavigationEntry<'a>>,
 }
 
 impl<'a> GetNavigationHistoryReturns<'a> {
-    pub fn builder(currentIndex: u64, entries: Vec<NavigationEntry<'a>>) -> GetNavigationHistoryReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `current_index`: Index of the current navigation history entry.
+    /// * `entries`: Array of navigation history entries.
+    pub fn builder(current_index: u64, entries: Vec<NavigationEntry<'a>>) -> GetNavigationHistoryReturnsBuilder<'a> {
         GetNavigationHistoryReturnsBuilder {
-            currentIndex: currentIndex,
+            current_index: current_index,
             entries: entries,
         }
     }
-    pub fn currentIndex(&self) -> u64 { self.currentIndex }
+    /// Index of the current navigation history entry.
+    pub fn current_index(&self) -> u64 { self.current_index }
+    /// Array of navigation history entries.
     pub fn entries(&self) -> &[NavigationEntry<'a>] { &self.entries }
 }
 
 
 pub struct GetNavigationHistoryReturnsBuilder<'a> {
-    currentIndex: u64,
+    current_index: u64,
     entries: Vec<NavigationEntry<'a>>,
 }
 
 impl<'a> GetNavigationHistoryReturnsBuilder<'a> {
     pub fn build(self) -> GetNavigationHistoryReturns<'a> {
         GetNavigationHistoryReturns {
-            currentIndex: self.currentIndex,
+            current_index: self.current_index,
             entries: self.entries,
         }
     }
@@ -3931,32 +4334,38 @@ impl<'a> crate::CdpCommand<'a> for ResetNavigationHistoryParams {
 #[serde(rename_all = "camelCase")]
 pub struct GetResourceContentParams<'a> {
     /// Frame id to get resource for.
-    frameId: FrameId<'a>,
+    #[serde(rename = "frameId")]
+    frame_id: FrameId<'a>,
     /// URL of the resource to get content for.
     url: Cow<'a, str>,
 }
 
 impl<'a> GetResourceContentParams<'a> {
-    pub fn builder(frameId: impl Into<FrameId<'a>>, url: impl Into<Cow<'a, str>>) -> GetResourceContentParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `frame_id`: Frame id to get resource for.
+    /// * `url`: URL of the resource to get content for.
+    pub fn builder(frame_id: impl Into<FrameId<'a>>, url: impl Into<Cow<'a, str>>) -> GetResourceContentParamsBuilder<'a> {
         GetResourceContentParamsBuilder {
-            frameId: frameId.into(),
+            frame_id: frame_id.into(),
             url: url.into(),
         }
     }
-    pub fn frameId(&self) -> &FrameId<'a> { &self.frameId }
+    /// Frame id to get resource for.
+    pub fn frame_id(&self) -> &FrameId<'a> { &self.frame_id }
+    /// URL of the resource to get content for.
     pub fn url(&self) -> &str { self.url.as_ref() }
 }
 
 
 pub struct GetResourceContentParamsBuilder<'a> {
-    frameId: FrameId<'a>,
+    frame_id: FrameId<'a>,
     url: Cow<'a, str>,
 }
 
 impl<'a> GetResourceContentParamsBuilder<'a> {
     pub fn build(self) -> GetResourceContentParams<'a> {
         GetResourceContentParams {
-            frameId: self.frameId,
+            frame_id: self.frame_id,
             url: self.url,
         }
     }
@@ -3970,31 +4379,37 @@ pub struct GetResourceContentReturns<'a> {
     /// Resource content.
     content: Cow<'a, str>,
     /// True, if content was served as base64.
-    base64Encoded: bool,
+    #[serde(rename = "base64Encoded")]
+    base64_encoded: bool,
 }
 
 impl<'a> GetResourceContentReturns<'a> {
-    pub fn builder(content: impl Into<Cow<'a, str>>, base64Encoded: bool) -> GetResourceContentReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `content`: Resource content.
+    /// * `base64_encoded`: True, if content was served as base64.
+    pub fn builder(content: impl Into<Cow<'a, str>>, base64_encoded: bool) -> GetResourceContentReturnsBuilder<'a> {
         GetResourceContentReturnsBuilder {
             content: content.into(),
-            base64Encoded: base64Encoded,
+            base64_encoded: base64_encoded,
         }
     }
+    /// Resource content.
     pub fn content(&self) -> &str { self.content.as_ref() }
-    pub fn base64Encoded(&self) -> bool { self.base64Encoded }
+    /// True, if content was served as base64.
+    pub fn base64_encoded(&self) -> bool { self.base64_encoded }
 }
 
 
 pub struct GetResourceContentReturnsBuilder<'a> {
     content: Cow<'a, str>,
-    base64Encoded: bool,
+    base64_encoded: bool,
 }
 
 impl<'a> GetResourceContentReturnsBuilder<'a> {
     pub fn build(self) -> GetResourceContentReturns<'a> {
         GetResourceContentReturns {
             content: self.content,
-            base64Encoded: self.base64Encoded,
+            base64_encoded: self.base64_encoded,
         }
     }
 }
@@ -4012,27 +4427,31 @@ impl<'a> crate::CdpCommand<'a> for GetResourceContentParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct GetResourceTreeReturns<'a> {
     /// Present frame / resource tree structure.
-    frameTree: FrameResourceTree<'a>,
+    #[serde(rename = "frameTree")]
+    frame_tree: FrameResourceTree<'a>,
 }
 
 impl<'a> GetResourceTreeReturns<'a> {
-    pub fn builder(frameTree: FrameResourceTree<'a>) -> GetResourceTreeReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `frame_tree`: Present frame / resource tree structure.
+    pub fn builder(frame_tree: FrameResourceTree<'a>) -> GetResourceTreeReturnsBuilder<'a> {
         GetResourceTreeReturnsBuilder {
-            frameTree: frameTree,
+            frame_tree: frame_tree,
         }
     }
-    pub fn frameTree(&self) -> &FrameResourceTree<'a> { &self.frameTree }
+    /// Present frame / resource tree structure.
+    pub fn frame_tree(&self) -> &FrameResourceTree<'a> { &self.frame_tree }
 }
 
 
 pub struct GetResourceTreeReturnsBuilder<'a> {
-    frameTree: FrameResourceTree<'a>,
+    frame_tree: FrameResourceTree<'a>,
 }
 
 impl<'a> GetResourceTreeReturnsBuilder<'a> {
     pub fn build(self) -> GetResourceTreeReturns<'a> {
         GetResourceTreeReturns {
-            frameTree: self.frameTree,
+            frame_tree: self.frame_tree,
         }
     }
 }
@@ -4056,35 +4475,40 @@ pub struct HandleJavaScriptDialogParams<'a> {
     accept: bool,
     /// The text to enter into the dialog prompt before accepting. Used only if this is a prompt
     /// dialog.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    promptText: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "promptText")]
+    prompt_text: Option<Cow<'a, str>>,
 }
 
 impl<'a> HandleJavaScriptDialogParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `accept`: Whether to accept or dismiss the dialog.
     pub fn builder(accept: bool) -> HandleJavaScriptDialogParamsBuilder<'a> {
         HandleJavaScriptDialogParamsBuilder {
             accept: accept,
-            promptText: None,
+            prompt_text: None,
         }
     }
+    /// Whether to accept or dismiss the dialog.
     pub fn accept(&self) -> bool { self.accept }
-    pub fn promptText(&self) -> Option<&str> { self.promptText.as_deref() }
+    /// The text to enter into the dialog prompt before accepting. Used only if this is a prompt
+    /// dialog.
+    pub fn prompt_text(&self) -> Option<&str> { self.prompt_text.as_deref() }
 }
 
 
 pub struct HandleJavaScriptDialogParamsBuilder<'a> {
     accept: bool,
-    promptText: Option<Cow<'a, str>>,
+    prompt_text: Option<Cow<'a, str>>,
 }
 
 impl<'a> HandleJavaScriptDialogParamsBuilder<'a> {
     /// The text to enter into the dialog prompt before accepting. Used only if this is a prompt
     /// dialog.
-    pub fn promptText(mut self, promptText: impl Into<Cow<'a, str>>) -> Self { self.promptText = Some(promptText.into()); self }
+    pub fn prompt_text(mut self, prompt_text: impl Into<Cow<'a, str>>) -> Self { self.prompt_text = Some(prompt_text.into()); self }
     pub fn build(self) -> HandleJavaScriptDialogParams<'a> {
         HandleJavaScriptDialogParams {
             accept: self.accept,
-            promptText: self.promptText,
+            prompt_text: self.prompt_text,
         }
     }
 }
@@ -4107,58 +4531,65 @@ pub struct NavigateParams<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     referrer: Option<Cow<'a, str>>,
     /// Intended transition type.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    transitionType: Option<TransitionType>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "transitionType")]
+    transition_type: Option<TransitionType>,
     /// Frame id to navigate, if not specified navigates the top frame.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    frameId: Option<FrameId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "frameId")]
+    frame_id: Option<FrameId<'a>>,
     /// Referrer-policy used for the navigation.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    referrerPolicy: Option<ReferrerPolicy>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "referrerPolicy")]
+    referrer_policy: Option<ReferrerPolicy>,
 }
 
 impl<'a> NavigateParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url`: URL to navigate the page to.
     pub fn builder(url: impl Into<Cow<'a, str>>) -> NavigateParamsBuilder<'a> {
         NavigateParamsBuilder {
             url: url.into(),
             referrer: None,
-            transitionType: None,
-            frameId: None,
-            referrerPolicy: None,
+            transition_type: None,
+            frame_id: None,
+            referrer_policy: None,
         }
     }
+    /// URL to navigate the page to.
     pub fn url(&self) -> &str { self.url.as_ref() }
+    /// Referrer URL.
     pub fn referrer(&self) -> Option<&str> { self.referrer.as_deref() }
-    pub fn transitionType(&self) -> Option<&TransitionType> { self.transitionType.as_ref() }
-    pub fn frameId(&self) -> Option<&FrameId<'a>> { self.frameId.as_ref() }
-    pub fn referrerPolicy(&self) -> Option<&ReferrerPolicy> { self.referrerPolicy.as_ref() }
+    /// Intended transition type.
+    pub fn transition_type(&self) -> Option<&TransitionType> { self.transition_type.as_ref() }
+    /// Frame id to navigate, if not specified navigates the top frame.
+    pub fn frame_id(&self) -> Option<&FrameId<'a>> { self.frame_id.as_ref() }
+    /// Referrer-policy used for the navigation.
+    pub fn referrer_policy(&self) -> Option<&ReferrerPolicy> { self.referrer_policy.as_ref() }
 }
 
 
 pub struct NavigateParamsBuilder<'a> {
     url: Cow<'a, str>,
     referrer: Option<Cow<'a, str>>,
-    transitionType: Option<TransitionType>,
-    frameId: Option<FrameId<'a>>,
-    referrerPolicy: Option<ReferrerPolicy>,
+    transition_type: Option<TransitionType>,
+    frame_id: Option<FrameId<'a>>,
+    referrer_policy: Option<ReferrerPolicy>,
 }
 
 impl<'a> NavigateParamsBuilder<'a> {
     /// Referrer URL.
     pub fn referrer(mut self, referrer: impl Into<Cow<'a, str>>) -> Self { self.referrer = Some(referrer.into()); self }
     /// Intended transition type.
-    pub fn transitionType(mut self, transitionType: impl Into<TransitionType>) -> Self { self.transitionType = Some(transitionType.into()); self }
+    pub fn transition_type(mut self, transition_type: impl Into<TransitionType>) -> Self { self.transition_type = Some(transition_type.into()); self }
     /// Frame id to navigate, if not specified navigates the top frame.
-    pub fn frameId(mut self, frameId: impl Into<FrameId<'a>>) -> Self { self.frameId = Some(frameId.into()); self }
+    pub fn frame_id(mut self, frame_id: impl Into<FrameId<'a>>) -> Self { self.frame_id = Some(frame_id.into()); self }
     /// Referrer-policy used for the navigation.
-    pub fn referrerPolicy(mut self, referrerPolicy: impl Into<ReferrerPolicy>) -> Self { self.referrerPolicy = Some(referrerPolicy.into()); self }
+    pub fn referrer_policy(mut self, referrer_policy: impl Into<ReferrerPolicy>) -> Self { self.referrer_policy = Some(referrer_policy.into()); self }
     pub fn build(self) -> NavigateParams<'a> {
         NavigateParams {
             url: self.url,
             referrer: self.referrer,
-            transitionType: self.transitionType,
-            frameId: self.frameId,
-            referrerPolicy: self.referrerPolicy,
+            transition_type: self.transition_type,
+            frame_id: self.frame_id,
+            referrer_policy: self.referrer_policy,
         }
     }
 }
@@ -4169,56 +4600,64 @@ impl<'a> NavigateParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct NavigateReturns<'a> {
     /// Frame id that has navigated (or failed to navigate)
-    frameId: FrameId<'a>,
+    #[serde(rename = "frameId")]
+    frame_id: FrameId<'a>,
     /// Loader identifier. This is omitted in case of same-document navigation,
     /// as the previously committed loaderId would not change.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    loaderId: Option<crate::network::LoaderId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "loaderId")]
+    loader_id: Option<crate::network::LoaderId<'a>>,
     /// User friendly error message, present if and only if navigation has failed.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    errorText: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "errorText")]
+    error_text: Option<Cow<'a, str>>,
     /// Whether the navigation resulted in a download.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    isDownload: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "isDownload")]
+    is_download: Option<bool>,
 }
 
 impl<'a> NavigateReturns<'a> {
-    pub fn builder(frameId: impl Into<FrameId<'a>>) -> NavigateReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `frame_id`: Frame id that has navigated (or failed to navigate)
+    pub fn builder(frame_id: impl Into<FrameId<'a>>) -> NavigateReturnsBuilder<'a> {
         NavigateReturnsBuilder {
-            frameId: frameId.into(),
-            loaderId: None,
-            errorText: None,
-            isDownload: None,
+            frame_id: frame_id.into(),
+            loader_id: None,
+            error_text: None,
+            is_download: None,
         }
     }
-    pub fn frameId(&self) -> &FrameId<'a> { &self.frameId }
-    pub fn loaderId(&self) -> Option<&crate::network::LoaderId<'a>> { self.loaderId.as_ref() }
-    pub fn errorText(&self) -> Option<&str> { self.errorText.as_deref() }
-    pub fn isDownload(&self) -> Option<bool> { self.isDownload }
+    /// Frame id that has navigated (or failed to navigate)
+    pub fn frame_id(&self) -> &FrameId<'a> { &self.frame_id }
+    /// Loader identifier. This is omitted in case of same-document navigation,
+    /// as the previously committed loaderId would not change.
+    pub fn loader_id(&self) -> Option<&crate::network::LoaderId<'a>> { self.loader_id.as_ref() }
+    /// User friendly error message, present if and only if navigation has failed.
+    pub fn error_text(&self) -> Option<&str> { self.error_text.as_deref() }
+    /// Whether the navigation resulted in a download.
+    pub fn is_download(&self) -> Option<bool> { self.is_download }
 }
 
 
 pub struct NavigateReturnsBuilder<'a> {
-    frameId: FrameId<'a>,
-    loaderId: Option<crate::network::LoaderId<'a>>,
-    errorText: Option<Cow<'a, str>>,
-    isDownload: Option<bool>,
+    frame_id: FrameId<'a>,
+    loader_id: Option<crate::network::LoaderId<'a>>,
+    error_text: Option<Cow<'a, str>>,
+    is_download: Option<bool>,
 }
 
 impl<'a> NavigateReturnsBuilder<'a> {
     /// Loader identifier. This is omitted in case of same-document navigation,
     /// as the previously committed loaderId would not change.
-    pub fn loaderId(mut self, loaderId: crate::network::LoaderId<'a>) -> Self { self.loaderId = Some(loaderId); self }
+    pub fn loader_id(mut self, loader_id: crate::network::LoaderId<'a>) -> Self { self.loader_id = Some(loader_id); self }
     /// User friendly error message, present if and only if navigation has failed.
-    pub fn errorText(mut self, errorText: impl Into<Cow<'a, str>>) -> Self { self.errorText = Some(errorText.into()); self }
+    pub fn error_text(mut self, error_text: impl Into<Cow<'a, str>>) -> Self { self.error_text = Some(error_text.into()); self }
     /// Whether the navigation resulted in a download.
-    pub fn isDownload(mut self, isDownload: bool) -> Self { self.isDownload = Some(isDownload); self }
+    pub fn is_download(mut self, is_download: bool) -> Self { self.is_download = Some(is_download); self }
     pub fn build(self) -> NavigateReturns<'a> {
         NavigateReturns {
-            frameId: self.frameId,
-            loaderId: self.loaderId,
-            errorText: self.errorText,
-            isDownload: self.isDownload,
+            frame_id: self.frame_id,
+            loader_id: self.loader_id,
+            error_text: self.error_text,
+            is_download: self.is_download,
         }
     }
 }
@@ -4236,27 +4675,31 @@ impl<'a> crate::CdpCommand<'a> for NavigateParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct NavigateToHistoryEntryParams {
     /// Unique id of the entry to navigate to.
-    entryId: u64,
+    #[serde(rename = "entryId")]
+    entry_id: u64,
 }
 
 impl NavigateToHistoryEntryParams {
-    pub fn builder(entryId: u64) -> NavigateToHistoryEntryParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `entry_id`: Unique id of the entry to navigate to.
+    pub fn builder(entry_id: u64) -> NavigateToHistoryEntryParamsBuilder {
         NavigateToHistoryEntryParamsBuilder {
-            entryId: entryId,
+            entry_id: entry_id,
         }
     }
-    pub fn entryId(&self) -> u64 { self.entryId }
+    /// Unique id of the entry to navigate to.
+    pub fn entry_id(&self) -> u64 { self.entry_id }
 }
 
 
 pub struct NavigateToHistoryEntryParamsBuilder {
-    entryId: u64,
+    entry_id: u64,
 }
 
 impl NavigateToHistoryEntryParamsBuilder {
     pub fn build(self) -> NavigateToHistoryEntryParams {
         NavigateToHistoryEntryParams {
-            entryId: self.entryId,
+            entry_id: self.entry_id,
         }
     }
 }
@@ -4277,32 +4720,32 @@ pub struct PrintToPDFParams<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     landscape: Option<bool>,
     /// Display header and footer. Defaults to false.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    displayHeaderFooter: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "displayHeaderFooter")]
+    display_header_footer: Option<bool>,
     /// Print background graphics. Defaults to false.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    printBackground: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "printBackground")]
+    print_background: Option<bool>,
     /// Scale of the webpage rendering. Defaults to 1.
     #[serde(skip_serializing_if = "Option::is_none")]
     scale: Option<f64>,
     /// Paper width in inches. Defaults to 8.5 inches.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    paperWidth: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "paperWidth")]
+    paper_width: Option<f64>,
     /// Paper height in inches. Defaults to 11 inches.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    paperHeight: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "paperHeight")]
+    paper_height: Option<f64>,
     /// Top margin in inches. Defaults to 1cm (~0.4 inches).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    marginTop: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "marginTop")]
+    margin_top: Option<f64>,
     /// Bottom margin in inches. Defaults to 1cm (~0.4 inches).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    marginBottom: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "marginBottom")]
+    margin_bottom: Option<f64>,
     /// Left margin in inches. Defaults to 1cm (~0.4 inches).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    marginLeft: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "marginLeft")]
+    margin_left: Option<f64>,
     /// Right margin in inches. Defaults to 1cm (~0.4 inches).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    marginRight: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "marginRight")]
+    margin_right: Option<f64>,
     /// Paper ranges to print, one based, e.g., '1-5, 8, 11-13'. Pages are
     /// printed in the document order, not in the order specified, and no
     /// more than once.
@@ -4311,8 +4754,8 @@ pub struct PrintToPDFParams<'a> {
     /// document, and ranges beyond the end of the document are ignored.
     /// If this results in no pages to print, an error is reported.
     /// It is an error to specify a range with start greater than end.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pageRanges: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "pageRanges")]
+    page_ranges: Option<Cow<'a, str>>,
     /// HTML template for the print header. Should be valid HTML markup with following
     /// classes used to inject printing values into them:
     /// - 'date': formatted print date
@@ -4321,110 +4764,144 @@ pub struct PrintToPDFParams<'a> {
     /// - 'pageNumber': current page number
     /// - 'totalPages': total pages in the document
     /// 
-    /// For example, '<span class=title></span>' would generate span containing the title.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    headerTemplate: Option<Cow<'a, str>>,
+    /// For example, '\<span class=title\>\</span\>' would generate span containing the title.
+    #[serde(skip_serializing_if = "Option::is_none", rename = "headerTemplate")]
+    header_template: Option<Cow<'a, str>>,
     /// HTML template for the print footer. Should use the same format as the 'headerTemplate'.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    footerTemplate: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "footerTemplate")]
+    footer_template: Option<Cow<'a, str>>,
     /// Whether or not to prefer page size as defined by css. Defaults to false,
     /// in which case the content will be scaled to fit the paper size.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    preferCSSPageSize: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "preferCSSPageSize")]
+    prefer_css_page_size: Option<bool>,
     /// return as stream
-    #[serde(skip_serializing_if = "Option::is_none")]
-    transferMode: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "transferMode")]
+    transfer_mode: Option<Cow<'a, str>>,
     /// Whether or not to generate tagged (accessible) PDF. Defaults to embedder choice.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    generateTaggedPDF: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "generateTaggedPDF")]
+    generate_tagged_pdf: Option<bool>,
     /// Whether or not to embed the document outline into the PDF.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    generateDocumentOutline: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "generateDocumentOutline")]
+    generate_document_outline: Option<bool>,
 }
 
 impl<'a> PrintToPDFParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> PrintToPDFParamsBuilder<'a> {
         PrintToPDFParamsBuilder {
             landscape: None,
-            displayHeaderFooter: None,
-            printBackground: None,
+            display_header_footer: None,
+            print_background: None,
             scale: None,
-            paperWidth: None,
-            paperHeight: None,
-            marginTop: None,
-            marginBottom: None,
-            marginLeft: None,
-            marginRight: None,
-            pageRanges: None,
-            headerTemplate: None,
-            footerTemplate: None,
-            preferCSSPageSize: None,
-            transferMode: None,
-            generateTaggedPDF: None,
-            generateDocumentOutline: None,
+            paper_width: None,
+            paper_height: None,
+            margin_top: None,
+            margin_bottom: None,
+            margin_left: None,
+            margin_right: None,
+            page_ranges: None,
+            header_template: None,
+            footer_template: None,
+            prefer_css_page_size: None,
+            transfer_mode: None,
+            generate_tagged_pdf: None,
+            generate_document_outline: None,
         }
     }
+    /// Paper orientation. Defaults to false.
     pub fn landscape(&self) -> Option<bool> { self.landscape }
-    pub fn displayHeaderFooter(&self) -> Option<bool> { self.displayHeaderFooter }
-    pub fn printBackground(&self) -> Option<bool> { self.printBackground }
+    /// Display header and footer. Defaults to false.
+    pub fn display_header_footer(&self) -> Option<bool> { self.display_header_footer }
+    /// Print background graphics. Defaults to false.
+    pub fn print_background(&self) -> Option<bool> { self.print_background }
+    /// Scale of the webpage rendering. Defaults to 1.
     pub fn scale(&self) -> Option<f64> { self.scale }
-    pub fn paperWidth(&self) -> Option<f64> { self.paperWidth }
-    pub fn paperHeight(&self) -> Option<f64> { self.paperHeight }
-    pub fn marginTop(&self) -> Option<f64> { self.marginTop }
-    pub fn marginBottom(&self) -> Option<f64> { self.marginBottom }
-    pub fn marginLeft(&self) -> Option<f64> { self.marginLeft }
-    pub fn marginRight(&self) -> Option<f64> { self.marginRight }
-    pub fn pageRanges(&self) -> Option<&str> { self.pageRanges.as_deref() }
-    pub fn headerTemplate(&self) -> Option<&str> { self.headerTemplate.as_deref() }
-    pub fn footerTemplate(&self) -> Option<&str> { self.footerTemplate.as_deref() }
-    pub fn preferCSSPageSize(&self) -> Option<bool> { self.preferCSSPageSize }
-    pub fn transferMode(&self) -> Option<&str> { self.transferMode.as_deref() }
-    pub fn generateTaggedPDF(&self) -> Option<bool> { self.generateTaggedPDF }
-    pub fn generateDocumentOutline(&self) -> Option<bool> { self.generateDocumentOutline }
+    /// Paper width in inches. Defaults to 8.5 inches.
+    pub fn paper_width(&self) -> Option<f64> { self.paper_width }
+    /// Paper height in inches. Defaults to 11 inches.
+    pub fn paper_height(&self) -> Option<f64> { self.paper_height }
+    /// Top margin in inches. Defaults to 1cm (~0.4 inches).
+    pub fn margin_top(&self) -> Option<f64> { self.margin_top }
+    /// Bottom margin in inches. Defaults to 1cm (~0.4 inches).
+    pub fn margin_bottom(&self) -> Option<f64> { self.margin_bottom }
+    /// Left margin in inches. Defaults to 1cm (~0.4 inches).
+    pub fn margin_left(&self) -> Option<f64> { self.margin_left }
+    /// Right margin in inches. Defaults to 1cm (~0.4 inches).
+    pub fn margin_right(&self) -> Option<f64> { self.margin_right }
+    /// Paper ranges to print, one based, e.g., '1-5, 8, 11-13'. Pages are
+    /// printed in the document order, not in the order specified, and no
+    /// more than once.
+    /// Defaults to empty string, which implies the entire document is printed.
+    /// The page numbers are quietly capped to actual page count of the
+    /// document, and ranges beyond the end of the document are ignored.
+    /// If this results in no pages to print, an error is reported.
+    /// It is an error to specify a range with start greater than end.
+    pub fn page_ranges(&self) -> Option<&str> { self.page_ranges.as_deref() }
+    /// HTML template for the print header. Should be valid HTML markup with following
+    /// classes used to inject printing values into them:
+    /// - 'date': formatted print date
+    /// - 'title': document title
+    /// - 'url': document location
+    /// - 'pageNumber': current page number
+    /// - 'totalPages': total pages in the document
+    /// 
+    /// For example, '\<span class=title\>\</span\>' would generate span containing the title.
+    pub fn header_template(&self) -> Option<&str> { self.header_template.as_deref() }
+    /// HTML template for the print footer. Should use the same format as the 'headerTemplate'.
+    pub fn footer_template(&self) -> Option<&str> { self.footer_template.as_deref() }
+    /// Whether or not to prefer page size as defined by css. Defaults to false,
+    /// in which case the content will be scaled to fit the paper size.
+    pub fn prefer_css_page_size(&self) -> Option<bool> { self.prefer_css_page_size }
+    /// return as stream
+    pub fn transfer_mode(&self) -> Option<&str> { self.transfer_mode.as_deref() }
+    /// Whether or not to generate tagged (accessible) PDF. Defaults to embedder choice.
+    pub fn generate_tagged_pdf(&self) -> Option<bool> { self.generate_tagged_pdf }
+    /// Whether or not to embed the document outline into the PDF.
+    pub fn generate_document_outline(&self) -> Option<bool> { self.generate_document_outline }
 }
 
 #[derive(Default)]
 pub struct PrintToPDFParamsBuilder<'a> {
     landscape: Option<bool>,
-    displayHeaderFooter: Option<bool>,
-    printBackground: Option<bool>,
+    display_header_footer: Option<bool>,
+    print_background: Option<bool>,
     scale: Option<f64>,
-    paperWidth: Option<f64>,
-    paperHeight: Option<f64>,
-    marginTop: Option<f64>,
-    marginBottom: Option<f64>,
-    marginLeft: Option<f64>,
-    marginRight: Option<f64>,
-    pageRanges: Option<Cow<'a, str>>,
-    headerTemplate: Option<Cow<'a, str>>,
-    footerTemplate: Option<Cow<'a, str>>,
-    preferCSSPageSize: Option<bool>,
-    transferMode: Option<Cow<'a, str>>,
-    generateTaggedPDF: Option<bool>,
-    generateDocumentOutline: Option<bool>,
+    paper_width: Option<f64>,
+    paper_height: Option<f64>,
+    margin_top: Option<f64>,
+    margin_bottom: Option<f64>,
+    margin_left: Option<f64>,
+    margin_right: Option<f64>,
+    page_ranges: Option<Cow<'a, str>>,
+    header_template: Option<Cow<'a, str>>,
+    footer_template: Option<Cow<'a, str>>,
+    prefer_css_page_size: Option<bool>,
+    transfer_mode: Option<Cow<'a, str>>,
+    generate_tagged_pdf: Option<bool>,
+    generate_document_outline: Option<bool>,
 }
 
 impl<'a> PrintToPDFParamsBuilder<'a> {
     /// Paper orientation. Defaults to false.
     pub fn landscape(mut self, landscape: bool) -> Self { self.landscape = Some(landscape); self }
     /// Display header and footer. Defaults to false.
-    pub fn displayHeaderFooter(mut self, displayHeaderFooter: bool) -> Self { self.displayHeaderFooter = Some(displayHeaderFooter); self }
+    pub fn display_header_footer(mut self, display_header_footer: bool) -> Self { self.display_header_footer = Some(display_header_footer); self }
     /// Print background graphics. Defaults to false.
-    pub fn printBackground(mut self, printBackground: bool) -> Self { self.printBackground = Some(printBackground); self }
+    pub fn print_background(mut self, print_background: bool) -> Self { self.print_background = Some(print_background); self }
     /// Scale of the webpage rendering. Defaults to 1.
     pub fn scale(mut self, scale: f64) -> Self { self.scale = Some(scale); self }
     /// Paper width in inches. Defaults to 8.5 inches.
-    pub fn paperWidth(mut self, paperWidth: f64) -> Self { self.paperWidth = Some(paperWidth); self }
+    pub fn paper_width(mut self, paper_width: f64) -> Self { self.paper_width = Some(paper_width); self }
     /// Paper height in inches. Defaults to 11 inches.
-    pub fn paperHeight(mut self, paperHeight: f64) -> Self { self.paperHeight = Some(paperHeight); self }
+    pub fn paper_height(mut self, paper_height: f64) -> Self { self.paper_height = Some(paper_height); self }
     /// Top margin in inches. Defaults to 1cm (~0.4 inches).
-    pub fn marginTop(mut self, marginTop: f64) -> Self { self.marginTop = Some(marginTop); self }
+    pub fn margin_top(mut self, margin_top: f64) -> Self { self.margin_top = Some(margin_top); self }
     /// Bottom margin in inches. Defaults to 1cm (~0.4 inches).
-    pub fn marginBottom(mut self, marginBottom: f64) -> Self { self.marginBottom = Some(marginBottom); self }
+    pub fn margin_bottom(mut self, margin_bottom: f64) -> Self { self.margin_bottom = Some(margin_bottom); self }
     /// Left margin in inches. Defaults to 1cm (~0.4 inches).
-    pub fn marginLeft(mut self, marginLeft: f64) -> Self { self.marginLeft = Some(marginLeft); self }
+    pub fn margin_left(mut self, margin_left: f64) -> Self { self.margin_left = Some(margin_left); self }
     /// Right margin in inches. Defaults to 1cm (~0.4 inches).
-    pub fn marginRight(mut self, marginRight: f64) -> Self { self.marginRight = Some(marginRight); self }
+    pub fn margin_right(mut self, margin_right: f64) -> Self { self.margin_right = Some(margin_right); self }
     /// Paper ranges to print, one based, e.g., '1-5, 8, 11-13'. Pages are
     /// printed in the document order, not in the order specified, and no
     /// more than once.
@@ -4433,7 +4910,7 @@ impl<'a> PrintToPDFParamsBuilder<'a> {
     /// document, and ranges beyond the end of the document are ignored.
     /// If this results in no pages to print, an error is reported.
     /// It is an error to specify a range with start greater than end.
-    pub fn pageRanges(mut self, pageRanges: impl Into<Cow<'a, str>>) -> Self { self.pageRanges = Some(pageRanges.into()); self }
+    pub fn page_ranges(mut self, page_ranges: impl Into<Cow<'a, str>>) -> Self { self.page_ranges = Some(page_ranges.into()); self }
     /// HTML template for the print header. Should be valid HTML markup with following
     /// classes used to inject printing values into them:
     /// - 'date': formatted print date
@@ -4442,38 +4919,38 @@ impl<'a> PrintToPDFParamsBuilder<'a> {
     /// - 'pageNumber': current page number
     /// - 'totalPages': total pages in the document
     /// 
-    /// For example, '<span class=title></span>' would generate span containing the title.
-    pub fn headerTemplate(mut self, headerTemplate: impl Into<Cow<'a, str>>) -> Self { self.headerTemplate = Some(headerTemplate.into()); self }
+    /// For example, '\<span class=title\>\</span\>' would generate span containing the title.
+    pub fn header_template(mut self, header_template: impl Into<Cow<'a, str>>) -> Self { self.header_template = Some(header_template.into()); self }
     /// HTML template for the print footer. Should use the same format as the 'headerTemplate'.
-    pub fn footerTemplate(mut self, footerTemplate: impl Into<Cow<'a, str>>) -> Self { self.footerTemplate = Some(footerTemplate.into()); self }
+    pub fn footer_template(mut self, footer_template: impl Into<Cow<'a, str>>) -> Self { self.footer_template = Some(footer_template.into()); self }
     /// Whether or not to prefer page size as defined by css. Defaults to false,
     /// in which case the content will be scaled to fit the paper size.
-    pub fn preferCSSPageSize(mut self, preferCSSPageSize: bool) -> Self { self.preferCSSPageSize = Some(preferCSSPageSize); self }
+    pub fn prefer_css_page_size(mut self, prefer_css_page_size: bool) -> Self { self.prefer_css_page_size = Some(prefer_css_page_size); self }
     /// return as stream
-    pub fn transferMode(mut self, transferMode: impl Into<Cow<'a, str>>) -> Self { self.transferMode = Some(transferMode.into()); self }
+    pub fn transfer_mode(mut self, transfer_mode: impl Into<Cow<'a, str>>) -> Self { self.transfer_mode = Some(transfer_mode.into()); self }
     /// Whether or not to generate tagged (accessible) PDF. Defaults to embedder choice.
-    pub fn generateTaggedPDF(mut self, generateTaggedPDF: bool) -> Self { self.generateTaggedPDF = Some(generateTaggedPDF); self }
+    pub fn generate_tagged_pdf(mut self, generate_tagged_pdf: bool) -> Self { self.generate_tagged_pdf = Some(generate_tagged_pdf); self }
     /// Whether or not to embed the document outline into the PDF.
-    pub fn generateDocumentOutline(mut self, generateDocumentOutline: bool) -> Self { self.generateDocumentOutline = Some(generateDocumentOutline); self }
+    pub fn generate_document_outline(mut self, generate_document_outline: bool) -> Self { self.generate_document_outline = Some(generate_document_outline); self }
     pub fn build(self) -> PrintToPDFParams<'a> {
         PrintToPDFParams {
             landscape: self.landscape,
-            displayHeaderFooter: self.displayHeaderFooter,
-            printBackground: self.printBackground,
+            display_header_footer: self.display_header_footer,
+            print_background: self.print_background,
             scale: self.scale,
-            paperWidth: self.paperWidth,
-            paperHeight: self.paperHeight,
-            marginTop: self.marginTop,
-            marginBottom: self.marginBottom,
-            marginLeft: self.marginLeft,
-            marginRight: self.marginRight,
-            pageRanges: self.pageRanges,
-            headerTemplate: self.headerTemplate,
-            footerTemplate: self.footerTemplate,
-            preferCSSPageSize: self.preferCSSPageSize,
-            transferMode: self.transferMode,
-            generateTaggedPDF: self.generateTaggedPDF,
-            generateDocumentOutline: self.generateDocumentOutline,
+            paper_width: self.paper_width,
+            paper_height: self.paper_height,
+            margin_top: self.margin_top,
+            margin_bottom: self.margin_bottom,
+            margin_left: self.margin_left,
+            margin_right: self.margin_right,
+            page_ranges: self.page_ranges,
+            header_template: self.header_template,
+            footer_template: self.footer_template,
+            prefer_css_page_size: self.prefer_css_page_size,
+            transfer_mode: self.transfer_mode,
+            generate_tagged_pdf: self.generate_tagged_pdf,
+            generate_document_outline: self.generate_document_outline,
         }
     }
 }
@@ -4491,13 +4968,17 @@ pub struct PrintToPDFReturns<'a> {
 }
 
 impl<'a> PrintToPDFReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `data`: Base64-encoded pdf data. Empty if |returnAsStream| is specified. (Encoded as a base64 string when passed over JSON)
     pub fn builder(data: impl Into<Cow<'a, str>>) -> PrintToPDFReturnsBuilder<'a> {
         PrintToPDFReturnsBuilder {
             data: data.into(),
             stream: None,
         }
     }
+    /// Base64-encoded pdf data. Empty if |returnAsStream| is specified. (Encoded as a base64 string when passed over JSON)
     pub fn data(&self) -> &str { self.data.as_ref() }
+    /// A handle of the stream that holds resulting PDF data.
     pub fn stream(&self) -> Option<&crate::io::StreamHandle<'a>> { self.stream.as_ref() }
 }
 
@@ -4531,54 +5012,61 @@ impl<'a> crate::CdpCommand<'a> for PrintToPDFParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ReloadParams<'a> {
     /// If true, browser cache is ignored (as if the user pressed Shift+refresh).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    ignoreCache: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "ignoreCache")]
+    ignore_cache: Option<bool>,
     /// If set, the script will be injected into all frames of the inspected page after reload.
     /// Argument will be ignored if reloading dataURL origin.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    scriptToEvaluateOnLoad: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "scriptToEvaluateOnLoad")]
+    script_to_evaluate_on_load: Option<Cow<'a, str>>,
     /// If set, an error will be thrown if the target page's main frame's
     /// loader id does not match the provided id. This prevents accidentally
     /// reloading an unintended target in case there's a racing navigation.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    loaderId: Option<crate::network::LoaderId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "loaderId")]
+    loader_id: Option<crate::network::LoaderId<'a>>,
 }
 
 impl<'a> ReloadParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> ReloadParamsBuilder<'a> {
         ReloadParamsBuilder {
-            ignoreCache: None,
-            scriptToEvaluateOnLoad: None,
-            loaderId: None,
+            ignore_cache: None,
+            script_to_evaluate_on_load: None,
+            loader_id: None,
         }
     }
-    pub fn ignoreCache(&self) -> Option<bool> { self.ignoreCache }
-    pub fn scriptToEvaluateOnLoad(&self) -> Option<&str> { self.scriptToEvaluateOnLoad.as_deref() }
-    pub fn loaderId(&self) -> Option<&crate::network::LoaderId<'a>> { self.loaderId.as_ref() }
+    /// If true, browser cache is ignored (as if the user pressed Shift+refresh).
+    pub fn ignore_cache(&self) -> Option<bool> { self.ignore_cache }
+    /// If set, the script will be injected into all frames of the inspected page after reload.
+    /// Argument will be ignored if reloading dataURL origin.
+    pub fn script_to_evaluate_on_load(&self) -> Option<&str> { self.script_to_evaluate_on_load.as_deref() }
+    /// If set, an error will be thrown if the target page's main frame's
+    /// loader id does not match the provided id. This prevents accidentally
+    /// reloading an unintended target in case there's a racing navigation.
+    pub fn loader_id(&self) -> Option<&crate::network::LoaderId<'a>> { self.loader_id.as_ref() }
 }
 
 #[derive(Default)]
 pub struct ReloadParamsBuilder<'a> {
-    ignoreCache: Option<bool>,
-    scriptToEvaluateOnLoad: Option<Cow<'a, str>>,
-    loaderId: Option<crate::network::LoaderId<'a>>,
+    ignore_cache: Option<bool>,
+    script_to_evaluate_on_load: Option<Cow<'a, str>>,
+    loader_id: Option<crate::network::LoaderId<'a>>,
 }
 
 impl<'a> ReloadParamsBuilder<'a> {
     /// If true, browser cache is ignored (as if the user pressed Shift+refresh).
-    pub fn ignoreCache(mut self, ignoreCache: bool) -> Self { self.ignoreCache = Some(ignoreCache); self }
+    pub fn ignore_cache(mut self, ignore_cache: bool) -> Self { self.ignore_cache = Some(ignore_cache); self }
     /// If set, the script will be injected into all frames of the inspected page after reload.
     /// Argument will be ignored if reloading dataURL origin.
-    pub fn scriptToEvaluateOnLoad(mut self, scriptToEvaluateOnLoad: impl Into<Cow<'a, str>>) -> Self { self.scriptToEvaluateOnLoad = Some(scriptToEvaluateOnLoad.into()); self }
+    pub fn script_to_evaluate_on_load(mut self, script_to_evaluate_on_load: impl Into<Cow<'a, str>>) -> Self { self.script_to_evaluate_on_load = Some(script_to_evaluate_on_load.into()); self }
     /// If set, an error will be thrown if the target page's main frame's
     /// loader id does not match the provided id. This prevents accidentally
     /// reloading an unintended target in case there's a racing navigation.
-    pub fn loaderId(mut self, loaderId: crate::network::LoaderId<'a>) -> Self { self.loaderId = Some(loaderId); self }
+    pub fn loader_id(mut self, loader_id: crate::network::LoaderId<'a>) -> Self { self.loader_id = Some(loader_id); self }
     pub fn build(self) -> ReloadParams<'a> {
         ReloadParams {
-            ignoreCache: self.ignoreCache,
-            scriptToEvaluateOnLoad: self.scriptToEvaluateOnLoad,
-            loaderId: self.loaderId,
+            ignore_cache: self.ignore_cache,
+            script_to_evaluate_on_load: self.script_to_evaluate_on_load,
+            loader_id: self.loader_id,
         }
     }
 }
@@ -4599,6 +5087,8 @@ pub struct RemoveScriptToEvaluateOnLoadParams<'a> {
 }
 
 impl<'a> RemoveScriptToEvaluateOnLoadParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `identifier`: 
     pub fn builder(identifier: impl Into<ScriptIdentifier<'a>>) -> RemoveScriptToEvaluateOnLoadParamsBuilder<'a> {
         RemoveScriptToEvaluateOnLoadParamsBuilder {
             identifier: identifier.into(),
@@ -4636,6 +5126,8 @@ pub struct RemoveScriptToEvaluateOnNewDocumentParams<'a> {
 }
 
 impl<'a> RemoveScriptToEvaluateOnNewDocumentParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `identifier`: 
     pub fn builder(identifier: impl Into<ScriptIdentifier<'a>>) -> RemoveScriptToEvaluateOnNewDocumentParamsBuilder<'a> {
         RemoveScriptToEvaluateOnNewDocumentParamsBuilder {
             identifier: identifier.into(),
@@ -4670,27 +5162,31 @@ impl<'a> crate::CdpCommand<'a> for RemoveScriptToEvaluateOnNewDocumentParams<'a>
 #[serde(rename_all = "camelCase")]
 pub struct ScreencastFrameAckParams {
     /// Frame number.
-    sessionId: u64,
+    #[serde(rename = "sessionId")]
+    session_id: u64,
 }
 
 impl ScreencastFrameAckParams {
-    pub fn builder(sessionId: u64) -> ScreencastFrameAckParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `session_id`: Frame number.
+    pub fn builder(session_id: u64) -> ScreencastFrameAckParamsBuilder {
         ScreencastFrameAckParamsBuilder {
-            sessionId: sessionId,
+            session_id: session_id,
         }
     }
-    pub fn sessionId(&self) -> u64 { self.sessionId }
+    /// Frame number.
+    pub fn session_id(&self) -> u64 { self.session_id }
 }
 
 
 pub struct ScreencastFrameAckParamsBuilder {
-    sessionId: u64,
+    session_id: u64,
 }
 
 impl ScreencastFrameAckParamsBuilder {
     pub fn build(self) -> ScreencastFrameAckParams {
         ScreencastFrameAckParams {
-            sessionId: self.sessionId,
+            session_id: self.session_id,
         }
     }
 }
@@ -4708,57 +5204,67 @@ impl<'a> crate::CdpCommand<'a> for ScreencastFrameAckParams {
 #[serde(rename_all = "camelCase")]
 pub struct SearchInResourceParams<'a> {
     /// Frame id for resource to search in.
-    frameId: FrameId<'a>,
+    #[serde(rename = "frameId")]
+    frame_id: FrameId<'a>,
     /// URL of the resource to search in.
     url: Cow<'a, str>,
     /// String to search for.
     query: Cow<'a, str>,
     /// If true, search is case sensitive.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    caseSensitive: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "caseSensitive")]
+    case_sensitive: Option<bool>,
     /// If true, treats string parameter as regex.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    isRegex: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "isRegex")]
+    is_regex: Option<bool>,
 }
 
 impl<'a> SearchInResourceParams<'a> {
-    pub fn builder(frameId: impl Into<FrameId<'a>>, url: impl Into<Cow<'a, str>>, query: impl Into<Cow<'a, str>>) -> SearchInResourceParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `frame_id`: Frame id for resource to search in.
+    /// * `url`: URL of the resource to search in.
+    /// * `query`: String to search for.
+    pub fn builder(frame_id: impl Into<FrameId<'a>>, url: impl Into<Cow<'a, str>>, query: impl Into<Cow<'a, str>>) -> SearchInResourceParamsBuilder<'a> {
         SearchInResourceParamsBuilder {
-            frameId: frameId.into(),
+            frame_id: frame_id.into(),
             url: url.into(),
             query: query.into(),
-            caseSensitive: None,
-            isRegex: None,
+            case_sensitive: None,
+            is_regex: None,
         }
     }
-    pub fn frameId(&self) -> &FrameId<'a> { &self.frameId }
+    /// Frame id for resource to search in.
+    pub fn frame_id(&self) -> &FrameId<'a> { &self.frame_id }
+    /// URL of the resource to search in.
     pub fn url(&self) -> &str { self.url.as_ref() }
+    /// String to search for.
     pub fn query(&self) -> &str { self.query.as_ref() }
-    pub fn caseSensitive(&self) -> Option<bool> { self.caseSensitive }
-    pub fn isRegex(&self) -> Option<bool> { self.isRegex }
+    /// If true, search is case sensitive.
+    pub fn case_sensitive(&self) -> Option<bool> { self.case_sensitive }
+    /// If true, treats string parameter as regex.
+    pub fn is_regex(&self) -> Option<bool> { self.is_regex }
 }
 
 
 pub struct SearchInResourceParamsBuilder<'a> {
-    frameId: FrameId<'a>,
+    frame_id: FrameId<'a>,
     url: Cow<'a, str>,
     query: Cow<'a, str>,
-    caseSensitive: Option<bool>,
-    isRegex: Option<bool>,
+    case_sensitive: Option<bool>,
+    is_regex: Option<bool>,
 }
 
 impl<'a> SearchInResourceParamsBuilder<'a> {
     /// If true, search is case sensitive.
-    pub fn caseSensitive(mut self, caseSensitive: bool) -> Self { self.caseSensitive = Some(caseSensitive); self }
+    pub fn case_sensitive(mut self, case_sensitive: bool) -> Self { self.case_sensitive = Some(case_sensitive); self }
     /// If true, treats string parameter as regex.
-    pub fn isRegex(mut self, isRegex: bool) -> Self { self.isRegex = Some(isRegex); self }
+    pub fn is_regex(mut self, is_regex: bool) -> Self { self.is_regex = Some(is_regex); self }
     pub fn build(self) -> SearchInResourceParams<'a> {
         SearchInResourceParams {
-            frameId: self.frameId,
+            frame_id: self.frame_id,
             url: self.url,
             query: self.query,
-            caseSensitive: self.caseSensitive,
-            isRegex: self.isRegex,
+            case_sensitive: self.case_sensitive,
+            is_regex: self.is_regex,
         }
     }
 }
@@ -4773,11 +5279,14 @@ pub struct SearchInResourceReturns {
 }
 
 impl SearchInResourceReturns {
+    /// Creates a builder for this type with the required parameters:
+    /// * `result`: List of search matches.
     pub fn builder(result: Vec<crate::debugger::SearchMatch>) -> SearchInResourceReturnsBuilder {
         SearchInResourceReturnsBuilder {
             result: result,
         }
     }
+    /// List of search matches.
     pub fn result(&self) -> &[crate::debugger::SearchMatch] { &self.result }
 }
 
@@ -4811,11 +5320,14 @@ pub struct SetAdBlockingEnabledParams {
 }
 
 impl SetAdBlockingEnabledParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `enabled`: Whether to block ads.
     pub fn builder(enabled: bool) -> SetAdBlockingEnabledParamsBuilder {
         SetAdBlockingEnabledParamsBuilder {
             enabled: enabled,
         }
     }
+    /// Whether to block ads.
     pub fn enabled(&self) -> bool { self.enabled }
 }
 
@@ -4849,11 +5361,14 @@ pub struct SetBypassCSPParams {
 }
 
 impl SetBypassCSPParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `enabled`: Whether to bypass page CSP.
     pub fn builder(enabled: bool) -> SetBypassCSPParamsBuilder {
         SetBypassCSPParamsBuilder {
             enabled: enabled,
         }
     }
+    /// Whether to bypass page CSP.
     pub fn enabled(&self) -> bool { self.enabled }
 }
 
@@ -4882,27 +5397,30 @@ impl<'a> crate::CdpCommand<'a> for SetBypassCSPParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetPermissionsPolicyStateParams<'a> {
-    frameId: FrameId<'a>,
+    #[serde(rename = "frameId")]
+    frame_id: FrameId<'a>,
 }
 
 impl<'a> GetPermissionsPolicyStateParams<'a> {
-    pub fn builder(frameId: impl Into<FrameId<'a>>) -> GetPermissionsPolicyStateParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `frame_id`: 
+    pub fn builder(frame_id: impl Into<FrameId<'a>>) -> GetPermissionsPolicyStateParamsBuilder<'a> {
         GetPermissionsPolicyStateParamsBuilder {
-            frameId: frameId.into(),
+            frame_id: frame_id.into(),
         }
     }
-    pub fn frameId(&self) -> &FrameId<'a> { &self.frameId }
+    pub fn frame_id(&self) -> &FrameId<'a> { &self.frame_id }
 }
 
 
 pub struct GetPermissionsPolicyStateParamsBuilder<'a> {
-    frameId: FrameId<'a>,
+    frame_id: FrameId<'a>,
 }
 
 impl<'a> GetPermissionsPolicyStateParamsBuilder<'a> {
     pub fn build(self) -> GetPermissionsPolicyStateParams<'a> {
         GetPermissionsPolicyStateParams {
-            frameId: self.frameId,
+            frame_id: self.frame_id,
         }
     }
 }
@@ -4916,6 +5434,8 @@ pub struct GetPermissionsPolicyStateReturns<'a> {
 }
 
 impl<'a> GetPermissionsPolicyStateReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `states`: 
     pub fn builder(states: Vec<PermissionsPolicyFeatureState<'a>>) -> GetPermissionsPolicyStateReturnsBuilder<'a> {
         GetPermissionsPolicyStateReturnsBuilder {
             states: states,
@@ -4949,27 +5469,30 @@ impl<'a> crate::CdpCommand<'a> for GetPermissionsPolicyStateParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetOriginTrialsParams<'a> {
-    frameId: FrameId<'a>,
+    #[serde(rename = "frameId")]
+    frame_id: FrameId<'a>,
 }
 
 impl<'a> GetOriginTrialsParams<'a> {
-    pub fn builder(frameId: impl Into<FrameId<'a>>) -> GetOriginTrialsParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `frame_id`: 
+    pub fn builder(frame_id: impl Into<FrameId<'a>>) -> GetOriginTrialsParamsBuilder<'a> {
         GetOriginTrialsParamsBuilder {
-            frameId: frameId.into(),
+            frame_id: frame_id.into(),
         }
     }
-    pub fn frameId(&self) -> &FrameId<'a> { &self.frameId }
+    pub fn frame_id(&self) -> &FrameId<'a> { &self.frame_id }
 }
 
 
 pub struct GetOriginTrialsParamsBuilder<'a> {
-    frameId: FrameId<'a>,
+    frame_id: FrameId<'a>,
 }
 
 impl<'a> GetOriginTrialsParamsBuilder<'a> {
     pub fn build(self) -> GetOriginTrialsParams<'a> {
         GetOriginTrialsParams {
-            frameId: self.frameId,
+            frame_id: self.frame_id,
         }
     }
 }
@@ -4979,27 +5502,30 @@ impl<'a> GetOriginTrialsParamsBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetOriginTrialsReturns<'a> {
-    originTrials: Vec<OriginTrial<'a>>,
+    #[serde(rename = "originTrials")]
+    origin_trials: Vec<OriginTrial<'a>>,
 }
 
 impl<'a> GetOriginTrialsReturns<'a> {
-    pub fn builder(originTrials: Vec<OriginTrial<'a>>) -> GetOriginTrialsReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `origin_trials`: 
+    pub fn builder(origin_trials: Vec<OriginTrial<'a>>) -> GetOriginTrialsReturnsBuilder<'a> {
         GetOriginTrialsReturnsBuilder {
-            originTrials: originTrials,
+            origin_trials: origin_trials,
         }
     }
-    pub fn originTrials(&self) -> &[OriginTrial<'a>] { &self.originTrials }
+    pub fn origin_trials(&self) -> &[OriginTrial<'a>] { &self.origin_trials }
 }
 
 
 pub struct GetOriginTrialsReturnsBuilder<'a> {
-    originTrials: Vec<OriginTrial<'a>>,
+    origin_trials: Vec<OriginTrial<'a>>,
 }
 
 impl<'a> GetOriginTrialsReturnsBuilder<'a> {
     pub fn build(self) -> GetOriginTrialsReturns<'a> {
         GetOriginTrialsReturns {
-            originTrials: self.originTrials,
+            origin_trials: self.origin_trials,
         }
     }
 }
@@ -5023,7 +5549,8 @@ pub struct SetDeviceMetricsOverrideParams<'a> {
     /// Overriding height value in pixels (minimum 0, maximum 10000000). 0 disables the override.
     height: i64,
     /// Overriding device scale factor value. 0 disables the override.
-    deviceScaleFactor: f64,
+    #[serde(rename = "deviceScaleFactor")]
+    device_scale_factor: f64,
     /// Whether to emulate mobile device. This includes viewport meta tag, overlay scrollbars, text
     /// autosizing and more.
     mobile: bool,
@@ -5031,56 +5558,74 @@ pub struct SetDeviceMetricsOverrideParams<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     scale: Option<f64>,
     /// Overriding screen width value in pixels (minimum 0, maximum 10000000).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    screenWidth: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "screenWidth")]
+    screen_width: Option<u64>,
     /// Overriding screen height value in pixels (minimum 0, maximum 10000000).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    screenHeight: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "screenHeight")]
+    screen_height: Option<i64>,
     /// Overriding view X position on screen in pixels (minimum 0, maximum 10000000).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    positionX: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "positionX")]
+    position_x: Option<i64>,
     /// Overriding view Y position on screen in pixels (minimum 0, maximum 10000000).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    positionY: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "positionY")]
+    position_y: Option<i64>,
     /// Do not set visible view size, rely upon explicit setVisibleSize call.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    dontSetVisibleSize: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "dontSetVisibleSize")]
+    dont_set_visible_size: Option<bool>,
     /// Screen orientation override.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    screenOrientation: Option<crate::emulation::ScreenOrientation<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "screenOrientation")]
+    screen_orientation: Option<crate::emulation::ScreenOrientation<'a>>,
     /// The viewport dimensions and scale. If not set, the override is cleared.
     #[serde(skip_serializing_if = "Option::is_none")]
     viewport: Option<Viewport>,
 }
 
 impl<'a> SetDeviceMetricsOverrideParams<'a> {
-    pub fn builder(width: u64, height: i64, deviceScaleFactor: f64, mobile: bool) -> SetDeviceMetricsOverrideParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `width`: Overriding width value in pixels (minimum 0, maximum 10000000). 0 disables the override.
+    /// * `height`: Overriding height value in pixels (minimum 0, maximum 10000000). 0 disables the override.
+    /// * `device_scale_factor`: Overriding device scale factor value. 0 disables the override.
+    /// * `mobile`: Whether to emulate mobile device. This includes viewport meta tag, overlay scrollbars, text autosizing and more.
+    pub fn builder(width: u64, height: i64, device_scale_factor: f64, mobile: bool) -> SetDeviceMetricsOverrideParamsBuilder<'a> {
         SetDeviceMetricsOverrideParamsBuilder {
             width: width,
             height: height,
-            deviceScaleFactor: deviceScaleFactor,
+            device_scale_factor: device_scale_factor,
             mobile: mobile,
             scale: None,
-            screenWidth: None,
-            screenHeight: None,
-            positionX: None,
-            positionY: None,
-            dontSetVisibleSize: None,
-            screenOrientation: None,
+            screen_width: None,
+            screen_height: None,
+            position_x: None,
+            position_y: None,
+            dont_set_visible_size: None,
+            screen_orientation: None,
             viewport: None,
         }
     }
+    /// Overriding width value in pixels (minimum 0, maximum 10000000). 0 disables the override.
     pub fn width(&self) -> u64 { self.width }
+    /// Overriding height value in pixels (minimum 0, maximum 10000000). 0 disables the override.
     pub fn height(&self) -> i64 { self.height }
-    pub fn deviceScaleFactor(&self) -> f64 { self.deviceScaleFactor }
+    /// Overriding device scale factor value. 0 disables the override.
+    pub fn device_scale_factor(&self) -> f64 { self.device_scale_factor }
+    /// Whether to emulate mobile device. This includes viewport meta tag, overlay scrollbars, text
+    /// autosizing and more.
     pub fn mobile(&self) -> bool { self.mobile }
+    /// Scale to apply to resulting view image.
     pub fn scale(&self) -> Option<f64> { self.scale }
-    pub fn screenWidth(&self) -> Option<u64> { self.screenWidth }
-    pub fn screenHeight(&self) -> Option<i64> { self.screenHeight }
-    pub fn positionX(&self) -> Option<i64> { self.positionX }
-    pub fn positionY(&self) -> Option<i64> { self.positionY }
-    pub fn dontSetVisibleSize(&self) -> Option<bool> { self.dontSetVisibleSize }
-    pub fn screenOrientation(&self) -> Option<&crate::emulation::ScreenOrientation<'a>> { self.screenOrientation.as_ref() }
+    /// Overriding screen width value in pixels (minimum 0, maximum 10000000).
+    pub fn screen_width(&self) -> Option<u64> { self.screen_width }
+    /// Overriding screen height value in pixels (minimum 0, maximum 10000000).
+    pub fn screen_height(&self) -> Option<i64> { self.screen_height }
+    /// Overriding view X position on screen in pixels (minimum 0, maximum 10000000).
+    pub fn position_x(&self) -> Option<i64> { self.position_x }
+    /// Overriding view Y position on screen in pixels (minimum 0, maximum 10000000).
+    pub fn position_y(&self) -> Option<i64> { self.position_y }
+    /// Do not set visible view size, rely upon explicit setVisibleSize call.
+    pub fn dont_set_visible_size(&self) -> Option<bool> { self.dont_set_visible_size }
+    /// Screen orientation override.
+    pub fn screen_orientation(&self) -> Option<&crate::emulation::ScreenOrientation<'a>> { self.screen_orientation.as_ref() }
+    /// The viewport dimensions and scale. If not set, the override is cleared.
     pub fn viewport(&self) -> Option<&Viewport> { self.viewport.as_ref() }
 }
 
@@ -5088,15 +5633,15 @@ impl<'a> SetDeviceMetricsOverrideParams<'a> {
 pub struct SetDeviceMetricsOverrideParamsBuilder<'a> {
     width: u64,
     height: i64,
-    deviceScaleFactor: f64,
+    device_scale_factor: f64,
     mobile: bool,
     scale: Option<f64>,
-    screenWidth: Option<u64>,
-    screenHeight: Option<i64>,
-    positionX: Option<i64>,
-    positionY: Option<i64>,
-    dontSetVisibleSize: Option<bool>,
-    screenOrientation: Option<crate::emulation::ScreenOrientation<'a>>,
+    screen_width: Option<u64>,
+    screen_height: Option<i64>,
+    position_x: Option<i64>,
+    position_y: Option<i64>,
+    dont_set_visible_size: Option<bool>,
+    screen_orientation: Option<crate::emulation::ScreenOrientation<'a>>,
     viewport: Option<Viewport>,
 }
 
@@ -5104,32 +5649,32 @@ impl<'a> SetDeviceMetricsOverrideParamsBuilder<'a> {
     /// Scale to apply to resulting view image.
     pub fn scale(mut self, scale: f64) -> Self { self.scale = Some(scale); self }
     /// Overriding screen width value in pixels (minimum 0, maximum 10000000).
-    pub fn screenWidth(mut self, screenWidth: u64) -> Self { self.screenWidth = Some(screenWidth); self }
+    pub fn screen_width(mut self, screen_width: u64) -> Self { self.screen_width = Some(screen_width); self }
     /// Overriding screen height value in pixels (minimum 0, maximum 10000000).
-    pub fn screenHeight(mut self, screenHeight: i64) -> Self { self.screenHeight = Some(screenHeight); self }
+    pub fn screen_height(mut self, screen_height: i64) -> Self { self.screen_height = Some(screen_height); self }
     /// Overriding view X position on screen in pixels (minimum 0, maximum 10000000).
-    pub fn positionX(mut self, positionX: i64) -> Self { self.positionX = Some(positionX); self }
+    pub fn position_x(mut self, position_x: i64) -> Self { self.position_x = Some(position_x); self }
     /// Overriding view Y position on screen in pixels (minimum 0, maximum 10000000).
-    pub fn positionY(mut self, positionY: i64) -> Self { self.positionY = Some(positionY); self }
+    pub fn position_y(mut self, position_y: i64) -> Self { self.position_y = Some(position_y); self }
     /// Do not set visible view size, rely upon explicit setVisibleSize call.
-    pub fn dontSetVisibleSize(mut self, dontSetVisibleSize: bool) -> Self { self.dontSetVisibleSize = Some(dontSetVisibleSize); self }
+    pub fn dont_set_visible_size(mut self, dont_set_visible_size: bool) -> Self { self.dont_set_visible_size = Some(dont_set_visible_size); self }
     /// Screen orientation override.
-    pub fn screenOrientation(mut self, screenOrientation: crate::emulation::ScreenOrientation<'a>) -> Self { self.screenOrientation = Some(screenOrientation); self }
+    pub fn screen_orientation(mut self, screen_orientation: crate::emulation::ScreenOrientation<'a>) -> Self { self.screen_orientation = Some(screen_orientation); self }
     /// The viewport dimensions and scale. If not set, the override is cleared.
     pub fn viewport(mut self, viewport: Viewport) -> Self { self.viewport = Some(viewport); self }
     pub fn build(self) -> SetDeviceMetricsOverrideParams<'a> {
         SetDeviceMetricsOverrideParams {
             width: self.width,
             height: self.height,
-            deviceScaleFactor: self.deviceScaleFactor,
+            device_scale_factor: self.device_scale_factor,
             mobile: self.mobile,
             scale: self.scale,
-            screenWidth: self.screenWidth,
-            screenHeight: self.screenHeight,
-            positionX: self.positionX,
-            positionY: self.positionY,
-            dontSetVisibleSize: self.dontSetVisibleSize,
-            screenOrientation: self.screenOrientation,
+            screen_width: self.screen_width,
+            screen_height: self.screen_height,
+            position_x: self.position_x,
+            position_y: self.position_y,
+            dont_set_visible_size: self.dont_set_visible_size,
+            screen_orientation: self.screen_orientation,
             viewport: self.viewport,
         }
     }
@@ -5156,6 +5701,10 @@ pub struct SetDeviceOrientationOverrideParams {
 }
 
 impl SetDeviceOrientationOverrideParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `alpha`: Mock alpha
+    /// * `beta`: Mock beta
+    /// * `gamma`: Mock gamma
     pub fn builder(alpha: f64, beta: f64, gamma: f64) -> SetDeviceOrientationOverrideParamsBuilder {
         SetDeviceOrientationOverrideParamsBuilder {
             alpha: alpha,
@@ -5163,8 +5712,11 @@ impl SetDeviceOrientationOverrideParams {
             gamma: gamma,
         }
     }
+    /// Mock alpha
     pub fn alpha(&self) -> f64 { self.alpha }
+    /// Mock beta
     pub fn beta(&self) -> f64 { self.beta }
+    /// Mock gamma
     pub fn gamma(&self) -> f64 { self.gamma }
 }
 
@@ -5198,36 +5750,41 @@ impl<'a> crate::CdpCommand<'a> for SetDeviceOrientationOverrideParams {
 #[serde(rename_all = "camelCase")]
 pub struct SetFontFamiliesParams<'a> {
     /// Specifies font families to set. If a font family is not specified, it won't be changed.
-    fontFamilies: FontFamilies<'a>,
+    #[serde(rename = "fontFamilies")]
+    font_families: FontFamilies<'a>,
     /// Specifies font families to set for individual scripts.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    forScripts: Option<Vec<ScriptFontFamilies<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "forScripts")]
+    for_scripts: Option<Vec<ScriptFontFamilies<'a>>>,
 }
 
 impl<'a> SetFontFamiliesParams<'a> {
-    pub fn builder(fontFamilies: FontFamilies<'a>) -> SetFontFamiliesParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `font_families`: Specifies font families to set. If a font family is not specified, it won't be changed.
+    pub fn builder(font_families: FontFamilies<'a>) -> SetFontFamiliesParamsBuilder<'a> {
         SetFontFamiliesParamsBuilder {
-            fontFamilies: fontFamilies,
-            forScripts: None,
+            font_families: font_families,
+            for_scripts: None,
         }
     }
-    pub fn fontFamilies(&self) -> &FontFamilies<'a> { &self.fontFamilies }
-    pub fn forScripts(&self) -> Option<&[ScriptFontFamilies<'a>]> { self.forScripts.as_deref() }
+    /// Specifies font families to set. If a font family is not specified, it won't be changed.
+    pub fn font_families(&self) -> &FontFamilies<'a> { &self.font_families }
+    /// Specifies font families to set for individual scripts.
+    pub fn for_scripts(&self) -> Option<&[ScriptFontFamilies<'a>]> { self.for_scripts.as_deref() }
 }
 
 
 pub struct SetFontFamiliesParamsBuilder<'a> {
-    fontFamilies: FontFamilies<'a>,
-    forScripts: Option<Vec<ScriptFontFamilies<'a>>>,
+    font_families: FontFamilies<'a>,
+    for_scripts: Option<Vec<ScriptFontFamilies<'a>>>,
 }
 
 impl<'a> SetFontFamiliesParamsBuilder<'a> {
     /// Specifies font families to set for individual scripts.
-    pub fn forScripts(mut self, forScripts: Vec<ScriptFontFamilies<'a>>) -> Self { self.forScripts = Some(forScripts); self }
+    pub fn for_scripts(mut self, for_scripts: Vec<ScriptFontFamilies<'a>>) -> Self { self.for_scripts = Some(for_scripts); self }
     pub fn build(self) -> SetFontFamiliesParams<'a> {
         SetFontFamiliesParams {
-            fontFamilies: self.fontFamilies,
-            forScripts: self.forScripts,
+            font_families: self.font_families,
+            for_scripts: self.for_scripts,
         }
     }
 }
@@ -5245,27 +5802,31 @@ impl<'a> crate::CdpCommand<'a> for SetFontFamiliesParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SetFontSizesParams {
     /// Specifies font sizes to set. If a font size is not specified, it won't be changed.
-    fontSizes: FontSizes,
+    #[serde(rename = "fontSizes")]
+    font_sizes: FontSizes,
 }
 
 impl SetFontSizesParams {
-    pub fn builder(fontSizes: FontSizes) -> SetFontSizesParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `font_sizes`: Specifies font sizes to set. If a font size is not specified, it won't be changed.
+    pub fn builder(font_sizes: FontSizes) -> SetFontSizesParamsBuilder {
         SetFontSizesParamsBuilder {
-            fontSizes: fontSizes,
+            font_sizes: font_sizes,
         }
     }
-    pub fn fontSizes(&self) -> &FontSizes { &self.fontSizes }
+    /// Specifies font sizes to set. If a font size is not specified, it won't be changed.
+    pub fn font_sizes(&self) -> &FontSizes { &self.font_sizes }
 }
 
 
 pub struct SetFontSizesParamsBuilder {
-    fontSizes: FontSizes,
+    font_sizes: FontSizes,
 }
 
 impl SetFontSizesParamsBuilder {
     pub fn build(self) -> SetFontSizesParams {
         SetFontSizesParams {
-            fontSizes: self.fontSizes,
+            font_sizes: self.font_sizes,
         }
     }
 }
@@ -5283,32 +5844,38 @@ impl<'a> crate::CdpCommand<'a> for SetFontSizesParams {
 #[serde(rename_all = "camelCase")]
 pub struct SetDocumentContentParams<'a> {
     /// Frame id to set HTML for.
-    frameId: FrameId<'a>,
+    #[serde(rename = "frameId")]
+    frame_id: FrameId<'a>,
     /// HTML content to set.
     html: Cow<'a, str>,
 }
 
 impl<'a> SetDocumentContentParams<'a> {
-    pub fn builder(frameId: impl Into<FrameId<'a>>, html: impl Into<Cow<'a, str>>) -> SetDocumentContentParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `frame_id`: Frame id to set HTML for.
+    /// * `html`: HTML content to set.
+    pub fn builder(frame_id: impl Into<FrameId<'a>>, html: impl Into<Cow<'a, str>>) -> SetDocumentContentParamsBuilder<'a> {
         SetDocumentContentParamsBuilder {
-            frameId: frameId.into(),
+            frame_id: frame_id.into(),
             html: html.into(),
         }
     }
-    pub fn frameId(&self) -> &FrameId<'a> { &self.frameId }
+    /// Frame id to set HTML for.
+    pub fn frame_id(&self) -> &FrameId<'a> { &self.frame_id }
+    /// HTML content to set.
     pub fn html(&self) -> &str { self.html.as_ref() }
 }
 
 
 pub struct SetDocumentContentParamsBuilder<'a> {
-    frameId: FrameId<'a>,
+    frame_id: FrameId<'a>,
     html: Cow<'a, str>,
 }
 
 impl<'a> SetDocumentContentParamsBuilder<'a> {
     pub fn build(self) -> SetDocumentContentParams<'a> {
         SetDocumentContentParams {
-            frameId: self.frameId,
+            frame_id: self.frame_id,
             html: self.html,
         }
     }
@@ -5330,34 +5897,39 @@ pub struct SetDownloadBehaviorParams<'a> {
     /// available (otherwise deny).
     behavior: Cow<'a, str>,
     /// The default path to save downloaded files to. This is required if behavior is set to 'allow'
-    #[serde(skip_serializing_if = "Option::is_none")]
-    downloadPath: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "downloadPath")]
+    download_path: Option<Cow<'a, str>>,
 }
 
 impl<'a> SetDownloadBehaviorParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `behavior`: Whether to allow all or deny all download requests, or use default Chrome behavior if available (otherwise deny).
     pub fn builder(behavior: impl Into<Cow<'a, str>>) -> SetDownloadBehaviorParamsBuilder<'a> {
         SetDownloadBehaviorParamsBuilder {
             behavior: behavior.into(),
-            downloadPath: None,
+            download_path: None,
         }
     }
+    /// Whether to allow all or deny all download requests, or use default Chrome behavior if
+    /// available (otherwise deny).
     pub fn behavior(&self) -> &str { self.behavior.as_ref() }
-    pub fn downloadPath(&self) -> Option<&str> { self.downloadPath.as_deref() }
+    /// The default path to save downloaded files to. This is required if behavior is set to 'allow'
+    pub fn download_path(&self) -> Option<&str> { self.download_path.as_deref() }
 }
 
 
 pub struct SetDownloadBehaviorParamsBuilder<'a> {
     behavior: Cow<'a, str>,
-    downloadPath: Option<Cow<'a, str>>,
+    download_path: Option<Cow<'a, str>>,
 }
 
 impl<'a> SetDownloadBehaviorParamsBuilder<'a> {
     /// The default path to save downloaded files to. This is required if behavior is set to 'allow'
-    pub fn downloadPath(mut self, downloadPath: impl Into<Cow<'a, str>>) -> Self { self.downloadPath = Some(downloadPath.into()); self }
+    pub fn download_path(mut self, download_path: impl Into<Cow<'a, str>>) -> Self { self.download_path = Some(download_path.into()); self }
     pub fn build(self) -> SetDownloadBehaviorParams<'a> {
         SetDownloadBehaviorParams {
             behavior: self.behavior,
-            downloadPath: self.downloadPath,
+            download_path: self.download_path,
         }
     }
 }
@@ -5387,6 +5959,7 @@ pub struct SetGeolocationOverrideParams {
 }
 
 impl SetGeolocationOverrideParams {
+    /// Creates a builder for this type.
     pub fn builder() -> SetGeolocationOverrideParamsBuilder {
         SetGeolocationOverrideParamsBuilder {
             latitude: None,
@@ -5394,8 +5967,11 @@ impl SetGeolocationOverrideParams {
             accuracy: None,
         }
     }
+    /// Mock latitude
     pub fn latitude(&self) -> Option<f64> { self.latitude }
+    /// Mock longitude
     pub fn longitude(&self) -> Option<f64> { self.longitude }
+    /// Mock accuracy
     pub fn accuracy(&self) -> Option<f64> { self.accuracy }
 }
 
@@ -5439,11 +6015,14 @@ pub struct SetLifecycleEventsEnabledParams {
 }
 
 impl SetLifecycleEventsEnabledParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `enabled`: If true, starts emitting lifecycle events.
     pub fn builder(enabled: bool) -> SetLifecycleEventsEnabledParamsBuilder {
         SetLifecycleEventsEnabledParamsBuilder {
             enabled: enabled,
         }
     }
+    /// If true, starts emitting lifecycle events.
     pub fn enabled(&self) -> bool { self.enabled }
 }
 
@@ -5480,13 +6059,17 @@ pub struct SetTouchEmulationEnabledParams<'a> {
 }
 
 impl<'a> SetTouchEmulationEnabledParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `enabled`: Whether the touch event emulation should be enabled.
     pub fn builder(enabled: bool) -> SetTouchEmulationEnabledParamsBuilder<'a> {
         SetTouchEmulationEnabledParamsBuilder {
             enabled: enabled,
             configuration: None,
         }
     }
+    /// Whether the touch event emulation should be enabled.
     pub fn enabled(&self) -> bool { self.enabled }
+    /// Touch/gesture events configuration. Default: current platform.
     pub fn configuration(&self) -> Option<&str> { self.configuration.as_deref() }
 }
 
@@ -5522,64 +6105,70 @@ pub struct StartScreencastParams<'a> {
     /// Image compression format.
     #[serde(skip_serializing_if = "Option::is_none")]
     format: Option<Cow<'a, str>>,
-    /// Compression quality from range [0..100].
+    /// Compression quality from range \[0..100\].
     #[serde(skip_serializing_if = "Option::is_none")]
     quality: Option<i64>,
     /// Maximum screenshot width.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    maxWidth: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "maxWidth")]
+    max_width: Option<u64>,
     /// Maximum screenshot height.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    maxHeight: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "maxHeight")]
+    max_height: Option<i64>,
     /// Send every n-th frame.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    everyNthFrame: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "everyNthFrame")]
+    every_nth_frame: Option<i64>,
 }
 
 impl<'a> StartScreencastParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> StartScreencastParamsBuilder<'a> {
         StartScreencastParamsBuilder {
             format: None,
             quality: None,
-            maxWidth: None,
-            maxHeight: None,
-            everyNthFrame: None,
+            max_width: None,
+            max_height: None,
+            every_nth_frame: None,
         }
     }
+    /// Image compression format.
     pub fn format(&self) -> Option<&str> { self.format.as_deref() }
+    /// Compression quality from range \[0..100\].
     pub fn quality(&self) -> Option<i64> { self.quality }
-    pub fn maxWidth(&self) -> Option<u64> { self.maxWidth }
-    pub fn maxHeight(&self) -> Option<i64> { self.maxHeight }
-    pub fn everyNthFrame(&self) -> Option<i64> { self.everyNthFrame }
+    /// Maximum screenshot width.
+    pub fn max_width(&self) -> Option<u64> { self.max_width }
+    /// Maximum screenshot height.
+    pub fn max_height(&self) -> Option<i64> { self.max_height }
+    /// Send every n-th frame.
+    pub fn every_nth_frame(&self) -> Option<i64> { self.every_nth_frame }
 }
 
 #[derive(Default)]
 pub struct StartScreencastParamsBuilder<'a> {
     format: Option<Cow<'a, str>>,
     quality: Option<i64>,
-    maxWidth: Option<u64>,
-    maxHeight: Option<i64>,
-    everyNthFrame: Option<i64>,
+    max_width: Option<u64>,
+    max_height: Option<i64>,
+    every_nth_frame: Option<i64>,
 }
 
 impl<'a> StartScreencastParamsBuilder<'a> {
     /// Image compression format.
     pub fn format(mut self, format: impl Into<Cow<'a, str>>) -> Self { self.format = Some(format.into()); self }
-    /// Compression quality from range [0..100].
+    /// Compression quality from range \[0..100\].
     pub fn quality(mut self, quality: i64) -> Self { self.quality = Some(quality); self }
     /// Maximum screenshot width.
-    pub fn maxWidth(mut self, maxWidth: u64) -> Self { self.maxWidth = Some(maxWidth); self }
+    pub fn max_width(mut self, max_width: u64) -> Self { self.max_width = Some(max_width); self }
     /// Maximum screenshot height.
-    pub fn maxHeight(mut self, maxHeight: i64) -> Self { self.maxHeight = Some(maxHeight); self }
+    pub fn max_height(mut self, max_height: i64) -> Self { self.max_height = Some(max_height); self }
     /// Send every n-th frame.
-    pub fn everyNthFrame(mut self, everyNthFrame: i64) -> Self { self.everyNthFrame = Some(everyNthFrame); self }
+    pub fn every_nth_frame(mut self, every_nth_frame: i64) -> Self { self.every_nth_frame = Some(every_nth_frame); self }
     pub fn build(self) -> StartScreencastParams<'a> {
         StartScreencastParams {
             format: self.format,
             quality: self.quality,
-            maxWidth: self.maxWidth,
-            maxHeight: self.maxHeight,
-            everyNthFrame: self.everyNthFrame,
+            max_width: self.max_width,
+            max_height: self.max_height,
+            every_nth_frame: self.every_nth_frame,
         }
     }
 }
@@ -5623,7 +6212,7 @@ impl<'a> crate::CdpCommand<'a> for CloseParams {
 
 /// Tries to update the web lifecycle state of the page.
 /// It will transition the page to the given state according to:
-/// https://github.com/WICG/web-lifecycle/
+/// <https://github.com/WICG/web-lifecycle/>
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -5633,11 +6222,14 @@ pub struct SetWebLifecycleStateParams<'a> {
 }
 
 impl<'a> SetWebLifecycleStateParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `state`: Target lifecycle state
     pub fn builder(state: impl Into<Cow<'a, str>>) -> SetWebLifecycleStateParamsBuilder<'a> {
         SetWebLifecycleStateParamsBuilder {
             state: state.into(),
         }
     }
+    /// Target lifecycle state
     pub fn state(&self) -> &str { self.state.as_ref() }
 }
 
@@ -5685,6 +6277,8 @@ pub struct ProduceCompilationCacheParams<'a> {
 }
 
 impl<'a> ProduceCompilationCacheParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `scripts`: 
     pub fn builder(scripts: Vec<CompilationCacheParams<'a>>) -> ProduceCompilationCacheParamsBuilder<'a> {
         ProduceCompilationCacheParamsBuilder {
             scripts: scripts,
@@ -5725,6 +6319,9 @@ pub struct AddCompilationCacheParams<'a> {
 }
 
 impl<'a> AddCompilationCacheParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url`: 
+    /// * `data`: Base64-encoded data (Encoded as a base64 string when passed over JSON)
     pub fn builder(url: impl Into<Cow<'a, str>>, data: impl Into<Cow<'a, str>>) -> AddCompilationCacheParamsBuilder<'a> {
         AddCompilationCacheParamsBuilder {
             url: url.into(),
@@ -5732,6 +6329,7 @@ impl<'a> AddCompilationCacheParams<'a> {
         }
     }
     pub fn url(&self) -> &str { self.url.as_ref() }
+    /// Base64-encoded data (Encoded as a base64 string when passed over JSON)
     pub fn data(&self) -> &str { self.data.as_ref() }
 }
 
@@ -5768,7 +6366,7 @@ impl<'a> crate::CdpCommand<'a> for ClearCompilationCacheParams {
 }
 
 /// Sets the Secure Payment Confirmation transaction mode.
-/// https://w3c.github.io/secure-payment-confirmation/#sctn-automation-set-spc-transaction-mode
+/// <https://w3c.github.io/secure-payment-confirmation/#sctn-automation-set-spc-transaction-mode>
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -5777,6 +6375,8 @@ pub struct SetSPCTransactionModeParams<'a> {
 }
 
 impl<'a> SetSPCTransactionModeParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `mode`: 
     pub fn builder(mode: impl Into<Cow<'a, str>>) -> SetSPCTransactionModeParamsBuilder<'a> {
         SetSPCTransactionModeParamsBuilder {
             mode: mode.into(),
@@ -5806,7 +6406,7 @@ impl<'a> crate::CdpCommand<'a> for SetSPCTransactionModeParams<'a> {
 }
 
 /// Extensions for Custom Handlers API:
-/// https://html.spec.whatwg.org/multipage/system-state.html#rph-automation
+/// <https://html.spec.whatwg.org/multipage/system-state.html#rph-automation>
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -5815,6 +6415,8 @@ pub struct SetRPHRegistrationModeParams<'a> {
 }
 
 impl<'a> SetRPHRegistrationModeParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `mode`: 
     pub fn builder(mode: impl Into<Cow<'a, str>>) -> SetRPHRegistrationModeParamsBuilder<'a> {
         SetRPHRegistrationModeParamsBuilder {
             mode: mode.into(),
@@ -5856,13 +6458,17 @@ pub struct GenerateTestReportParams<'a> {
 }
 
 impl<'a> GenerateTestReportParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `message`: Message to be displayed in the report.
     pub fn builder(message: impl Into<Cow<'a, str>>) -> GenerateTestReportParamsBuilder<'a> {
         GenerateTestReportParamsBuilder {
             message: message.into(),
             group: None,
         }
     }
+    /// Message to be displayed in the report.
     pub fn message(&self) -> &str { self.message.as_ref() }
+    /// Specifies the endpoint group to deliver the report to.
     pub fn group(&self) -> Option<&str> { self.group.as_deref() }
 }
 
@@ -5916,6 +6522,8 @@ pub struct SetInterceptFileChooserDialogParams {
 }
 
 impl SetInterceptFileChooserDialogParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `enabled`: 
     pub fn builder(enabled: bool) -> SetInterceptFileChooserDialogParamsBuilder {
         SetInterceptFileChooserDialogParamsBuilder {
             enabled: enabled,
@@ -5923,6 +6531,9 @@ impl SetInterceptFileChooserDialogParams {
         }
     }
     pub fn enabled(&self) -> bool { self.enabled }
+    /// If true, cancels the dialog by emitting relevant events (if any)
+    /// in addition to not showing it if the interception is enabled
+    /// (default: false).
     pub fn cancel(&self) -> Option<bool> { self.cancel }
 }
 
@@ -5954,36 +6565,39 @@ impl<'a> crate::CdpCommand<'a> for SetInterceptFileChooserDialogParams {
 
 /// Enable/disable prerendering manually.
 /// 
-/// This command is a short-term solution for https://crbug.com/1440085.
-/// See https://docs.google.com/document/d/12HVmFxYj5Jc-eJr5OmWsa2bqTJsbgGLKI6ZIyx0_wpA
+/// This command is a short-term solution for <https://crbug.com/1440085>.
+/// See <https://docs.google.com/document/d/12HVmFxYj5Jc-eJr5OmWsa2bqTJsbgGLKI6ZIyx0_wpA>
 /// for more details.
 /// 
-/// TODO(https://crbug.com/1440085): Remove this once Puppeteer supports tab targets.
+/// TODO(<https://crbug.com/1440085>): Remove this once Puppeteer supports tab targets.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetPrerenderingAllowedParams {
-    isAllowed: bool,
+    #[serde(rename = "isAllowed")]
+    is_allowed: bool,
 }
 
 impl SetPrerenderingAllowedParams {
-    pub fn builder(isAllowed: bool) -> SetPrerenderingAllowedParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `is_allowed`: 
+    pub fn builder(is_allowed: bool) -> SetPrerenderingAllowedParamsBuilder {
         SetPrerenderingAllowedParamsBuilder {
-            isAllowed: isAllowed,
+            is_allowed: is_allowed,
         }
     }
-    pub fn isAllowed(&self) -> bool { self.isAllowed }
+    pub fn is_allowed(&self) -> bool { self.is_allowed }
 }
 
 
 pub struct SetPrerenderingAllowedParamsBuilder {
-    isAllowed: bool,
+    is_allowed: bool,
 }
 
 impl SetPrerenderingAllowedParamsBuilder {
     pub fn build(self) -> SetPrerenderingAllowedParams {
         SetPrerenderingAllowedParams {
-            isAllowed: self.isAllowed,
+            is_allowed: self.is_allowed,
         }
     }
 }
@@ -6002,30 +6616,32 @@ impl<'a> crate::CdpCommand<'a> for SetPrerenderingAllowedParams {
 #[serde(rename_all = "camelCase")]
 pub struct GetAnnotatedPageContentParams {
     /// Whether to include actionable information. Defaults to true.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    includeActionableInformation: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "includeActionableInformation")]
+    include_actionable_information: Option<bool>,
 }
 
 impl GetAnnotatedPageContentParams {
+    /// Creates a builder for this type.
     pub fn builder() -> GetAnnotatedPageContentParamsBuilder {
         GetAnnotatedPageContentParamsBuilder {
-            includeActionableInformation: None,
+            include_actionable_information: None,
         }
     }
-    pub fn includeActionableInformation(&self) -> Option<bool> { self.includeActionableInformation }
+    /// Whether to include actionable information. Defaults to true.
+    pub fn include_actionable_information(&self) -> Option<bool> { self.include_actionable_information }
 }
 
 #[derive(Default)]
 pub struct GetAnnotatedPageContentParamsBuilder {
-    includeActionableInformation: Option<bool>,
+    include_actionable_information: Option<bool>,
 }
 
 impl GetAnnotatedPageContentParamsBuilder {
     /// Whether to include actionable information. Defaults to true.
-    pub fn includeActionableInformation(mut self, includeActionableInformation: bool) -> Self { self.includeActionableInformation = Some(includeActionableInformation); self }
+    pub fn include_actionable_information(mut self, include_actionable_information: bool) -> Self { self.include_actionable_information = Some(include_actionable_information); self }
     pub fn build(self) -> GetAnnotatedPageContentParams {
         GetAnnotatedPageContentParams {
-            includeActionableInformation: self.includeActionableInformation,
+            include_actionable_information: self.include_actionable_information,
         }
     }
 }
@@ -6043,11 +6659,16 @@ pub struct GetAnnotatedPageContentReturns<'a> {
 }
 
 impl<'a> GetAnnotatedPageContentReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `content`: The annotated page content as a base64 encoded protobuf. The format is defined by the `AnnotatedPageContent` message in components/optimization_guide/proto/features/common_quality_data.proto (Encoded as a base64 string when passed over JSON)
     pub fn builder(content: impl Into<Cow<'a, str>>) -> GetAnnotatedPageContentReturnsBuilder<'a> {
         GetAnnotatedPageContentReturnsBuilder {
             content: content.into(),
         }
     }
+    /// The annotated page content as a base64 encoded protobuf.
+    /// The format is defined by the 'AnnotatedPageContent' message in
+    /// components/optimization_guide/proto/features/common_quality_data.proto (Encoded as a base64 string when passed over JSON)
     pub fn content(&self) -> &str { self.content.as_ref() }
 }
 

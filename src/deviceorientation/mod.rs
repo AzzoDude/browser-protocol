@@ -26,6 +26,10 @@ pub struct SetDeviceOrientationOverrideParams {
 }
 
 impl SetDeviceOrientationOverrideParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `alpha`: Mock alpha
+    /// * `beta`: Mock beta
+    /// * `gamma`: Mock gamma
     pub fn builder(alpha: f64, beta: f64, gamma: f64) -> SetDeviceOrientationOverrideParamsBuilder {
         SetDeviceOrientationOverrideParamsBuilder {
             alpha: alpha,
@@ -33,8 +37,11 @@ impl SetDeviceOrientationOverrideParams {
             gamma: gamma,
         }
     }
+    /// Mock alpha
     pub fn alpha(&self) -> f64 { self.alpha }
+    /// Mock beta
     pub fn beta(&self) -> f64 { self.beta }
+    /// Mock gamma
     pub fn gamma(&self) -> f64 { self.gamma }
 }
 

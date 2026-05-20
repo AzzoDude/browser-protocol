@@ -53,183 +53,217 @@ pub enum AuthenticatorTransport {
 pub struct VirtualAuthenticatorOptions {
     protocol: AuthenticatorProtocol,
     /// Defaults to ctap2_0. Ignored if |protocol| == u2f.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    ctap2Version: Option<Ctap2Version>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "ctap2Version")]
+    ctap2_version: Option<Ctap2Version>,
     transport: AuthenticatorTransport,
     /// Defaults to false.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    hasResidentKey: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "hasResidentKey")]
+    has_resident_key: Option<bool>,
     /// Defaults to false.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    hasUserVerification: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "hasUserVerification")]
+    has_user_verification: Option<bool>,
     /// If set to true, the authenticator will support the largeBlob extension.
-    /// https://w3c.github.io/webauthn#largeBlob
+    /// <https://w3c.github.io/webauthn#largeBlob>
     /// Defaults to false.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    hasLargeBlob: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "hasLargeBlob")]
+    has_large_blob: Option<bool>,
     /// If set to true, the authenticator will support the credBlob extension.
-    /// https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension
+    /// <https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension>
     /// Defaults to false.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    hasCredBlob: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "hasCredBlob")]
+    has_cred_blob: Option<bool>,
     /// If set to true, the authenticator will support the minPinLength extension.
-    /// https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-minpinlength-extension
+    /// <https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-minpinlength-extension>
     /// Defaults to false.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    hasMinPinLength: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "hasMinPinLength")]
+    has_min_pin_length: Option<bool>,
     /// If set to true, the authenticator will support the prf extension.
-    /// https://w3c.github.io/webauthn/#prf-extension
+    /// <https://w3c.github.io/webauthn/#prf-extension>
     /// Defaults to false.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    hasPrf: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "hasPrf")]
+    has_prf: Option<bool>,
     /// If set to true, the authenticator will support the hmac-secret extension.
-    /// https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-hmac-secret-extension
+    /// <https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-hmac-secret-extension>
     /// Defaults to false.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    hasHmacSecret: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "hasHmacSecret")]
+    has_hmac_secret: Option<bool>,
     /// If set to true, the authenticator will support the hmac-secret-mc extension.
-    /// https://fidoalliance.org/specs/fido-v2.2-rd-20241003/fido-client-to-authenticator-protocol-v2.2-rd-20241003.html#sctn-hmac-secret-make-cred-extension
+    /// <https://fidoalliance.org/specs/fido-v2.2-rd-20241003/fido-client-to-authenticator-protocol-v2.2-rd-20241003.html#sctn-hmac-secret-make-cred-extension>
     /// Defaults to false.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    hasHmacSecretMc: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "hasHmacSecretMc")]
+    has_hmac_secret_mc: Option<bool>,
     /// If set to true, tests of user presence will succeed immediately.
     /// Otherwise, they will not be resolved. Defaults to true.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    automaticPresenceSimulation: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "automaticPresenceSimulation")]
+    automatic_presence_simulation: Option<bool>,
     /// Sets whether User Verification succeeds or fails for an authenticator.
     /// Defaults to false.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    isUserVerified: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "isUserVerified")]
+    is_user_verified: Option<bool>,
     /// Credentials created by this authenticator will have the backup
     /// eligibility (BE) flag set to this value. Defaults to false.
-    /// https://w3c.github.io/webauthn/#sctn-credential-backup
-    #[serde(skip_serializing_if = "Option::is_none")]
-    defaultBackupEligibility: Option<bool>,
+    /// <https://w3c.github.io/webauthn/#sctn-credential-backup>
+    #[serde(skip_serializing_if = "Option::is_none", rename = "defaultBackupEligibility")]
+    default_backup_eligibility: Option<bool>,
     /// Credentials created by this authenticator will have the backup state
     /// (BS) flag set to this value. Defaults to false.
-    /// https://w3c.github.io/webauthn/#sctn-credential-backup
-    #[serde(skip_serializing_if = "Option::is_none")]
-    defaultBackupState: Option<bool>,
+    /// <https://w3c.github.io/webauthn/#sctn-credential-backup>
+    #[serde(skip_serializing_if = "Option::is_none", rename = "defaultBackupState")]
+    default_backup_state: Option<bool>,
 }
 
 impl VirtualAuthenticatorOptions {
+    /// Creates a builder for this type with the required parameters:
+    /// * `protocol`: 
+    /// * `transport`: 
     pub fn builder(protocol: impl Into<AuthenticatorProtocol>, transport: impl Into<AuthenticatorTransport>) -> VirtualAuthenticatorOptionsBuilder {
         VirtualAuthenticatorOptionsBuilder {
             protocol: protocol.into(),
-            ctap2Version: None,
+            ctap2_version: None,
             transport: transport.into(),
-            hasResidentKey: None,
-            hasUserVerification: None,
-            hasLargeBlob: None,
-            hasCredBlob: None,
-            hasMinPinLength: None,
-            hasPrf: None,
-            hasHmacSecret: None,
-            hasHmacSecretMc: None,
-            automaticPresenceSimulation: None,
-            isUserVerified: None,
-            defaultBackupEligibility: None,
-            defaultBackupState: None,
+            has_resident_key: None,
+            has_user_verification: None,
+            has_large_blob: None,
+            has_cred_blob: None,
+            has_min_pin_length: None,
+            has_prf: None,
+            has_hmac_secret: None,
+            has_hmac_secret_mc: None,
+            automatic_presence_simulation: None,
+            is_user_verified: None,
+            default_backup_eligibility: None,
+            default_backup_state: None,
         }
     }
     pub fn protocol(&self) -> &AuthenticatorProtocol { &self.protocol }
-    pub fn ctap2Version(&self) -> Option<&Ctap2Version> { self.ctap2Version.as_ref() }
+    /// Defaults to ctap2_0. Ignored if |protocol| == u2f.
+    pub fn ctap2_version(&self) -> Option<&Ctap2Version> { self.ctap2_version.as_ref() }
     pub fn transport(&self) -> &AuthenticatorTransport { &self.transport }
-    pub fn hasResidentKey(&self) -> Option<bool> { self.hasResidentKey }
-    pub fn hasUserVerification(&self) -> Option<bool> { self.hasUserVerification }
-    pub fn hasLargeBlob(&self) -> Option<bool> { self.hasLargeBlob }
-    pub fn hasCredBlob(&self) -> Option<bool> { self.hasCredBlob }
-    pub fn hasMinPinLength(&self) -> Option<bool> { self.hasMinPinLength }
-    pub fn hasPrf(&self) -> Option<bool> { self.hasPrf }
-    pub fn hasHmacSecret(&self) -> Option<bool> { self.hasHmacSecret }
-    pub fn hasHmacSecretMc(&self) -> Option<bool> { self.hasHmacSecretMc }
-    pub fn automaticPresenceSimulation(&self) -> Option<bool> { self.automaticPresenceSimulation }
-    pub fn isUserVerified(&self) -> Option<bool> { self.isUserVerified }
-    pub fn defaultBackupEligibility(&self) -> Option<bool> { self.defaultBackupEligibility }
-    pub fn defaultBackupState(&self) -> Option<bool> { self.defaultBackupState }
+    /// Defaults to false.
+    pub fn has_resident_key(&self) -> Option<bool> { self.has_resident_key }
+    /// Defaults to false.
+    pub fn has_user_verification(&self) -> Option<bool> { self.has_user_verification }
+    /// If set to true, the authenticator will support the largeBlob extension.
+    /// <https://w3c.github.io/webauthn#largeBlob>
+    /// Defaults to false.
+    pub fn has_large_blob(&self) -> Option<bool> { self.has_large_blob }
+    /// If set to true, the authenticator will support the credBlob extension.
+    /// <https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension>
+    /// Defaults to false.
+    pub fn has_cred_blob(&self) -> Option<bool> { self.has_cred_blob }
+    /// If set to true, the authenticator will support the minPinLength extension.
+    /// <https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-minpinlength-extension>
+    /// Defaults to false.
+    pub fn has_min_pin_length(&self) -> Option<bool> { self.has_min_pin_length }
+    /// If set to true, the authenticator will support the prf extension.
+    /// <https://w3c.github.io/webauthn/#prf-extension>
+    /// Defaults to false.
+    pub fn has_prf(&self) -> Option<bool> { self.has_prf }
+    /// If set to true, the authenticator will support the hmac-secret extension.
+    /// <https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-hmac-secret-extension>
+    /// Defaults to false.
+    pub fn has_hmac_secret(&self) -> Option<bool> { self.has_hmac_secret }
+    /// If set to true, the authenticator will support the hmac-secret-mc extension.
+    /// <https://fidoalliance.org/specs/fido-v2.2-rd-20241003/fido-client-to-authenticator-protocol-v2.2-rd-20241003.html#sctn-hmac-secret-make-cred-extension>
+    /// Defaults to false.
+    pub fn has_hmac_secret_mc(&self) -> Option<bool> { self.has_hmac_secret_mc }
+    /// If set to true, tests of user presence will succeed immediately.
+    /// Otherwise, they will not be resolved. Defaults to true.
+    pub fn automatic_presence_simulation(&self) -> Option<bool> { self.automatic_presence_simulation }
+    /// Sets whether User Verification succeeds or fails for an authenticator.
+    /// Defaults to false.
+    pub fn is_user_verified(&self) -> Option<bool> { self.is_user_verified }
+    /// Credentials created by this authenticator will have the backup
+    /// eligibility (BE) flag set to this value. Defaults to false.
+    /// <https://w3c.github.io/webauthn/#sctn-credential-backup>
+    pub fn default_backup_eligibility(&self) -> Option<bool> { self.default_backup_eligibility }
+    /// Credentials created by this authenticator will have the backup state
+    /// (BS) flag set to this value. Defaults to false.
+    /// <https://w3c.github.io/webauthn/#sctn-credential-backup>
+    pub fn default_backup_state(&self) -> Option<bool> { self.default_backup_state }
 }
 
 
 pub struct VirtualAuthenticatorOptionsBuilder {
     protocol: AuthenticatorProtocol,
-    ctap2Version: Option<Ctap2Version>,
+    ctap2_version: Option<Ctap2Version>,
     transport: AuthenticatorTransport,
-    hasResidentKey: Option<bool>,
-    hasUserVerification: Option<bool>,
-    hasLargeBlob: Option<bool>,
-    hasCredBlob: Option<bool>,
-    hasMinPinLength: Option<bool>,
-    hasPrf: Option<bool>,
-    hasHmacSecret: Option<bool>,
-    hasHmacSecretMc: Option<bool>,
-    automaticPresenceSimulation: Option<bool>,
-    isUserVerified: Option<bool>,
-    defaultBackupEligibility: Option<bool>,
-    defaultBackupState: Option<bool>,
+    has_resident_key: Option<bool>,
+    has_user_verification: Option<bool>,
+    has_large_blob: Option<bool>,
+    has_cred_blob: Option<bool>,
+    has_min_pin_length: Option<bool>,
+    has_prf: Option<bool>,
+    has_hmac_secret: Option<bool>,
+    has_hmac_secret_mc: Option<bool>,
+    automatic_presence_simulation: Option<bool>,
+    is_user_verified: Option<bool>,
+    default_backup_eligibility: Option<bool>,
+    default_backup_state: Option<bool>,
 }
 
 impl VirtualAuthenticatorOptionsBuilder {
     /// Defaults to ctap2_0. Ignored if |protocol| == u2f.
-    pub fn ctap2Version(mut self, ctap2Version: impl Into<Ctap2Version>) -> Self { self.ctap2Version = Some(ctap2Version.into()); self }
+    pub fn ctap2_version(mut self, ctap2_version: impl Into<Ctap2Version>) -> Self { self.ctap2_version = Some(ctap2_version.into()); self }
     /// Defaults to false.
-    pub fn hasResidentKey(mut self, hasResidentKey: bool) -> Self { self.hasResidentKey = Some(hasResidentKey); self }
+    pub fn has_resident_key(mut self, has_resident_key: bool) -> Self { self.has_resident_key = Some(has_resident_key); self }
     /// Defaults to false.
-    pub fn hasUserVerification(mut self, hasUserVerification: bool) -> Self { self.hasUserVerification = Some(hasUserVerification); self }
+    pub fn has_user_verification(mut self, has_user_verification: bool) -> Self { self.has_user_verification = Some(has_user_verification); self }
     /// If set to true, the authenticator will support the largeBlob extension.
-    /// https://w3c.github.io/webauthn#largeBlob
+    /// <https://w3c.github.io/webauthn#largeBlob>
     /// Defaults to false.
-    pub fn hasLargeBlob(mut self, hasLargeBlob: bool) -> Self { self.hasLargeBlob = Some(hasLargeBlob); self }
+    pub fn has_large_blob(mut self, has_large_blob: bool) -> Self { self.has_large_blob = Some(has_large_blob); self }
     /// If set to true, the authenticator will support the credBlob extension.
-    /// https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension
+    /// <https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension>
     /// Defaults to false.
-    pub fn hasCredBlob(mut self, hasCredBlob: bool) -> Self { self.hasCredBlob = Some(hasCredBlob); self }
+    pub fn has_cred_blob(mut self, has_cred_blob: bool) -> Self { self.has_cred_blob = Some(has_cred_blob); self }
     /// If set to true, the authenticator will support the minPinLength extension.
-    /// https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-minpinlength-extension
+    /// <https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-minpinlength-extension>
     /// Defaults to false.
-    pub fn hasMinPinLength(mut self, hasMinPinLength: bool) -> Self { self.hasMinPinLength = Some(hasMinPinLength); self }
+    pub fn has_min_pin_length(mut self, has_min_pin_length: bool) -> Self { self.has_min_pin_length = Some(has_min_pin_length); self }
     /// If set to true, the authenticator will support the prf extension.
-    /// https://w3c.github.io/webauthn/#prf-extension
+    /// <https://w3c.github.io/webauthn/#prf-extension>
     /// Defaults to false.
-    pub fn hasPrf(mut self, hasPrf: bool) -> Self { self.hasPrf = Some(hasPrf); self }
+    pub fn has_prf(mut self, has_prf: bool) -> Self { self.has_prf = Some(has_prf); self }
     /// If set to true, the authenticator will support the hmac-secret extension.
-    /// https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-hmac-secret-extension
+    /// <https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-hmac-secret-extension>
     /// Defaults to false.
-    pub fn hasHmacSecret(mut self, hasHmacSecret: bool) -> Self { self.hasHmacSecret = Some(hasHmacSecret); self }
+    pub fn has_hmac_secret(mut self, has_hmac_secret: bool) -> Self { self.has_hmac_secret = Some(has_hmac_secret); self }
     /// If set to true, the authenticator will support the hmac-secret-mc extension.
-    /// https://fidoalliance.org/specs/fido-v2.2-rd-20241003/fido-client-to-authenticator-protocol-v2.2-rd-20241003.html#sctn-hmac-secret-make-cred-extension
+    /// <https://fidoalliance.org/specs/fido-v2.2-rd-20241003/fido-client-to-authenticator-protocol-v2.2-rd-20241003.html#sctn-hmac-secret-make-cred-extension>
     /// Defaults to false.
-    pub fn hasHmacSecretMc(mut self, hasHmacSecretMc: bool) -> Self { self.hasHmacSecretMc = Some(hasHmacSecretMc); self }
+    pub fn has_hmac_secret_mc(mut self, has_hmac_secret_mc: bool) -> Self { self.has_hmac_secret_mc = Some(has_hmac_secret_mc); self }
     /// If set to true, tests of user presence will succeed immediately.
     /// Otherwise, they will not be resolved. Defaults to true.
-    pub fn automaticPresenceSimulation(mut self, automaticPresenceSimulation: bool) -> Self { self.automaticPresenceSimulation = Some(automaticPresenceSimulation); self }
+    pub fn automatic_presence_simulation(mut self, automatic_presence_simulation: bool) -> Self { self.automatic_presence_simulation = Some(automatic_presence_simulation); self }
     /// Sets whether User Verification succeeds or fails for an authenticator.
     /// Defaults to false.
-    pub fn isUserVerified(mut self, isUserVerified: bool) -> Self { self.isUserVerified = Some(isUserVerified); self }
+    pub fn is_user_verified(mut self, is_user_verified: bool) -> Self { self.is_user_verified = Some(is_user_verified); self }
     /// Credentials created by this authenticator will have the backup
     /// eligibility (BE) flag set to this value. Defaults to false.
-    /// https://w3c.github.io/webauthn/#sctn-credential-backup
-    pub fn defaultBackupEligibility(mut self, defaultBackupEligibility: bool) -> Self { self.defaultBackupEligibility = Some(defaultBackupEligibility); self }
+    /// <https://w3c.github.io/webauthn/#sctn-credential-backup>
+    pub fn default_backup_eligibility(mut self, default_backup_eligibility: bool) -> Self { self.default_backup_eligibility = Some(default_backup_eligibility); self }
     /// Credentials created by this authenticator will have the backup state
     /// (BS) flag set to this value. Defaults to false.
-    /// https://w3c.github.io/webauthn/#sctn-credential-backup
-    pub fn defaultBackupState(mut self, defaultBackupState: bool) -> Self { self.defaultBackupState = Some(defaultBackupState); self }
+    /// <https://w3c.github.io/webauthn/#sctn-credential-backup>
+    pub fn default_backup_state(mut self, default_backup_state: bool) -> Self { self.default_backup_state = Some(default_backup_state); self }
     pub fn build(self) -> VirtualAuthenticatorOptions {
         VirtualAuthenticatorOptions {
             protocol: self.protocol,
-            ctap2Version: self.ctap2Version,
+            ctap2_version: self.ctap2_version,
             transport: self.transport,
-            hasResidentKey: self.hasResidentKey,
-            hasUserVerification: self.hasUserVerification,
-            hasLargeBlob: self.hasLargeBlob,
-            hasCredBlob: self.hasCredBlob,
-            hasMinPinLength: self.hasMinPinLength,
-            hasPrf: self.hasPrf,
-            hasHmacSecret: self.hasHmacSecret,
-            hasHmacSecretMc: self.hasHmacSecretMc,
-            automaticPresenceSimulation: self.automaticPresenceSimulation,
-            isUserVerified: self.isUserVerified,
-            defaultBackupEligibility: self.defaultBackupEligibility,
-            defaultBackupState: self.defaultBackupState,
+            has_resident_key: self.has_resident_key,
+            has_user_verification: self.has_user_verification,
+            has_large_blob: self.has_large_blob,
+            has_cred_blob: self.has_cred_blob,
+            has_min_pin_length: self.has_min_pin_length,
+            has_prf: self.has_prf,
+            has_hmac_secret: self.has_hmac_secret,
+            has_hmac_secret_mc: self.has_hmac_secret_mc,
+            automatic_presence_simulation: self.automatic_presence_simulation,
+            is_user_verified: self.is_user_verified,
+            default_backup_eligibility: self.default_backup_eligibility,
+            default_backup_state: self.default_backup_state,
         }
     }
 }
@@ -238,129 +272,159 @@ impl VirtualAuthenticatorOptionsBuilder {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Credential<'a> {
-    credentialId: Cow<'a, str>,
-    isResidentCredential: bool,
+    #[serde(rename = "credentialId")]
+    credential_id: Cow<'a, str>,
+    #[serde(rename = "isResidentCredential")]
+    is_resident_credential: bool,
     /// Relying Party ID the credential is scoped to. Must be set when adding a
     /// credential.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    rpId: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "rpId")]
+    rp_id: Option<Cow<'a, str>>,
     /// The ECDSA P-256 private key in PKCS#8 format. (Encoded as a base64 string when passed over JSON)
-    privateKey: Cow<'a, str>,
+    #[serde(rename = "privateKey")]
+    private_key: Cow<'a, str>,
     /// An opaque byte sequence with a maximum size of 64 bytes mapping the
     /// credential to a specific user. (Encoded as a base64 string when passed over JSON)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    userHandle: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "userHandle")]
+    user_handle: Option<Cow<'a, str>>,
     /// Signature counter. This is incremented by one for each successful
     /// assertion.
-    /// See https://w3c.github.io/webauthn/#signature-counter
-    signCount: u64,
+    /// See <https://w3c.github.io/webauthn/#signature-counter>
+    #[serde(rename = "signCount")]
+    sign_count: u64,
     /// The large blob associated with the credential.
-    /// See https://w3c.github.io/webauthn/#sctn-large-blob-extension (Encoded as a base64 string when passed over JSON)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    largeBlob: Option<Cow<'a, str>>,
+    /// See <https://w3c.github.io/webauthn/#sctn-large-blob-extension> (Encoded as a base64 string when passed over JSON)
+    #[serde(skip_serializing_if = "Option::is_none", rename = "largeBlob")]
+    large_blob: Option<Cow<'a, str>>,
     /// Assertions returned by this credential will have the backup eligibility
     /// (BE) flag set to this value. Defaults to the authenticator's
     /// defaultBackupEligibility value.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    backupEligibility: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "backupEligibility")]
+    backup_eligibility: Option<bool>,
     /// Assertions returned by this credential will have the backup state (BS)
     /// flag set to this value. Defaults to the authenticator's
     /// defaultBackupState value.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    backupState: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "backupState")]
+    backup_state: Option<bool>,
     /// The credential's user.name property. Equivalent to empty if not set.
-    /// https://w3c.github.io/webauthn/#dom-publickeycredentialentity-name
-    #[serde(skip_serializing_if = "Option::is_none")]
-    userName: Option<Cow<'a, str>>,
+    /// <https://w3c.github.io/webauthn/#dom-publickeycredentialentity-name>
+    #[serde(skip_serializing_if = "Option::is_none", rename = "userName")]
+    user_name: Option<Cow<'a, str>>,
     /// The credential's user.displayName property. Equivalent to empty if
     /// not set.
-    /// https://w3c.github.io/webauthn/#dom-publickeycredentialuserentity-displayname
-    #[serde(skip_serializing_if = "Option::is_none")]
-    userDisplayName: Option<Cow<'a, str>>,
+    /// <https://w3c.github.io/webauthn/#dom-publickeycredentialuserentity-displayname>
+    #[serde(skip_serializing_if = "Option::is_none", rename = "userDisplayName")]
+    user_display_name: Option<Cow<'a, str>>,
 }
 
 impl<'a> Credential<'a> {
-    pub fn builder(credentialId: impl Into<Cow<'a, str>>, isResidentCredential: bool, privateKey: impl Into<Cow<'a, str>>, signCount: u64) -> CredentialBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `credential_id`: 
+    /// * `is_resident_credential`: 
+    /// * `private_key`: The ECDSA P-256 private key in PKCS#8 format. (Encoded as a base64 string when passed over JSON)
+    /// * `sign_count`: Signature counter. This is incremented by one for each successful assertion. See <https://w3c.github.io/webauthn/#signature-counter>
+    pub fn builder(credential_id: impl Into<Cow<'a, str>>, is_resident_credential: bool, private_key: impl Into<Cow<'a, str>>, sign_count: u64) -> CredentialBuilder<'a> {
         CredentialBuilder {
-            credentialId: credentialId.into(),
-            isResidentCredential: isResidentCredential,
-            rpId: None,
-            privateKey: privateKey.into(),
-            userHandle: None,
-            signCount: signCount,
-            largeBlob: None,
-            backupEligibility: None,
-            backupState: None,
-            userName: None,
-            userDisplayName: None,
+            credential_id: credential_id.into(),
+            is_resident_credential: is_resident_credential,
+            rp_id: None,
+            private_key: private_key.into(),
+            user_handle: None,
+            sign_count: sign_count,
+            large_blob: None,
+            backup_eligibility: None,
+            backup_state: None,
+            user_name: None,
+            user_display_name: None,
         }
     }
-    pub fn credentialId(&self) -> &str { self.credentialId.as_ref() }
-    pub fn isResidentCredential(&self) -> bool { self.isResidentCredential }
-    pub fn rpId(&self) -> Option<&str> { self.rpId.as_deref() }
-    pub fn privateKey(&self) -> &str { self.privateKey.as_ref() }
-    pub fn userHandle(&self) -> Option<&str> { self.userHandle.as_deref() }
-    pub fn signCount(&self) -> u64 { self.signCount }
-    pub fn largeBlob(&self) -> Option<&str> { self.largeBlob.as_deref() }
-    pub fn backupEligibility(&self) -> Option<bool> { self.backupEligibility }
-    pub fn backupState(&self) -> Option<bool> { self.backupState }
-    pub fn userName(&self) -> Option<&str> { self.userName.as_deref() }
-    pub fn userDisplayName(&self) -> Option<&str> { self.userDisplayName.as_deref() }
+    pub fn credential_id(&self) -> &str { self.credential_id.as_ref() }
+    pub fn is_resident_credential(&self) -> bool { self.is_resident_credential }
+    /// Relying Party ID the credential is scoped to. Must be set when adding a
+    /// credential.
+    pub fn rp_id(&self) -> Option<&str> { self.rp_id.as_deref() }
+    /// The ECDSA P-256 private key in PKCS#8 format. (Encoded as a base64 string when passed over JSON)
+    pub fn private_key(&self) -> &str { self.private_key.as_ref() }
+    /// An opaque byte sequence with a maximum size of 64 bytes mapping the
+    /// credential to a specific user. (Encoded as a base64 string when passed over JSON)
+    pub fn user_handle(&self) -> Option<&str> { self.user_handle.as_deref() }
+    /// Signature counter. This is incremented by one for each successful
+    /// assertion.
+    /// See <https://w3c.github.io/webauthn/#signature-counter>
+    pub fn sign_count(&self) -> u64 { self.sign_count }
+    /// The large blob associated with the credential.
+    /// See <https://w3c.github.io/webauthn/#sctn-large-blob-extension> (Encoded as a base64 string when passed over JSON)
+    pub fn large_blob(&self) -> Option<&str> { self.large_blob.as_deref() }
+    /// Assertions returned by this credential will have the backup eligibility
+    /// (BE) flag set to this value. Defaults to the authenticator's
+    /// defaultBackupEligibility value.
+    pub fn backup_eligibility(&self) -> Option<bool> { self.backup_eligibility }
+    /// Assertions returned by this credential will have the backup state (BS)
+    /// flag set to this value. Defaults to the authenticator's
+    /// defaultBackupState value.
+    pub fn backup_state(&self) -> Option<bool> { self.backup_state }
+    /// The credential's user.name property. Equivalent to empty if not set.
+    /// <https://w3c.github.io/webauthn/#dom-publickeycredentialentity-name>
+    pub fn user_name(&self) -> Option<&str> { self.user_name.as_deref() }
+    /// The credential's user.displayName property. Equivalent to empty if
+    /// not set.
+    /// <https://w3c.github.io/webauthn/#dom-publickeycredentialuserentity-displayname>
+    pub fn user_display_name(&self) -> Option<&str> { self.user_display_name.as_deref() }
 }
 
 
 pub struct CredentialBuilder<'a> {
-    credentialId: Cow<'a, str>,
-    isResidentCredential: bool,
-    rpId: Option<Cow<'a, str>>,
-    privateKey: Cow<'a, str>,
-    userHandle: Option<Cow<'a, str>>,
-    signCount: u64,
-    largeBlob: Option<Cow<'a, str>>,
-    backupEligibility: Option<bool>,
-    backupState: Option<bool>,
-    userName: Option<Cow<'a, str>>,
-    userDisplayName: Option<Cow<'a, str>>,
+    credential_id: Cow<'a, str>,
+    is_resident_credential: bool,
+    rp_id: Option<Cow<'a, str>>,
+    private_key: Cow<'a, str>,
+    user_handle: Option<Cow<'a, str>>,
+    sign_count: u64,
+    large_blob: Option<Cow<'a, str>>,
+    backup_eligibility: Option<bool>,
+    backup_state: Option<bool>,
+    user_name: Option<Cow<'a, str>>,
+    user_display_name: Option<Cow<'a, str>>,
 }
 
 impl<'a> CredentialBuilder<'a> {
     /// Relying Party ID the credential is scoped to. Must be set when adding a
     /// credential.
-    pub fn rpId(mut self, rpId: impl Into<Cow<'a, str>>) -> Self { self.rpId = Some(rpId.into()); self }
+    pub fn rp_id(mut self, rp_id: impl Into<Cow<'a, str>>) -> Self { self.rp_id = Some(rp_id.into()); self }
     /// An opaque byte sequence with a maximum size of 64 bytes mapping the
     /// credential to a specific user. (Encoded as a base64 string when passed over JSON)
-    pub fn userHandle(mut self, userHandle: impl Into<Cow<'a, str>>) -> Self { self.userHandle = Some(userHandle.into()); self }
+    pub fn user_handle(mut self, user_handle: impl Into<Cow<'a, str>>) -> Self { self.user_handle = Some(user_handle.into()); self }
     /// The large blob associated with the credential.
-    /// See https://w3c.github.io/webauthn/#sctn-large-blob-extension (Encoded as a base64 string when passed over JSON)
-    pub fn largeBlob(mut self, largeBlob: impl Into<Cow<'a, str>>) -> Self { self.largeBlob = Some(largeBlob.into()); self }
+    /// See <https://w3c.github.io/webauthn/#sctn-large-blob-extension> (Encoded as a base64 string when passed over JSON)
+    pub fn large_blob(mut self, large_blob: impl Into<Cow<'a, str>>) -> Self { self.large_blob = Some(large_blob.into()); self }
     /// Assertions returned by this credential will have the backup eligibility
     /// (BE) flag set to this value. Defaults to the authenticator's
     /// defaultBackupEligibility value.
-    pub fn backupEligibility(mut self, backupEligibility: bool) -> Self { self.backupEligibility = Some(backupEligibility); self }
+    pub fn backup_eligibility(mut self, backup_eligibility: bool) -> Self { self.backup_eligibility = Some(backup_eligibility); self }
     /// Assertions returned by this credential will have the backup state (BS)
     /// flag set to this value. Defaults to the authenticator's
     /// defaultBackupState value.
-    pub fn backupState(mut self, backupState: bool) -> Self { self.backupState = Some(backupState); self }
+    pub fn backup_state(mut self, backup_state: bool) -> Self { self.backup_state = Some(backup_state); self }
     /// The credential's user.name property. Equivalent to empty if not set.
-    /// https://w3c.github.io/webauthn/#dom-publickeycredentialentity-name
-    pub fn userName(mut self, userName: impl Into<Cow<'a, str>>) -> Self { self.userName = Some(userName.into()); self }
+    /// <https://w3c.github.io/webauthn/#dom-publickeycredentialentity-name>
+    pub fn user_name(mut self, user_name: impl Into<Cow<'a, str>>) -> Self { self.user_name = Some(user_name.into()); self }
     /// The credential's user.displayName property. Equivalent to empty if
     /// not set.
-    /// https://w3c.github.io/webauthn/#dom-publickeycredentialuserentity-displayname
-    pub fn userDisplayName(mut self, userDisplayName: impl Into<Cow<'a, str>>) -> Self { self.userDisplayName = Some(userDisplayName.into()); self }
+    /// <https://w3c.github.io/webauthn/#dom-publickeycredentialuserentity-displayname>
+    pub fn user_display_name(mut self, user_display_name: impl Into<Cow<'a, str>>) -> Self { self.user_display_name = Some(user_display_name.into()); self }
     pub fn build(self) -> Credential<'a> {
         Credential {
-            credentialId: self.credentialId,
-            isResidentCredential: self.isResidentCredential,
-            rpId: self.rpId,
-            privateKey: self.privateKey,
-            userHandle: self.userHandle,
-            signCount: self.signCount,
-            largeBlob: self.largeBlob,
-            backupEligibility: self.backupEligibility,
-            backupState: self.backupState,
-            userName: self.userName,
-            userDisplayName: self.userDisplayName,
+            credential_id: self.credential_id,
+            is_resident_credential: self.is_resident_credential,
+            rp_id: self.rp_id,
+            private_key: self.private_key,
+            user_handle: self.user_handle,
+            sign_count: self.sign_count,
+            large_blob: self.large_blob,
+            backup_eligibility: self.backup_eligibility,
+            backup_state: self.backup_state,
+            user_name: self.user_name,
+            user_display_name: self.user_display_name,
         }
     }
 }
@@ -376,22 +440,28 @@ pub struct EnableParams {
     /// experience. Disabling the UI is recommended for automated testing.
     /// Supported at the embedder's discretion if UI is available.
     /// Defaults to false.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    enableUI: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "enableUI")]
+    enable_ui: Option<bool>,
 }
 
 impl EnableParams {
+    /// Creates a builder for this type.
     pub fn builder() -> EnableParamsBuilder {
         EnableParamsBuilder {
-            enableUI: None,
+            enable_ui: None,
         }
     }
-    pub fn enableUI(&self) -> Option<bool> { self.enableUI }
+    /// Whether to enable the WebAuthn user interface. Enabling the UI is
+    /// recommended for debugging and demo purposes, as it is closer to the real
+    /// experience. Disabling the UI is recommended for automated testing.
+    /// Supported at the embedder's discretion if UI is available.
+    /// Defaults to false.
+    pub fn enable_ui(&self) -> Option<bool> { self.enable_ui }
 }
 
 #[derive(Default)]
 pub struct EnableParamsBuilder {
-    enableUI: Option<bool>,
+    enable_ui: Option<bool>,
 }
 
 impl EnableParamsBuilder {
@@ -400,10 +470,10 @@ impl EnableParamsBuilder {
     /// experience. Disabling the UI is recommended for automated testing.
     /// Supported at the embedder's discretion if UI is available.
     /// Defaults to false.
-    pub fn enableUI(mut self, enableUI: bool) -> Self { self.enableUI = Some(enableUI); self }
+    pub fn enable_ui(mut self, enable_ui: bool) -> Self { self.enable_ui = Some(enable_ui); self }
     pub fn build(self) -> EnableParams {
         EnableParams {
-            enableUI: self.enableUI,
+            enable_ui: self.enable_ui,
         }
     }
 }
@@ -434,6 +504,8 @@ pub struct AddVirtualAuthenticatorParams {
 }
 
 impl AddVirtualAuthenticatorParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `options`: 
     pub fn builder(options: VirtualAuthenticatorOptions) -> AddVirtualAuthenticatorParamsBuilder {
         AddVirtualAuthenticatorParamsBuilder {
             options: options,
@@ -460,27 +532,30 @@ impl AddVirtualAuthenticatorParamsBuilder {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct AddVirtualAuthenticatorReturns<'a> {
-    authenticatorId: AuthenticatorId<'a>,
+    #[serde(rename = "authenticatorId")]
+    authenticator_id: AuthenticatorId<'a>,
 }
 
 impl<'a> AddVirtualAuthenticatorReturns<'a> {
-    pub fn builder(authenticatorId: impl Into<AuthenticatorId<'a>>) -> AddVirtualAuthenticatorReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `authenticator_id`: 
+    pub fn builder(authenticator_id: impl Into<AuthenticatorId<'a>>) -> AddVirtualAuthenticatorReturnsBuilder<'a> {
         AddVirtualAuthenticatorReturnsBuilder {
-            authenticatorId: authenticatorId.into(),
+            authenticator_id: authenticator_id.into(),
         }
     }
-    pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
+    pub fn authenticator_id(&self) -> &AuthenticatorId<'a> { &self.authenticator_id }
 }
 
 
 pub struct AddVirtualAuthenticatorReturnsBuilder<'a> {
-    authenticatorId: AuthenticatorId<'a>,
+    authenticator_id: AuthenticatorId<'a>,
 }
 
 impl<'a> AddVirtualAuthenticatorReturnsBuilder<'a> {
     pub fn build(self) -> AddVirtualAuthenticatorReturns<'a> {
         AddVirtualAuthenticatorReturns {
-            authenticatorId: self.authenticatorId,
+            authenticator_id: self.authenticator_id,
         }
     }
 }
@@ -497,60 +572,69 @@ impl<'a> crate::CdpCommand<'a> for AddVirtualAuthenticatorParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetResponseOverrideBitsParams<'a> {
-    authenticatorId: AuthenticatorId<'a>,
+    #[serde(rename = "authenticatorId")]
+    authenticator_id: AuthenticatorId<'a>,
     /// If isBogusSignature is set, overrides the signature in the authenticator response to be zero.
     /// Defaults to false.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    isBogusSignature: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "isBogusSignature")]
+    is_bogus_signature: Option<bool>,
     /// If isBadUV is set, overrides the UV bit in the flags in the authenticator response to
     /// be zero. Defaults to false.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    isBadUV: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "isBadUV")]
+    is_bad_uv: Option<bool>,
     /// If isBadUP is set, overrides the UP bit in the flags in the authenticator response to
     /// be zero. Defaults to false.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    isBadUP: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "isBadUP")]
+    is_bad_up: Option<bool>,
 }
 
 impl<'a> SetResponseOverrideBitsParams<'a> {
-    pub fn builder(authenticatorId: impl Into<AuthenticatorId<'a>>) -> SetResponseOverrideBitsParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `authenticator_id`: 
+    pub fn builder(authenticator_id: impl Into<AuthenticatorId<'a>>) -> SetResponseOverrideBitsParamsBuilder<'a> {
         SetResponseOverrideBitsParamsBuilder {
-            authenticatorId: authenticatorId.into(),
-            isBogusSignature: None,
-            isBadUV: None,
-            isBadUP: None,
+            authenticator_id: authenticator_id.into(),
+            is_bogus_signature: None,
+            is_bad_uv: None,
+            is_bad_up: None,
         }
     }
-    pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
-    pub fn isBogusSignature(&self) -> Option<bool> { self.isBogusSignature }
-    pub fn isBadUV(&self) -> Option<bool> { self.isBadUV }
-    pub fn isBadUP(&self) -> Option<bool> { self.isBadUP }
+    pub fn authenticator_id(&self) -> &AuthenticatorId<'a> { &self.authenticator_id }
+    /// If isBogusSignature is set, overrides the signature in the authenticator response to be zero.
+    /// Defaults to false.
+    pub fn is_bogus_signature(&self) -> Option<bool> { self.is_bogus_signature }
+    /// If isBadUV is set, overrides the UV bit in the flags in the authenticator response to
+    /// be zero. Defaults to false.
+    pub fn is_bad_uv(&self) -> Option<bool> { self.is_bad_uv }
+    /// If isBadUP is set, overrides the UP bit in the flags in the authenticator response to
+    /// be zero. Defaults to false.
+    pub fn is_bad_up(&self) -> Option<bool> { self.is_bad_up }
 }
 
 
 pub struct SetResponseOverrideBitsParamsBuilder<'a> {
-    authenticatorId: AuthenticatorId<'a>,
-    isBogusSignature: Option<bool>,
-    isBadUV: Option<bool>,
-    isBadUP: Option<bool>,
+    authenticator_id: AuthenticatorId<'a>,
+    is_bogus_signature: Option<bool>,
+    is_bad_uv: Option<bool>,
+    is_bad_up: Option<bool>,
 }
 
 impl<'a> SetResponseOverrideBitsParamsBuilder<'a> {
     /// If isBogusSignature is set, overrides the signature in the authenticator response to be zero.
     /// Defaults to false.
-    pub fn isBogusSignature(mut self, isBogusSignature: bool) -> Self { self.isBogusSignature = Some(isBogusSignature); self }
+    pub fn is_bogus_signature(mut self, is_bogus_signature: bool) -> Self { self.is_bogus_signature = Some(is_bogus_signature); self }
     /// If isBadUV is set, overrides the UV bit in the flags in the authenticator response to
     /// be zero. Defaults to false.
-    pub fn isBadUV(mut self, isBadUV: bool) -> Self { self.isBadUV = Some(isBadUV); self }
+    pub fn is_bad_uv(mut self, is_bad_uv: bool) -> Self { self.is_bad_uv = Some(is_bad_uv); self }
     /// If isBadUP is set, overrides the UP bit in the flags in the authenticator response to
     /// be zero. Defaults to false.
-    pub fn isBadUP(mut self, isBadUP: bool) -> Self { self.isBadUP = Some(isBadUP); self }
+    pub fn is_bad_up(mut self, is_bad_up: bool) -> Self { self.is_bad_up = Some(is_bad_up); self }
     pub fn build(self) -> SetResponseOverrideBitsParams<'a> {
         SetResponseOverrideBitsParams {
-            authenticatorId: self.authenticatorId,
-            isBogusSignature: self.isBogusSignature,
-            isBadUV: self.isBadUV,
-            isBadUP: self.isBadUP,
+            authenticator_id: self.authenticator_id,
+            is_bogus_signature: self.is_bogus_signature,
+            is_bad_uv: self.is_bad_uv,
+            is_bad_up: self.is_bad_up,
         }
     }
 }
@@ -567,27 +651,30 @@ impl<'a> crate::CdpCommand<'a> for SetResponseOverrideBitsParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveVirtualAuthenticatorParams<'a> {
-    authenticatorId: AuthenticatorId<'a>,
+    #[serde(rename = "authenticatorId")]
+    authenticator_id: AuthenticatorId<'a>,
 }
 
 impl<'a> RemoveVirtualAuthenticatorParams<'a> {
-    pub fn builder(authenticatorId: impl Into<AuthenticatorId<'a>>) -> RemoveVirtualAuthenticatorParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `authenticator_id`: 
+    pub fn builder(authenticator_id: impl Into<AuthenticatorId<'a>>) -> RemoveVirtualAuthenticatorParamsBuilder<'a> {
         RemoveVirtualAuthenticatorParamsBuilder {
-            authenticatorId: authenticatorId.into(),
+            authenticator_id: authenticator_id.into(),
         }
     }
-    pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
+    pub fn authenticator_id(&self) -> &AuthenticatorId<'a> { &self.authenticator_id }
 }
 
 
 pub struct RemoveVirtualAuthenticatorParamsBuilder<'a> {
-    authenticatorId: AuthenticatorId<'a>,
+    authenticator_id: AuthenticatorId<'a>,
 }
 
 impl<'a> RemoveVirtualAuthenticatorParamsBuilder<'a> {
     pub fn build(self) -> RemoveVirtualAuthenticatorParams<'a> {
         RemoveVirtualAuthenticatorParams {
-            authenticatorId: self.authenticatorId,
+            authenticator_id: self.authenticator_id,
         }
     }
 }
@@ -604,31 +691,35 @@ impl<'a> crate::CdpCommand<'a> for RemoveVirtualAuthenticatorParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct AddCredentialParams<'a> {
-    authenticatorId: AuthenticatorId<'a>,
+    #[serde(rename = "authenticatorId")]
+    authenticator_id: AuthenticatorId<'a>,
     credential: Credential<'a>,
 }
 
 impl<'a> AddCredentialParams<'a> {
-    pub fn builder(authenticatorId: impl Into<AuthenticatorId<'a>>, credential: Credential<'a>) -> AddCredentialParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `authenticator_id`: 
+    /// * `credential`: 
+    pub fn builder(authenticator_id: impl Into<AuthenticatorId<'a>>, credential: Credential<'a>) -> AddCredentialParamsBuilder<'a> {
         AddCredentialParamsBuilder {
-            authenticatorId: authenticatorId.into(),
+            authenticator_id: authenticator_id.into(),
             credential: credential,
         }
     }
-    pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
+    pub fn authenticator_id(&self) -> &AuthenticatorId<'a> { &self.authenticator_id }
     pub fn credential(&self) -> &Credential<'a> { &self.credential }
 }
 
 
 pub struct AddCredentialParamsBuilder<'a> {
-    authenticatorId: AuthenticatorId<'a>,
+    authenticator_id: AuthenticatorId<'a>,
     credential: Credential<'a>,
 }
 
 impl<'a> AddCredentialParamsBuilder<'a> {
     pub fn build(self) -> AddCredentialParams<'a> {
         AddCredentialParams {
-            authenticatorId: self.authenticatorId,
+            authenticator_id: self.authenticator_id,
             credential: self.credential,
         }
     }
@@ -647,32 +738,37 @@ impl<'a> crate::CdpCommand<'a> for AddCredentialParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetCredentialParams<'a> {
-    authenticatorId: AuthenticatorId<'a>,
-    credentialId: Cow<'a, str>,
+    #[serde(rename = "authenticatorId")]
+    authenticator_id: AuthenticatorId<'a>,
+    #[serde(rename = "credentialId")]
+    credential_id: Cow<'a, str>,
 }
 
 impl<'a> GetCredentialParams<'a> {
-    pub fn builder(authenticatorId: impl Into<AuthenticatorId<'a>>, credentialId: impl Into<Cow<'a, str>>) -> GetCredentialParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `authenticator_id`: 
+    /// * `credential_id`: 
+    pub fn builder(authenticator_id: impl Into<AuthenticatorId<'a>>, credential_id: impl Into<Cow<'a, str>>) -> GetCredentialParamsBuilder<'a> {
         GetCredentialParamsBuilder {
-            authenticatorId: authenticatorId.into(),
-            credentialId: credentialId.into(),
+            authenticator_id: authenticator_id.into(),
+            credential_id: credential_id.into(),
         }
     }
-    pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
-    pub fn credentialId(&self) -> &str { self.credentialId.as_ref() }
+    pub fn authenticator_id(&self) -> &AuthenticatorId<'a> { &self.authenticator_id }
+    pub fn credential_id(&self) -> &str { self.credential_id.as_ref() }
 }
 
 
 pub struct GetCredentialParamsBuilder<'a> {
-    authenticatorId: AuthenticatorId<'a>,
-    credentialId: Cow<'a, str>,
+    authenticator_id: AuthenticatorId<'a>,
+    credential_id: Cow<'a, str>,
 }
 
 impl<'a> GetCredentialParamsBuilder<'a> {
     pub fn build(self) -> GetCredentialParams<'a> {
         GetCredentialParams {
-            authenticatorId: self.authenticatorId,
-            credentialId: self.credentialId,
+            authenticator_id: self.authenticator_id,
+            credential_id: self.credential_id,
         }
     }
 }
@@ -687,6 +783,8 @@ pub struct GetCredentialReturns<'a> {
 }
 
 impl<'a> GetCredentialReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `credential`: 
     pub fn builder(credential: Credential<'a>) -> GetCredentialReturnsBuilder<'a> {
         GetCredentialReturnsBuilder {
             credential: credential,
@@ -720,27 +818,30 @@ impl<'a> crate::CdpCommand<'a> for GetCredentialParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetCredentialsParams<'a> {
-    authenticatorId: AuthenticatorId<'a>,
+    #[serde(rename = "authenticatorId")]
+    authenticator_id: AuthenticatorId<'a>,
 }
 
 impl<'a> GetCredentialsParams<'a> {
-    pub fn builder(authenticatorId: impl Into<AuthenticatorId<'a>>) -> GetCredentialsParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `authenticator_id`: 
+    pub fn builder(authenticator_id: impl Into<AuthenticatorId<'a>>) -> GetCredentialsParamsBuilder<'a> {
         GetCredentialsParamsBuilder {
-            authenticatorId: authenticatorId.into(),
+            authenticator_id: authenticator_id.into(),
         }
     }
-    pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
+    pub fn authenticator_id(&self) -> &AuthenticatorId<'a> { &self.authenticator_id }
 }
 
 
 pub struct GetCredentialsParamsBuilder<'a> {
-    authenticatorId: AuthenticatorId<'a>,
+    authenticator_id: AuthenticatorId<'a>,
 }
 
 impl<'a> GetCredentialsParamsBuilder<'a> {
     pub fn build(self) -> GetCredentialsParams<'a> {
         GetCredentialsParams {
-            authenticatorId: self.authenticatorId,
+            authenticator_id: self.authenticator_id,
         }
     }
 }
@@ -754,6 +855,8 @@ pub struct GetCredentialsReturns<'a> {
 }
 
 impl<'a> GetCredentialsReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `credentials`: 
     pub fn builder(credentials: Vec<Credential<'a>>) -> GetCredentialsReturnsBuilder<'a> {
         GetCredentialsReturnsBuilder {
             credentials: credentials,
@@ -787,32 +890,37 @@ impl<'a> crate::CdpCommand<'a> for GetCredentialsParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveCredentialParams<'a> {
-    authenticatorId: AuthenticatorId<'a>,
-    credentialId: Cow<'a, str>,
+    #[serde(rename = "authenticatorId")]
+    authenticator_id: AuthenticatorId<'a>,
+    #[serde(rename = "credentialId")]
+    credential_id: Cow<'a, str>,
 }
 
 impl<'a> RemoveCredentialParams<'a> {
-    pub fn builder(authenticatorId: impl Into<AuthenticatorId<'a>>, credentialId: impl Into<Cow<'a, str>>) -> RemoveCredentialParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `authenticator_id`: 
+    /// * `credential_id`: 
+    pub fn builder(authenticator_id: impl Into<AuthenticatorId<'a>>, credential_id: impl Into<Cow<'a, str>>) -> RemoveCredentialParamsBuilder<'a> {
         RemoveCredentialParamsBuilder {
-            authenticatorId: authenticatorId.into(),
-            credentialId: credentialId.into(),
+            authenticator_id: authenticator_id.into(),
+            credential_id: credential_id.into(),
         }
     }
-    pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
-    pub fn credentialId(&self) -> &str { self.credentialId.as_ref() }
+    pub fn authenticator_id(&self) -> &AuthenticatorId<'a> { &self.authenticator_id }
+    pub fn credential_id(&self) -> &str { self.credential_id.as_ref() }
 }
 
 
 pub struct RemoveCredentialParamsBuilder<'a> {
-    authenticatorId: AuthenticatorId<'a>,
-    credentialId: Cow<'a, str>,
+    authenticator_id: AuthenticatorId<'a>,
+    credential_id: Cow<'a, str>,
 }
 
 impl<'a> RemoveCredentialParamsBuilder<'a> {
     pub fn build(self) -> RemoveCredentialParams<'a> {
         RemoveCredentialParams {
-            authenticatorId: self.authenticatorId,
-            credentialId: self.credentialId,
+            authenticator_id: self.authenticator_id,
+            credential_id: self.credential_id,
         }
     }
 }
@@ -829,27 +937,30 @@ impl<'a> crate::CdpCommand<'a> for RemoveCredentialParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ClearCredentialsParams<'a> {
-    authenticatorId: AuthenticatorId<'a>,
+    #[serde(rename = "authenticatorId")]
+    authenticator_id: AuthenticatorId<'a>,
 }
 
 impl<'a> ClearCredentialsParams<'a> {
-    pub fn builder(authenticatorId: impl Into<AuthenticatorId<'a>>) -> ClearCredentialsParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `authenticator_id`: 
+    pub fn builder(authenticator_id: impl Into<AuthenticatorId<'a>>) -> ClearCredentialsParamsBuilder<'a> {
         ClearCredentialsParamsBuilder {
-            authenticatorId: authenticatorId.into(),
+            authenticator_id: authenticator_id.into(),
         }
     }
-    pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
+    pub fn authenticator_id(&self) -> &AuthenticatorId<'a> { &self.authenticator_id }
 }
 
 
 pub struct ClearCredentialsParamsBuilder<'a> {
-    authenticatorId: AuthenticatorId<'a>,
+    authenticator_id: AuthenticatorId<'a>,
 }
 
 impl<'a> ClearCredentialsParamsBuilder<'a> {
     pub fn build(self) -> ClearCredentialsParams<'a> {
         ClearCredentialsParams {
-            authenticatorId: self.authenticatorId,
+            authenticator_id: self.authenticator_id,
         }
     }
 }
@@ -867,32 +978,37 @@ impl<'a> crate::CdpCommand<'a> for ClearCredentialsParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetUserVerifiedParams<'a> {
-    authenticatorId: AuthenticatorId<'a>,
-    isUserVerified: bool,
+    #[serde(rename = "authenticatorId")]
+    authenticator_id: AuthenticatorId<'a>,
+    #[serde(rename = "isUserVerified")]
+    is_user_verified: bool,
 }
 
 impl<'a> SetUserVerifiedParams<'a> {
-    pub fn builder(authenticatorId: impl Into<AuthenticatorId<'a>>, isUserVerified: bool) -> SetUserVerifiedParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `authenticator_id`: 
+    /// * `is_user_verified`: 
+    pub fn builder(authenticator_id: impl Into<AuthenticatorId<'a>>, is_user_verified: bool) -> SetUserVerifiedParamsBuilder<'a> {
         SetUserVerifiedParamsBuilder {
-            authenticatorId: authenticatorId.into(),
-            isUserVerified: isUserVerified,
+            authenticator_id: authenticator_id.into(),
+            is_user_verified: is_user_verified,
         }
     }
-    pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
-    pub fn isUserVerified(&self) -> bool { self.isUserVerified }
+    pub fn authenticator_id(&self) -> &AuthenticatorId<'a> { &self.authenticator_id }
+    pub fn is_user_verified(&self) -> bool { self.is_user_verified }
 }
 
 
 pub struct SetUserVerifiedParamsBuilder<'a> {
-    authenticatorId: AuthenticatorId<'a>,
-    isUserVerified: bool,
+    authenticator_id: AuthenticatorId<'a>,
+    is_user_verified: bool,
 }
 
 impl<'a> SetUserVerifiedParamsBuilder<'a> {
     pub fn build(self) -> SetUserVerifiedParams<'a> {
         SetUserVerifiedParams {
-            authenticatorId: self.authenticatorId,
-            isUserVerified: self.isUserVerified,
+            authenticator_id: self.authenticator_id,
+            is_user_verified: self.is_user_verified,
         }
     }
 }
@@ -910,31 +1026,35 @@ impl<'a> crate::CdpCommand<'a> for SetUserVerifiedParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetAutomaticPresenceSimulationParams<'a> {
-    authenticatorId: AuthenticatorId<'a>,
+    #[serde(rename = "authenticatorId")]
+    authenticator_id: AuthenticatorId<'a>,
     enabled: bool,
 }
 
 impl<'a> SetAutomaticPresenceSimulationParams<'a> {
-    pub fn builder(authenticatorId: impl Into<AuthenticatorId<'a>>, enabled: bool) -> SetAutomaticPresenceSimulationParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `authenticator_id`: 
+    /// * `enabled`: 
+    pub fn builder(authenticator_id: impl Into<AuthenticatorId<'a>>, enabled: bool) -> SetAutomaticPresenceSimulationParamsBuilder<'a> {
         SetAutomaticPresenceSimulationParamsBuilder {
-            authenticatorId: authenticatorId.into(),
+            authenticator_id: authenticator_id.into(),
             enabled: enabled,
         }
     }
-    pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
+    pub fn authenticator_id(&self) -> &AuthenticatorId<'a> { &self.authenticator_id }
     pub fn enabled(&self) -> bool { self.enabled }
 }
 
 
 pub struct SetAutomaticPresenceSimulationParamsBuilder<'a> {
-    authenticatorId: AuthenticatorId<'a>,
+    authenticator_id: AuthenticatorId<'a>,
     enabled: bool,
 }
 
 impl<'a> SetAutomaticPresenceSimulationParamsBuilder<'a> {
     pub fn build(self) -> SetAutomaticPresenceSimulationParams<'a> {
         SetAutomaticPresenceSimulationParams {
-            authenticatorId: self.authenticatorId,
+            authenticator_id: self.authenticator_id,
             enabled: self.enabled,
         }
     }
@@ -948,51 +1068,56 @@ impl<'a> crate::CdpCommand<'a> for SetAutomaticPresenceSimulationParams<'a> {
 }
 
 /// Allows setting credential properties.
-/// https://w3c.github.io/webauthn/#sctn-automation-set-credential-properties
+/// <https://w3c.github.io/webauthn/#sctn-automation-set-credential-properties>
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetCredentialPropertiesParams<'a> {
-    authenticatorId: AuthenticatorId<'a>,
-    credentialId: Cow<'a, str>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    backupEligibility: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    backupState: Option<bool>,
+    #[serde(rename = "authenticatorId")]
+    authenticator_id: AuthenticatorId<'a>,
+    #[serde(rename = "credentialId")]
+    credential_id: Cow<'a, str>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "backupEligibility")]
+    backup_eligibility: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "backupState")]
+    backup_state: Option<bool>,
 }
 
 impl<'a> SetCredentialPropertiesParams<'a> {
-    pub fn builder(authenticatorId: impl Into<AuthenticatorId<'a>>, credentialId: impl Into<Cow<'a, str>>) -> SetCredentialPropertiesParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `authenticator_id`: 
+    /// * `credential_id`: 
+    pub fn builder(authenticator_id: impl Into<AuthenticatorId<'a>>, credential_id: impl Into<Cow<'a, str>>) -> SetCredentialPropertiesParamsBuilder<'a> {
         SetCredentialPropertiesParamsBuilder {
-            authenticatorId: authenticatorId.into(),
-            credentialId: credentialId.into(),
-            backupEligibility: None,
-            backupState: None,
+            authenticator_id: authenticator_id.into(),
+            credential_id: credential_id.into(),
+            backup_eligibility: None,
+            backup_state: None,
         }
     }
-    pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
-    pub fn credentialId(&self) -> &str { self.credentialId.as_ref() }
-    pub fn backupEligibility(&self) -> Option<bool> { self.backupEligibility }
-    pub fn backupState(&self) -> Option<bool> { self.backupState }
+    pub fn authenticator_id(&self) -> &AuthenticatorId<'a> { &self.authenticator_id }
+    pub fn credential_id(&self) -> &str { self.credential_id.as_ref() }
+    pub fn backup_eligibility(&self) -> Option<bool> { self.backup_eligibility }
+    pub fn backup_state(&self) -> Option<bool> { self.backup_state }
 }
 
 
 pub struct SetCredentialPropertiesParamsBuilder<'a> {
-    authenticatorId: AuthenticatorId<'a>,
-    credentialId: Cow<'a, str>,
-    backupEligibility: Option<bool>,
-    backupState: Option<bool>,
+    authenticator_id: AuthenticatorId<'a>,
+    credential_id: Cow<'a, str>,
+    backup_eligibility: Option<bool>,
+    backup_state: Option<bool>,
 }
 
 impl<'a> SetCredentialPropertiesParamsBuilder<'a> {
-    pub fn backupEligibility(mut self, backupEligibility: bool) -> Self { self.backupEligibility = Some(backupEligibility); self }
-    pub fn backupState(mut self, backupState: bool) -> Self { self.backupState = Some(backupState); self }
+    pub fn backup_eligibility(mut self, backup_eligibility: bool) -> Self { self.backup_eligibility = Some(backup_eligibility); self }
+    pub fn backup_state(mut self, backup_state: bool) -> Self { self.backup_state = Some(backup_state); self }
     pub fn build(self) -> SetCredentialPropertiesParams<'a> {
         SetCredentialPropertiesParams {
-            authenticatorId: self.authenticatorId,
-            credentialId: self.credentialId,
-            backupEligibility: self.backupEligibility,
-            backupState: self.backupState,
+            authenticator_id: self.authenticator_id,
+            credential_id: self.credential_id,
+            backup_eligibility: self.backup_eligibility,
+            backup_state: self.backup_state,
         }
     }
 }

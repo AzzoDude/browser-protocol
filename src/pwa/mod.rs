@@ -6,39 +6,46 @@ use serde_json::Value as JsonValue;
 use std::borrow::Cow;
 
 /// The following types are the replica of
-/// https://crsrc.org/c/chrome/browser/web_applications/proto/web_app_os_integration_state.proto;drc=9910d3be894c8f142c977ba1023f30a656bc13fc;l=67
+/// <https://crsrc.org/c/chrome/browser/web_applications/proto/web_app_os_integration_state.proto;drc=9910d3be894c8f142c977ba1023f30a656bc13fc;l=67>
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct FileHandlerAccept<'a> {
     /// New name of the mimetype according to
-    /// https://www.iana.org/assignments/media-types/media-types.xhtml
-    mediaType: Cow<'a, str>,
-    fileExtensions: Vec<Cow<'a, str>>,
+    /// <https://www.iana.org/assignments/media-types/media-types.xhtml>
+    #[serde(rename = "mediaType")]
+    media_type: Cow<'a, str>,
+    #[serde(rename = "fileExtensions")]
+    file_extensions: Vec<Cow<'a, str>>,
 }
 
 impl<'a> FileHandlerAccept<'a> {
-    pub fn builder(mediaType: impl Into<Cow<'a, str>>, fileExtensions: Vec<Cow<'a, str>>) -> FileHandlerAcceptBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `media_type`: New name of the mimetype according to <https://www.iana.org/assignments/media-types/media-types.xhtml>
+    /// * `file_extensions`: 
+    pub fn builder(media_type: impl Into<Cow<'a, str>>, file_extensions: Vec<Cow<'a, str>>) -> FileHandlerAcceptBuilder<'a> {
         FileHandlerAcceptBuilder {
-            mediaType: mediaType.into(),
-            fileExtensions: fileExtensions,
+            media_type: media_type.into(),
+            file_extensions: file_extensions,
         }
     }
-    pub fn mediaType(&self) -> &str { self.mediaType.as_ref() }
-    pub fn fileExtensions(&self) -> &[Cow<'a, str>] { &self.fileExtensions }
+    /// New name of the mimetype according to
+    /// <https://www.iana.org/assignments/media-types/media-types.xhtml>
+    pub fn media_type(&self) -> &str { self.media_type.as_ref() }
+    pub fn file_extensions(&self) -> &[Cow<'a, str>] { &self.file_extensions }
 }
 
 
 pub struct FileHandlerAcceptBuilder<'a> {
-    mediaType: Cow<'a, str>,
-    fileExtensions: Vec<Cow<'a, str>>,
+    media_type: Cow<'a, str>,
+    file_extensions: Vec<Cow<'a, str>>,
 }
 
 impl<'a> FileHandlerAcceptBuilder<'a> {
     pub fn build(self) -> FileHandlerAccept<'a> {
         FileHandlerAccept {
-            mediaType: self.mediaType,
-            fileExtensions: self.fileExtensions,
+            media_type: self.media_type,
+            file_extensions: self.file_extensions,
         }
     }
 }
@@ -49,27 +56,32 @@ impl<'a> FileHandlerAcceptBuilder<'a> {
 pub struct FileHandler<'a> {
     action: Cow<'a, str>,
     accepts: Vec<FileHandlerAccept<'a>>,
-    displayName: Cow<'a, str>,
+    #[serde(rename = "displayName")]
+    display_name: Cow<'a, str>,
 }
 
 impl<'a> FileHandler<'a> {
-    pub fn builder(action: impl Into<Cow<'a, str>>, accepts: Vec<FileHandlerAccept<'a>>, displayName: impl Into<Cow<'a, str>>) -> FileHandlerBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `action`: 
+    /// * `accepts`: 
+    /// * `display_name`: 
+    pub fn builder(action: impl Into<Cow<'a, str>>, accepts: Vec<FileHandlerAccept<'a>>, display_name: impl Into<Cow<'a, str>>) -> FileHandlerBuilder<'a> {
         FileHandlerBuilder {
             action: action.into(),
             accepts: accepts,
-            displayName: displayName.into(),
+            display_name: display_name.into(),
         }
     }
     pub fn action(&self) -> &str { self.action.as_ref() }
     pub fn accepts(&self) -> &[FileHandlerAccept<'a>] { &self.accepts }
-    pub fn displayName(&self) -> &str { self.displayName.as_ref() }
+    pub fn display_name(&self) -> &str { self.display_name.as_ref() }
 }
 
 
 pub struct FileHandlerBuilder<'a> {
     action: Cow<'a, str>,
     accepts: Vec<FileHandlerAccept<'a>>,
-    displayName: Cow<'a, str>,
+    display_name: Cow<'a, str>,
 }
 
 impl<'a> FileHandlerBuilder<'a> {
@@ -77,7 +89,7 @@ impl<'a> FileHandlerBuilder<'a> {
         FileHandler {
             action: self.action,
             accepts: self.accepts,
-            displayName: self.displayName,
+            display_name: self.display_name,
         }
     }
 }
@@ -100,28 +112,34 @@ pub enum DisplayMode {
 pub struct GetOsAppStateParams<'a> {
     /// The id from the webapp's manifest file, commonly it's the url of the
     /// site installing the webapp. See
-    /// https://web.dev/learn/pwa/web-app-manifest.
-    manifestId: Cow<'a, str>,
+    /// <https://web.dev/learn/pwa/web-app-manifest>.
+    #[serde(rename = "manifestId")]
+    manifest_id: Cow<'a, str>,
 }
 
 impl<'a> GetOsAppStateParams<'a> {
-    pub fn builder(manifestId: impl Into<Cow<'a, str>>) -> GetOsAppStateParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `manifest_id`: The id from the webapp's manifest file, commonly it's the url of the site installing the webapp. See <https://web.dev/learn/pwa/web-app-manifest>.
+    pub fn builder(manifest_id: impl Into<Cow<'a, str>>) -> GetOsAppStateParamsBuilder<'a> {
         GetOsAppStateParamsBuilder {
-            manifestId: manifestId.into(),
+            manifest_id: manifest_id.into(),
         }
     }
-    pub fn manifestId(&self) -> &str { self.manifestId.as_ref() }
+    /// The id from the webapp's manifest file, commonly it's the url of the
+    /// site installing the webapp. See
+    /// <https://web.dev/learn/pwa/web-app-manifest>.
+    pub fn manifest_id(&self) -> &str { self.manifest_id.as_ref() }
 }
 
 
 pub struct GetOsAppStateParamsBuilder<'a> {
-    manifestId: Cow<'a, str>,
+    manifest_id: Cow<'a, str>,
 }
 
 impl<'a> GetOsAppStateParamsBuilder<'a> {
     pub fn build(self) -> GetOsAppStateParams<'a> {
         GetOsAppStateParams {
-            manifestId: self.manifestId,
+            manifest_id: self.manifest_id,
         }
     }
 }
@@ -131,32 +149,37 @@ impl<'a> GetOsAppStateParamsBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetOsAppStateReturns<'a> {
-    badgeCount: u64,
-    fileHandlers: Vec<FileHandler<'a>>,
+    #[serde(rename = "badgeCount")]
+    badge_count: u64,
+    #[serde(rename = "fileHandlers")]
+    file_handlers: Vec<FileHandler<'a>>,
 }
 
 impl<'a> GetOsAppStateReturns<'a> {
-    pub fn builder(badgeCount: u64, fileHandlers: Vec<FileHandler<'a>>) -> GetOsAppStateReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `badge_count`: 
+    /// * `file_handlers`: 
+    pub fn builder(badge_count: u64, file_handlers: Vec<FileHandler<'a>>) -> GetOsAppStateReturnsBuilder<'a> {
         GetOsAppStateReturnsBuilder {
-            badgeCount: badgeCount,
-            fileHandlers: fileHandlers,
+            badge_count: badge_count,
+            file_handlers: file_handlers,
         }
     }
-    pub fn badgeCount(&self) -> u64 { self.badgeCount }
-    pub fn fileHandlers(&self) -> &[FileHandler<'a>] { &self.fileHandlers }
+    pub fn badge_count(&self) -> u64 { self.badge_count }
+    pub fn file_handlers(&self) -> &[FileHandler<'a>] { &self.file_handlers }
 }
 
 
 pub struct GetOsAppStateReturnsBuilder<'a> {
-    badgeCount: u64,
-    fileHandlers: Vec<FileHandler<'a>>,
+    badge_count: u64,
+    file_handlers: Vec<FileHandler<'a>>,
 }
 
 impl<'a> GetOsAppStateReturnsBuilder<'a> {
     pub fn build(self) -> GetOsAppStateReturns<'a> {
         GetOsAppStateReturns {
-            badgeCount: self.badgeCount,
-            fileHandlers: self.fileHandlers,
+            badge_count: self.badge_count,
+            file_handlers: self.file_handlers,
         }
     }
 }
@@ -189,7 +212,7 @@ impl<'a> crate::CdpCommand<'a> for GetOsAppStateParams<'a> {
 /// To generate bundle id for proxy mode:
 /// 1. Generate 32 random bytes.
 /// 2. Add a specific suffix at the end following the documentation
-/// https://github.com/WICG/isolated-web-apps/blob/main/Scheme.md#suffix
+/// <https://github.com/WICG/isolated-web-apps/blob/main/Scheme.md#suffix>
 /// 3. Encode the entire sequence using Base32 without padding.
 /// 
 /// If Chrome is not in IWA dev
@@ -198,38 +221,43 @@ impl<'a> crate::CdpCommand<'a> for GetOsAppStateParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct InstallParams<'a> {
-    manifestId: Cow<'a, str>,
+    #[serde(rename = "manifestId")]
+    manifest_id: Cow<'a, str>,
     /// The location of the app or bundle overriding the one derived from the
     /// manifestId.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    installUrlOrBundleUrl: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "installUrlOrBundleUrl")]
+    install_url_or_bundle_url: Option<Cow<'a, str>>,
 }
 
 impl<'a> InstallParams<'a> {
-    pub fn builder(manifestId: impl Into<Cow<'a, str>>) -> InstallParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `manifest_id`: 
+    pub fn builder(manifest_id: impl Into<Cow<'a, str>>) -> InstallParamsBuilder<'a> {
         InstallParamsBuilder {
-            manifestId: manifestId.into(),
-            installUrlOrBundleUrl: None,
+            manifest_id: manifest_id.into(),
+            install_url_or_bundle_url: None,
         }
     }
-    pub fn manifestId(&self) -> &str { self.manifestId.as_ref() }
-    pub fn installUrlOrBundleUrl(&self) -> Option<&str> { self.installUrlOrBundleUrl.as_deref() }
+    pub fn manifest_id(&self) -> &str { self.manifest_id.as_ref() }
+    /// The location of the app or bundle overriding the one derived from the
+    /// manifestId.
+    pub fn install_url_or_bundle_url(&self) -> Option<&str> { self.install_url_or_bundle_url.as_deref() }
 }
 
 
 pub struct InstallParamsBuilder<'a> {
-    manifestId: Cow<'a, str>,
-    installUrlOrBundleUrl: Option<Cow<'a, str>>,
+    manifest_id: Cow<'a, str>,
+    install_url_or_bundle_url: Option<Cow<'a, str>>,
 }
 
 impl<'a> InstallParamsBuilder<'a> {
     /// The location of the app or bundle overriding the one derived from the
     /// manifestId.
-    pub fn installUrlOrBundleUrl(mut self, installUrlOrBundleUrl: impl Into<Cow<'a, str>>) -> Self { self.installUrlOrBundleUrl = Some(installUrlOrBundleUrl.into()); self }
+    pub fn install_url_or_bundle_url(mut self, install_url_or_bundle_url: impl Into<Cow<'a, str>>) -> Self { self.install_url_or_bundle_url = Some(install_url_or_bundle_url.into()); self }
     pub fn build(self) -> InstallParams<'a> {
         InstallParams {
-            manifestId: self.manifestId,
-            installUrlOrBundleUrl: self.installUrlOrBundleUrl,
+            manifest_id: self.manifest_id,
+            install_url_or_bundle_url: self.install_url_or_bundle_url,
         }
     }
 }
@@ -246,27 +274,30 @@ impl<'a> crate::CdpCommand<'a> for InstallParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct UninstallParams<'a> {
-    manifestId: Cow<'a, str>,
+    #[serde(rename = "manifestId")]
+    manifest_id: Cow<'a, str>,
 }
 
 impl<'a> UninstallParams<'a> {
-    pub fn builder(manifestId: impl Into<Cow<'a, str>>) -> UninstallParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `manifest_id`: 
+    pub fn builder(manifest_id: impl Into<Cow<'a, str>>) -> UninstallParamsBuilder<'a> {
         UninstallParamsBuilder {
-            manifestId: manifestId.into(),
+            manifest_id: manifest_id.into(),
         }
     }
-    pub fn manifestId(&self) -> &str { self.manifestId.as_ref() }
+    pub fn manifest_id(&self) -> &str { self.manifest_id.as_ref() }
 }
 
 
 pub struct UninstallParamsBuilder<'a> {
-    manifestId: Cow<'a, str>,
+    manifest_id: Cow<'a, str>,
 }
 
 impl<'a> UninstallParamsBuilder<'a> {
     pub fn build(self) -> UninstallParams<'a> {
         UninstallParams {
-            manifestId: self.manifestId,
+            manifest_id: self.manifest_id,
         }
     }
 }
@@ -285,25 +316,28 @@ impl<'a> crate::CdpCommand<'a> for UninstallParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct LaunchParams<'a> {
-    manifestId: Cow<'a, str>,
+    #[serde(rename = "manifestId")]
+    manifest_id: Cow<'a, str>,
     #[serde(skip_serializing_if = "Option::is_none")]
     url: Option<Cow<'a, str>>,
 }
 
 impl<'a> LaunchParams<'a> {
-    pub fn builder(manifestId: impl Into<Cow<'a, str>>) -> LaunchParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `manifest_id`: 
+    pub fn builder(manifest_id: impl Into<Cow<'a, str>>) -> LaunchParamsBuilder<'a> {
         LaunchParamsBuilder {
-            manifestId: manifestId.into(),
+            manifest_id: manifest_id.into(),
             url: None,
         }
     }
-    pub fn manifestId(&self) -> &str { self.manifestId.as_ref() }
+    pub fn manifest_id(&self) -> &str { self.manifest_id.as_ref() }
     pub fn url(&self) -> Option<&str> { self.url.as_deref() }
 }
 
 
 pub struct LaunchParamsBuilder<'a> {
-    manifestId: Cow<'a, str>,
+    manifest_id: Cow<'a, str>,
     url: Option<Cow<'a, str>>,
 }
 
@@ -311,7 +345,7 @@ impl<'a> LaunchParamsBuilder<'a> {
     pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
     pub fn build(self) -> LaunchParams<'a> {
         LaunchParams {
-            manifestId: self.manifestId,
+            manifest_id: self.manifest_id,
             url: self.url,
         }
     }
@@ -325,27 +359,31 @@ impl<'a> LaunchParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct LaunchReturns<'a> {
     /// ID of the tab target created as a result.
-    targetId: crate::target::TargetID<'a>,
+    #[serde(rename = "targetId")]
+    target_id: crate::target::TargetID<'a>,
 }
 
 impl<'a> LaunchReturns<'a> {
-    pub fn builder(targetId: crate::target::TargetID<'a>) -> LaunchReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `target_id`: ID of the tab target created as a result.
+    pub fn builder(target_id: crate::target::TargetID<'a>) -> LaunchReturnsBuilder<'a> {
         LaunchReturnsBuilder {
-            targetId: targetId,
+            target_id: target_id,
         }
     }
-    pub fn targetId(&self) -> &crate::target::TargetID<'a> { &self.targetId }
+    /// ID of the tab target created as a result.
+    pub fn target_id(&self) -> &crate::target::TargetID<'a> { &self.target_id }
 }
 
 
 pub struct LaunchReturnsBuilder<'a> {
-    targetId: crate::target::TargetID<'a>,
+    target_id: crate::target::TargetID<'a>,
 }
 
 impl<'a> LaunchReturnsBuilder<'a> {
     pub fn build(self) -> LaunchReturns<'a> {
         LaunchReturns {
-            targetId: self.targetId,
+            target_id: self.target_id,
         }
     }
 }
@@ -374,31 +412,35 @@ impl<'a> crate::CdpCommand<'a> for LaunchParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct LaunchFilesInAppParams<'a> {
-    manifestId: Cow<'a, str>,
+    #[serde(rename = "manifestId")]
+    manifest_id: Cow<'a, str>,
     files: Vec<Cow<'a, str>>,
 }
 
 impl<'a> LaunchFilesInAppParams<'a> {
-    pub fn builder(manifestId: impl Into<Cow<'a, str>>, files: Vec<Cow<'a, str>>) -> LaunchFilesInAppParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `manifest_id`: 
+    /// * `files`: 
+    pub fn builder(manifest_id: impl Into<Cow<'a, str>>, files: Vec<Cow<'a, str>>) -> LaunchFilesInAppParamsBuilder<'a> {
         LaunchFilesInAppParamsBuilder {
-            manifestId: manifestId.into(),
+            manifest_id: manifest_id.into(),
             files: files,
         }
     }
-    pub fn manifestId(&self) -> &str { self.manifestId.as_ref() }
+    pub fn manifest_id(&self) -> &str { self.manifest_id.as_ref() }
     pub fn files(&self) -> &[Cow<'a, str>] { &self.files }
 }
 
 
 pub struct LaunchFilesInAppParamsBuilder<'a> {
-    manifestId: Cow<'a, str>,
+    manifest_id: Cow<'a, str>,
     files: Vec<Cow<'a, str>>,
 }
 
 impl<'a> LaunchFilesInAppParamsBuilder<'a> {
     pub fn build(self) -> LaunchFilesInAppParams<'a> {
         LaunchFilesInAppParams {
-            manifestId: self.manifestId,
+            manifest_id: self.manifest_id,
             files: self.files,
         }
     }
@@ -422,27 +464,31 @@ impl<'a> LaunchFilesInAppParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct LaunchFilesInAppReturns<'a> {
     /// IDs of the tab targets created as the result.
-    targetIds: Vec<crate::target::TargetID<'a>>,
+    #[serde(rename = "targetIds")]
+    target_ids: Vec<crate::target::TargetID<'a>>,
 }
 
 impl<'a> LaunchFilesInAppReturns<'a> {
-    pub fn builder(targetIds: Vec<crate::target::TargetID<'a>>) -> LaunchFilesInAppReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `target_ids`: IDs of the tab targets created as the result.
+    pub fn builder(target_ids: Vec<crate::target::TargetID<'a>>) -> LaunchFilesInAppReturnsBuilder<'a> {
         LaunchFilesInAppReturnsBuilder {
-            targetIds: targetIds,
+            target_ids: target_ids,
         }
     }
-    pub fn targetIds(&self) -> &[crate::target::TargetID<'a>] { &self.targetIds }
+    /// IDs of the tab targets created as the result.
+    pub fn target_ids(&self) -> &[crate::target::TargetID<'a>] { &self.target_ids }
 }
 
 
 pub struct LaunchFilesInAppReturnsBuilder<'a> {
-    targetIds: Vec<crate::target::TargetID<'a>>,
+    target_ids: Vec<crate::target::TargetID<'a>>,
 }
 
 impl<'a> LaunchFilesInAppReturnsBuilder<'a> {
     pub fn build(self) -> LaunchFilesInAppReturns<'a> {
         LaunchFilesInAppReturns {
-            targetIds: self.targetIds,
+            target_ids: self.target_ids,
         }
     }
 }
@@ -461,27 +507,30 @@ impl<'a> crate::CdpCommand<'a> for LaunchFilesInAppParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct OpenCurrentPageInAppParams<'a> {
-    manifestId: Cow<'a, str>,
+    #[serde(rename = "manifestId")]
+    manifest_id: Cow<'a, str>,
 }
 
 impl<'a> OpenCurrentPageInAppParams<'a> {
-    pub fn builder(manifestId: impl Into<Cow<'a, str>>) -> OpenCurrentPageInAppParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `manifest_id`: 
+    pub fn builder(manifest_id: impl Into<Cow<'a, str>>) -> OpenCurrentPageInAppParamsBuilder<'a> {
         OpenCurrentPageInAppParamsBuilder {
-            manifestId: manifestId.into(),
+            manifest_id: manifest_id.into(),
         }
     }
-    pub fn manifestId(&self) -> &str { self.manifestId.as_ref() }
+    pub fn manifest_id(&self) -> &str { self.manifest_id.as_ref() }
 }
 
 
 pub struct OpenCurrentPageInAppParamsBuilder<'a> {
-    manifestId: Cow<'a, str>,
+    manifest_id: Cow<'a, str>,
 }
 
 impl<'a> OpenCurrentPageInAppParamsBuilder<'a> {
     pub fn build(self) -> OpenCurrentPageInAppParams<'a> {
         OpenCurrentPageInAppParams {
-            manifestId: self.manifestId,
+            manifest_id: self.manifest_id,
         }
     }
 }
@@ -506,7 +555,8 @@ impl<'a> crate::CdpCommand<'a> for OpenCurrentPageInAppParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ChangeAppUserSettingsParams<'a> {
-    manifestId: Cow<'a, str>,
+    #[serde(rename = "manifestId")]
+    manifest_id: Cow<'a, str>,
     /// If user allows the links clicked on by the user in the app's scope, or
     /// extended scope if the manifest has scope extensions and the flags
     /// 'DesktopPWAsLinkCapturingWithScopeExtensions' and
@@ -518,30 +568,43 @@ pub struct ChangeAppUserSettingsParams<'a> {
     /// 
     /// TODO(crbug.com/339453269): Setting this value on ChromeOS is not
     /// supported yet.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    linkCapturing: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    displayMode: Option<DisplayMode>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "linkCapturing")]
+    link_capturing: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "displayMode")]
+    display_mode: Option<DisplayMode>,
 }
 
 impl<'a> ChangeAppUserSettingsParams<'a> {
-    pub fn builder(manifestId: impl Into<Cow<'a, str>>) -> ChangeAppUserSettingsParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `manifest_id`: 
+    pub fn builder(manifest_id: impl Into<Cow<'a, str>>) -> ChangeAppUserSettingsParamsBuilder<'a> {
         ChangeAppUserSettingsParamsBuilder {
-            manifestId: manifestId.into(),
-            linkCapturing: None,
-            displayMode: None,
+            manifest_id: manifest_id.into(),
+            link_capturing: None,
+            display_mode: None,
         }
     }
-    pub fn manifestId(&self) -> &str { self.manifestId.as_ref() }
-    pub fn linkCapturing(&self) -> Option<bool> { self.linkCapturing }
-    pub fn displayMode(&self) -> Option<&DisplayMode> { self.displayMode.as_ref() }
+    pub fn manifest_id(&self) -> &str { self.manifest_id.as_ref() }
+    /// If user allows the links clicked on by the user in the app's scope, or
+    /// extended scope if the manifest has scope extensions and the flags
+    /// 'DesktopPWAsLinkCapturingWithScopeExtensions' and
+    /// 'WebAppEnableScopeExtensions' are enabled.
+    /// 
+    /// Note, the API does not support resetting the linkCapturing to the
+    /// initial value, uninstalling and installing the web app again will reset
+    /// it.
+    /// 
+    /// TODO(crbug.com/339453269): Setting this value on ChromeOS is not
+    /// supported yet.
+    pub fn link_capturing(&self) -> Option<bool> { self.link_capturing }
+    pub fn display_mode(&self) -> Option<&DisplayMode> { self.display_mode.as_ref() }
 }
 
 
 pub struct ChangeAppUserSettingsParamsBuilder<'a> {
-    manifestId: Cow<'a, str>,
-    linkCapturing: Option<bool>,
-    displayMode: Option<DisplayMode>,
+    manifest_id: Cow<'a, str>,
+    link_capturing: Option<bool>,
+    display_mode: Option<DisplayMode>,
 }
 
 impl<'a> ChangeAppUserSettingsParamsBuilder<'a> {
@@ -556,13 +619,13 @@ impl<'a> ChangeAppUserSettingsParamsBuilder<'a> {
     /// 
     /// TODO(crbug.com/339453269): Setting this value on ChromeOS is not
     /// supported yet.
-    pub fn linkCapturing(mut self, linkCapturing: bool) -> Self { self.linkCapturing = Some(linkCapturing); self }
-    pub fn displayMode(mut self, displayMode: impl Into<DisplayMode>) -> Self { self.displayMode = Some(displayMode.into()); self }
+    pub fn link_capturing(mut self, link_capturing: bool) -> Self { self.link_capturing = Some(link_capturing); self }
+    pub fn display_mode(mut self, display_mode: impl Into<DisplayMode>) -> Self { self.display_mode = Some(display_mode.into()); self }
     pub fn build(self) -> ChangeAppUserSettingsParams<'a> {
         ChangeAppUserSettingsParams {
-            manifestId: self.manifestId,
-            linkCapturing: self.linkCapturing,
-            displayMode: self.displayMode,
+            manifest_id: self.manifest_id,
+            link_capturing: self.link_capturing,
+            display_mode: self.display_mode,
         }
     }
 }

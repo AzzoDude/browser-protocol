@@ -19,6 +19,9 @@ pub struct Sink<'a> {
 }
 
 impl<'a> Sink<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: 
+    /// * `id`: 
     pub fn builder(name: impl Into<Cow<'a, str>>, id: impl Into<Cow<'a, str>>) -> SinkBuilder<'a> {
         SinkBuilder {
             name: name.into(),
@@ -28,6 +31,8 @@ impl<'a> Sink<'a> {
     }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn id(&self) -> &str { self.id.as_ref() }
+    /// Text describing the current session. Present only if there is an active
+    /// session on the sink.
     pub fn session(&self) -> Option<&str> { self.session.as_deref() }
 }
 
@@ -60,29 +65,30 @@ impl<'a> SinkBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct EnableParams<'a> {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    presentationUrl: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "presentationUrl")]
+    presentation_url: Option<Cow<'a, str>>,
 }
 
 impl<'a> EnableParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> EnableParamsBuilder<'a> {
         EnableParamsBuilder {
-            presentationUrl: None,
+            presentation_url: None,
         }
     }
-    pub fn presentationUrl(&self) -> Option<&str> { self.presentationUrl.as_deref() }
+    pub fn presentation_url(&self) -> Option<&str> { self.presentation_url.as_deref() }
 }
 
 #[derive(Default)]
 pub struct EnableParamsBuilder<'a> {
-    presentationUrl: Option<Cow<'a, str>>,
+    presentation_url: Option<Cow<'a, str>>,
 }
 
 impl<'a> EnableParamsBuilder<'a> {
-    pub fn presentationUrl(mut self, presentationUrl: impl Into<Cow<'a, str>>) -> Self { self.presentationUrl = Some(presentationUrl.into()); self }
+    pub fn presentation_url(mut self, presentation_url: impl Into<Cow<'a, str>>) -> Self { self.presentation_url = Some(presentation_url.into()); self }
     pub fn build(self) -> EnableParams<'a> {
         EnableParams {
-            presentationUrl: self.presentationUrl,
+            presentation_url: self.presentation_url,
         }
     }
 }
@@ -110,27 +116,30 @@ impl<'a> crate::CdpCommand<'a> for DisableParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetSinkToUseParams<'a> {
-    sinkName: Cow<'a, str>,
+    #[serde(rename = "sinkName")]
+    sink_name: Cow<'a, str>,
 }
 
 impl<'a> SetSinkToUseParams<'a> {
-    pub fn builder(sinkName: impl Into<Cow<'a, str>>) -> SetSinkToUseParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `sink_name`: 
+    pub fn builder(sink_name: impl Into<Cow<'a, str>>) -> SetSinkToUseParamsBuilder<'a> {
         SetSinkToUseParamsBuilder {
-            sinkName: sinkName.into(),
+            sink_name: sink_name.into(),
         }
     }
-    pub fn sinkName(&self) -> &str { self.sinkName.as_ref() }
+    pub fn sink_name(&self) -> &str { self.sink_name.as_ref() }
 }
 
 
 pub struct SetSinkToUseParamsBuilder<'a> {
-    sinkName: Cow<'a, str>,
+    sink_name: Cow<'a, str>,
 }
 
 impl<'a> SetSinkToUseParamsBuilder<'a> {
     pub fn build(self) -> SetSinkToUseParams<'a> {
         SetSinkToUseParams {
-            sinkName: self.sinkName,
+            sink_name: self.sink_name,
         }
     }
 }
@@ -147,27 +156,30 @@ impl<'a> crate::CdpCommand<'a> for SetSinkToUseParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct StartDesktopMirroringParams<'a> {
-    sinkName: Cow<'a, str>,
+    #[serde(rename = "sinkName")]
+    sink_name: Cow<'a, str>,
 }
 
 impl<'a> StartDesktopMirroringParams<'a> {
-    pub fn builder(sinkName: impl Into<Cow<'a, str>>) -> StartDesktopMirroringParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `sink_name`: 
+    pub fn builder(sink_name: impl Into<Cow<'a, str>>) -> StartDesktopMirroringParamsBuilder<'a> {
         StartDesktopMirroringParamsBuilder {
-            sinkName: sinkName.into(),
+            sink_name: sink_name.into(),
         }
     }
-    pub fn sinkName(&self) -> &str { self.sinkName.as_ref() }
+    pub fn sink_name(&self) -> &str { self.sink_name.as_ref() }
 }
 
 
 pub struct StartDesktopMirroringParamsBuilder<'a> {
-    sinkName: Cow<'a, str>,
+    sink_name: Cow<'a, str>,
 }
 
 impl<'a> StartDesktopMirroringParamsBuilder<'a> {
     pub fn build(self) -> StartDesktopMirroringParams<'a> {
         StartDesktopMirroringParams {
-            sinkName: self.sinkName,
+            sink_name: self.sink_name,
         }
     }
 }
@@ -184,27 +196,30 @@ impl<'a> crate::CdpCommand<'a> for StartDesktopMirroringParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct StartTabMirroringParams<'a> {
-    sinkName: Cow<'a, str>,
+    #[serde(rename = "sinkName")]
+    sink_name: Cow<'a, str>,
 }
 
 impl<'a> StartTabMirroringParams<'a> {
-    pub fn builder(sinkName: impl Into<Cow<'a, str>>) -> StartTabMirroringParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `sink_name`: 
+    pub fn builder(sink_name: impl Into<Cow<'a, str>>) -> StartTabMirroringParamsBuilder<'a> {
         StartTabMirroringParamsBuilder {
-            sinkName: sinkName.into(),
+            sink_name: sink_name.into(),
         }
     }
-    pub fn sinkName(&self) -> &str { self.sinkName.as_ref() }
+    pub fn sink_name(&self) -> &str { self.sink_name.as_ref() }
 }
 
 
 pub struct StartTabMirroringParamsBuilder<'a> {
-    sinkName: Cow<'a, str>,
+    sink_name: Cow<'a, str>,
 }
 
 impl<'a> StartTabMirroringParamsBuilder<'a> {
     pub fn build(self) -> StartTabMirroringParams<'a> {
         StartTabMirroringParams {
-            sinkName: self.sinkName,
+            sink_name: self.sink_name,
         }
     }
 }
@@ -221,27 +236,30 @@ impl<'a> crate::CdpCommand<'a> for StartTabMirroringParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct StopCastingParams<'a> {
-    sinkName: Cow<'a, str>,
+    #[serde(rename = "sinkName")]
+    sink_name: Cow<'a, str>,
 }
 
 impl<'a> StopCastingParams<'a> {
-    pub fn builder(sinkName: impl Into<Cow<'a, str>>) -> StopCastingParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `sink_name`: 
+    pub fn builder(sink_name: impl Into<Cow<'a, str>>) -> StopCastingParamsBuilder<'a> {
         StopCastingParamsBuilder {
-            sinkName: sinkName.into(),
+            sink_name: sink_name.into(),
         }
     }
-    pub fn sinkName(&self) -> &str { self.sinkName.as_ref() }
+    pub fn sink_name(&self) -> &str { self.sink_name.as_ref() }
 }
 
 
 pub struct StopCastingParamsBuilder<'a> {
-    sinkName: Cow<'a, str>,
+    sink_name: Cow<'a, str>,
 }
 
 impl<'a> StopCastingParamsBuilder<'a> {
     pub fn build(self) -> StopCastingParams<'a> {
         StopCastingParams {
-            sinkName: self.sinkName,
+            sink_name: self.sink_name,
         }
     }
 }

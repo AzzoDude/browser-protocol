@@ -16,8 +16,9 @@ pub type SessionID<'a> = Cow<'a, str>;
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct TargetInfo<'a> {
-    targetId: TargetID<'a>,
-    /// List of types: https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/devtools_agent_host_impl.cc?ss=chromium&q=f:devtools%20-f:out%20%22::kTypeTab%5B%5D%22
+    #[serde(rename = "targetId")]
+    target_id: TargetID<'a>,
+    /// List of types: <https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/devtools_agent_host_impl.cc?ss=chromium&q=f:devtools%20-f:out%20%22::kTypeTab%5B%5D%22>
     #[serde(rename = "type")]
     type_: Cow<'a, str>,
     title: Cow<'a, str>,
@@ -25,22 +26,23 @@ pub struct TargetInfo<'a> {
     /// Whether the target has an attached client.
     attached: bool,
     /// Id of the parent target, if any. For example, "iframe" target may have a "page" parent.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    parentId: Option<TargetID<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "parentId")]
+    parent_id: Option<TargetID<'a>>,
     /// Opener target Id
-    #[serde(skip_serializing_if = "Option::is_none")]
-    openerId: Option<TargetID<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "openerId")]
+    opener_id: Option<TargetID<'a>>,
     /// Whether the target has access to the originating window.
-    canAccessOpener: bool,
+    #[serde(rename = "canAccessOpener")]
+    can_access_opener: bool,
     /// Frame id of originating window (is only set if target has an opener).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    openerFrameId: Option<crate::page::FrameId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "openerFrameId")]
+    opener_frame_id: Option<crate::page::FrameId<'a>>,
     /// Id of the parent frame, present for "iframe" and "worker" targets. For nested workers,
     /// this is the "ancestor" frame that created the first worker in the nested chain.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    parentFrameId: Option<crate::page::FrameId<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    browserContextId: Option<crate::browser::BrowserContextID<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "parentFrameId")]
+    parent_frame_id: Option<crate::page::FrameId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "browserContextId")]
+    browser_context_id: Option<crate::browser::BrowserContextID<'a>>,
     /// Provides additional details for specific target types. For example, for
     /// the type of "page", this may be set to "prerender".
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -48,79 +50,96 @@ pub struct TargetInfo<'a> {
 }
 
 impl<'a> TargetInfo<'a> {
-    pub fn builder(targetId: impl Into<TargetID<'a>>, type_: impl Into<Cow<'a, str>>, title: impl Into<Cow<'a, str>>, url: impl Into<Cow<'a, str>>, attached: bool, canAccessOpener: bool) -> TargetInfoBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `target_id`: 
+    /// * `type_`: List of types: <https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/devtools_agent_host_impl.cc?ss=chromium&q=f:devtools%20-f:out%20%22::kTypeTab%5B%5D%22>
+    /// * `title`: 
+    /// * `url`: 
+    /// * `attached`: Whether the target has an attached client.
+    /// * `can_access_opener`: Whether the target has access to the originating window.
+    pub fn builder(target_id: impl Into<TargetID<'a>>, type_: impl Into<Cow<'a, str>>, title: impl Into<Cow<'a, str>>, url: impl Into<Cow<'a, str>>, attached: bool, can_access_opener: bool) -> TargetInfoBuilder<'a> {
         TargetInfoBuilder {
-            targetId: targetId.into(),
+            target_id: target_id.into(),
             type_: type_.into(),
             title: title.into(),
             url: url.into(),
             attached: attached,
-            parentId: None,
-            openerId: None,
-            canAccessOpener: canAccessOpener,
-            openerFrameId: None,
-            parentFrameId: None,
-            browserContextId: None,
+            parent_id: None,
+            opener_id: None,
+            can_access_opener: can_access_opener,
+            opener_frame_id: None,
+            parent_frame_id: None,
+            browser_context_id: None,
             subtype: None,
         }
     }
-    pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }
+    pub fn target_id(&self) -> &TargetID<'a> { &self.target_id }
+    /// List of types: <https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/devtools_agent_host_impl.cc?ss=chromium&q=f:devtools%20-f:out%20%22::kTypeTab%5B%5D%22>
     pub fn type_(&self) -> &str { self.type_.as_ref() }
     pub fn title(&self) -> &str { self.title.as_ref() }
     pub fn url(&self) -> &str { self.url.as_ref() }
+    /// Whether the target has an attached client.
     pub fn attached(&self) -> bool { self.attached }
-    pub fn parentId(&self) -> Option<&TargetID<'a>> { self.parentId.as_ref() }
-    pub fn openerId(&self) -> Option<&TargetID<'a>> { self.openerId.as_ref() }
-    pub fn canAccessOpener(&self) -> bool { self.canAccessOpener }
-    pub fn openerFrameId(&self) -> Option<&crate::page::FrameId<'a>> { self.openerFrameId.as_ref() }
-    pub fn parentFrameId(&self) -> Option<&crate::page::FrameId<'a>> { self.parentFrameId.as_ref() }
-    pub fn browserContextId(&self) -> Option<&crate::browser::BrowserContextID<'a>> { self.browserContextId.as_ref() }
+    /// Id of the parent target, if any. For example, "iframe" target may have a "page" parent.
+    pub fn parent_id(&self) -> Option<&TargetID<'a>> { self.parent_id.as_ref() }
+    /// Opener target Id
+    pub fn opener_id(&self) -> Option<&TargetID<'a>> { self.opener_id.as_ref() }
+    /// Whether the target has access to the originating window.
+    pub fn can_access_opener(&self) -> bool { self.can_access_opener }
+    /// Frame id of originating window (is only set if target has an opener).
+    pub fn opener_frame_id(&self) -> Option<&crate::page::FrameId<'a>> { self.opener_frame_id.as_ref() }
+    /// Id of the parent frame, present for "iframe" and "worker" targets. For nested workers,
+    /// this is the "ancestor" frame that created the first worker in the nested chain.
+    pub fn parent_frame_id(&self) -> Option<&crate::page::FrameId<'a>> { self.parent_frame_id.as_ref() }
+    pub fn browser_context_id(&self) -> Option<&crate::browser::BrowserContextID<'a>> { self.browser_context_id.as_ref() }
+    /// Provides additional details for specific target types. For example, for
+    /// the type of "page", this may be set to "prerender".
     pub fn subtype(&self) -> Option<&str> { self.subtype.as_deref() }
 }
 
 
 pub struct TargetInfoBuilder<'a> {
-    targetId: TargetID<'a>,
+    target_id: TargetID<'a>,
     type_: Cow<'a, str>,
     title: Cow<'a, str>,
     url: Cow<'a, str>,
     attached: bool,
-    parentId: Option<TargetID<'a>>,
-    openerId: Option<TargetID<'a>>,
-    canAccessOpener: bool,
-    openerFrameId: Option<crate::page::FrameId<'a>>,
-    parentFrameId: Option<crate::page::FrameId<'a>>,
-    browserContextId: Option<crate::browser::BrowserContextID<'a>>,
+    parent_id: Option<TargetID<'a>>,
+    opener_id: Option<TargetID<'a>>,
+    can_access_opener: bool,
+    opener_frame_id: Option<crate::page::FrameId<'a>>,
+    parent_frame_id: Option<crate::page::FrameId<'a>>,
+    browser_context_id: Option<crate::browser::BrowserContextID<'a>>,
     subtype: Option<Cow<'a, str>>,
 }
 
 impl<'a> TargetInfoBuilder<'a> {
     /// Id of the parent target, if any. For example, "iframe" target may have a "page" parent.
-    pub fn parentId(mut self, parentId: impl Into<TargetID<'a>>) -> Self { self.parentId = Some(parentId.into()); self }
+    pub fn parent_id(mut self, parent_id: impl Into<TargetID<'a>>) -> Self { self.parent_id = Some(parent_id.into()); self }
     /// Opener target Id
-    pub fn openerId(mut self, openerId: impl Into<TargetID<'a>>) -> Self { self.openerId = Some(openerId.into()); self }
+    pub fn opener_id(mut self, opener_id: impl Into<TargetID<'a>>) -> Self { self.opener_id = Some(opener_id.into()); self }
     /// Frame id of originating window (is only set if target has an opener).
-    pub fn openerFrameId(mut self, openerFrameId: crate::page::FrameId<'a>) -> Self { self.openerFrameId = Some(openerFrameId); self }
+    pub fn opener_frame_id(mut self, opener_frame_id: crate::page::FrameId<'a>) -> Self { self.opener_frame_id = Some(opener_frame_id); self }
     /// Id of the parent frame, present for "iframe" and "worker" targets. For nested workers,
     /// this is the "ancestor" frame that created the first worker in the nested chain.
-    pub fn parentFrameId(mut self, parentFrameId: crate::page::FrameId<'a>) -> Self { self.parentFrameId = Some(parentFrameId); self }
-    pub fn browserContextId(mut self, browserContextId: crate::browser::BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
+    pub fn parent_frame_id(mut self, parent_frame_id: crate::page::FrameId<'a>) -> Self { self.parent_frame_id = Some(parent_frame_id); self }
+    pub fn browser_context_id(mut self, browser_context_id: crate::browser::BrowserContextID<'a>) -> Self { self.browser_context_id = Some(browser_context_id); self }
     /// Provides additional details for specific target types. For example, for
     /// the type of "page", this may be set to "prerender".
     pub fn subtype(mut self, subtype: impl Into<Cow<'a, str>>) -> Self { self.subtype = Some(subtype.into()); self }
     pub fn build(self) -> TargetInfo<'a> {
         TargetInfo {
-            targetId: self.targetId,
+            target_id: self.target_id,
             type_: self.type_,
             title: self.title,
             url: self.url,
             attached: self.attached,
-            parentId: self.parentId,
-            openerId: self.openerId,
-            canAccessOpener: self.canAccessOpener,
-            openerFrameId: self.openerFrameId,
-            parentFrameId: self.parentFrameId,
-            browserContextId: self.browserContextId,
+            parent_id: self.parent_id,
+            opener_id: self.opener_id,
+            can_access_opener: self.can_access_opener,
+            opener_frame_id: self.opener_frame_id,
+            parent_frame_id: self.parent_frame_id,
+            browser_context_id: self.browser_context_id,
             subtype: self.subtype,
         }
     }
@@ -140,13 +159,16 @@ pub struct FilterEntry<'a> {
 }
 
 impl<'a> FilterEntry<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> FilterEntryBuilder<'a> {
         FilterEntryBuilder {
             exclude: None,
             type_: None,
         }
     }
+    /// If set, causes exclusion of matching targets from the list.
     pub fn exclude(&self) -> Option<bool> { self.exclude }
+    /// If not present, matches any type.
     pub fn type_(&self) -> Option<&str> { self.type_.as_deref() }
 }
 
@@ -173,7 +195,7 @@ impl<'a> FilterEntryBuilder<'a> {
 /// the first entry that matches determines if the target is included or not,
 /// depending on the value of 'exclude' field in the entry.
 /// If filter is not specified, the one assumed is
-/// [{type: "browser", exclude: true}, {type: "tab", exclude: true}, {}]
+/// \[{type: "browser", exclude: true}, {type: "tab", exclude: true}, {}\]
 /// (i.e. include everything but 'browser' and 'tab').
 
 pub type TargetFilter<'a> = Vec<FilterEntry<'a>>;
@@ -187,6 +209,9 @@ pub struct RemoteLocation<'a> {
 }
 
 impl<'a> RemoteLocation<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `host`: 
+    /// * `port`: 
     pub fn builder(host: impl Into<Cow<'a, str>>, port: i64) -> RemoteLocationBuilder<'a> {
         RemoteLocationBuilder {
             host: host.into(),
@@ -232,27 +257,30 @@ pub enum WindowState {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ActivateTargetParams<'a> {
-    targetId: TargetID<'a>,
+    #[serde(rename = "targetId")]
+    target_id: TargetID<'a>,
 }
 
 impl<'a> ActivateTargetParams<'a> {
-    pub fn builder(targetId: impl Into<TargetID<'a>>) -> ActivateTargetParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `target_id`: 
+    pub fn builder(target_id: impl Into<TargetID<'a>>) -> ActivateTargetParamsBuilder<'a> {
         ActivateTargetParamsBuilder {
-            targetId: targetId.into(),
+            target_id: target_id.into(),
         }
     }
-    pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }
+    pub fn target_id(&self) -> &TargetID<'a> { &self.target_id }
 }
 
 
 pub struct ActivateTargetParamsBuilder<'a> {
-    targetId: TargetID<'a>,
+    target_id: TargetID<'a>,
 }
 
 impl<'a> ActivateTargetParamsBuilder<'a> {
     pub fn build(self) -> ActivateTargetParams<'a> {
         ActivateTargetParams {
-            targetId: self.targetId,
+            target_id: self.target_id,
         }
     }
 }
@@ -269,7 +297,8 @@ impl<'a> crate::CdpCommand<'a> for ActivateTargetParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct AttachToTargetParams<'a> {
-    targetId: TargetID<'a>,
+    #[serde(rename = "targetId")]
+    target_id: TargetID<'a>,
     /// Enables "flat" access to the session via specifying sessionId attribute in the commands.
     /// We plan to make this the default, deprecate non-flattened mode,
     /// and eventually retire it. See crbug.com/991325.
@@ -278,19 +307,24 @@ pub struct AttachToTargetParams<'a> {
 }
 
 impl<'a> AttachToTargetParams<'a> {
-    pub fn builder(targetId: impl Into<TargetID<'a>>) -> AttachToTargetParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `target_id`: 
+    pub fn builder(target_id: impl Into<TargetID<'a>>) -> AttachToTargetParamsBuilder<'a> {
         AttachToTargetParamsBuilder {
-            targetId: targetId.into(),
+            target_id: target_id.into(),
             flatten: None,
         }
     }
-    pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }
+    pub fn target_id(&self) -> &TargetID<'a> { &self.target_id }
+    /// Enables "flat" access to the session via specifying sessionId attribute in the commands.
+    /// We plan to make this the default, deprecate non-flattened mode,
+    /// and eventually retire it. See crbug.com/991325.
     pub fn flatten(&self) -> Option<bool> { self.flatten }
 }
 
 
 pub struct AttachToTargetParamsBuilder<'a> {
-    targetId: TargetID<'a>,
+    target_id: TargetID<'a>,
     flatten: Option<bool>,
 }
 
@@ -301,7 +335,7 @@ impl<'a> AttachToTargetParamsBuilder<'a> {
     pub fn flatten(mut self, flatten: bool) -> Self { self.flatten = Some(flatten); self }
     pub fn build(self) -> AttachToTargetParams<'a> {
         AttachToTargetParams {
-            targetId: self.targetId,
+            target_id: self.target_id,
             flatten: self.flatten,
         }
     }
@@ -313,27 +347,31 @@ impl<'a> AttachToTargetParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct AttachToTargetReturns<'a> {
     /// Id assigned to the session.
-    sessionId: SessionID<'a>,
+    #[serde(rename = "sessionId")]
+    session_id: SessionID<'a>,
 }
 
 impl<'a> AttachToTargetReturns<'a> {
-    pub fn builder(sessionId: impl Into<SessionID<'a>>) -> AttachToTargetReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `session_id`: Id assigned to the session.
+    pub fn builder(session_id: impl Into<SessionID<'a>>) -> AttachToTargetReturnsBuilder<'a> {
         AttachToTargetReturnsBuilder {
-            sessionId: sessionId.into(),
+            session_id: session_id.into(),
         }
     }
-    pub fn sessionId(&self) -> &SessionID<'a> { &self.sessionId }
+    /// Id assigned to the session.
+    pub fn session_id(&self) -> &SessionID<'a> { &self.session_id }
 }
 
 
 pub struct AttachToTargetReturnsBuilder<'a> {
-    sessionId: SessionID<'a>,
+    session_id: SessionID<'a>,
 }
 
 impl<'a> AttachToTargetReturnsBuilder<'a> {
     pub fn build(self) -> AttachToTargetReturns<'a> {
         AttachToTargetReturns {
-            sessionId: self.sessionId,
+            session_id: self.session_id,
         }
     }
 }
@@ -351,27 +389,31 @@ impl<'a> crate::CdpCommand<'a> for AttachToTargetParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct AttachToBrowserTargetReturns<'a> {
     /// Id assigned to the session.
-    sessionId: SessionID<'a>,
+    #[serde(rename = "sessionId")]
+    session_id: SessionID<'a>,
 }
 
 impl<'a> AttachToBrowserTargetReturns<'a> {
-    pub fn builder(sessionId: impl Into<SessionID<'a>>) -> AttachToBrowserTargetReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `session_id`: Id assigned to the session.
+    pub fn builder(session_id: impl Into<SessionID<'a>>) -> AttachToBrowserTargetReturnsBuilder<'a> {
         AttachToBrowserTargetReturnsBuilder {
-            sessionId: sessionId.into(),
+            session_id: session_id.into(),
         }
     }
-    pub fn sessionId(&self) -> &SessionID<'a> { &self.sessionId }
+    /// Id assigned to the session.
+    pub fn session_id(&self) -> &SessionID<'a> { &self.session_id }
 }
 
 
 pub struct AttachToBrowserTargetReturnsBuilder<'a> {
-    sessionId: SessionID<'a>,
+    session_id: SessionID<'a>,
 }
 
 impl<'a> AttachToBrowserTargetReturnsBuilder<'a> {
     pub fn build(self) -> AttachToBrowserTargetReturns<'a> {
         AttachToBrowserTargetReturns {
-            sessionId: self.sessionId,
+            session_id: self.session_id,
         }
     }
 }
@@ -391,27 +433,30 @@ impl<'a> crate::CdpCommand<'a> for AttachToBrowserTargetParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct CloseTargetParams<'a> {
-    targetId: TargetID<'a>,
+    #[serde(rename = "targetId")]
+    target_id: TargetID<'a>,
 }
 
 impl<'a> CloseTargetParams<'a> {
-    pub fn builder(targetId: impl Into<TargetID<'a>>) -> CloseTargetParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `target_id`: 
+    pub fn builder(target_id: impl Into<TargetID<'a>>) -> CloseTargetParamsBuilder<'a> {
         CloseTargetParamsBuilder {
-            targetId: targetId.into(),
+            target_id: target_id.into(),
         }
     }
-    pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }
+    pub fn target_id(&self) -> &TargetID<'a> { &self.target_id }
 }
 
 
 pub struct CloseTargetParamsBuilder<'a> {
-    targetId: TargetID<'a>,
+    target_id: TargetID<'a>,
 }
 
 impl<'a> CloseTargetParamsBuilder<'a> {
     pub fn build(self) -> CloseTargetParams<'a> {
         CloseTargetParams {
-            targetId: self.targetId,
+            target_id: self.target_id,
         }
     }
 }
@@ -426,11 +471,14 @@ pub struct CloseTargetReturns {
 }
 
 impl CloseTargetReturns {
+    /// Creates a builder for this type with the required parameters:
+    /// * `success`: Always set to true. If an error occurs, the response indicates protocol error.
     pub fn builder(success: bool) -> CloseTargetReturnsBuilder {
         CloseTargetReturnsBuilder {
             success: success,
         }
     }
+    /// Always set to true. If an error occurs, the response indicates protocol error.
     pub fn success(&self) -> bool { self.success }
 }
 
@@ -457,54 +505,59 @@ impl<'a> crate::CdpCommand<'a> for CloseTargetParams<'a> {
 /// Inject object to the target's main frame that provides a communication
 /// channel with browser target.
 /// 
-/// Injected object will be available as 'window[bindingName]'.
+/// Injected object will be available as 'window\[bindingName\]'.
 /// 
 /// The object has the following API:
 /// - 'binding.send(json)' - a method to send messages over the remote debugging protocol
-/// - 'binding.onmessage = json => handleMessage(json)' - a callback that will be called for the protocol notifications and command responses.
+/// - 'binding.onmessage = json =\> handleMessage(json)' - a callback that will be called for the protocol notifications and command responses.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ExposeDevToolsProtocolParams<'a> {
-    targetId: TargetID<'a>,
+    #[serde(rename = "targetId")]
+    target_id: TargetID<'a>,
     /// Binding name, 'cdp' if not specified.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    bindingName: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "bindingName")]
+    binding_name: Option<Cow<'a, str>>,
     /// If true, inherits the current root session's permissions (default: false).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    inheritPermissions: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "inheritPermissions")]
+    inherit_permissions: Option<bool>,
 }
 
 impl<'a> ExposeDevToolsProtocolParams<'a> {
-    pub fn builder(targetId: impl Into<TargetID<'a>>) -> ExposeDevToolsProtocolParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `target_id`: 
+    pub fn builder(target_id: impl Into<TargetID<'a>>) -> ExposeDevToolsProtocolParamsBuilder<'a> {
         ExposeDevToolsProtocolParamsBuilder {
-            targetId: targetId.into(),
-            bindingName: None,
-            inheritPermissions: None,
+            target_id: target_id.into(),
+            binding_name: None,
+            inherit_permissions: None,
         }
     }
-    pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }
-    pub fn bindingName(&self) -> Option<&str> { self.bindingName.as_deref() }
-    pub fn inheritPermissions(&self) -> Option<bool> { self.inheritPermissions }
+    pub fn target_id(&self) -> &TargetID<'a> { &self.target_id }
+    /// Binding name, 'cdp' if not specified.
+    pub fn binding_name(&self) -> Option<&str> { self.binding_name.as_deref() }
+    /// If true, inherits the current root session's permissions (default: false).
+    pub fn inherit_permissions(&self) -> Option<bool> { self.inherit_permissions }
 }
 
 
 pub struct ExposeDevToolsProtocolParamsBuilder<'a> {
-    targetId: TargetID<'a>,
-    bindingName: Option<Cow<'a, str>>,
-    inheritPermissions: Option<bool>,
+    target_id: TargetID<'a>,
+    binding_name: Option<Cow<'a, str>>,
+    inherit_permissions: Option<bool>,
 }
 
 impl<'a> ExposeDevToolsProtocolParamsBuilder<'a> {
     /// Binding name, 'cdp' if not specified.
-    pub fn bindingName(mut self, bindingName: impl Into<Cow<'a, str>>) -> Self { self.bindingName = Some(bindingName.into()); self }
+    pub fn binding_name(mut self, binding_name: impl Into<Cow<'a, str>>) -> Self { self.binding_name = Some(binding_name.into()); self }
     /// If true, inherits the current root session's permissions (default: false).
-    pub fn inheritPermissions(mut self, inheritPermissions: bool) -> Self { self.inheritPermissions = Some(inheritPermissions); self }
+    pub fn inherit_permissions(mut self, inherit_permissions: bool) -> Self { self.inherit_permissions = Some(inherit_permissions); self }
     pub fn build(self) -> ExposeDevToolsProtocolParams<'a> {
         ExposeDevToolsProtocolParams {
-            targetId: self.targetId,
-            bindingName: self.bindingName,
-            inheritPermissions: self.inheritPermissions,
+            target_id: self.target_id,
+            binding_name: self.binding_name,
+            inherit_permissions: self.inherit_permissions,
         }
     }
 }
@@ -523,59 +576,65 @@ impl<'a> crate::CdpCommand<'a> for ExposeDevToolsProtocolParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct CreateBrowserContextParams<'a> {
     /// If specified, disposes this context when debugging session disconnects.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    disposeOnDetach: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "disposeOnDetach")]
+    dispose_on_detach: Option<bool>,
     /// Proxy server, similar to the one passed to --proxy-server
-    #[serde(skip_serializing_if = "Option::is_none")]
-    proxyServer: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "proxyServer")]
+    proxy_server: Option<Cow<'a, str>>,
     /// Proxy bypass list, similar to the one passed to --proxy-bypass-list
-    #[serde(skip_serializing_if = "Option::is_none")]
-    proxyBypassList: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "proxyBypassList")]
+    proxy_bypass_list: Option<Cow<'a, str>>,
     /// An optional list of origins to grant unlimited cross-origin access to.
     /// Parts of the URL other than those constituting origin are ignored.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    originsWithUniversalNetworkAccess: Option<Vec<Cow<'a, str>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "originsWithUniversalNetworkAccess")]
+    origins_with_universal_network_access: Option<Vec<Cow<'a, str>>>,
 }
 
 impl<'a> CreateBrowserContextParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> CreateBrowserContextParamsBuilder<'a> {
         CreateBrowserContextParamsBuilder {
-            disposeOnDetach: None,
-            proxyServer: None,
-            proxyBypassList: None,
-            originsWithUniversalNetworkAccess: None,
+            dispose_on_detach: None,
+            proxy_server: None,
+            proxy_bypass_list: None,
+            origins_with_universal_network_access: None,
         }
     }
-    pub fn disposeOnDetach(&self) -> Option<bool> { self.disposeOnDetach }
-    pub fn proxyServer(&self) -> Option<&str> { self.proxyServer.as_deref() }
-    pub fn proxyBypassList(&self) -> Option<&str> { self.proxyBypassList.as_deref() }
-    pub fn originsWithUniversalNetworkAccess(&self) -> Option<&[Cow<'a, str>]> { self.originsWithUniversalNetworkAccess.as_deref() }
+    /// If specified, disposes this context when debugging session disconnects.
+    pub fn dispose_on_detach(&self) -> Option<bool> { self.dispose_on_detach }
+    /// Proxy server, similar to the one passed to --proxy-server
+    pub fn proxy_server(&self) -> Option<&str> { self.proxy_server.as_deref() }
+    /// Proxy bypass list, similar to the one passed to --proxy-bypass-list
+    pub fn proxy_bypass_list(&self) -> Option<&str> { self.proxy_bypass_list.as_deref() }
+    /// An optional list of origins to grant unlimited cross-origin access to.
+    /// Parts of the URL other than those constituting origin are ignored.
+    pub fn origins_with_universal_network_access(&self) -> Option<&[Cow<'a, str>]> { self.origins_with_universal_network_access.as_deref() }
 }
 
 #[derive(Default)]
 pub struct CreateBrowserContextParamsBuilder<'a> {
-    disposeOnDetach: Option<bool>,
-    proxyServer: Option<Cow<'a, str>>,
-    proxyBypassList: Option<Cow<'a, str>>,
-    originsWithUniversalNetworkAccess: Option<Vec<Cow<'a, str>>>,
+    dispose_on_detach: Option<bool>,
+    proxy_server: Option<Cow<'a, str>>,
+    proxy_bypass_list: Option<Cow<'a, str>>,
+    origins_with_universal_network_access: Option<Vec<Cow<'a, str>>>,
 }
 
 impl<'a> CreateBrowserContextParamsBuilder<'a> {
     /// If specified, disposes this context when debugging session disconnects.
-    pub fn disposeOnDetach(mut self, disposeOnDetach: bool) -> Self { self.disposeOnDetach = Some(disposeOnDetach); self }
+    pub fn dispose_on_detach(mut self, dispose_on_detach: bool) -> Self { self.dispose_on_detach = Some(dispose_on_detach); self }
     /// Proxy server, similar to the one passed to --proxy-server
-    pub fn proxyServer(mut self, proxyServer: impl Into<Cow<'a, str>>) -> Self { self.proxyServer = Some(proxyServer.into()); self }
+    pub fn proxy_server(mut self, proxy_server: impl Into<Cow<'a, str>>) -> Self { self.proxy_server = Some(proxy_server.into()); self }
     /// Proxy bypass list, similar to the one passed to --proxy-bypass-list
-    pub fn proxyBypassList(mut self, proxyBypassList: impl Into<Cow<'a, str>>) -> Self { self.proxyBypassList = Some(proxyBypassList.into()); self }
+    pub fn proxy_bypass_list(mut self, proxy_bypass_list: impl Into<Cow<'a, str>>) -> Self { self.proxy_bypass_list = Some(proxy_bypass_list.into()); self }
     /// An optional list of origins to grant unlimited cross-origin access to.
     /// Parts of the URL other than those constituting origin are ignored.
-    pub fn originsWithUniversalNetworkAccess(mut self, originsWithUniversalNetworkAccess: Vec<Cow<'a, str>>) -> Self { self.originsWithUniversalNetworkAccess = Some(originsWithUniversalNetworkAccess); self }
+    pub fn origins_with_universal_network_access(mut self, origins_with_universal_network_access: Vec<Cow<'a, str>>) -> Self { self.origins_with_universal_network_access = Some(origins_with_universal_network_access); self }
     pub fn build(self) -> CreateBrowserContextParams<'a> {
         CreateBrowserContextParams {
-            disposeOnDetach: self.disposeOnDetach,
-            proxyServer: self.proxyServer,
-            proxyBypassList: self.proxyBypassList,
-            originsWithUniversalNetworkAccess: self.originsWithUniversalNetworkAccess,
+            dispose_on_detach: self.dispose_on_detach,
+            proxy_server: self.proxy_server,
+            proxy_bypass_list: self.proxy_bypass_list,
+            origins_with_universal_network_access: self.origins_with_universal_network_access,
         }
     }
 }
@@ -587,27 +646,31 @@ impl<'a> CreateBrowserContextParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct CreateBrowserContextReturns<'a> {
     /// The id of the context created.
-    browserContextId: crate::browser::BrowserContextID<'a>,
+    #[serde(rename = "browserContextId")]
+    browser_context_id: crate::browser::BrowserContextID<'a>,
 }
 
 impl<'a> CreateBrowserContextReturns<'a> {
-    pub fn builder(browserContextId: crate::browser::BrowserContextID<'a>) -> CreateBrowserContextReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `browser_context_id`: The id of the context created.
+    pub fn builder(browser_context_id: crate::browser::BrowserContextID<'a>) -> CreateBrowserContextReturnsBuilder<'a> {
         CreateBrowserContextReturnsBuilder {
-            browserContextId: browserContextId,
+            browser_context_id: browser_context_id,
         }
     }
-    pub fn browserContextId(&self) -> &crate::browser::BrowserContextID<'a> { &self.browserContextId }
+    /// The id of the context created.
+    pub fn browser_context_id(&self) -> &crate::browser::BrowserContextID<'a> { &self.browser_context_id }
 }
 
 
 pub struct CreateBrowserContextReturnsBuilder<'a> {
-    browserContextId: crate::browser::BrowserContextID<'a>,
+    browser_context_id: crate::browser::BrowserContextID<'a>,
 }
 
 impl<'a> CreateBrowserContextReturnsBuilder<'a> {
     pub fn build(self) -> CreateBrowserContextReturns<'a> {
         CreateBrowserContextReturns {
-            browserContextId: self.browserContextId,
+            browser_context_id: self.browser_context_id,
         }
     }
 }
@@ -625,36 +688,41 @@ impl<'a> crate::CdpCommand<'a> for CreateBrowserContextParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct GetBrowserContextsReturns<'a> {
     /// An array of browser context ids.
-    browserContextIds: Vec<crate::browser::BrowserContextID<'a>>,
+    #[serde(rename = "browserContextIds")]
+    browser_context_ids: Vec<crate::browser::BrowserContextID<'a>>,
     /// The id of the default browser context if available.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    defaultBrowserContextId: Option<crate::browser::BrowserContextID<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "defaultBrowserContextId")]
+    default_browser_context_id: Option<crate::browser::BrowserContextID<'a>>,
 }
 
 impl<'a> GetBrowserContextsReturns<'a> {
-    pub fn builder(browserContextIds: Vec<crate::browser::BrowserContextID<'a>>) -> GetBrowserContextsReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `browser_context_ids`: An array of browser context ids.
+    pub fn builder(browser_context_ids: Vec<crate::browser::BrowserContextID<'a>>) -> GetBrowserContextsReturnsBuilder<'a> {
         GetBrowserContextsReturnsBuilder {
-            browserContextIds: browserContextIds,
-            defaultBrowserContextId: None,
+            browser_context_ids: browser_context_ids,
+            default_browser_context_id: None,
         }
     }
-    pub fn browserContextIds(&self) -> &[crate::browser::BrowserContextID<'a>] { &self.browserContextIds }
-    pub fn defaultBrowserContextId(&self) -> Option<&crate::browser::BrowserContextID<'a>> { self.defaultBrowserContextId.as_ref() }
+    /// An array of browser context ids.
+    pub fn browser_context_ids(&self) -> &[crate::browser::BrowserContextID<'a>] { &self.browser_context_ids }
+    /// The id of the default browser context if available.
+    pub fn default_browser_context_id(&self) -> Option<&crate::browser::BrowserContextID<'a>> { self.default_browser_context_id.as_ref() }
 }
 
 
 pub struct GetBrowserContextsReturnsBuilder<'a> {
-    browserContextIds: Vec<crate::browser::BrowserContextID<'a>>,
-    defaultBrowserContextId: Option<crate::browser::BrowserContextID<'a>>,
+    browser_context_ids: Vec<crate::browser::BrowserContextID<'a>>,
+    default_browser_context_id: Option<crate::browser::BrowserContextID<'a>>,
 }
 
 impl<'a> GetBrowserContextsReturnsBuilder<'a> {
     /// The id of the default browser context if available.
-    pub fn defaultBrowserContextId(mut self, defaultBrowserContextId: crate::browser::BrowserContextID<'a>) -> Self { self.defaultBrowserContextId = Some(defaultBrowserContextId); self }
+    pub fn default_browser_context_id(mut self, default_browser_context_id: crate::browser::BrowserContextID<'a>) -> Self { self.default_browser_context_id = Some(default_browser_context_id); self }
     pub fn build(self) -> GetBrowserContextsReturns<'a> {
         GetBrowserContextsReturns {
-            browserContextIds: self.browserContextIds,
-            defaultBrowserContextId: self.defaultBrowserContextId,
+            browser_context_ids: self.browser_context_ids,
+            default_browser_context_id: self.default_browser_context_id,
         }
     }
 }
@@ -690,25 +758,25 @@ pub struct CreateTargetParams<'a> {
     height: Option<i64>,
     /// Frame window state (requires newWindow to be true or headless shell).
     /// Default is normal.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    windowState: Option<WindowState>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "windowState")]
+    window_state: Option<WindowState>,
     /// The browser context to create the page in.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    browserContextId: Option<crate::browser::BrowserContextID<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "browserContextId")]
+    browser_context_id: Option<crate::browser::BrowserContextID<'a>>,
     /// Whether BeginFrames for this target will be controlled via DevTools (headless shell only,
     /// not supported on MacOS yet, false by default).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    enableBeginFrameControl: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "enableBeginFrameControl")]
+    enable_begin_frame_control: Option<bool>,
     /// Whether to create a new Window or Tab (false by default, not supported by headless shell).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    newWindow: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "newWindow")]
+    new_window: Option<bool>,
     /// Whether to create the target in background or foreground (false by default, not supported
     /// by headless shell).
     #[serde(skip_serializing_if = "Option::is_none")]
     background: Option<bool>,
     /// Whether to create the target of type "tab".
-    #[serde(skip_serializing_if = "Option::is_none")]
-    forTab: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "forTab")]
+    for_tab: Option<bool>,
     /// Whether to create a hidden target. The hidden target is observable via protocol, but not
     /// present in the tab UI strip. Cannot be created with 'forTab: true', 'newWindow: true' or
     /// 'background: false'. The life-time of the tab is limited to the life-time of the session.
@@ -726,6 +794,8 @@ pub struct CreateTargetParams<'a> {
 }
 
 impl<'a> CreateTargetParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url`: The initial URL the page will be navigated to. An empty string indicates about:blank.
     pub fn builder(url: impl Into<Cow<'a, str>>) -> CreateTargetParamsBuilder<'a> {
         CreateTargetParamsBuilder {
             url: url.into(),
@@ -733,28 +803,52 @@ impl<'a> CreateTargetParams<'a> {
             top: None,
             width: None,
             height: None,
-            windowState: None,
-            browserContextId: None,
-            enableBeginFrameControl: None,
-            newWindow: None,
+            window_state: None,
+            browser_context_id: None,
+            enable_begin_frame_control: None,
+            new_window: None,
             background: None,
-            forTab: None,
+            for_tab: None,
             hidden: None,
             focus: None,
         }
     }
+    /// The initial URL the page will be navigated to. An empty string indicates about:blank.
     pub fn url(&self) -> &str { self.url.as_ref() }
+    /// Frame left origin in DIP (requires newWindow to be true or headless shell).
     pub fn left(&self) -> Option<i64> { self.left }
+    /// Frame top origin in DIP (requires newWindow to be true or headless shell).
     pub fn top(&self) -> Option<i64> { self.top }
+    /// Frame width in DIP (requires newWindow to be true or headless shell).
     pub fn width(&self) -> Option<u64> { self.width }
+    /// Frame height in DIP (requires newWindow to be true or headless shell).
     pub fn height(&self) -> Option<i64> { self.height }
-    pub fn windowState(&self) -> Option<&WindowState> { self.windowState.as_ref() }
-    pub fn browserContextId(&self) -> Option<&crate::browser::BrowserContextID<'a>> { self.browserContextId.as_ref() }
-    pub fn enableBeginFrameControl(&self) -> Option<bool> { self.enableBeginFrameControl }
-    pub fn newWindow(&self) -> Option<bool> { self.newWindow }
+    /// Frame window state (requires newWindow to be true or headless shell).
+    /// Default is normal.
+    pub fn window_state(&self) -> Option<&WindowState> { self.window_state.as_ref() }
+    /// The browser context to create the page in.
+    pub fn browser_context_id(&self) -> Option<&crate::browser::BrowserContextID<'a>> { self.browser_context_id.as_ref() }
+    /// Whether BeginFrames for this target will be controlled via DevTools (headless shell only,
+    /// not supported on MacOS yet, false by default).
+    pub fn enable_begin_frame_control(&self) -> Option<bool> { self.enable_begin_frame_control }
+    /// Whether to create a new Window or Tab (false by default, not supported by headless shell).
+    pub fn new_window(&self) -> Option<bool> { self.new_window }
+    /// Whether to create the target in background or foreground (false by default, not supported
+    /// by headless shell).
     pub fn background(&self) -> Option<bool> { self.background }
-    pub fn forTab(&self) -> Option<bool> { self.forTab }
+    /// Whether to create the target of type "tab".
+    pub fn for_tab(&self) -> Option<bool> { self.for_tab }
+    /// Whether to create a hidden target. The hidden target is observable via protocol, but not
+    /// present in the tab UI strip. Cannot be created with 'forTab: true', 'newWindow: true' or
+    /// 'background: false'. The life-time of the tab is limited to the life-time of the session.
     pub fn hidden(&self) -> Option<bool> { self.hidden }
+    /// If specified, the option is used to determine if the new target should
+    /// be focused or not. By default, the focus behavior depends on the
+    /// value of the background field. For example, background=false and focus=false
+    /// will result in the target tab being opened but the browser window remain
+    /// unchanged (if it was in the background, it will remain in the background)
+    /// and background=false with focus=undefined will result in the window being focused.
+    /// Using background: true and focus: true is not supported and will result in an error.
     pub fn focus(&self) -> Option<bool> { self.focus }
 }
 
@@ -765,12 +859,12 @@ pub struct CreateTargetParamsBuilder<'a> {
     top: Option<i64>,
     width: Option<u64>,
     height: Option<i64>,
-    windowState: Option<WindowState>,
-    browserContextId: Option<crate::browser::BrowserContextID<'a>>,
-    enableBeginFrameControl: Option<bool>,
-    newWindow: Option<bool>,
+    window_state: Option<WindowState>,
+    browser_context_id: Option<crate::browser::BrowserContextID<'a>>,
+    enable_begin_frame_control: Option<bool>,
+    new_window: Option<bool>,
     background: Option<bool>,
-    forTab: Option<bool>,
+    for_tab: Option<bool>,
     hidden: Option<bool>,
     focus: Option<bool>,
 }
@@ -786,19 +880,19 @@ impl<'a> CreateTargetParamsBuilder<'a> {
     pub fn height(mut self, height: i64) -> Self { self.height = Some(height); self }
     /// Frame window state (requires newWindow to be true or headless shell).
     /// Default is normal.
-    pub fn windowState(mut self, windowState: impl Into<WindowState>) -> Self { self.windowState = Some(windowState.into()); self }
+    pub fn window_state(mut self, window_state: impl Into<WindowState>) -> Self { self.window_state = Some(window_state.into()); self }
     /// The browser context to create the page in.
-    pub fn browserContextId(mut self, browserContextId: crate::browser::BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
+    pub fn browser_context_id(mut self, browser_context_id: crate::browser::BrowserContextID<'a>) -> Self { self.browser_context_id = Some(browser_context_id); self }
     /// Whether BeginFrames for this target will be controlled via DevTools (headless shell only,
     /// not supported on MacOS yet, false by default).
-    pub fn enableBeginFrameControl(mut self, enableBeginFrameControl: bool) -> Self { self.enableBeginFrameControl = Some(enableBeginFrameControl); self }
+    pub fn enable_begin_frame_control(mut self, enable_begin_frame_control: bool) -> Self { self.enable_begin_frame_control = Some(enable_begin_frame_control); self }
     /// Whether to create a new Window or Tab (false by default, not supported by headless shell).
-    pub fn newWindow(mut self, newWindow: bool) -> Self { self.newWindow = Some(newWindow); self }
+    pub fn new_window(mut self, new_window: bool) -> Self { self.new_window = Some(new_window); self }
     /// Whether to create the target in background or foreground (false by default, not supported
     /// by headless shell).
     pub fn background(mut self, background: bool) -> Self { self.background = Some(background); self }
     /// Whether to create the target of type "tab".
-    pub fn forTab(mut self, forTab: bool) -> Self { self.forTab = Some(forTab); self }
+    pub fn for_tab(mut self, for_tab: bool) -> Self { self.for_tab = Some(for_tab); self }
     /// Whether to create a hidden target. The hidden target is observable via protocol, but not
     /// present in the tab UI strip. Cannot be created with 'forTab: true', 'newWindow: true' or
     /// 'background: false'. The life-time of the tab is limited to the life-time of the session.
@@ -818,12 +912,12 @@ impl<'a> CreateTargetParamsBuilder<'a> {
             top: self.top,
             width: self.width,
             height: self.height,
-            windowState: self.windowState,
-            browserContextId: self.browserContextId,
-            enableBeginFrameControl: self.enableBeginFrameControl,
-            newWindow: self.newWindow,
+            window_state: self.window_state,
+            browser_context_id: self.browser_context_id,
+            enable_begin_frame_control: self.enable_begin_frame_control,
+            new_window: self.new_window,
             background: self.background,
-            forTab: self.forTab,
+            for_tab: self.for_tab,
             hidden: self.hidden,
             focus: self.focus,
         }
@@ -836,27 +930,31 @@ impl<'a> CreateTargetParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct CreateTargetReturns<'a> {
     /// The id of the page opened.
-    targetId: TargetID<'a>,
+    #[serde(rename = "targetId")]
+    target_id: TargetID<'a>,
 }
 
 impl<'a> CreateTargetReturns<'a> {
-    pub fn builder(targetId: impl Into<TargetID<'a>>) -> CreateTargetReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `target_id`: The id of the page opened.
+    pub fn builder(target_id: impl Into<TargetID<'a>>) -> CreateTargetReturnsBuilder<'a> {
         CreateTargetReturnsBuilder {
-            targetId: targetId.into(),
+            target_id: target_id.into(),
         }
     }
-    pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }
+    /// The id of the page opened.
+    pub fn target_id(&self) -> &TargetID<'a> { &self.target_id }
 }
 
 
 pub struct CreateTargetReturnsBuilder<'a> {
-    targetId: TargetID<'a>,
+    target_id: TargetID<'a>,
 }
 
 impl<'a> CreateTargetReturnsBuilder<'a> {
     pub fn build(self) -> CreateTargetReturns<'a> {
         CreateTargetReturns {
-            targetId: self.targetId,
+            target_id: self.target_id,
         }
     }
 }
@@ -874,39 +972,42 @@ impl<'a> crate::CdpCommand<'a> for CreateTargetParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct DetachFromTargetParams<'a> {
     /// Session to detach.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    sessionId: Option<SessionID<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sessionId")]
+    session_id: Option<SessionID<'a>>,
     /// Deprecated.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    targetId: Option<TargetID<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "targetId")]
+    target_id: Option<TargetID<'a>>,
 }
 
 impl<'a> DetachFromTargetParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> DetachFromTargetParamsBuilder<'a> {
         DetachFromTargetParamsBuilder {
-            sessionId: None,
-            targetId: None,
+            session_id: None,
+            target_id: None,
         }
     }
-    pub fn sessionId(&self) -> Option<&SessionID<'a>> { self.sessionId.as_ref() }
-    pub fn targetId(&self) -> Option<&TargetID<'a>> { self.targetId.as_ref() }
+    /// Session to detach.
+    pub fn session_id(&self) -> Option<&SessionID<'a>> { self.session_id.as_ref() }
+    /// Deprecated.
+    pub fn target_id(&self) -> Option<&TargetID<'a>> { self.target_id.as_ref() }
 }
 
 #[derive(Default)]
 pub struct DetachFromTargetParamsBuilder<'a> {
-    sessionId: Option<SessionID<'a>>,
-    targetId: Option<TargetID<'a>>,
+    session_id: Option<SessionID<'a>>,
+    target_id: Option<TargetID<'a>>,
 }
 
 impl<'a> DetachFromTargetParamsBuilder<'a> {
     /// Session to detach.
-    pub fn sessionId(mut self, sessionId: impl Into<SessionID<'a>>) -> Self { self.sessionId = Some(sessionId.into()); self }
+    pub fn session_id(mut self, session_id: impl Into<SessionID<'a>>) -> Self { self.session_id = Some(session_id.into()); self }
     /// Deprecated.
-    pub fn targetId(mut self, targetId: impl Into<TargetID<'a>>) -> Self { self.targetId = Some(targetId.into()); self }
+    pub fn target_id(mut self, target_id: impl Into<TargetID<'a>>) -> Self { self.target_id = Some(target_id.into()); self }
     pub fn build(self) -> DetachFromTargetParams<'a> {
         DetachFromTargetParams {
-            sessionId: self.sessionId,
-            targetId: self.targetId,
+            session_id: self.session_id,
+            target_id: self.target_id,
         }
     }
 }
@@ -924,27 +1025,30 @@ impl<'a> crate::CdpCommand<'a> for DetachFromTargetParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct DisposeBrowserContextParams<'a> {
-    browserContextId: crate::browser::BrowserContextID<'a>,
+    #[serde(rename = "browserContextId")]
+    browser_context_id: crate::browser::BrowserContextID<'a>,
 }
 
 impl<'a> DisposeBrowserContextParams<'a> {
-    pub fn builder(browserContextId: crate::browser::BrowserContextID<'a>) -> DisposeBrowserContextParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `browser_context_id`: 
+    pub fn builder(browser_context_id: crate::browser::BrowserContextID<'a>) -> DisposeBrowserContextParamsBuilder<'a> {
         DisposeBrowserContextParamsBuilder {
-            browserContextId: browserContextId,
+            browser_context_id: browser_context_id,
         }
     }
-    pub fn browserContextId(&self) -> &crate::browser::BrowserContextID<'a> { &self.browserContextId }
+    pub fn browser_context_id(&self) -> &crate::browser::BrowserContextID<'a> { &self.browser_context_id }
 }
 
 
 pub struct DisposeBrowserContextParamsBuilder<'a> {
-    browserContextId: crate::browser::BrowserContextID<'a>,
+    browser_context_id: crate::browser::BrowserContextID<'a>,
 }
 
 impl<'a> DisposeBrowserContextParamsBuilder<'a> {
     pub fn build(self) -> DisposeBrowserContextParams<'a> {
         DisposeBrowserContextParams {
-            browserContextId: self.browserContextId,
+            browser_context_id: self.browser_context_id,
         }
     }
 }
@@ -961,29 +1065,30 @@ impl<'a> crate::CdpCommand<'a> for DisposeBrowserContextParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetTargetInfoParams<'a> {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    targetId: Option<TargetID<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "targetId")]
+    target_id: Option<TargetID<'a>>,
 }
 
 impl<'a> GetTargetInfoParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> GetTargetInfoParamsBuilder<'a> {
         GetTargetInfoParamsBuilder {
-            targetId: None,
+            target_id: None,
         }
     }
-    pub fn targetId(&self) -> Option<&TargetID<'a>> { self.targetId.as_ref() }
+    pub fn target_id(&self) -> Option<&TargetID<'a>> { self.target_id.as_ref() }
 }
 
 #[derive(Default)]
 pub struct GetTargetInfoParamsBuilder<'a> {
-    targetId: Option<TargetID<'a>>,
+    target_id: Option<TargetID<'a>>,
 }
 
 impl<'a> GetTargetInfoParamsBuilder<'a> {
-    pub fn targetId(mut self, targetId: impl Into<TargetID<'a>>) -> Self { self.targetId = Some(targetId.into()); self }
+    pub fn target_id(mut self, target_id: impl Into<TargetID<'a>>) -> Self { self.target_id = Some(target_id.into()); self }
     pub fn build(self) -> GetTargetInfoParams<'a> {
         GetTargetInfoParams {
-            targetId: self.targetId,
+            target_id: self.target_id,
         }
     }
 }
@@ -993,27 +1098,30 @@ impl<'a> GetTargetInfoParamsBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetTargetInfoReturns<'a> {
-    targetInfo: TargetInfo<'a>,
+    #[serde(rename = "targetInfo")]
+    target_info: TargetInfo<'a>,
 }
 
 impl<'a> GetTargetInfoReturns<'a> {
-    pub fn builder(targetInfo: TargetInfo<'a>) -> GetTargetInfoReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `target_info`: 
+    pub fn builder(target_info: TargetInfo<'a>) -> GetTargetInfoReturnsBuilder<'a> {
         GetTargetInfoReturnsBuilder {
-            targetInfo: targetInfo,
+            target_info: target_info,
         }
     }
-    pub fn targetInfo(&self) -> &TargetInfo<'a> { &self.targetInfo }
+    pub fn target_info(&self) -> &TargetInfo<'a> { &self.target_info }
 }
 
 
 pub struct GetTargetInfoReturnsBuilder<'a> {
-    targetInfo: TargetInfo<'a>,
+    target_info: TargetInfo<'a>,
 }
 
 impl<'a> GetTargetInfoReturnsBuilder<'a> {
     pub fn build(self) -> GetTargetInfoReturns<'a> {
         GetTargetInfoReturns {
-            targetInfo: self.targetInfo,
+            target_info: self.target_info,
         }
     }
 }
@@ -1038,11 +1146,15 @@ pub struct GetTargetsParams<'a> {
 }
 
 impl<'a> GetTargetsParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> GetTargetsParamsBuilder<'a> {
         GetTargetsParamsBuilder {
             filter: None,
         }
     }
+    /// Only targets matching filter will be reported. If filter is not specified
+    /// and target discovery is currently enabled, a filter used for target discovery
+    /// is used for consistency.
     pub fn filter(&self) -> Option<&TargetFilter<'a>> { self.filter.as_ref() }
 }
 
@@ -1069,27 +1181,31 @@ impl<'a> GetTargetsParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct GetTargetsReturns<'a> {
     /// The list of targets.
-    targetInfos: Vec<TargetInfo<'a>>,
+    #[serde(rename = "targetInfos")]
+    target_infos: Vec<TargetInfo<'a>>,
 }
 
 impl<'a> GetTargetsReturns<'a> {
-    pub fn builder(targetInfos: Vec<TargetInfo<'a>>) -> GetTargetsReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `target_infos`: The list of targets.
+    pub fn builder(target_infos: Vec<TargetInfo<'a>>) -> GetTargetsReturnsBuilder<'a> {
         GetTargetsReturnsBuilder {
-            targetInfos: targetInfos,
+            target_infos: target_infos,
         }
     }
-    pub fn targetInfos(&self) -> &[TargetInfo<'a>] { &self.targetInfos }
+    /// The list of targets.
+    pub fn target_infos(&self) -> &[TargetInfo<'a>] { &self.target_infos }
 }
 
 
 pub struct GetTargetsReturnsBuilder<'a> {
-    targetInfos: Vec<TargetInfo<'a>>,
+    target_infos: Vec<TargetInfo<'a>>,
 }
 
 impl<'a> GetTargetsReturnsBuilder<'a> {
     pub fn build(self) -> GetTargetsReturns<'a> {
         GetTargetsReturns {
-            targetInfos: self.targetInfos,
+            target_infos: self.target_infos,
         }
     }
 }
@@ -1110,43 +1226,47 @@ impl<'a> crate::CdpCommand<'a> for GetTargetsParams<'a> {
 pub struct SendMessageToTargetParams<'a> {
     message: Cow<'a, str>,
     /// Identifier of the session.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    sessionId: Option<SessionID<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sessionId")]
+    session_id: Option<SessionID<'a>>,
     /// Deprecated.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    targetId: Option<TargetID<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "targetId")]
+    target_id: Option<TargetID<'a>>,
 }
 
 impl<'a> SendMessageToTargetParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `message`: 
     pub fn builder(message: impl Into<Cow<'a, str>>) -> SendMessageToTargetParamsBuilder<'a> {
         SendMessageToTargetParamsBuilder {
             message: message.into(),
-            sessionId: None,
-            targetId: None,
+            session_id: None,
+            target_id: None,
         }
     }
     pub fn message(&self) -> &str { self.message.as_ref() }
-    pub fn sessionId(&self) -> Option<&SessionID<'a>> { self.sessionId.as_ref() }
-    pub fn targetId(&self) -> Option<&TargetID<'a>> { self.targetId.as_ref() }
+    /// Identifier of the session.
+    pub fn session_id(&self) -> Option<&SessionID<'a>> { self.session_id.as_ref() }
+    /// Deprecated.
+    pub fn target_id(&self) -> Option<&TargetID<'a>> { self.target_id.as_ref() }
 }
 
 
 pub struct SendMessageToTargetParamsBuilder<'a> {
     message: Cow<'a, str>,
-    sessionId: Option<SessionID<'a>>,
-    targetId: Option<TargetID<'a>>,
+    session_id: Option<SessionID<'a>>,
+    target_id: Option<TargetID<'a>>,
 }
 
 impl<'a> SendMessageToTargetParamsBuilder<'a> {
     /// Identifier of the session.
-    pub fn sessionId(mut self, sessionId: impl Into<SessionID<'a>>) -> Self { self.sessionId = Some(sessionId.into()); self }
+    pub fn session_id(mut self, session_id: impl Into<SessionID<'a>>) -> Self { self.session_id = Some(session_id.into()); self }
     /// Deprecated.
-    pub fn targetId(mut self, targetId: impl Into<TargetID<'a>>) -> Self { self.targetId = Some(targetId.into()); self }
+    pub fn target_id(mut self, target_id: impl Into<TargetID<'a>>) -> Self { self.target_id = Some(target_id.into()); self }
     pub fn build(self) -> SendMessageToTargetParams<'a> {
         SendMessageToTargetParams {
             message: self.message,
-            sessionId: self.sessionId,
-            targetId: self.targetId,
+            session_id: self.session_id,
+            target_id: self.target_id,
         }
     }
 }
@@ -1171,10 +1291,12 @@ impl<'a> crate::CdpCommand<'a> for SendMessageToTargetParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SetAutoAttachParams<'a> {
     /// Whether to auto-attach to related targets.
-    autoAttach: bool,
+    #[serde(rename = "autoAttach")]
+    auto_attach: bool,
     /// Whether to pause new targets when attaching to them. Use 'Runtime.runIfWaitingForDebugger'
     /// to run paused targets.
-    waitForDebuggerOnStart: bool,
+    #[serde(rename = "waitForDebuggerOnStart")]
+    wait_for_debugger_on_start: bool,
     /// Enables "flat" access to the session via specifying sessionId attribute in the commands.
     /// We plan to make this the default, deprecate non-flattened mode,
     /// and eventually retire it. See crbug.com/991325.
@@ -1186,24 +1308,34 @@ pub struct SetAutoAttachParams<'a> {
 }
 
 impl<'a> SetAutoAttachParams<'a> {
-    pub fn builder(autoAttach: bool, waitForDebuggerOnStart: bool) -> SetAutoAttachParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `auto_attach`: Whether to auto-attach to related targets.
+    /// * `wait_for_debugger_on_start`: Whether to pause new targets when attaching to them. Use `Runtime.runIfWaitingForDebugger` to run paused targets.
+    pub fn builder(auto_attach: bool, wait_for_debugger_on_start: bool) -> SetAutoAttachParamsBuilder<'a> {
         SetAutoAttachParamsBuilder {
-            autoAttach: autoAttach,
-            waitForDebuggerOnStart: waitForDebuggerOnStart,
+            auto_attach: auto_attach,
+            wait_for_debugger_on_start: wait_for_debugger_on_start,
             flatten: None,
             filter: None,
         }
     }
-    pub fn autoAttach(&self) -> bool { self.autoAttach }
-    pub fn waitForDebuggerOnStart(&self) -> bool { self.waitForDebuggerOnStart }
+    /// Whether to auto-attach to related targets.
+    pub fn auto_attach(&self) -> bool { self.auto_attach }
+    /// Whether to pause new targets when attaching to them. Use 'Runtime.runIfWaitingForDebugger'
+    /// to run paused targets.
+    pub fn wait_for_debugger_on_start(&self) -> bool { self.wait_for_debugger_on_start }
+    /// Enables "flat" access to the session via specifying sessionId attribute in the commands.
+    /// We plan to make this the default, deprecate non-flattened mode,
+    /// and eventually retire it. See crbug.com/991325.
     pub fn flatten(&self) -> Option<bool> { self.flatten }
+    /// Only targets matching filter will be attached.
     pub fn filter(&self) -> Option<&TargetFilter<'a>> { self.filter.as_ref() }
 }
 
 
 pub struct SetAutoAttachParamsBuilder<'a> {
-    autoAttach: bool,
-    waitForDebuggerOnStart: bool,
+    auto_attach: bool,
+    wait_for_debugger_on_start: bool,
     flatten: Option<bool>,
     filter: Option<TargetFilter<'a>>,
 }
@@ -1217,8 +1349,8 @@ impl<'a> SetAutoAttachParamsBuilder<'a> {
     pub fn filter(mut self, filter: TargetFilter<'a>) -> Self { self.filter = Some(filter); self }
     pub fn build(self) -> SetAutoAttachParams<'a> {
         SetAutoAttachParams {
-            autoAttach: self.autoAttach,
-            waitForDebuggerOnStart: self.waitForDebuggerOnStart,
+            auto_attach: self.auto_attach,
+            wait_for_debugger_on_start: self.wait_for_debugger_on_start,
             flatten: self.flatten,
             filter: self.filter,
         }
@@ -1241,32 +1373,40 @@ impl<'a> crate::CdpCommand<'a> for SetAutoAttachParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct AutoAttachRelatedParams<'a> {
-    targetId: TargetID<'a>,
+    #[serde(rename = "targetId")]
+    target_id: TargetID<'a>,
     /// Whether to pause new targets when attaching to them. Use 'Runtime.runIfWaitingForDebugger'
     /// to run paused targets.
-    waitForDebuggerOnStart: bool,
+    #[serde(rename = "waitForDebuggerOnStart")]
+    wait_for_debugger_on_start: bool,
     /// Only targets matching filter will be attached.
     #[serde(skip_serializing_if = "Option::is_none")]
     filter: Option<TargetFilter<'a>>,
 }
 
 impl<'a> AutoAttachRelatedParams<'a> {
-    pub fn builder(targetId: impl Into<TargetID<'a>>, waitForDebuggerOnStart: bool) -> AutoAttachRelatedParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `target_id`: 
+    /// * `wait_for_debugger_on_start`: Whether to pause new targets when attaching to them. Use `Runtime.runIfWaitingForDebugger` to run paused targets.
+    pub fn builder(target_id: impl Into<TargetID<'a>>, wait_for_debugger_on_start: bool) -> AutoAttachRelatedParamsBuilder<'a> {
         AutoAttachRelatedParamsBuilder {
-            targetId: targetId.into(),
-            waitForDebuggerOnStart: waitForDebuggerOnStart,
+            target_id: target_id.into(),
+            wait_for_debugger_on_start: wait_for_debugger_on_start,
             filter: None,
         }
     }
-    pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }
-    pub fn waitForDebuggerOnStart(&self) -> bool { self.waitForDebuggerOnStart }
+    pub fn target_id(&self) -> &TargetID<'a> { &self.target_id }
+    /// Whether to pause new targets when attaching to them. Use 'Runtime.runIfWaitingForDebugger'
+    /// to run paused targets.
+    pub fn wait_for_debugger_on_start(&self) -> bool { self.wait_for_debugger_on_start }
+    /// Only targets matching filter will be attached.
     pub fn filter(&self) -> Option<&TargetFilter<'a>> { self.filter.as_ref() }
 }
 
 
 pub struct AutoAttachRelatedParamsBuilder<'a> {
-    targetId: TargetID<'a>,
-    waitForDebuggerOnStart: bool,
+    target_id: TargetID<'a>,
+    wait_for_debugger_on_start: bool,
     filter: Option<TargetFilter<'a>>,
 }
 
@@ -1275,8 +1415,8 @@ impl<'a> AutoAttachRelatedParamsBuilder<'a> {
     pub fn filter(mut self, filter: TargetFilter<'a>) -> Self { self.filter = Some(filter); self }
     pub fn build(self) -> AutoAttachRelatedParams<'a> {
         AutoAttachRelatedParams {
-            targetId: self.targetId,
-            waitForDebuggerOnStart: self.waitForDebuggerOnStart,
+            target_id: self.target_id,
+            wait_for_debugger_on_start: self.wait_for_debugger_on_start,
             filter: self.filter,
         }
     }
@@ -1304,13 +1444,18 @@ pub struct SetDiscoverTargetsParams<'a> {
 }
 
 impl<'a> SetDiscoverTargetsParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `discover`: Whether to discover available targets.
     pub fn builder(discover: bool) -> SetDiscoverTargetsParamsBuilder<'a> {
         SetDiscoverTargetsParamsBuilder {
             discover: discover,
             filter: None,
         }
     }
+    /// Whether to discover available targets.
     pub fn discover(&self) -> bool { self.discover }
+    /// Only targets matching filter will be attached. If 'discover' is false,
+    /// 'filter' must be omitted or empty.
     pub fn filter(&self) -> Option<&TargetFilter<'a>> { self.filter.as_ref() }
 }
 
@@ -1350,11 +1495,14 @@ pub struct SetRemoteLocationsParams<'a> {
 }
 
 impl<'a> SetRemoteLocationsParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `locations`: List of remote locations.
     pub fn builder(locations: Vec<RemoteLocation<'a>>) -> SetRemoteLocationsParamsBuilder<'a> {
         SetRemoteLocationsParamsBuilder {
             locations: locations,
         }
     }
+    /// List of remote locations.
     pub fn locations(&self) -> &[RemoteLocation<'a>] { &self.locations }
 }
 
@@ -1385,27 +1533,31 @@ impl<'a> crate::CdpCommand<'a> for SetRemoteLocationsParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct GetDevToolsTargetParams<'a> {
     /// Page or tab target ID.
-    targetId: TargetID<'a>,
+    #[serde(rename = "targetId")]
+    target_id: TargetID<'a>,
 }
 
 impl<'a> GetDevToolsTargetParams<'a> {
-    pub fn builder(targetId: impl Into<TargetID<'a>>) -> GetDevToolsTargetParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `target_id`: Page or tab target ID.
+    pub fn builder(target_id: impl Into<TargetID<'a>>) -> GetDevToolsTargetParamsBuilder<'a> {
         GetDevToolsTargetParamsBuilder {
-            targetId: targetId.into(),
+            target_id: target_id.into(),
         }
     }
-    pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }
+    /// Page or tab target ID.
+    pub fn target_id(&self) -> &TargetID<'a> { &self.target_id }
 }
 
 
 pub struct GetDevToolsTargetParamsBuilder<'a> {
-    targetId: TargetID<'a>,
+    target_id: TargetID<'a>,
 }
 
 impl<'a> GetDevToolsTargetParamsBuilder<'a> {
     pub fn build(self) -> GetDevToolsTargetParams<'a> {
         GetDevToolsTargetParams {
-            targetId: self.targetId,
+            target_id: self.target_id,
         }
     }
 }
@@ -1417,30 +1569,32 @@ impl<'a> GetDevToolsTargetParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct GetDevToolsTargetReturns<'a> {
     /// The targetId of DevTools page target if exists.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    targetId: Option<TargetID<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "targetId")]
+    target_id: Option<TargetID<'a>>,
 }
 
 impl<'a> GetDevToolsTargetReturns<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> GetDevToolsTargetReturnsBuilder<'a> {
         GetDevToolsTargetReturnsBuilder {
-            targetId: None,
+            target_id: None,
         }
     }
-    pub fn targetId(&self) -> Option<&TargetID<'a>> { self.targetId.as_ref() }
+    /// The targetId of DevTools page target if exists.
+    pub fn target_id(&self) -> Option<&TargetID<'a>> { self.target_id.as_ref() }
 }
 
 #[derive(Default)]
 pub struct GetDevToolsTargetReturnsBuilder<'a> {
-    targetId: Option<TargetID<'a>>,
+    target_id: Option<TargetID<'a>>,
 }
 
 impl<'a> GetDevToolsTargetReturnsBuilder<'a> {
     /// The targetId of DevTools page target if exists.
-    pub fn targetId(mut self, targetId: impl Into<TargetID<'a>>) -> Self { self.targetId = Some(targetId.into()); self }
+    pub fn target_id(mut self, target_id: impl Into<TargetID<'a>>) -> Self { self.target_id = Some(target_id.into()); self }
     pub fn build(self) -> GetDevToolsTargetReturns<'a> {
         GetDevToolsTargetReturns {
-            targetId: self.targetId,
+            target_id: self.target_id,
         }
     }
 }
@@ -1458,40 +1612,47 @@ impl<'a> crate::CdpCommand<'a> for GetDevToolsTargetParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct OpenDevToolsParams<'a> {
     /// This can be the page or tab target ID.
-    targetId: TargetID<'a>,
+    #[serde(rename = "targetId")]
+    target_id: TargetID<'a>,
     /// The id of the panel we want DevTools to open initially. Currently
     /// supported panels are elements, console, network, sources, resources
     /// and performance.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    panelId: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "panelId")]
+    panel_id: Option<Cow<'a, str>>,
 }
 
 impl<'a> OpenDevToolsParams<'a> {
-    pub fn builder(targetId: impl Into<TargetID<'a>>) -> OpenDevToolsParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `target_id`: This can be the page or tab target ID.
+    pub fn builder(target_id: impl Into<TargetID<'a>>) -> OpenDevToolsParamsBuilder<'a> {
         OpenDevToolsParamsBuilder {
-            targetId: targetId.into(),
-            panelId: None,
+            target_id: target_id.into(),
+            panel_id: None,
         }
     }
-    pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }
-    pub fn panelId(&self) -> Option<&str> { self.panelId.as_deref() }
+    /// This can be the page or tab target ID.
+    pub fn target_id(&self) -> &TargetID<'a> { &self.target_id }
+    /// The id of the panel we want DevTools to open initially. Currently
+    /// supported panels are elements, console, network, sources, resources
+    /// and performance.
+    pub fn panel_id(&self) -> Option<&str> { self.panel_id.as_deref() }
 }
 
 
 pub struct OpenDevToolsParamsBuilder<'a> {
-    targetId: TargetID<'a>,
-    panelId: Option<Cow<'a, str>>,
+    target_id: TargetID<'a>,
+    panel_id: Option<Cow<'a, str>>,
 }
 
 impl<'a> OpenDevToolsParamsBuilder<'a> {
     /// The id of the panel we want DevTools to open initially. Currently
     /// supported panels are elements, console, network, sources, resources
     /// and performance.
-    pub fn panelId(mut self, panelId: impl Into<Cow<'a, str>>) -> Self { self.panelId = Some(panelId.into()); self }
+    pub fn panel_id(mut self, panel_id: impl Into<Cow<'a, str>>) -> Self { self.panel_id = Some(panel_id.into()); self }
     pub fn build(self) -> OpenDevToolsParams<'a> {
         OpenDevToolsParams {
-            targetId: self.targetId,
-            panelId: self.panelId,
+            target_id: self.target_id,
+            panel_id: self.panel_id,
         }
     }
 }
@@ -1502,27 +1663,31 @@ impl<'a> OpenDevToolsParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct OpenDevToolsReturns<'a> {
     /// The targetId of DevTools page target.
-    targetId: TargetID<'a>,
+    #[serde(rename = "targetId")]
+    target_id: TargetID<'a>,
 }
 
 impl<'a> OpenDevToolsReturns<'a> {
-    pub fn builder(targetId: impl Into<TargetID<'a>>) -> OpenDevToolsReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `target_id`: The targetId of DevTools page target.
+    pub fn builder(target_id: impl Into<TargetID<'a>>) -> OpenDevToolsReturnsBuilder<'a> {
         OpenDevToolsReturnsBuilder {
-            targetId: targetId.into(),
+            target_id: target_id.into(),
         }
     }
-    pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }
+    /// The targetId of DevTools page target.
+    pub fn target_id(&self) -> &TargetID<'a> { &self.target_id }
 }
 
 
 pub struct OpenDevToolsReturnsBuilder<'a> {
-    targetId: TargetID<'a>,
+    target_id: TargetID<'a>,
 }
 
 impl<'a> OpenDevToolsReturnsBuilder<'a> {
     pub fn build(self) -> OpenDevToolsReturns<'a> {
         OpenDevToolsReturns {
-            targetId: self.targetId,
+            target_id: self.target_id,
         }
     }
 }

@@ -11,75 +11,96 @@ use std::borrow::Cow;
 #[serde(rename_all = "camelCase")]
 pub struct GPUDevice<'a> {
     /// PCI ID of the GPU vendor, if available; 0 otherwise.
-    vendorId: f64,
+    #[serde(rename = "vendorId")]
+    vendor_id: f64,
     /// PCI ID of the GPU device, if available; 0 otherwise.
-    deviceId: f64,
+    #[serde(rename = "deviceId")]
+    device_id: f64,
     /// Sub sys ID of the GPU, only available on Windows.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    subSysId: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "subSysId")]
+    sub_sys_id: Option<f64>,
     /// Revision of the GPU, only available on Windows.
     #[serde(skip_serializing_if = "Option::is_none")]
     revision: Option<f64>,
     /// String description of the GPU vendor, if the PCI ID is not available.
-    vendorString: Cow<'a, str>,
+    #[serde(rename = "vendorString")]
+    vendor_string: Cow<'a, str>,
     /// String description of the GPU device, if the PCI ID is not available.
-    deviceString: Cow<'a, str>,
+    #[serde(rename = "deviceString")]
+    device_string: Cow<'a, str>,
     /// String description of the GPU driver vendor.
-    driverVendor: Cow<'a, str>,
+    #[serde(rename = "driverVendor")]
+    driver_vendor: Cow<'a, str>,
     /// String description of the GPU driver version.
-    driverVersion: Cow<'a, str>,
+    #[serde(rename = "driverVersion")]
+    driver_version: Cow<'a, str>,
 }
 
 impl<'a> GPUDevice<'a> {
-    pub fn builder(vendorId: f64, deviceId: f64, vendorString: impl Into<Cow<'a, str>>, deviceString: impl Into<Cow<'a, str>>, driverVendor: impl Into<Cow<'a, str>>, driverVersion: impl Into<Cow<'a, str>>) -> GPUDeviceBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `vendor_id`: PCI ID of the GPU vendor, if available; 0 otherwise.
+    /// * `device_id`: PCI ID of the GPU device, if available; 0 otherwise.
+    /// * `vendor_string`: String description of the GPU vendor, if the PCI ID is not available.
+    /// * `device_string`: String description of the GPU device, if the PCI ID is not available.
+    /// * `driver_vendor`: String description of the GPU driver vendor.
+    /// * `driver_version`: String description of the GPU driver version.
+    pub fn builder(vendor_id: f64, device_id: f64, vendor_string: impl Into<Cow<'a, str>>, device_string: impl Into<Cow<'a, str>>, driver_vendor: impl Into<Cow<'a, str>>, driver_version: impl Into<Cow<'a, str>>) -> GPUDeviceBuilder<'a> {
         GPUDeviceBuilder {
-            vendorId: vendorId,
-            deviceId: deviceId,
-            subSysId: None,
+            vendor_id: vendor_id,
+            device_id: device_id,
+            sub_sys_id: None,
             revision: None,
-            vendorString: vendorString.into(),
-            deviceString: deviceString.into(),
-            driverVendor: driverVendor.into(),
-            driverVersion: driverVersion.into(),
+            vendor_string: vendor_string.into(),
+            device_string: device_string.into(),
+            driver_vendor: driver_vendor.into(),
+            driver_version: driver_version.into(),
         }
     }
-    pub fn vendorId(&self) -> f64 { self.vendorId }
-    pub fn deviceId(&self) -> f64 { self.deviceId }
-    pub fn subSysId(&self) -> Option<f64> { self.subSysId }
+    /// PCI ID of the GPU vendor, if available; 0 otherwise.
+    pub fn vendor_id(&self) -> f64 { self.vendor_id }
+    /// PCI ID of the GPU device, if available; 0 otherwise.
+    pub fn device_id(&self) -> f64 { self.device_id }
+    /// Sub sys ID of the GPU, only available on Windows.
+    pub fn sub_sys_id(&self) -> Option<f64> { self.sub_sys_id }
+    /// Revision of the GPU, only available on Windows.
     pub fn revision(&self) -> Option<f64> { self.revision }
-    pub fn vendorString(&self) -> &str { self.vendorString.as_ref() }
-    pub fn deviceString(&self) -> &str { self.deviceString.as_ref() }
-    pub fn driverVendor(&self) -> &str { self.driverVendor.as_ref() }
-    pub fn driverVersion(&self) -> &str { self.driverVersion.as_ref() }
+    /// String description of the GPU vendor, if the PCI ID is not available.
+    pub fn vendor_string(&self) -> &str { self.vendor_string.as_ref() }
+    /// String description of the GPU device, if the PCI ID is not available.
+    pub fn device_string(&self) -> &str { self.device_string.as_ref() }
+    /// String description of the GPU driver vendor.
+    pub fn driver_vendor(&self) -> &str { self.driver_vendor.as_ref() }
+    /// String description of the GPU driver version.
+    pub fn driver_version(&self) -> &str { self.driver_version.as_ref() }
 }
 
 
 pub struct GPUDeviceBuilder<'a> {
-    vendorId: f64,
-    deviceId: f64,
-    subSysId: Option<f64>,
+    vendor_id: f64,
+    device_id: f64,
+    sub_sys_id: Option<f64>,
     revision: Option<f64>,
-    vendorString: Cow<'a, str>,
-    deviceString: Cow<'a, str>,
-    driverVendor: Cow<'a, str>,
-    driverVersion: Cow<'a, str>,
+    vendor_string: Cow<'a, str>,
+    device_string: Cow<'a, str>,
+    driver_vendor: Cow<'a, str>,
+    driver_version: Cow<'a, str>,
 }
 
 impl<'a> GPUDeviceBuilder<'a> {
     /// Sub sys ID of the GPU, only available on Windows.
-    pub fn subSysId(mut self, subSysId: f64) -> Self { self.subSysId = Some(subSysId); self }
+    pub fn sub_sys_id(mut self, sub_sys_id: f64) -> Self { self.sub_sys_id = Some(sub_sys_id); self }
     /// Revision of the GPU, only available on Windows.
     pub fn revision(mut self, revision: f64) -> Self { self.revision = Some(revision); self }
     pub fn build(self) -> GPUDevice<'a> {
         GPUDevice {
-            vendorId: self.vendorId,
-            deviceId: self.deviceId,
-            subSysId: self.subSysId,
+            vendor_id: self.vendor_id,
+            device_id: self.device_id,
+            sub_sys_id: self.sub_sys_id,
             revision: self.revision,
-            vendorString: self.vendorString,
-            deviceString: self.deviceString,
-            driverVendor: self.driverVendor,
-            driverVersion: self.driverVersion,
+            vendor_string: self.vendor_string,
+            device_string: self.device_string,
+            driver_vendor: self.driver_vendor,
+            driver_version: self.driver_version,
         }
     }
 }
@@ -96,13 +117,18 @@ pub struct Size {
 }
 
 impl Size {
+    /// Creates a builder for this type with the required parameters:
+    /// * `width`: Width in pixels.
+    /// * `height`: Height in pixels.
     pub fn builder(width: u64, height: i64) -> SizeBuilder {
         SizeBuilder {
             width: width,
             height: height,
         }
     }
+    /// Width in pixels.
     pub fn width(&self) -> u64 { self.width }
+    /// Height in pixels.
     pub fn height(&self) -> i64 { self.height }
 }
 
@@ -130,37 +156,46 @@ pub struct VideoDecodeAcceleratorCapability<'a> {
     /// Video codec profile that is supported, e.g. VP9 Profile 2.
     profile: Cow<'a, str>,
     /// Maximum video dimensions in pixels supported for this |profile|.
-    maxResolution: Size,
+    #[serde(rename = "maxResolution")]
+    max_resolution: Size,
     /// Minimum video dimensions in pixels supported for this |profile|.
-    minResolution: Size,
+    #[serde(rename = "minResolution")]
+    min_resolution: Size,
 }
 
 impl<'a> VideoDecodeAcceleratorCapability<'a> {
-    pub fn builder(profile: impl Into<Cow<'a, str>>, maxResolution: Size, minResolution: Size) -> VideoDecodeAcceleratorCapabilityBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `profile`: Video codec profile that is supported, e.g. VP9 Profile 2.
+    /// * `max_resolution`: Maximum video dimensions in pixels supported for this |profile|.
+    /// * `min_resolution`: Minimum video dimensions in pixels supported for this |profile|.
+    pub fn builder(profile: impl Into<Cow<'a, str>>, max_resolution: Size, min_resolution: Size) -> VideoDecodeAcceleratorCapabilityBuilder<'a> {
         VideoDecodeAcceleratorCapabilityBuilder {
             profile: profile.into(),
-            maxResolution: maxResolution,
-            minResolution: minResolution,
+            max_resolution: max_resolution,
+            min_resolution: min_resolution,
         }
     }
+    /// Video codec profile that is supported, e.g. VP9 Profile 2.
     pub fn profile(&self) -> &str { self.profile.as_ref() }
-    pub fn maxResolution(&self) -> &Size { &self.maxResolution }
-    pub fn minResolution(&self) -> &Size { &self.minResolution }
+    /// Maximum video dimensions in pixels supported for this |profile|.
+    pub fn max_resolution(&self) -> &Size { &self.max_resolution }
+    /// Minimum video dimensions in pixels supported for this |profile|.
+    pub fn min_resolution(&self) -> &Size { &self.min_resolution }
 }
 
 
 pub struct VideoDecodeAcceleratorCapabilityBuilder<'a> {
     profile: Cow<'a, str>,
-    maxResolution: Size,
-    minResolution: Size,
+    max_resolution: Size,
+    min_resolution: Size,
 }
 
 impl<'a> VideoDecodeAcceleratorCapabilityBuilder<'a> {
     pub fn build(self) -> VideoDecodeAcceleratorCapability<'a> {
         VideoDecodeAcceleratorCapability {
             profile: self.profile,
-            maxResolution: self.maxResolution,
-            minResolution: self.minResolution,
+            max_resolution: self.max_resolution,
+            min_resolution: self.min_resolution,
         }
     }
 }
@@ -174,44 +209,57 @@ pub struct VideoEncodeAcceleratorCapability<'a> {
     /// Video codec profile that is supported, e.g H264 Main.
     profile: Cow<'a, str>,
     /// Maximum video dimensions in pixels supported for this |profile|.
-    maxResolution: Size,
+    #[serde(rename = "maxResolution")]
+    max_resolution: Size,
     /// Maximum encoding framerate in frames per second supported for this
     /// |profile|, as fraction's numerator and denominator, e.g. 24/1 fps,
     /// 24000/1001 fps, etc.
-    maxFramerateNumerator: i64,
-    maxFramerateDenominator: i64,
+    #[serde(rename = "maxFramerateNumerator")]
+    max_framerate_numerator: i64,
+    #[serde(rename = "maxFramerateDenominator")]
+    max_framerate_denominator: i64,
 }
 
 impl<'a> VideoEncodeAcceleratorCapability<'a> {
-    pub fn builder(profile: impl Into<Cow<'a, str>>, maxResolution: Size, maxFramerateNumerator: i64, maxFramerateDenominator: i64) -> VideoEncodeAcceleratorCapabilityBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `profile`: Video codec profile that is supported, e.g H264 Main.
+    /// * `max_resolution`: Maximum video dimensions in pixels supported for this |profile|.
+    /// * `max_framerate_numerator`: Maximum encoding framerate in frames per second supported for this |profile|, as fraction's numerator and denominator, e.g. 24/1 fps, 24000/1001 fps, etc.
+    /// * `max_framerate_denominator`: 
+    pub fn builder(profile: impl Into<Cow<'a, str>>, max_resolution: Size, max_framerate_numerator: i64, max_framerate_denominator: i64) -> VideoEncodeAcceleratorCapabilityBuilder<'a> {
         VideoEncodeAcceleratorCapabilityBuilder {
             profile: profile.into(),
-            maxResolution: maxResolution,
-            maxFramerateNumerator: maxFramerateNumerator,
-            maxFramerateDenominator: maxFramerateDenominator,
+            max_resolution: max_resolution,
+            max_framerate_numerator: max_framerate_numerator,
+            max_framerate_denominator: max_framerate_denominator,
         }
     }
+    /// Video codec profile that is supported, e.g H264 Main.
     pub fn profile(&self) -> &str { self.profile.as_ref() }
-    pub fn maxResolution(&self) -> &Size { &self.maxResolution }
-    pub fn maxFramerateNumerator(&self) -> i64 { self.maxFramerateNumerator }
-    pub fn maxFramerateDenominator(&self) -> i64 { self.maxFramerateDenominator }
+    /// Maximum video dimensions in pixels supported for this |profile|.
+    pub fn max_resolution(&self) -> &Size { &self.max_resolution }
+    /// Maximum encoding framerate in frames per second supported for this
+    /// |profile|, as fraction's numerator and denominator, e.g. 24/1 fps,
+    /// 24000/1001 fps, etc.
+    pub fn max_framerate_numerator(&self) -> i64 { self.max_framerate_numerator }
+    pub fn max_framerate_denominator(&self) -> i64 { self.max_framerate_denominator }
 }
 
 
 pub struct VideoEncodeAcceleratorCapabilityBuilder<'a> {
     profile: Cow<'a, str>,
-    maxResolution: Size,
-    maxFramerateNumerator: i64,
-    maxFramerateDenominator: i64,
+    max_resolution: Size,
+    max_framerate_numerator: i64,
+    max_framerate_denominator: i64,
 }
 
 impl<'a> VideoEncodeAcceleratorCapabilityBuilder<'a> {
     pub fn build(self) -> VideoEncodeAcceleratorCapability<'a> {
         VideoEncodeAcceleratorCapability {
             profile: self.profile,
-            maxResolution: self.maxResolution,
-            maxFramerateNumerator: self.maxFramerateNumerator,
-            maxFramerateDenominator: self.maxFramerateDenominator,
+            max_resolution: self.max_resolution,
+            max_framerate_numerator: self.max_framerate_numerator,
+            max_framerate_denominator: self.max_framerate_denominator,
         }
     }
 }
@@ -250,61 +298,75 @@ pub struct GPUInfo<'a> {
     /// The graphics devices on the system. Element 0 is the primary GPU.
     devices: Vec<GPUDevice<'a>>,
     /// An optional dictionary of additional GPU related attributes.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    auxAttributes: Option<serde_json::Map<String, JsonValue>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "auxAttributes")]
+    aux_attributes: Option<serde_json::Map<String, JsonValue>>,
     /// An optional dictionary of graphics features and their status.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    featureStatus: Option<serde_json::Map<String, JsonValue>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "featureStatus")]
+    feature_status: Option<serde_json::Map<String, JsonValue>>,
     /// An optional array of GPU driver bug workarounds.
-    driverBugWorkarounds: Vec<Cow<'a, str>>,
+    #[serde(rename = "driverBugWorkarounds")]
+    driver_bug_workarounds: Vec<Cow<'a, str>>,
     /// Supported accelerated video decoding capabilities.
-    videoDecoding: Vec<VideoDecodeAcceleratorCapability<'a>>,
+    #[serde(rename = "videoDecoding")]
+    video_decoding: Vec<VideoDecodeAcceleratorCapability<'a>>,
     /// Supported accelerated video encoding capabilities.
-    videoEncoding: Vec<VideoEncodeAcceleratorCapability<'a>>,
+    #[serde(rename = "videoEncoding")]
+    video_encoding: Vec<VideoEncodeAcceleratorCapability<'a>>,
 }
 
 impl<'a> GPUInfo<'a> {
-    pub fn builder(devices: Vec<GPUDevice<'a>>, driverBugWorkarounds: Vec<Cow<'a, str>>, videoDecoding: Vec<VideoDecodeAcceleratorCapability<'a>>, videoEncoding: Vec<VideoEncodeAcceleratorCapability<'a>>) -> GPUInfoBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `devices`: The graphics devices on the system. Element 0 is the primary GPU.
+    /// * `driver_bug_workarounds`: An optional array of GPU driver bug workarounds.
+    /// * `video_decoding`: Supported accelerated video decoding capabilities.
+    /// * `video_encoding`: Supported accelerated video encoding capabilities.
+    pub fn builder(devices: Vec<GPUDevice<'a>>, driver_bug_workarounds: Vec<Cow<'a, str>>, video_decoding: Vec<VideoDecodeAcceleratorCapability<'a>>, video_encoding: Vec<VideoEncodeAcceleratorCapability<'a>>) -> GPUInfoBuilder<'a> {
         GPUInfoBuilder {
             devices: devices,
-            auxAttributes: None,
-            featureStatus: None,
-            driverBugWorkarounds: driverBugWorkarounds,
-            videoDecoding: videoDecoding,
-            videoEncoding: videoEncoding,
+            aux_attributes: None,
+            feature_status: None,
+            driver_bug_workarounds: driver_bug_workarounds,
+            video_decoding: video_decoding,
+            video_encoding: video_encoding,
         }
     }
+    /// The graphics devices on the system. Element 0 is the primary GPU.
     pub fn devices(&self) -> &[GPUDevice<'a>] { &self.devices }
-    pub fn auxAttributes(&self) -> Option<&serde_json::Map<String, JsonValue>> { self.auxAttributes.as_ref() }
-    pub fn featureStatus(&self) -> Option<&serde_json::Map<String, JsonValue>> { self.featureStatus.as_ref() }
-    pub fn driverBugWorkarounds(&self) -> &[Cow<'a, str>] { &self.driverBugWorkarounds }
-    pub fn videoDecoding(&self) -> &[VideoDecodeAcceleratorCapability<'a>] { &self.videoDecoding }
-    pub fn videoEncoding(&self) -> &[VideoEncodeAcceleratorCapability<'a>] { &self.videoEncoding }
+    /// An optional dictionary of additional GPU related attributes.
+    pub fn aux_attributes(&self) -> Option<&serde_json::Map<String, JsonValue>> { self.aux_attributes.as_ref() }
+    /// An optional dictionary of graphics features and their status.
+    pub fn feature_status(&self) -> Option<&serde_json::Map<String, JsonValue>> { self.feature_status.as_ref() }
+    /// An optional array of GPU driver bug workarounds.
+    pub fn driver_bug_workarounds(&self) -> &[Cow<'a, str>] { &self.driver_bug_workarounds }
+    /// Supported accelerated video decoding capabilities.
+    pub fn video_decoding(&self) -> &[VideoDecodeAcceleratorCapability<'a>] { &self.video_decoding }
+    /// Supported accelerated video encoding capabilities.
+    pub fn video_encoding(&self) -> &[VideoEncodeAcceleratorCapability<'a>] { &self.video_encoding }
 }
 
 
 pub struct GPUInfoBuilder<'a> {
     devices: Vec<GPUDevice<'a>>,
-    auxAttributes: Option<serde_json::Map<String, JsonValue>>,
-    featureStatus: Option<serde_json::Map<String, JsonValue>>,
-    driverBugWorkarounds: Vec<Cow<'a, str>>,
-    videoDecoding: Vec<VideoDecodeAcceleratorCapability<'a>>,
-    videoEncoding: Vec<VideoEncodeAcceleratorCapability<'a>>,
+    aux_attributes: Option<serde_json::Map<String, JsonValue>>,
+    feature_status: Option<serde_json::Map<String, JsonValue>>,
+    driver_bug_workarounds: Vec<Cow<'a, str>>,
+    video_decoding: Vec<VideoDecodeAcceleratorCapability<'a>>,
+    video_encoding: Vec<VideoEncodeAcceleratorCapability<'a>>,
 }
 
 impl<'a> GPUInfoBuilder<'a> {
     /// An optional dictionary of additional GPU related attributes.
-    pub fn auxAttributes(mut self, auxAttributes: serde_json::Map<String, JsonValue>) -> Self { self.auxAttributes = Some(auxAttributes); self }
+    pub fn aux_attributes(mut self, aux_attributes: serde_json::Map<String, JsonValue>) -> Self { self.aux_attributes = Some(aux_attributes); self }
     /// An optional dictionary of graphics features and their status.
-    pub fn featureStatus(mut self, featureStatus: serde_json::Map<String, JsonValue>) -> Self { self.featureStatus = Some(featureStatus); self }
+    pub fn feature_status(mut self, feature_status: serde_json::Map<String, JsonValue>) -> Self { self.feature_status = Some(feature_status); self }
     pub fn build(self) -> GPUInfo<'a> {
         GPUInfo {
             devices: self.devices,
-            auxAttributes: self.auxAttributes,
-            featureStatus: self.featureStatus,
-            driverBugWorkarounds: self.driverBugWorkarounds,
-            videoDecoding: self.videoDecoding,
-            videoEncoding: self.videoEncoding,
+            aux_attributes: self.aux_attributes,
+            feature_status: self.feature_status,
+            driver_bug_workarounds: self.driver_bug_workarounds,
+            video_decoding: self.video_decoding,
+            video_encoding: self.video_encoding,
         }
     }
 }
@@ -321,27 +383,36 @@ pub struct ProcessInfo<'a> {
     id: u64,
     /// Specifies cumulative CPU usage in seconds across all threads of the
     /// process since the process start.
-    cpuTime: f64,
+    #[serde(rename = "cpuTime")]
+    cpu_time: f64,
 }
 
 impl<'a> ProcessInfo<'a> {
-    pub fn builder(type_: impl Into<Cow<'a, str>>, id: u64, cpuTime: f64) -> ProcessInfoBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `type_`: Specifies process type.
+    /// * `id`: Specifies process id.
+    /// * `cpu_time`: Specifies cumulative CPU usage in seconds across all threads of the process since the process start.
+    pub fn builder(type_: impl Into<Cow<'a, str>>, id: u64, cpu_time: f64) -> ProcessInfoBuilder<'a> {
         ProcessInfoBuilder {
             type_: type_.into(),
             id: id,
-            cpuTime: cpuTime,
+            cpu_time: cpu_time,
         }
     }
+    /// Specifies process type.
     pub fn type_(&self) -> &str { self.type_.as_ref() }
+    /// Specifies process id.
     pub fn id(&self) -> u64 { self.id }
-    pub fn cpuTime(&self) -> f64 { self.cpuTime }
+    /// Specifies cumulative CPU usage in seconds across all threads of the
+    /// process since the process start.
+    pub fn cpu_time(&self) -> f64 { self.cpu_time }
 }
 
 
 pub struct ProcessInfoBuilder<'a> {
     type_: Cow<'a, str>,
     id: u64,
-    cpuTime: f64,
+    cpu_time: f64,
 }
 
 impl<'a> ProcessInfoBuilder<'a> {
@@ -349,7 +420,7 @@ impl<'a> ProcessInfoBuilder<'a> {
         ProcessInfo {
             type_: self.type_,
             id: self.id,
-            cpuTime: self.cpuTime,
+            cpu_time: self.cpu_time,
         }
     }
 }
@@ -363,45 +434,60 @@ pub struct GetInfoReturns<'a> {
     gpu: GPUInfo<'a>,
     /// A platform-dependent description of the model of the machine. On Mac OS, this is, for
     /// example, 'MacBookPro'. Will be the empty string if not supported.
-    modelName: Cow<'a, str>,
+    #[serde(rename = "modelName")]
+    model_name: Cow<'a, str>,
     /// A platform-dependent description of the version of the machine. On Mac OS, this is, for
     /// example, '10.1'. Will be the empty string if not supported.
-    modelVersion: Cow<'a, str>,
+    #[serde(rename = "modelVersion")]
+    model_version: Cow<'a, str>,
     /// The command line string used to launch the browser. Will be the empty string if not
     /// supported.
-    commandLine: Cow<'a, str>,
+    #[serde(rename = "commandLine")]
+    command_line: Cow<'a, str>,
 }
 
 impl<'a> GetInfoReturns<'a> {
-    pub fn builder(gpu: GPUInfo<'a>, modelName: impl Into<Cow<'a, str>>, modelVersion: impl Into<Cow<'a, str>>, commandLine: impl Into<Cow<'a, str>>) -> GetInfoReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `gpu`: Information about the GPUs on the system.
+    /// * `model_name`: A platform-dependent description of the model of the machine. On Mac OS, this is, for example, 'MacBookPro'. Will be the empty string if not supported.
+    /// * `model_version`: A platform-dependent description of the version of the machine. On Mac OS, this is, for example, '10.1'. Will be the empty string if not supported.
+    /// * `command_line`: The command line string used to launch the browser. Will be the empty string if not supported.
+    pub fn builder(gpu: GPUInfo<'a>, model_name: impl Into<Cow<'a, str>>, model_version: impl Into<Cow<'a, str>>, command_line: impl Into<Cow<'a, str>>) -> GetInfoReturnsBuilder<'a> {
         GetInfoReturnsBuilder {
             gpu: gpu,
-            modelName: modelName.into(),
-            modelVersion: modelVersion.into(),
-            commandLine: commandLine.into(),
+            model_name: model_name.into(),
+            model_version: model_version.into(),
+            command_line: command_line.into(),
         }
     }
+    /// Information about the GPUs on the system.
     pub fn gpu(&self) -> &GPUInfo<'a> { &self.gpu }
-    pub fn modelName(&self) -> &str { self.modelName.as_ref() }
-    pub fn modelVersion(&self) -> &str { self.modelVersion.as_ref() }
-    pub fn commandLine(&self) -> &str { self.commandLine.as_ref() }
+    /// A platform-dependent description of the model of the machine. On Mac OS, this is, for
+    /// example, 'MacBookPro'. Will be the empty string if not supported.
+    pub fn model_name(&self) -> &str { self.model_name.as_ref() }
+    /// A platform-dependent description of the version of the machine. On Mac OS, this is, for
+    /// example, '10.1'. Will be the empty string if not supported.
+    pub fn model_version(&self) -> &str { self.model_version.as_ref() }
+    /// The command line string used to launch the browser. Will be the empty string if not
+    /// supported.
+    pub fn command_line(&self) -> &str { self.command_line.as_ref() }
 }
 
 
 pub struct GetInfoReturnsBuilder<'a> {
     gpu: GPUInfo<'a>,
-    modelName: Cow<'a, str>,
-    modelVersion: Cow<'a, str>,
-    commandLine: Cow<'a, str>,
+    model_name: Cow<'a, str>,
+    model_version: Cow<'a, str>,
+    command_line: Cow<'a, str>,
 }
 
 impl<'a> GetInfoReturnsBuilder<'a> {
     pub fn build(self) -> GetInfoReturns<'a> {
         GetInfoReturns {
             gpu: self.gpu,
-            modelName: self.modelName,
-            modelVersion: self.modelVersion,
-            commandLine: self.commandLine,
+            model_name: self.model_name,
+            model_version: self.model_version,
+            command_line: self.command_line,
         }
     }
 }
@@ -421,27 +507,30 @@ impl<'a> crate::CdpCommand<'a> for GetInfoParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetFeatureStateParams<'a> {
-    featureState: Cow<'a, str>,
+    #[serde(rename = "featureState")]
+    feature_state: Cow<'a, str>,
 }
 
 impl<'a> GetFeatureStateParams<'a> {
-    pub fn builder(featureState: impl Into<Cow<'a, str>>) -> GetFeatureStateParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `feature_state`: 
+    pub fn builder(feature_state: impl Into<Cow<'a, str>>) -> GetFeatureStateParamsBuilder<'a> {
         GetFeatureStateParamsBuilder {
-            featureState: featureState.into(),
+            feature_state: feature_state.into(),
         }
     }
-    pub fn featureState(&self) -> &str { self.featureState.as_ref() }
+    pub fn feature_state(&self) -> &str { self.feature_state.as_ref() }
 }
 
 
 pub struct GetFeatureStateParamsBuilder<'a> {
-    featureState: Cow<'a, str>,
+    feature_state: Cow<'a, str>,
 }
 
 impl<'a> GetFeatureStateParamsBuilder<'a> {
     pub fn build(self) -> GetFeatureStateParams<'a> {
         GetFeatureStateParams {
-            featureState: self.featureState,
+            feature_state: self.feature_state,
         }
     }
 }
@@ -451,27 +540,30 @@ impl<'a> GetFeatureStateParamsBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetFeatureStateReturns {
-    featureEnabled: bool,
+    #[serde(rename = "featureEnabled")]
+    feature_enabled: bool,
 }
 
 impl GetFeatureStateReturns {
-    pub fn builder(featureEnabled: bool) -> GetFeatureStateReturnsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `feature_enabled`: 
+    pub fn builder(feature_enabled: bool) -> GetFeatureStateReturnsBuilder {
         GetFeatureStateReturnsBuilder {
-            featureEnabled: featureEnabled,
+            feature_enabled: feature_enabled,
         }
     }
-    pub fn featureEnabled(&self) -> bool { self.featureEnabled }
+    pub fn feature_enabled(&self) -> bool { self.feature_enabled }
 }
 
 
 pub struct GetFeatureStateReturnsBuilder {
-    featureEnabled: bool,
+    feature_enabled: bool,
 }
 
 impl GetFeatureStateReturnsBuilder {
     pub fn build(self) -> GetFeatureStateReturns {
         GetFeatureStateReturns {
-            featureEnabled: self.featureEnabled,
+            feature_enabled: self.feature_enabled,
         }
     }
 }
@@ -489,27 +581,31 @@ impl<'a> crate::CdpCommand<'a> for GetFeatureStateParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct GetProcessInfoReturns<'a> {
     /// An array of process info blocks.
-    processInfo: Vec<ProcessInfo<'a>>,
+    #[serde(rename = "processInfo")]
+    process_info: Vec<ProcessInfo<'a>>,
 }
 
 impl<'a> GetProcessInfoReturns<'a> {
-    pub fn builder(processInfo: Vec<ProcessInfo<'a>>) -> GetProcessInfoReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `process_info`: An array of process info blocks.
+    pub fn builder(process_info: Vec<ProcessInfo<'a>>) -> GetProcessInfoReturnsBuilder<'a> {
         GetProcessInfoReturnsBuilder {
-            processInfo: processInfo,
+            process_info: process_info,
         }
     }
-    pub fn processInfo(&self) -> &[ProcessInfo<'a>] { &self.processInfo }
+    /// An array of process info blocks.
+    pub fn process_info(&self) -> &[ProcessInfo<'a>] { &self.process_info }
 }
 
 
 pub struct GetProcessInfoReturnsBuilder<'a> {
-    processInfo: Vec<ProcessInfo<'a>>,
+    process_info: Vec<ProcessInfo<'a>>,
 }
 
 impl<'a> GetProcessInfoReturnsBuilder<'a> {
     pub fn build(self) -> GetProcessInfoReturns<'a> {
         GetProcessInfoReturns {
-            processInfo: self.processInfo,
+            process_info: self.process_info,
         }
     }
 }

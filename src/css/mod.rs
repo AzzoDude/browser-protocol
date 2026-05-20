@@ -3,7 +3,7 @@
 //! a specific 'id' structure, and those are not interchangeable between objects of different kinds.
 //! CSS objects can be loaded using the 'get*ForNode()' calls (which accept a DOM node id). A client
 //! can also keep track of stylesheets via the 'styleSheetAdded'/'styleSheetRemoved' events and
-//! subsequently load the required stylesheet contents using the 'getStyleSheet[Text]()' methods.
+//! subsequently load the required stylesheet contents using the 'getStyleSheet\[Text\]()' methods.
 
 
 use serde::{Serialize, Deserialize};
@@ -33,41 +33,48 @@ pub enum StyleSheetOrigin {
 #[serde(rename_all = "camelCase")]
 pub struct PseudoElementMatches<'a> {
     /// Pseudo element type.
-    pseudoType: crate::dom::PseudoType,
+    #[serde(rename = "pseudoType")]
+    pseudo_type: crate::dom::PseudoType,
     /// Pseudo element custom ident.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pseudoIdentifier: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "pseudoIdentifier")]
+    pseudo_identifier: Option<Cow<'a, str>>,
     /// Matches of CSS rules applicable to the pseudo style.
     matches: Vec<RuleMatch<'a>>,
 }
 
 impl<'a> PseudoElementMatches<'a> {
-    pub fn builder(pseudoType: crate::dom::PseudoType, matches: Vec<RuleMatch<'a>>) -> PseudoElementMatchesBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `pseudo_type`: Pseudo element type.
+    /// * `matches`: Matches of CSS rules applicable to the pseudo style.
+    pub fn builder(pseudo_type: crate::dom::PseudoType, matches: Vec<RuleMatch<'a>>) -> PseudoElementMatchesBuilder<'a> {
         PseudoElementMatchesBuilder {
-            pseudoType: pseudoType,
-            pseudoIdentifier: None,
+            pseudo_type: pseudo_type,
+            pseudo_identifier: None,
             matches: matches,
         }
     }
-    pub fn pseudoType(&self) -> &crate::dom::PseudoType { &self.pseudoType }
-    pub fn pseudoIdentifier(&self) -> Option<&str> { self.pseudoIdentifier.as_deref() }
+    /// Pseudo element type.
+    pub fn pseudo_type(&self) -> &crate::dom::PseudoType { &self.pseudo_type }
+    /// Pseudo element custom ident.
+    pub fn pseudo_identifier(&self) -> Option<&str> { self.pseudo_identifier.as_deref() }
+    /// Matches of CSS rules applicable to the pseudo style.
     pub fn matches(&self) -> &[RuleMatch<'a>] { &self.matches }
 }
 
 
 pub struct PseudoElementMatchesBuilder<'a> {
-    pseudoType: crate::dom::PseudoType,
-    pseudoIdentifier: Option<Cow<'a, str>>,
+    pseudo_type: crate::dom::PseudoType,
+    pseudo_identifier: Option<Cow<'a, str>>,
     matches: Vec<RuleMatch<'a>>,
 }
 
 impl<'a> PseudoElementMatchesBuilder<'a> {
     /// Pseudo element custom ident.
-    pub fn pseudoIdentifier(mut self, pseudoIdentifier: impl Into<Cow<'a, str>>) -> Self { self.pseudoIdentifier = Some(pseudoIdentifier.into()); self }
+    pub fn pseudo_identifier(mut self, pseudo_identifier: impl Into<Cow<'a, str>>) -> Self { self.pseudo_identifier = Some(pseudo_identifier.into()); self }
     pub fn build(self) -> PseudoElementMatches<'a> {
         PseudoElementMatches {
-            pseudoType: self.pseudoType,
-            pseudoIdentifier: self.pseudoIdentifier,
+            pseudo_type: self.pseudo_type,
+            pseudo_identifier: self.pseudo_identifier,
             matches: self.matches,
         }
     }
@@ -86,13 +93,17 @@ pub struct CSSAnimationStyle<'a> {
 }
 
 impl<'a> CSSAnimationStyle<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `style`: The style coming from the animation.
     pub fn builder(style: CSSStyle<'a>) -> CSSAnimationStyleBuilder<'a> {
         CSSAnimationStyleBuilder {
             name: None,
             style: style,
         }
     }
+    /// The name of the animation.
     pub fn name(&self) -> Option<&str> { self.name.as_deref() }
+    /// The style coming from the animation.
     pub fn style(&self) -> &CSSStyle<'a> { &self.style }
 }
 
@@ -119,36 +130,41 @@ impl<'a> CSSAnimationStyleBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct InheritedStyleEntry<'a> {
     /// The ancestor node's inline style, if any, in the style inheritance chain.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    inlineStyle: Option<CSSStyle<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "inlineStyle")]
+    inline_style: Option<CSSStyle<'a>>,
     /// Matches of CSS rules matching the ancestor node in the style inheritance chain.
-    matchedCSSRules: Vec<RuleMatch<'a>>,
+    #[serde(rename = "matchedCSSRules")]
+    matched_css_rules: Vec<RuleMatch<'a>>,
 }
 
 impl<'a> InheritedStyleEntry<'a> {
-    pub fn builder(matchedCSSRules: Vec<RuleMatch<'a>>) -> InheritedStyleEntryBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `matched_css_rules`: Matches of CSS rules matching the ancestor node in the style inheritance chain.
+    pub fn builder(matched_css_rules: Vec<RuleMatch<'a>>) -> InheritedStyleEntryBuilder<'a> {
         InheritedStyleEntryBuilder {
-            inlineStyle: None,
-            matchedCSSRules: matchedCSSRules,
+            inline_style: None,
+            matched_css_rules: matched_css_rules,
         }
     }
-    pub fn inlineStyle(&self) -> Option<&CSSStyle<'a>> { self.inlineStyle.as_ref() }
-    pub fn matchedCSSRules(&self) -> &[RuleMatch<'a>] { &self.matchedCSSRules }
+    /// The ancestor node's inline style, if any, in the style inheritance chain.
+    pub fn inline_style(&self) -> Option<&CSSStyle<'a>> { self.inline_style.as_ref() }
+    /// Matches of CSS rules matching the ancestor node in the style inheritance chain.
+    pub fn matched_css_rules(&self) -> &[RuleMatch<'a>] { &self.matched_css_rules }
 }
 
 
 pub struct InheritedStyleEntryBuilder<'a> {
-    inlineStyle: Option<CSSStyle<'a>>,
-    matchedCSSRules: Vec<RuleMatch<'a>>,
+    inline_style: Option<CSSStyle<'a>>,
+    matched_css_rules: Vec<RuleMatch<'a>>,
 }
 
 impl<'a> InheritedStyleEntryBuilder<'a> {
     /// The ancestor node's inline style, if any, in the style inheritance chain.
-    pub fn inlineStyle(mut self, inlineStyle: CSSStyle<'a>) -> Self { self.inlineStyle = Some(inlineStyle); self }
+    pub fn inline_style(mut self, inline_style: CSSStyle<'a>) -> Self { self.inline_style = Some(inline_style); self }
     pub fn build(self) -> InheritedStyleEntry<'a> {
         InheritedStyleEntry {
-            inlineStyle: self.inlineStyle,
-            matchedCSSRules: self.matchedCSSRules,
+            inline_style: self.inline_style,
+            matched_css_rules: self.matched_css_rules,
         }
     }
 }
@@ -159,39 +175,42 @@ impl<'a> InheritedStyleEntryBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct InheritedAnimatedStyleEntry<'a> {
     /// Styles coming from the animations of the ancestor, if any, in the style inheritance chain.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    animationStyles: Option<Vec<CSSAnimationStyle<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "animationStyles")]
+    animation_styles: Option<Vec<CSSAnimationStyle<'a>>>,
     /// The style coming from the transitions of the ancestor, if any, in the style inheritance chain.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    transitionsStyle: Option<CSSStyle<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "transitionsStyle")]
+    transitions_style: Option<CSSStyle<'a>>,
 }
 
 impl<'a> InheritedAnimatedStyleEntry<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> InheritedAnimatedStyleEntryBuilder<'a> {
         InheritedAnimatedStyleEntryBuilder {
-            animationStyles: None,
-            transitionsStyle: None,
+            animation_styles: None,
+            transitions_style: None,
         }
     }
-    pub fn animationStyles(&self) -> Option<&[CSSAnimationStyle<'a>]> { self.animationStyles.as_deref() }
-    pub fn transitionsStyle(&self) -> Option<&CSSStyle<'a>> { self.transitionsStyle.as_ref() }
+    /// Styles coming from the animations of the ancestor, if any, in the style inheritance chain.
+    pub fn animation_styles(&self) -> Option<&[CSSAnimationStyle<'a>]> { self.animation_styles.as_deref() }
+    /// The style coming from the transitions of the ancestor, if any, in the style inheritance chain.
+    pub fn transitions_style(&self) -> Option<&CSSStyle<'a>> { self.transitions_style.as_ref() }
 }
 
 #[derive(Default)]
 pub struct InheritedAnimatedStyleEntryBuilder<'a> {
-    animationStyles: Option<Vec<CSSAnimationStyle<'a>>>,
-    transitionsStyle: Option<CSSStyle<'a>>,
+    animation_styles: Option<Vec<CSSAnimationStyle<'a>>>,
+    transitions_style: Option<CSSStyle<'a>>,
 }
 
 impl<'a> InheritedAnimatedStyleEntryBuilder<'a> {
     /// Styles coming from the animations of the ancestor, if any, in the style inheritance chain.
-    pub fn animationStyles(mut self, animationStyles: Vec<CSSAnimationStyle<'a>>) -> Self { self.animationStyles = Some(animationStyles); self }
+    pub fn animation_styles(mut self, animation_styles: Vec<CSSAnimationStyle<'a>>) -> Self { self.animation_styles = Some(animation_styles); self }
     /// The style coming from the transitions of the ancestor, if any, in the style inheritance chain.
-    pub fn transitionsStyle(mut self, transitionsStyle: CSSStyle<'a>) -> Self { self.transitionsStyle = Some(transitionsStyle); self }
+    pub fn transitions_style(mut self, transitions_style: CSSStyle<'a>) -> Self { self.transitions_style = Some(transitions_style); self }
     pub fn build(self) -> InheritedAnimatedStyleEntry<'a> {
         InheritedAnimatedStyleEntry {
-            animationStyles: self.animationStyles,
-            transitionsStyle: self.transitionsStyle,
+            animation_styles: self.animation_styles,
+            transitions_style: self.transitions_style,
         }
     }
 }
@@ -202,27 +221,31 @@ impl<'a> InheritedAnimatedStyleEntryBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct InheritedPseudoElementMatches<'a> {
     /// Matches of pseudo styles from the pseudos of an ancestor node.
-    pseudoElements: Vec<PseudoElementMatches<'a>>,
+    #[serde(rename = "pseudoElements")]
+    pseudo_elements: Vec<PseudoElementMatches<'a>>,
 }
 
 impl<'a> InheritedPseudoElementMatches<'a> {
-    pub fn builder(pseudoElements: Vec<PseudoElementMatches<'a>>) -> InheritedPseudoElementMatchesBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `pseudo_elements`: Matches of pseudo styles from the pseudos of an ancestor node.
+    pub fn builder(pseudo_elements: Vec<PseudoElementMatches<'a>>) -> InheritedPseudoElementMatchesBuilder<'a> {
         InheritedPseudoElementMatchesBuilder {
-            pseudoElements: pseudoElements,
+            pseudo_elements: pseudo_elements,
         }
     }
-    pub fn pseudoElements(&self) -> &[PseudoElementMatches<'a>] { &self.pseudoElements }
+    /// Matches of pseudo styles from the pseudos of an ancestor node.
+    pub fn pseudo_elements(&self) -> &[PseudoElementMatches<'a>] { &self.pseudo_elements }
 }
 
 
 pub struct InheritedPseudoElementMatchesBuilder<'a> {
-    pseudoElements: Vec<PseudoElementMatches<'a>>,
+    pseudo_elements: Vec<PseudoElementMatches<'a>>,
 }
 
 impl<'a> InheritedPseudoElementMatchesBuilder<'a> {
     pub fn build(self) -> InheritedPseudoElementMatches<'a> {
         InheritedPseudoElementMatches {
-            pseudoElements: self.pseudoElements,
+            pseudo_elements: self.pseudo_elements,
         }
     }
 }
@@ -235,31 +258,37 @@ pub struct RuleMatch<'a> {
     /// CSS rule in the match.
     rule: CSSRule<'a>,
     /// Matching selector indices in the rule's selectorList selectors (0-based).
-    matchingSelectors: Vec<i64>,
+    #[serde(rename = "matchingSelectors")]
+    matching_selectors: Vec<i64>,
 }
 
 impl<'a> RuleMatch<'a> {
-    pub fn builder(rule: CSSRule<'a>, matchingSelectors: Vec<i64>) -> RuleMatchBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `rule`: CSS rule in the match.
+    /// * `matching_selectors`: Matching selector indices in the rule's selectorList selectors (0-based).
+    pub fn builder(rule: CSSRule<'a>, matching_selectors: Vec<i64>) -> RuleMatchBuilder<'a> {
         RuleMatchBuilder {
             rule: rule,
-            matchingSelectors: matchingSelectors,
+            matching_selectors: matching_selectors,
         }
     }
+    /// CSS rule in the match.
     pub fn rule(&self) -> &CSSRule<'a> { &self.rule }
-    pub fn matchingSelectors(&self) -> &[i64] { &self.matchingSelectors }
+    /// Matching selector indices in the rule's selectorList selectors (0-based).
+    pub fn matching_selectors(&self) -> &[i64] { &self.matching_selectors }
 }
 
 
 pub struct RuleMatchBuilder<'a> {
     rule: CSSRule<'a>,
-    matchingSelectors: Vec<i64>,
+    matching_selectors: Vec<i64>,
 }
 
 impl<'a> RuleMatchBuilder<'a> {
     pub fn build(self) -> RuleMatch<'a> {
         RuleMatch {
             rule: self.rule,
-            matchingSelectors: self.matchingSelectors,
+            matching_selectors: self.matching_selectors,
         }
     }
 }
@@ -280,6 +309,8 @@ pub struct ProtocolValue<'a> {
 }
 
 impl<'a> ProtocolValue<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `text`: Value text.
     pub fn builder(text: impl Into<Cow<'a, str>>) -> ProtocolValueBuilder<'a> {
         ProtocolValueBuilder {
             text: text.into(),
@@ -287,8 +318,11 @@ impl<'a> ProtocolValue<'a> {
             specificity: None,
         }
     }
+    /// Value text.
     pub fn text(&self) -> &str { self.text.as_ref() }
+    /// Value range in the underlying resource (if available).
     pub fn range(&self) -> Option<&SourceRange> { self.range.as_ref() }
+    /// Specificity of the selector.
     pub fn specificity(&self) -> Option<&Specificity> { self.specificity.as_ref() }
 }
 
@@ -314,7 +348,7 @@ impl<'a> ProtocolValueBuilder<'a> {
 }
 
 /// Specificity:
-/// https://drafts.csswg.org/selectors/#specificity-rules
+/// <https://drafts.csswg.org/selectors/#specificity-rules>
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -329,6 +363,10 @@ pub struct Specificity {
 }
 
 impl Specificity {
+    /// Creates a builder for this type with the required parameters:
+    /// * `a`: The a component, which represents the number of ID selectors.
+    /// * `b`: The b component, which represents the number of class selectors, attributes selectors, and pseudo-classes.
+    /// * `c`: The c component, which represents the number of type selectors and pseudo-elements.
     pub fn builder(a: i64, b: i64, c: i64) -> SpecificityBuilder {
         SpecificityBuilder {
             a: a,
@@ -336,8 +374,12 @@ impl Specificity {
             c: c,
         }
     }
+    /// The a component, which represents the number of ID selectors.
     pub fn a(&self) -> i64 { self.a }
+    /// The b component, which represents the number of class selectors, attributes selectors, and
+    /// pseudo-classes.
     pub fn b(&self) -> i64 { self.b }
+    /// The c component, which represents the number of type selectors and pseudo-elements.
     pub fn c(&self) -> i64 { self.c }
 }
 
@@ -370,13 +412,18 @@ pub struct SelectorList<'a> {
 }
 
 impl<'a> SelectorList<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `selectors`: Selectors in the list.
+    /// * `text`: Rule selector text.
     pub fn builder(selectors: Vec<ProtocolValue<'a>>, text: impl Into<Cow<'a, str>>) -> SelectorListBuilder<'a> {
         SelectorListBuilder {
             selectors: selectors,
             text: text.into(),
         }
     }
+    /// Selectors in the list.
     pub fn selectors(&self) -> &[ProtocolValue<'a>] { &self.selectors }
+    /// Rule selector text.
     pub fn text(&self) -> &str { self.text.as_ref() }
 }
 
@@ -401,148 +448,198 @@ impl<'a> SelectorListBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct CSSStyleSheetHeader<'a> {
     /// The stylesheet identifier.
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    #[serde(rename = "styleSheetId")]
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     /// Owner frame identifier.
-    frameId: crate::page::FrameId<'a>,
+    #[serde(rename = "frameId")]
+    frame_id: crate::page::FrameId<'a>,
     /// Stylesheet resource URL. Empty if this is a constructed stylesheet created using
     /// new CSSStyleSheet() (but non-empty if this is a constructed stylesheet imported
     /// as a CSS module script).
-    sourceURL: Cow<'a, str>,
+    #[serde(rename = "sourceURL")]
+    source_url: Cow<'a, str>,
     /// URL of source map associated with the stylesheet (if any).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    sourceMapURL: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sourceMapURL")]
+    source_map_url: Option<Cow<'a, str>>,
     /// Stylesheet origin.
     origin: StyleSheetOrigin,
     /// Stylesheet title.
     title: Cow<'a, str>,
     /// The backend id for the owner node of the stylesheet.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    ownerNode: Option<crate::dom::BackendNodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "ownerNode")]
+    owner_node: Option<crate::dom::BackendNodeId>,
     /// Denotes whether the stylesheet is disabled.
     disabled: bool,
     /// Whether the sourceURL field value comes from the sourceURL comment.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    hasSourceURL: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "hasSourceURL")]
+    has_source_url: Option<bool>,
     /// Whether this stylesheet is created for STYLE tag by parser. This flag is not set for
     /// document.written STYLE tags.
-    isInline: bool,
+    #[serde(rename = "isInline")]
+    is_inline: bool,
     /// Whether this stylesheet is mutable. Inline stylesheets become mutable
     /// after they have been modified via CSSOM API.
-    /// '<link>' element's stylesheets become mutable only if DevTools modifies them.
+    /// '\<link\>' element's stylesheets become mutable only if DevTools modifies them.
     /// Constructed stylesheets (new CSSStyleSheet()) are mutable immediately after creation.
-    isMutable: bool,
+    #[serde(rename = "isMutable")]
+    is_mutable: bool,
     /// True if this stylesheet is created through new CSSStyleSheet() or imported as a
     /// CSS module script.
-    isConstructed: bool,
+    #[serde(rename = "isConstructed")]
+    is_constructed: bool,
     /// Line offset of the stylesheet within the resource (zero based).
-    startLine: f64,
+    #[serde(rename = "startLine")]
+    start_line: f64,
     /// Column offset of the stylesheet within the resource (zero based).
-    startColumn: f64,
+    #[serde(rename = "startColumn")]
+    start_column: f64,
     /// Size of the content (in characters).
     length: f64,
     /// Line offset of the end of the stylesheet within the resource (zero based).
-    endLine: f64,
+    #[serde(rename = "endLine")]
+    end_line: f64,
     /// Column offset of the end of the stylesheet within the resource (zero based).
-    endColumn: f64,
+    #[serde(rename = "endColumn")]
+    end_column: f64,
     /// If the style sheet was loaded from a network resource, this indicates when the resource failed to load
-    #[serde(skip_serializing_if = "Option::is_none")]
-    loadingFailed: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "loadingFailed")]
+    loading_failed: Option<bool>,
 }
 
 impl<'a> CSSStyleSheetHeader<'a> {
-    pub fn builder(styleSheetId: crate::dom::StyleSheetId<'a>, frameId: crate::page::FrameId<'a>, sourceURL: impl Into<Cow<'a, str>>, origin: impl Into<StyleSheetOrigin>, title: impl Into<Cow<'a, str>>, disabled: bool, isInline: bool, isMutable: bool, isConstructed: bool, startLine: f64, startColumn: f64, length: f64, endLine: f64, endColumn: f64) -> CSSStyleSheetHeaderBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `style_sheet_id`: The stylesheet identifier.
+    /// * `frame_id`: Owner frame identifier.
+    /// * `source_url`: Stylesheet resource URL. Empty if this is a constructed stylesheet created using new CSSStyleSheet() (but non-empty if this is a constructed stylesheet imported as a CSS module script).
+    /// * `origin`: Stylesheet origin.
+    /// * `title`: Stylesheet title.
+    /// * `disabled`: Denotes whether the stylesheet is disabled.
+    /// * `is_inline`: Whether this stylesheet is created for STYLE tag by parser. This flag is not set for document.written STYLE tags.
+    /// * `is_mutable`: Whether this stylesheet is mutable. Inline stylesheets become mutable after they have been modified via CSSOM API. `\<link\>` element's stylesheets become mutable only if DevTools modifies them. Constructed stylesheets (new CSSStyleSheet()) are mutable immediately after creation.
+    /// * `is_constructed`: True if this stylesheet is created through new CSSStyleSheet() or imported as a CSS module script.
+    /// * `start_line`: Line offset of the stylesheet within the resource (zero based).
+    /// * `start_column`: Column offset of the stylesheet within the resource (zero based).
+    /// * `length`: Size of the content (in characters).
+    /// * `end_line`: Line offset of the end of the stylesheet within the resource (zero based).
+    /// * `end_column`: Column offset of the end of the stylesheet within the resource (zero based).
+    pub fn builder(style_sheet_id: crate::dom::StyleSheetId<'a>, frame_id: crate::page::FrameId<'a>, source_url: impl Into<Cow<'a, str>>, origin: impl Into<StyleSheetOrigin>, title: impl Into<Cow<'a, str>>, disabled: bool, is_inline: bool, is_mutable: bool, is_constructed: bool, start_line: f64, start_column: f64, length: f64, end_line: f64, end_column: f64) -> CSSStyleSheetHeaderBuilder<'a> {
         CSSStyleSheetHeaderBuilder {
-            styleSheetId: styleSheetId,
-            frameId: frameId,
-            sourceURL: sourceURL.into(),
-            sourceMapURL: None,
+            style_sheet_id: style_sheet_id,
+            frame_id: frame_id,
+            source_url: source_url.into(),
+            source_map_url: None,
             origin: origin.into(),
             title: title.into(),
-            ownerNode: None,
+            owner_node: None,
             disabled: disabled,
-            hasSourceURL: None,
-            isInline: isInline,
-            isMutable: isMutable,
-            isConstructed: isConstructed,
-            startLine: startLine,
-            startColumn: startColumn,
+            has_source_url: None,
+            is_inline: is_inline,
+            is_mutable: is_mutable,
+            is_constructed: is_constructed,
+            start_line: start_line,
+            start_column: start_column,
             length: length,
-            endLine: endLine,
-            endColumn: endColumn,
-            loadingFailed: None,
+            end_line: end_line,
+            end_column: end_column,
+            loading_failed: None,
         }
     }
-    pub fn styleSheetId(&self) -> &crate::dom::StyleSheetId<'a> { &self.styleSheetId }
-    pub fn frameId(&self) -> &crate::page::FrameId<'a> { &self.frameId }
-    pub fn sourceURL(&self) -> &str { self.sourceURL.as_ref() }
-    pub fn sourceMapURL(&self) -> Option<&str> { self.sourceMapURL.as_deref() }
+    /// The stylesheet identifier.
+    pub fn style_sheet_id(&self) -> &crate::dom::StyleSheetId<'a> { &self.style_sheet_id }
+    /// Owner frame identifier.
+    pub fn frame_id(&self) -> &crate::page::FrameId<'a> { &self.frame_id }
+    /// Stylesheet resource URL. Empty if this is a constructed stylesheet created using
+    /// new CSSStyleSheet() (but non-empty if this is a constructed stylesheet imported
+    /// as a CSS module script).
+    pub fn source_url(&self) -> &str { self.source_url.as_ref() }
+    /// URL of source map associated with the stylesheet (if any).
+    pub fn source_map_url(&self) -> Option<&str> { self.source_map_url.as_deref() }
+    /// Stylesheet origin.
     pub fn origin(&self) -> &StyleSheetOrigin { &self.origin }
+    /// Stylesheet title.
     pub fn title(&self) -> &str { self.title.as_ref() }
-    pub fn ownerNode(&self) -> Option<&crate::dom::BackendNodeId> { self.ownerNode.as_ref() }
+    /// The backend id for the owner node of the stylesheet.
+    pub fn owner_node(&self) -> Option<&crate::dom::BackendNodeId> { self.owner_node.as_ref() }
+    /// Denotes whether the stylesheet is disabled.
     pub fn disabled(&self) -> bool { self.disabled }
-    pub fn hasSourceURL(&self) -> Option<bool> { self.hasSourceURL }
-    pub fn isInline(&self) -> bool { self.isInline }
-    pub fn isMutable(&self) -> bool { self.isMutable }
-    pub fn isConstructed(&self) -> bool { self.isConstructed }
-    pub fn startLine(&self) -> f64 { self.startLine }
-    pub fn startColumn(&self) -> f64 { self.startColumn }
+    /// Whether the sourceURL field value comes from the sourceURL comment.
+    pub fn has_source_url(&self) -> Option<bool> { self.has_source_url }
+    /// Whether this stylesheet is created for STYLE tag by parser. This flag is not set for
+    /// document.written STYLE tags.
+    pub fn is_inline(&self) -> bool { self.is_inline }
+    /// Whether this stylesheet is mutable. Inline stylesheets become mutable
+    /// after they have been modified via CSSOM API.
+    /// '\<link\>' element's stylesheets become mutable only if DevTools modifies them.
+    /// Constructed stylesheets (new CSSStyleSheet()) are mutable immediately after creation.
+    pub fn is_mutable(&self) -> bool { self.is_mutable }
+    /// True if this stylesheet is created through new CSSStyleSheet() or imported as a
+    /// CSS module script.
+    pub fn is_constructed(&self) -> bool { self.is_constructed }
+    /// Line offset of the stylesheet within the resource (zero based).
+    pub fn start_line(&self) -> f64 { self.start_line }
+    /// Column offset of the stylesheet within the resource (zero based).
+    pub fn start_column(&self) -> f64 { self.start_column }
+    /// Size of the content (in characters).
     pub fn length(&self) -> f64 { self.length }
-    pub fn endLine(&self) -> f64 { self.endLine }
-    pub fn endColumn(&self) -> f64 { self.endColumn }
-    pub fn loadingFailed(&self) -> Option<bool> { self.loadingFailed }
+    /// Line offset of the end of the stylesheet within the resource (zero based).
+    pub fn end_line(&self) -> f64 { self.end_line }
+    /// Column offset of the end of the stylesheet within the resource (zero based).
+    pub fn end_column(&self) -> f64 { self.end_column }
+    /// If the style sheet was loaded from a network resource, this indicates when the resource failed to load
+    pub fn loading_failed(&self) -> Option<bool> { self.loading_failed }
 }
 
 
 pub struct CSSStyleSheetHeaderBuilder<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
-    frameId: crate::page::FrameId<'a>,
-    sourceURL: Cow<'a, str>,
-    sourceMapURL: Option<Cow<'a, str>>,
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
+    frame_id: crate::page::FrameId<'a>,
+    source_url: Cow<'a, str>,
+    source_map_url: Option<Cow<'a, str>>,
     origin: StyleSheetOrigin,
     title: Cow<'a, str>,
-    ownerNode: Option<crate::dom::BackendNodeId>,
+    owner_node: Option<crate::dom::BackendNodeId>,
     disabled: bool,
-    hasSourceURL: Option<bool>,
-    isInline: bool,
-    isMutable: bool,
-    isConstructed: bool,
-    startLine: f64,
-    startColumn: f64,
+    has_source_url: Option<bool>,
+    is_inline: bool,
+    is_mutable: bool,
+    is_constructed: bool,
+    start_line: f64,
+    start_column: f64,
     length: f64,
-    endLine: f64,
-    endColumn: f64,
-    loadingFailed: Option<bool>,
+    end_line: f64,
+    end_column: f64,
+    loading_failed: Option<bool>,
 }
 
 impl<'a> CSSStyleSheetHeaderBuilder<'a> {
     /// URL of source map associated with the stylesheet (if any).
-    pub fn sourceMapURL(mut self, sourceMapURL: impl Into<Cow<'a, str>>) -> Self { self.sourceMapURL = Some(sourceMapURL.into()); self }
+    pub fn source_map_url(mut self, source_map_url: impl Into<Cow<'a, str>>) -> Self { self.source_map_url = Some(source_map_url.into()); self }
     /// The backend id for the owner node of the stylesheet.
-    pub fn ownerNode(mut self, ownerNode: crate::dom::BackendNodeId) -> Self { self.ownerNode = Some(ownerNode); self }
+    pub fn owner_node(mut self, owner_node: crate::dom::BackendNodeId) -> Self { self.owner_node = Some(owner_node); self }
     /// Whether the sourceURL field value comes from the sourceURL comment.
-    pub fn hasSourceURL(mut self, hasSourceURL: bool) -> Self { self.hasSourceURL = Some(hasSourceURL); self }
+    pub fn has_source_url(mut self, has_source_url: bool) -> Self { self.has_source_url = Some(has_source_url); self }
     /// If the style sheet was loaded from a network resource, this indicates when the resource failed to load
-    pub fn loadingFailed(mut self, loadingFailed: bool) -> Self { self.loadingFailed = Some(loadingFailed); self }
+    pub fn loading_failed(mut self, loading_failed: bool) -> Self { self.loading_failed = Some(loading_failed); self }
     pub fn build(self) -> CSSStyleSheetHeader<'a> {
         CSSStyleSheetHeader {
-            styleSheetId: self.styleSheetId,
-            frameId: self.frameId,
-            sourceURL: self.sourceURL,
-            sourceMapURL: self.sourceMapURL,
+            style_sheet_id: self.style_sheet_id,
+            frame_id: self.frame_id,
+            source_url: self.source_url,
+            source_map_url: self.source_map_url,
             origin: self.origin,
             title: self.title,
-            ownerNode: self.ownerNode,
+            owner_node: self.owner_node,
             disabled: self.disabled,
-            hasSourceURL: self.hasSourceURL,
-            isInline: self.isInline,
-            isMutable: self.isMutable,
-            isConstructed: self.isConstructed,
-            startLine: self.startLine,
-            startColumn: self.startColumn,
+            has_source_url: self.has_source_url,
+            is_inline: self.is_inline,
+            is_mutable: self.is_mutable,
+            is_constructed: self.is_constructed,
+            start_line: self.start_line,
+            start_column: self.start_column,
             length: self.length,
-            endLine: self.endLine,
-            endColumn: self.endColumn,
-            loadingFailed: self.loadingFailed,
+            end_line: self.end_line,
+            end_column: self.end_column,
+            loading_failed: self.loading_failed,
         }
     }
 }
@@ -554,28 +651,29 @@ impl<'a> CSSStyleSheetHeaderBuilder<'a> {
 pub struct CSSRule<'a> {
     /// The css style sheet identifier (absent for user agent stylesheet and user-specified
     /// stylesheet rules) this rule came from.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "styleSheetId")]
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
     /// Rule selector data.
-    selectorList: SelectorList<'a>,
+    #[serde(rename = "selectorList")]
+    selector_list: SelectorList<'a>,
     /// Array of selectors from ancestor style rules, sorted by distance from the current rule.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    nestingSelectors: Option<Vec<Cow<'a, str>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "nestingSelectors")]
+    nesting_selectors: Option<Vec<Cow<'a, str>>>,
     /// Parent stylesheet's origin.
     origin: StyleSheetOrigin,
     /// Associated style declaration.
     style: CSSStyle<'a>,
     /// The BackendNodeId of the DOM node that constitutes the origin tree scope of this rule.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    originTreeScopeNodeId: Option<crate::dom::BackendNodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "originTreeScopeNodeId")]
+    origin_tree_scope_node_id: Option<crate::dom::BackendNodeId>,
     /// Media list array (for rules involving media queries). The array enumerates media queries
     /// starting with the innermost one, going outwards.
     #[serde(skip_serializing_if = "Option::is_none")]
     media: Option<Vec<CSSMedia<'a>>>,
     /// Container query list array (for rules involving container queries).
     /// The array enumerates container queries starting with the innermost one, going outwards.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    containerQueries: Option<Vec<CSSContainerQuery<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "containerQueries")]
+    container_queries: Option<Vec<CSSContainerQuery<'a>>>,
     /// @supports CSS at-rule array.
     /// The array enumerates @supports at-rules starting with the innermost one, going outwards.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -589,12 +687,12 @@ pub struct CSSRule<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     scopes: Option<Vec<CSSScope<'a>>>,
     /// The array keeps the types of ancestor CSSRules from the innermost going outwards.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    ruleTypes: Option<Vec<CSSRuleType>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "ruleTypes")]
+    rule_types: Option<Vec<CSSRuleType>>,
     /// @starting-style CSS at-rule array.
     /// The array enumerates @starting-style at-rules starting with the innermost one, going outwards.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    startingStyles: Option<Vec<CSSStartingStyle<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "startingStyles")]
+    starting_styles: Option<Vec<CSSStartingStyle<'a>>>,
     /// @navigation CSS at-rule array.
     /// The array enumerates @navigation at-rules starting with the innermost one, going outwards.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -602,72 +700,98 @@ pub struct CSSRule<'a> {
 }
 
 impl<'a> CSSRule<'a> {
-    pub fn builder(selectorList: SelectorList<'a>, origin: impl Into<StyleSheetOrigin>, style: CSSStyle<'a>) -> CSSRuleBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `selector_list`: Rule selector data.
+    /// * `origin`: Parent stylesheet's origin.
+    /// * `style`: Associated style declaration.
+    pub fn builder(selector_list: SelectorList<'a>, origin: impl Into<StyleSheetOrigin>, style: CSSStyle<'a>) -> CSSRuleBuilder<'a> {
         CSSRuleBuilder {
-            styleSheetId: None,
-            selectorList: selectorList,
-            nestingSelectors: None,
+            style_sheet_id: None,
+            selector_list: selector_list,
+            nesting_selectors: None,
             origin: origin.into(),
             style: style,
-            originTreeScopeNodeId: None,
+            origin_tree_scope_node_id: None,
             media: None,
-            containerQueries: None,
+            container_queries: None,
             supports: None,
             layers: None,
             scopes: None,
-            ruleTypes: None,
-            startingStyles: None,
+            rule_types: None,
+            starting_styles: None,
             navigations: None,
         }
     }
-    pub fn styleSheetId(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.styleSheetId.as_ref() }
-    pub fn selectorList(&self) -> &SelectorList<'a> { &self.selectorList }
-    pub fn nestingSelectors(&self) -> Option<&[Cow<'a, str>]> { self.nestingSelectors.as_deref() }
+    /// The css style sheet identifier (absent for user agent stylesheet and user-specified
+    /// stylesheet rules) this rule came from.
+    pub fn style_sheet_id(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.style_sheet_id.as_ref() }
+    /// Rule selector data.
+    pub fn selector_list(&self) -> &SelectorList<'a> { &self.selector_list }
+    /// Array of selectors from ancestor style rules, sorted by distance from the current rule.
+    pub fn nesting_selectors(&self) -> Option<&[Cow<'a, str>]> { self.nesting_selectors.as_deref() }
+    /// Parent stylesheet's origin.
     pub fn origin(&self) -> &StyleSheetOrigin { &self.origin }
+    /// Associated style declaration.
     pub fn style(&self) -> &CSSStyle<'a> { &self.style }
-    pub fn originTreeScopeNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.originTreeScopeNodeId.as_ref() }
+    /// The BackendNodeId of the DOM node that constitutes the origin tree scope of this rule.
+    pub fn origin_tree_scope_node_id(&self) -> Option<&crate::dom::BackendNodeId> { self.origin_tree_scope_node_id.as_ref() }
+    /// Media list array (for rules involving media queries). The array enumerates media queries
+    /// starting with the innermost one, going outwards.
     pub fn media(&self) -> Option<&[CSSMedia<'a>]> { self.media.as_deref() }
-    pub fn containerQueries(&self) -> Option<&[CSSContainerQuery<'a>]> { self.containerQueries.as_deref() }
+    /// Container query list array (for rules involving container queries).
+    /// The array enumerates container queries starting with the innermost one, going outwards.
+    pub fn container_queries(&self) -> Option<&[CSSContainerQuery<'a>]> { self.container_queries.as_deref() }
+    /// @supports CSS at-rule array.
+    /// The array enumerates @supports at-rules starting with the innermost one, going outwards.
     pub fn supports(&self) -> Option<&[CSSSupports<'a>]> { self.supports.as_deref() }
+    /// Cascade layer array. Contains the layer hierarchy that this rule belongs to starting
+    /// with the innermost layer and going outwards.
     pub fn layers(&self) -> Option<&[CSSLayer<'a>]> { self.layers.as_deref() }
+    /// @scope CSS at-rule array.
+    /// The array enumerates @scope at-rules starting with the innermost one, going outwards.
     pub fn scopes(&self) -> Option<&[CSSScope<'a>]> { self.scopes.as_deref() }
-    pub fn ruleTypes(&self) -> Option<&[CSSRuleType]> { self.ruleTypes.as_deref() }
-    pub fn startingStyles(&self) -> Option<&[CSSStartingStyle<'a>]> { self.startingStyles.as_deref() }
+    /// The array keeps the types of ancestor CSSRules from the innermost going outwards.
+    pub fn rule_types(&self) -> Option<&[CSSRuleType]> { self.rule_types.as_deref() }
+    /// @starting-style CSS at-rule array.
+    /// The array enumerates @starting-style at-rules starting with the innermost one, going outwards.
+    pub fn starting_styles(&self) -> Option<&[CSSStartingStyle<'a>]> { self.starting_styles.as_deref() }
+    /// @navigation CSS at-rule array.
+    /// The array enumerates @navigation at-rules starting with the innermost one, going outwards.
     pub fn navigations(&self) -> Option<&[CSSNavigation<'a>]> { self.navigations.as_deref() }
 }
 
 
 pub struct CSSRuleBuilder<'a> {
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
-    selectorList: SelectorList<'a>,
-    nestingSelectors: Option<Vec<Cow<'a, str>>>,
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
+    selector_list: SelectorList<'a>,
+    nesting_selectors: Option<Vec<Cow<'a, str>>>,
     origin: StyleSheetOrigin,
     style: CSSStyle<'a>,
-    originTreeScopeNodeId: Option<crate::dom::BackendNodeId>,
+    origin_tree_scope_node_id: Option<crate::dom::BackendNodeId>,
     media: Option<Vec<CSSMedia<'a>>>,
-    containerQueries: Option<Vec<CSSContainerQuery<'a>>>,
+    container_queries: Option<Vec<CSSContainerQuery<'a>>>,
     supports: Option<Vec<CSSSupports<'a>>>,
     layers: Option<Vec<CSSLayer<'a>>>,
     scopes: Option<Vec<CSSScope<'a>>>,
-    ruleTypes: Option<Vec<CSSRuleType>>,
-    startingStyles: Option<Vec<CSSStartingStyle<'a>>>,
+    rule_types: Option<Vec<CSSRuleType>>,
+    starting_styles: Option<Vec<CSSStartingStyle<'a>>>,
     navigations: Option<Vec<CSSNavigation<'a>>>,
 }
 
 impl<'a> CSSRuleBuilder<'a> {
     /// The css style sheet identifier (absent for user agent stylesheet and user-specified
     /// stylesheet rules) this rule came from.
-    pub fn styleSheetId(mut self, styleSheetId: crate::dom::StyleSheetId<'a>) -> Self { self.styleSheetId = Some(styleSheetId); self }
+    pub fn style_sheet_id(mut self, style_sheet_id: crate::dom::StyleSheetId<'a>) -> Self { self.style_sheet_id = Some(style_sheet_id); self }
     /// Array of selectors from ancestor style rules, sorted by distance from the current rule.
-    pub fn nestingSelectors(mut self, nestingSelectors: Vec<Cow<'a, str>>) -> Self { self.nestingSelectors = Some(nestingSelectors); self }
+    pub fn nesting_selectors(mut self, nesting_selectors: Vec<Cow<'a, str>>) -> Self { self.nesting_selectors = Some(nesting_selectors); self }
     /// The BackendNodeId of the DOM node that constitutes the origin tree scope of this rule.
-    pub fn originTreeScopeNodeId(mut self, originTreeScopeNodeId: crate::dom::BackendNodeId) -> Self { self.originTreeScopeNodeId = Some(originTreeScopeNodeId); self }
+    pub fn origin_tree_scope_node_id(mut self, origin_tree_scope_node_id: crate::dom::BackendNodeId) -> Self { self.origin_tree_scope_node_id = Some(origin_tree_scope_node_id); self }
     /// Media list array (for rules involving media queries). The array enumerates media queries
     /// starting with the innermost one, going outwards.
     pub fn media(mut self, media: Vec<CSSMedia<'a>>) -> Self { self.media = Some(media); self }
     /// Container query list array (for rules involving container queries).
     /// The array enumerates container queries starting with the innermost one, going outwards.
-    pub fn containerQueries(mut self, containerQueries: Vec<CSSContainerQuery<'a>>) -> Self { self.containerQueries = Some(containerQueries); self }
+    pub fn container_queries(mut self, container_queries: Vec<CSSContainerQuery<'a>>) -> Self { self.container_queries = Some(container_queries); self }
     /// @supports CSS at-rule array.
     /// The array enumerates @supports at-rules starting with the innermost one, going outwards.
     pub fn supports(mut self, supports: Vec<CSSSupports<'a>>) -> Self { self.supports = Some(supports); self }
@@ -678,28 +802,28 @@ impl<'a> CSSRuleBuilder<'a> {
     /// The array enumerates @scope at-rules starting with the innermost one, going outwards.
     pub fn scopes(mut self, scopes: Vec<CSSScope<'a>>) -> Self { self.scopes = Some(scopes); self }
     /// The array keeps the types of ancestor CSSRules from the innermost going outwards.
-    pub fn ruleTypes(mut self, ruleTypes: Vec<CSSRuleType>) -> Self { self.ruleTypes = Some(ruleTypes); self }
+    pub fn rule_types(mut self, rule_types: Vec<CSSRuleType>) -> Self { self.rule_types = Some(rule_types); self }
     /// @starting-style CSS at-rule array.
     /// The array enumerates @starting-style at-rules starting with the innermost one, going outwards.
-    pub fn startingStyles(mut self, startingStyles: Vec<CSSStartingStyle<'a>>) -> Self { self.startingStyles = Some(startingStyles); self }
+    pub fn starting_styles(mut self, starting_styles: Vec<CSSStartingStyle<'a>>) -> Self { self.starting_styles = Some(starting_styles); self }
     /// @navigation CSS at-rule array.
     /// The array enumerates @navigation at-rules starting with the innermost one, going outwards.
     pub fn navigations(mut self, navigations: Vec<CSSNavigation<'a>>) -> Self { self.navigations = Some(navigations); self }
     pub fn build(self) -> CSSRule<'a> {
         CSSRule {
-            styleSheetId: self.styleSheetId,
-            selectorList: self.selectorList,
-            nestingSelectors: self.nestingSelectors,
+            style_sheet_id: self.style_sheet_id,
+            selector_list: self.selector_list,
+            nesting_selectors: self.nesting_selectors,
             origin: self.origin,
             style: self.style,
-            originTreeScopeNodeId: self.originTreeScopeNodeId,
+            origin_tree_scope_node_id: self.origin_tree_scope_node_id,
             media: self.media,
-            containerQueries: self.containerQueries,
+            container_queries: self.container_queries,
             supports: self.supports,
             layers: self.layers,
             scopes: self.scopes,
-            ruleTypes: self.ruleTypes,
-            startingStyles: self.startingStyles,
+            rule_types: self.rule_types,
+            starting_styles: self.starting_styles,
             navigations: self.navigations,
         }
     }
@@ -736,44 +860,57 @@ pub enum CSSRuleType {
 pub struct RuleUsage<'a> {
     /// The css style sheet identifier (absent for user agent stylesheet and user-specified
     /// stylesheet rules) this rule came from.
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    #[serde(rename = "styleSheetId")]
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     /// Offset of the start of the rule (including selector) from the beginning of the stylesheet.
-    startOffset: f64,
+    #[serde(rename = "startOffset")]
+    start_offset: f64,
     /// Offset of the end of the rule body from the beginning of the stylesheet.
-    endOffset: f64,
+    #[serde(rename = "endOffset")]
+    end_offset: f64,
     /// Indicates whether the rule was actually used by some element in the page.
     used: bool,
 }
 
 impl<'a> RuleUsage<'a> {
-    pub fn builder(styleSheetId: crate::dom::StyleSheetId<'a>, startOffset: f64, endOffset: f64, used: bool) -> RuleUsageBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `style_sheet_id`: The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
+    /// * `start_offset`: Offset of the start of the rule (including selector) from the beginning of the stylesheet.
+    /// * `end_offset`: Offset of the end of the rule body from the beginning of the stylesheet.
+    /// * `used`: Indicates whether the rule was actually used by some element in the page.
+    pub fn builder(style_sheet_id: crate::dom::StyleSheetId<'a>, start_offset: f64, end_offset: f64, used: bool) -> RuleUsageBuilder<'a> {
         RuleUsageBuilder {
-            styleSheetId: styleSheetId,
-            startOffset: startOffset,
-            endOffset: endOffset,
+            style_sheet_id: style_sheet_id,
+            start_offset: start_offset,
+            end_offset: end_offset,
             used: used,
         }
     }
-    pub fn styleSheetId(&self) -> &crate::dom::StyleSheetId<'a> { &self.styleSheetId }
-    pub fn startOffset(&self) -> f64 { self.startOffset }
-    pub fn endOffset(&self) -> f64 { self.endOffset }
+    /// The css style sheet identifier (absent for user agent stylesheet and user-specified
+    /// stylesheet rules) this rule came from.
+    pub fn style_sheet_id(&self) -> &crate::dom::StyleSheetId<'a> { &self.style_sheet_id }
+    /// Offset of the start of the rule (including selector) from the beginning of the stylesheet.
+    pub fn start_offset(&self) -> f64 { self.start_offset }
+    /// Offset of the end of the rule body from the beginning of the stylesheet.
+    pub fn end_offset(&self) -> f64 { self.end_offset }
+    /// Indicates whether the rule was actually used by some element in the page.
     pub fn used(&self) -> bool { self.used }
 }
 
 
 pub struct RuleUsageBuilder<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
-    startOffset: f64,
-    endOffset: f64,
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
+    start_offset: f64,
+    end_offset: f64,
     used: bool,
 }
 
 impl<'a> RuleUsageBuilder<'a> {
     pub fn build(self) -> RuleUsage<'a> {
         RuleUsage {
-            styleSheetId: self.styleSheetId,
-            startOffset: self.startOffset,
-            endOffset: self.endOffset,
+            style_sheet_id: self.style_sheet_id,
+            start_offset: self.start_offset,
+            end_offset: self.end_offset,
             used: self.used,
         }
     }
@@ -785,45 +922,58 @@ impl<'a> RuleUsageBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SourceRange {
     /// Start line of range.
-    startLine: i64,
+    #[serde(rename = "startLine")]
+    start_line: i64,
     /// Start column of range (inclusive).
-    startColumn: i64,
+    #[serde(rename = "startColumn")]
+    start_column: i64,
     /// End line of range
-    endLine: i64,
+    #[serde(rename = "endLine")]
+    end_line: i64,
     /// End column of range (exclusive).
-    endColumn: i64,
+    #[serde(rename = "endColumn")]
+    end_column: i64,
 }
 
 impl SourceRange {
-    pub fn builder(startLine: i64, startColumn: i64, endLine: i64, endColumn: i64) -> SourceRangeBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `start_line`: Start line of range.
+    /// * `start_column`: Start column of range (inclusive).
+    /// * `end_line`: End line of range
+    /// * `end_column`: End column of range (exclusive).
+    pub fn builder(start_line: i64, start_column: i64, end_line: i64, end_column: i64) -> SourceRangeBuilder {
         SourceRangeBuilder {
-            startLine: startLine,
-            startColumn: startColumn,
-            endLine: endLine,
-            endColumn: endColumn,
+            start_line: start_line,
+            start_column: start_column,
+            end_line: end_line,
+            end_column: end_column,
         }
     }
-    pub fn startLine(&self) -> i64 { self.startLine }
-    pub fn startColumn(&self) -> i64 { self.startColumn }
-    pub fn endLine(&self) -> i64 { self.endLine }
-    pub fn endColumn(&self) -> i64 { self.endColumn }
+    /// Start line of range.
+    pub fn start_line(&self) -> i64 { self.start_line }
+    /// Start column of range (inclusive).
+    pub fn start_column(&self) -> i64 { self.start_column }
+    /// End line of range
+    pub fn end_line(&self) -> i64 { self.end_line }
+    /// End column of range (exclusive).
+    pub fn end_column(&self) -> i64 { self.end_column }
 }
 
 
 pub struct SourceRangeBuilder {
-    startLine: i64,
-    startColumn: i64,
-    endLine: i64,
-    endColumn: i64,
+    start_line: i64,
+    start_column: i64,
+    end_line: i64,
+    end_column: i64,
 }
 
 impl SourceRangeBuilder {
     pub fn build(self) -> SourceRange {
         SourceRange {
-            startLine: self.startLine,
-            startColumn: self.startColumn,
-            endLine: self.endLine,
-            endColumn: self.endColumn,
+            start_line: self.start_line,
+            start_column: self.start_column,
+            end_line: self.end_line,
+            end_column: self.end_column,
         }
     }
 }
@@ -842,6 +992,9 @@ pub struct ShorthandEntry<'a> {
 }
 
 impl<'a> ShorthandEntry<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: Shorthand name.
+    /// * `value`: Shorthand value.
     pub fn builder(name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> ShorthandEntryBuilder<'a> {
         ShorthandEntryBuilder {
             name: name.into(),
@@ -849,8 +1002,11 @@ impl<'a> ShorthandEntry<'a> {
             important: None,
         }
     }
+    /// Shorthand name.
     pub fn name(&self) -> &str { self.name.as_ref() }
+    /// Shorthand value.
     pub fn value(&self) -> &str { self.value.as_ref() }
+    /// Whether the property has "!important" annotation (implies 'false' if absent).
     pub fn important(&self) -> Option<bool> { self.important }
 }
 
@@ -884,13 +1040,18 @@ pub struct CSSComputedStyleProperty<'a> {
 }
 
 impl<'a> CSSComputedStyleProperty<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: Computed style property name.
+    /// * `value`: Computed style property value.
     pub fn builder(name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> CSSComputedStylePropertyBuilder<'a> {
         CSSComputedStylePropertyBuilder {
             name: name.into(),
             value: value.into(),
         }
     }
+    /// Computed style property name.
     pub fn name(&self) -> &str { self.name.as_ref() }
+    /// Computed style property value.
     pub fn value(&self) -> &str { self.value.as_ref() }
 }
 
@@ -916,27 +1077,33 @@ pub struct ComputedStyleExtraFields {
     /// Returns whether or not this node is being rendered with base appearance,
     /// which happens when it has its appearance property set to base/base-select
     /// or it is in the subtree of an element being rendered with base appearance.
-    isAppearanceBase: bool,
+    #[serde(rename = "isAppearanceBase")]
+    is_appearance_base: bool,
 }
 
 impl ComputedStyleExtraFields {
-    pub fn builder(isAppearanceBase: bool) -> ComputedStyleExtraFieldsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `is_appearance_base`: Returns whether or not this node is being rendered with base appearance, which happens when it has its appearance property set to base/base-select or it is in the subtree of an element being rendered with base appearance.
+    pub fn builder(is_appearance_base: bool) -> ComputedStyleExtraFieldsBuilder {
         ComputedStyleExtraFieldsBuilder {
-            isAppearanceBase: isAppearanceBase,
+            is_appearance_base: is_appearance_base,
         }
     }
-    pub fn isAppearanceBase(&self) -> bool { self.isAppearanceBase }
+    /// Returns whether or not this node is being rendered with base appearance,
+    /// which happens when it has its appearance property set to base/base-select
+    /// or it is in the subtree of an element being rendered with base appearance.
+    pub fn is_appearance_base(&self) -> bool { self.is_appearance_base }
 }
 
 
 pub struct ComputedStyleExtraFieldsBuilder {
-    isAppearanceBase: bool,
+    is_appearance_base: bool,
 }
 
 impl ComputedStyleExtraFieldsBuilder {
     pub fn build(self) -> ComputedStyleExtraFields {
         ComputedStyleExtraFields {
-            isAppearanceBase: self.isAppearanceBase,
+            is_appearance_base: self.is_appearance_base,
         }
     }
 }
@@ -948,60 +1115,71 @@ impl ComputedStyleExtraFieldsBuilder {
 pub struct CSSStyle<'a> {
     /// The css style sheet identifier (absent for user agent stylesheet and user-specified
     /// stylesheet rules) this rule came from.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "styleSheetId")]
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
     /// CSS properties in the style.
-    cssProperties: Vec<CSSProperty<'a>>,
+    #[serde(rename = "cssProperties")]
+    css_properties: Vec<CSSProperty<'a>>,
     /// Computed values for all shorthands found in the style.
-    shorthandEntries: Vec<ShorthandEntry<'a>>,
+    #[serde(rename = "shorthandEntries")]
+    shorthand_entries: Vec<ShorthandEntry<'a>>,
     /// Style declaration text (if available).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    cssText: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "cssText")]
+    css_text: Option<Cow<'a, str>>,
     /// Style declaration range in the enclosing stylesheet (if available).
     #[serde(skip_serializing_if = "Option::is_none")]
     range: Option<SourceRange>,
 }
 
 impl<'a> CSSStyle<'a> {
-    pub fn builder(cssProperties: Vec<CSSProperty<'a>>, shorthandEntries: Vec<ShorthandEntry<'a>>) -> CSSStyleBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `css_properties`: CSS properties in the style.
+    /// * `shorthand_entries`: Computed values for all shorthands found in the style.
+    pub fn builder(css_properties: Vec<CSSProperty<'a>>, shorthand_entries: Vec<ShorthandEntry<'a>>) -> CSSStyleBuilder<'a> {
         CSSStyleBuilder {
-            styleSheetId: None,
-            cssProperties: cssProperties,
-            shorthandEntries: shorthandEntries,
-            cssText: None,
+            style_sheet_id: None,
+            css_properties: css_properties,
+            shorthand_entries: shorthand_entries,
+            css_text: None,
             range: None,
         }
     }
-    pub fn styleSheetId(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.styleSheetId.as_ref() }
-    pub fn cssProperties(&self) -> &[CSSProperty<'a>] { &self.cssProperties }
-    pub fn shorthandEntries(&self) -> &[ShorthandEntry<'a>] { &self.shorthandEntries }
-    pub fn cssText(&self) -> Option<&str> { self.cssText.as_deref() }
+    /// The css style sheet identifier (absent for user agent stylesheet and user-specified
+    /// stylesheet rules) this rule came from.
+    pub fn style_sheet_id(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.style_sheet_id.as_ref() }
+    /// CSS properties in the style.
+    pub fn css_properties(&self) -> &[CSSProperty<'a>] { &self.css_properties }
+    /// Computed values for all shorthands found in the style.
+    pub fn shorthand_entries(&self) -> &[ShorthandEntry<'a>] { &self.shorthand_entries }
+    /// Style declaration text (if available).
+    pub fn css_text(&self) -> Option<&str> { self.css_text.as_deref() }
+    /// Style declaration range in the enclosing stylesheet (if available).
     pub fn range(&self) -> Option<&SourceRange> { self.range.as_ref() }
 }
 
 
 pub struct CSSStyleBuilder<'a> {
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
-    cssProperties: Vec<CSSProperty<'a>>,
-    shorthandEntries: Vec<ShorthandEntry<'a>>,
-    cssText: Option<Cow<'a, str>>,
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
+    css_properties: Vec<CSSProperty<'a>>,
+    shorthand_entries: Vec<ShorthandEntry<'a>>,
+    css_text: Option<Cow<'a, str>>,
     range: Option<SourceRange>,
 }
 
 impl<'a> CSSStyleBuilder<'a> {
     /// The css style sheet identifier (absent for user agent stylesheet and user-specified
     /// stylesheet rules) this rule came from.
-    pub fn styleSheetId(mut self, styleSheetId: crate::dom::StyleSheetId<'a>) -> Self { self.styleSheetId = Some(styleSheetId); self }
+    pub fn style_sheet_id(mut self, style_sheet_id: crate::dom::StyleSheetId<'a>) -> Self { self.style_sheet_id = Some(style_sheet_id); self }
     /// Style declaration text (if available).
-    pub fn cssText(mut self, cssText: impl Into<Cow<'a, str>>) -> Self { self.cssText = Some(cssText.into()); self }
+    pub fn css_text(mut self, css_text: impl Into<Cow<'a, str>>) -> Self { self.css_text = Some(css_text.into()); self }
     /// Style declaration range in the enclosing stylesheet (if available).
     pub fn range(mut self, range: SourceRange) -> Self { self.range = Some(range); self }
     pub fn build(self) -> CSSStyle<'a> {
         CSSStyle {
-            styleSheetId: self.styleSheetId,
-            cssProperties: self.cssProperties,
-            shorthandEntries: self.shorthandEntries,
-            cssText: self.cssText,
+            style_sheet_id: self.style_sheet_id,
+            css_properties: self.css_properties,
+            shorthand_entries: self.shorthand_entries,
+            css_text: self.css_text,
             range: self.range,
         }
     }
@@ -1026,8 +1204,8 @@ pub struct CSSProperty<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     text: Option<Cow<'a, str>>,
     /// Whether the property is understood by the browser (implies 'true' if absent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    parsedOk: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "parsedOk")]
+    parsed_ok: Option<bool>,
     /// Whether the property is disabled by the user (present for source-based properties only).
     #[serde(skip_serializing_if = "Option::is_none")]
     disabled: Option<bool>,
@@ -1036,11 +1214,14 @@ pub struct CSSProperty<'a> {
     range: Option<SourceRange>,
     /// Parsed longhand components of this property if it is a shorthand.
     /// This field will be empty if the given property is not a shorthand.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    longhandProperties: Option<Vec<Box<CSSProperty<'a>>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "longhandProperties")]
+    longhand_properties: Option<Vec<Box<CSSProperty<'a>>>>,
 }
 
 impl<'a> CSSProperty<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: The property name.
+    /// * `value`: The property value.
     pub fn builder(name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> CSSPropertyBuilder<'a> {
         CSSPropertyBuilder {
             name: name.into(),
@@ -1048,21 +1229,31 @@ impl<'a> CSSProperty<'a> {
             important: None,
             implicit: None,
             text: None,
-            parsedOk: None,
+            parsed_ok: None,
             disabled: None,
             range: None,
-            longhandProperties: None,
+            longhand_properties: None,
         }
     }
+    /// The property name.
     pub fn name(&self) -> &str { self.name.as_ref() }
+    /// The property value.
     pub fn value(&self) -> &str { self.value.as_ref() }
+    /// Whether the property has "!important" annotation (implies 'false' if absent).
     pub fn important(&self) -> Option<bool> { self.important }
+    /// Whether the property is implicit (implies 'false' if absent).
     pub fn implicit(&self) -> Option<bool> { self.implicit }
+    /// The full property text as specified in the style.
     pub fn text(&self) -> Option<&str> { self.text.as_deref() }
-    pub fn parsedOk(&self) -> Option<bool> { self.parsedOk }
+    /// Whether the property is understood by the browser (implies 'true' if absent).
+    pub fn parsed_ok(&self) -> Option<bool> { self.parsed_ok }
+    /// Whether the property is disabled by the user (present for source-based properties only).
     pub fn disabled(&self) -> Option<bool> { self.disabled }
+    /// The entire property range in the enclosing style declaration (if available).
     pub fn range(&self) -> Option<&SourceRange> { self.range.as_ref() }
-    pub fn longhandProperties(&self) -> Option<&[Box<CSSProperty<'a>>]> { self.longhandProperties.as_deref() }
+    /// Parsed longhand components of this property if it is a shorthand.
+    /// This field will be empty if the given property is not a shorthand.
+    pub fn longhand_properties(&self) -> Option<&[Box<CSSProperty<'a>>]> { self.longhand_properties.as_deref() }
 }
 
 
@@ -1072,10 +1263,10 @@ pub struct CSSPropertyBuilder<'a> {
     important: Option<bool>,
     implicit: Option<bool>,
     text: Option<Cow<'a, str>>,
-    parsedOk: Option<bool>,
+    parsed_ok: Option<bool>,
     disabled: Option<bool>,
     range: Option<SourceRange>,
-    longhandProperties: Option<Vec<Box<CSSProperty<'a>>>>,
+    longhand_properties: Option<Vec<Box<CSSProperty<'a>>>>,
 }
 
 impl<'a> CSSPropertyBuilder<'a> {
@@ -1086,14 +1277,14 @@ impl<'a> CSSPropertyBuilder<'a> {
     /// The full property text as specified in the style.
     pub fn text(mut self, text: impl Into<Cow<'a, str>>) -> Self { self.text = Some(text.into()); self }
     /// Whether the property is understood by the browser (implies 'true' if absent).
-    pub fn parsedOk(mut self, parsedOk: bool) -> Self { self.parsedOk = Some(parsedOk); self }
+    pub fn parsed_ok(mut self, parsed_ok: bool) -> Self { self.parsed_ok = Some(parsed_ok); self }
     /// Whether the property is disabled by the user (present for source-based properties only).
     pub fn disabled(mut self, disabled: bool) -> Self { self.disabled = Some(disabled); self }
     /// The entire property range in the enclosing style declaration (if available).
     pub fn range(mut self, range: SourceRange) -> Self { self.range = Some(range); self }
     /// Parsed longhand components of this property if it is a shorthand.
     /// This field will be empty if the given property is not a shorthand.
-    pub fn longhandProperties(mut self, longhandProperties: Vec<Box<CSSProperty<'a>>>) -> Self { self.longhandProperties = Some(longhandProperties); self }
+    pub fn longhand_properties(mut self, longhand_properties: Vec<Box<CSSProperty<'a>>>) -> Self { self.longhand_properties = Some(longhand_properties); self }
     pub fn build(self) -> CSSProperty<'a> {
         CSSProperty {
             name: self.name,
@@ -1101,10 +1292,10 @@ impl<'a> CSSPropertyBuilder<'a> {
             important: self.important,
             implicit: self.implicit,
             text: self.text,
-            parsedOk: self.parsedOk,
+            parsed_ok: self.parsed_ok,
             disabled: self.disabled,
             range: self.range,
-            longhandProperties: self.longhandProperties,
+            longhand_properties: self.longhand_properties,
         }
     }
 }
@@ -1122,67 +1313,80 @@ pub struct CSSMedia<'a> {
     /// stylesheet's STYLE tag.
     source: Cow<'a, str>,
     /// URL of the document containing the media query description.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    sourceURL: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sourceURL")]
+    source_url: Option<Cow<'a, str>>,
     /// The associated rule (@media or @import) header range in the enclosing stylesheet (if
     /// available).
     #[serde(skip_serializing_if = "Option::is_none")]
     range: Option<SourceRange>,
     /// Identifier of the stylesheet containing this object (if exists).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "styleSheetId")]
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
     /// Array of media queries.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    mediaList: Option<Vec<MediaQuery<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "mediaList")]
+    media_list: Option<Vec<MediaQuery<'a>>>,
 }
 
 impl<'a> CSSMedia<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `text`: Media query text.
+    /// * `source`: Source of the media query: "mediaRule" if specified by a @media rule, "importRule" if specified by an @import rule, "linkedSheet" if specified by a "media" attribute in a linked stylesheet's LINK tag, "inlineSheet" if specified by a "media" attribute in an inline stylesheet's STYLE tag.
     pub fn builder(text: impl Into<Cow<'a, str>>, source: impl Into<Cow<'a, str>>) -> CSSMediaBuilder<'a> {
         CSSMediaBuilder {
             text: text.into(),
             source: source.into(),
-            sourceURL: None,
+            source_url: None,
             range: None,
-            styleSheetId: None,
-            mediaList: None,
+            style_sheet_id: None,
+            media_list: None,
         }
     }
+    /// Media query text.
     pub fn text(&self) -> &str { self.text.as_ref() }
+    /// Source of the media query: "mediaRule" if specified by a @media rule, "importRule" if
+    /// specified by an @import rule, "linkedSheet" if specified by a "media" attribute in a linked
+    /// stylesheet's LINK tag, "inlineSheet" if specified by a "media" attribute in an inline
+    /// stylesheet's STYLE tag.
     pub fn source(&self) -> &str { self.source.as_ref() }
-    pub fn sourceURL(&self) -> Option<&str> { self.sourceURL.as_deref() }
+    /// URL of the document containing the media query description.
+    pub fn source_url(&self) -> Option<&str> { self.source_url.as_deref() }
+    /// The associated rule (@media or @import) header range in the enclosing stylesheet (if
+    /// available).
     pub fn range(&self) -> Option<&SourceRange> { self.range.as_ref() }
-    pub fn styleSheetId(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.styleSheetId.as_ref() }
-    pub fn mediaList(&self) -> Option<&[MediaQuery<'a>]> { self.mediaList.as_deref() }
+    /// Identifier of the stylesheet containing this object (if exists).
+    pub fn style_sheet_id(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.style_sheet_id.as_ref() }
+    /// Array of media queries.
+    pub fn media_list(&self) -> Option<&[MediaQuery<'a>]> { self.media_list.as_deref() }
 }
 
 
 pub struct CSSMediaBuilder<'a> {
     text: Cow<'a, str>,
     source: Cow<'a, str>,
-    sourceURL: Option<Cow<'a, str>>,
+    source_url: Option<Cow<'a, str>>,
     range: Option<SourceRange>,
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
-    mediaList: Option<Vec<MediaQuery<'a>>>,
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
+    media_list: Option<Vec<MediaQuery<'a>>>,
 }
 
 impl<'a> CSSMediaBuilder<'a> {
     /// URL of the document containing the media query description.
-    pub fn sourceURL(mut self, sourceURL: impl Into<Cow<'a, str>>) -> Self { self.sourceURL = Some(sourceURL.into()); self }
+    pub fn source_url(mut self, source_url: impl Into<Cow<'a, str>>) -> Self { self.source_url = Some(source_url.into()); self }
     /// The associated rule (@media or @import) header range in the enclosing stylesheet (if
     /// available).
     pub fn range(mut self, range: SourceRange) -> Self { self.range = Some(range); self }
     /// Identifier of the stylesheet containing this object (if exists).
-    pub fn styleSheetId(mut self, styleSheetId: crate::dom::StyleSheetId<'a>) -> Self { self.styleSheetId = Some(styleSheetId); self }
+    pub fn style_sheet_id(mut self, style_sheet_id: crate::dom::StyleSheetId<'a>) -> Self { self.style_sheet_id = Some(style_sheet_id); self }
     /// Array of media queries.
-    pub fn mediaList(mut self, mediaList: Vec<MediaQuery<'a>>) -> Self { self.mediaList = Some(mediaList); self }
+    pub fn media_list(mut self, media_list: Vec<MediaQuery<'a>>) -> Self { self.media_list = Some(media_list); self }
     pub fn build(self) -> CSSMedia<'a> {
         CSSMedia {
             text: self.text,
             source: self.source,
-            sourceURL: self.sourceURL,
+            source_url: self.source_url,
             range: self.range,
-            styleSheetId: self.styleSheetId,
-            mediaList: self.mediaList,
+            style_sheet_id: self.style_sheet_id,
+            media_list: self.media_list,
         }
     }
 }
@@ -1199,13 +1403,18 @@ pub struct MediaQuery<'a> {
 }
 
 impl<'a> MediaQuery<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `expressions`: Array of media query expressions.
+    /// * `active`: Whether the media query condition is satisfied.
     pub fn builder(expressions: Vec<MediaQueryExpression<'a>>, active: bool) -> MediaQueryBuilder<'a> {
         MediaQueryBuilder {
             expressions: expressions,
             active: active,
         }
     }
+    /// Array of media query expressions.
     pub fn expressions(&self) -> &[MediaQueryExpression<'a>] { &self.expressions }
+    /// Whether the media query condition is satisfied.
     pub fn active(&self) -> bool { self.active }
 }
 
@@ -1236,28 +1445,37 @@ pub struct MediaQueryExpression<'a> {
     /// Media query expression feature.
     feature: Cow<'a, str>,
     /// The associated range of the value text in the enclosing stylesheet (if available).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    valueRange: Option<SourceRange>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "valueRange")]
+    value_range: Option<SourceRange>,
     /// Computed length of media query expression (if applicable).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    computedLength: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "computedLength")]
+    computed_length: Option<f64>,
 }
 
 impl<'a> MediaQueryExpression<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `value`: Media query expression value.
+    /// * `unit`: Media query expression units.
+    /// * `feature`: Media query expression feature.
     pub fn builder(value: f64, unit: impl Into<Cow<'a, str>>, feature: impl Into<Cow<'a, str>>) -> MediaQueryExpressionBuilder<'a> {
         MediaQueryExpressionBuilder {
             value: value,
             unit: unit.into(),
             feature: feature.into(),
-            valueRange: None,
-            computedLength: None,
+            value_range: None,
+            computed_length: None,
         }
     }
+    /// Media query expression value.
     pub fn value(&self) -> f64 { self.value }
+    /// Media query expression units.
     pub fn unit(&self) -> &str { self.unit.as_ref() }
+    /// Media query expression feature.
     pub fn feature(&self) -> &str { self.feature.as_ref() }
-    pub fn valueRange(&self) -> Option<&SourceRange> { self.valueRange.as_ref() }
-    pub fn computedLength(&self) -> Option<f64> { self.computedLength }
+    /// The associated range of the value text in the enclosing stylesheet (if available).
+    pub fn value_range(&self) -> Option<&SourceRange> { self.value_range.as_ref() }
+    /// Computed length of media query expression (if applicable).
+    pub fn computed_length(&self) -> Option<f64> { self.computed_length }
 }
 
 
@@ -1265,22 +1483,22 @@ pub struct MediaQueryExpressionBuilder<'a> {
     value: f64,
     unit: Cow<'a, str>,
     feature: Cow<'a, str>,
-    valueRange: Option<SourceRange>,
-    computedLength: Option<f64>,
+    value_range: Option<SourceRange>,
+    computed_length: Option<f64>,
 }
 
 impl<'a> MediaQueryExpressionBuilder<'a> {
     /// The associated range of the value text in the enclosing stylesheet (if available).
-    pub fn valueRange(mut self, valueRange: SourceRange) -> Self { self.valueRange = Some(valueRange); self }
+    pub fn value_range(mut self, value_range: SourceRange) -> Self { self.value_range = Some(value_range); self }
     /// Computed length of media query expression (if applicable).
-    pub fn computedLength(mut self, computedLength: f64) -> Self { self.computedLength = Some(computedLength); self }
+    pub fn computed_length(mut self, computed_length: f64) -> Self { self.computed_length = Some(computed_length); self }
     pub fn build(self) -> MediaQueryExpression<'a> {
         MediaQueryExpression {
             value: self.value,
             unit: self.unit,
             feature: self.feature,
-            valueRange: self.valueRange,
-            computedLength: self.computedLength,
+            value_range: self.value_range,
+            computed_length: self.computed_length,
         }
     }
 }
@@ -1300,63 +1518,80 @@ pub struct CSSContainerQuery<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     range: Option<SourceRange>,
     /// Identifier of the stylesheet containing this object (if exists).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "styleSheetId")]
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
     /// Optional name for the container.
     #[serde(skip_serializing_if = "Option::is_none")]
     name: Option<Cow<'a, str>>,
     /// Optional physical axes queried for the container.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    physicalAxes: Option<crate::dom::PhysicalAxes>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "physicalAxes")]
+    physical_axes: Option<crate::dom::PhysicalAxes>,
     /// Optional logical axes queried for the container.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    logicalAxes: Option<crate::dom::LogicalAxes>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "logicalAxes")]
+    logical_axes: Option<crate::dom::LogicalAxes>,
     /// true if the query contains scroll-state() queries.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    queriesScrollState: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "queriesScrollState")]
+    queries_scroll_state: Option<bool>,
     /// true if the query contains anchored() queries.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    queriesAnchored: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "queriesAnchored")]
+    queries_anchored: Option<bool>,
     /// CSSContainerRule.conditionText
-    conditionText: Cow<'a, str>,
+    #[serde(rename = "conditionText")]
+    condition_text: Cow<'a, str>,
 }
 
 impl<'a> CSSContainerQuery<'a> {
-    pub fn builder(text: impl Into<Cow<'a, str>>, conditionText: impl Into<Cow<'a, str>>) -> CSSContainerQueryBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `text`: Container query text. Contains the query part without the container name for a single query. Deprecated in favor of conditionText which contains the full prelude after @container.
+    /// * `condition_text`: CSSContainerRule.conditionText
+    pub fn builder(text: impl Into<Cow<'a, str>>, condition_text: impl Into<Cow<'a, str>>) -> CSSContainerQueryBuilder<'a> {
         CSSContainerQueryBuilder {
             text: text.into(),
             range: None,
-            styleSheetId: None,
+            style_sheet_id: None,
             name: None,
-            physicalAxes: None,
-            logicalAxes: None,
-            queriesScrollState: None,
-            queriesAnchored: None,
-            conditionText: conditionText.into(),
+            physical_axes: None,
+            logical_axes: None,
+            queries_scroll_state: None,
+            queries_anchored: None,
+            condition_text: condition_text.into(),
         }
     }
+    /// Container query text.
+    /// Contains the query part without the container name for a single query.
+    /// Deprecated in favor of conditionText which contains the full prelude
+    /// after @container.
     pub fn text(&self) -> &str { self.text.as_ref() }
+    /// The associated rule header range in the enclosing stylesheet (if
+    /// available).
     pub fn range(&self) -> Option<&SourceRange> { self.range.as_ref() }
-    pub fn styleSheetId(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.styleSheetId.as_ref() }
+    /// Identifier of the stylesheet containing this object (if exists).
+    pub fn style_sheet_id(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.style_sheet_id.as_ref() }
+    /// Optional name for the container.
     pub fn name(&self) -> Option<&str> { self.name.as_deref() }
-    pub fn physicalAxes(&self) -> Option<&crate::dom::PhysicalAxes> { self.physicalAxes.as_ref() }
-    pub fn logicalAxes(&self) -> Option<&crate::dom::LogicalAxes> { self.logicalAxes.as_ref() }
-    pub fn queriesScrollState(&self) -> Option<bool> { self.queriesScrollState }
-    pub fn queriesAnchored(&self) -> Option<bool> { self.queriesAnchored }
-    pub fn conditionText(&self) -> &str { self.conditionText.as_ref() }
+    /// Optional physical axes queried for the container.
+    pub fn physical_axes(&self) -> Option<&crate::dom::PhysicalAxes> { self.physical_axes.as_ref() }
+    /// Optional logical axes queried for the container.
+    pub fn logical_axes(&self) -> Option<&crate::dom::LogicalAxes> { self.logical_axes.as_ref() }
+    /// true if the query contains scroll-state() queries.
+    pub fn queries_scroll_state(&self) -> Option<bool> { self.queries_scroll_state }
+    /// true if the query contains anchored() queries.
+    pub fn queries_anchored(&self) -> Option<bool> { self.queries_anchored }
+    /// CSSContainerRule.conditionText
+    pub fn condition_text(&self) -> &str { self.condition_text.as_ref() }
 }
 
 
 pub struct CSSContainerQueryBuilder<'a> {
     text: Cow<'a, str>,
     range: Option<SourceRange>,
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
     name: Option<Cow<'a, str>>,
-    physicalAxes: Option<crate::dom::PhysicalAxes>,
-    logicalAxes: Option<crate::dom::LogicalAxes>,
-    queriesScrollState: Option<bool>,
-    queriesAnchored: Option<bool>,
-    conditionText: Cow<'a, str>,
+    physical_axes: Option<crate::dom::PhysicalAxes>,
+    logical_axes: Option<crate::dom::LogicalAxes>,
+    queries_scroll_state: Option<bool>,
+    queries_anchored: Option<bool>,
+    condition_text: Cow<'a, str>,
 }
 
 impl<'a> CSSContainerQueryBuilder<'a> {
@@ -1364,28 +1599,28 @@ impl<'a> CSSContainerQueryBuilder<'a> {
     /// available).
     pub fn range(mut self, range: SourceRange) -> Self { self.range = Some(range); self }
     /// Identifier of the stylesheet containing this object (if exists).
-    pub fn styleSheetId(mut self, styleSheetId: crate::dom::StyleSheetId<'a>) -> Self { self.styleSheetId = Some(styleSheetId); self }
+    pub fn style_sheet_id(mut self, style_sheet_id: crate::dom::StyleSheetId<'a>) -> Self { self.style_sheet_id = Some(style_sheet_id); self }
     /// Optional name for the container.
     pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
     /// Optional physical axes queried for the container.
-    pub fn physicalAxes(mut self, physicalAxes: crate::dom::PhysicalAxes) -> Self { self.physicalAxes = Some(physicalAxes); self }
+    pub fn physical_axes(mut self, physical_axes: crate::dom::PhysicalAxes) -> Self { self.physical_axes = Some(physical_axes); self }
     /// Optional logical axes queried for the container.
-    pub fn logicalAxes(mut self, logicalAxes: crate::dom::LogicalAxes) -> Self { self.logicalAxes = Some(logicalAxes); self }
+    pub fn logical_axes(mut self, logical_axes: crate::dom::LogicalAxes) -> Self { self.logical_axes = Some(logical_axes); self }
     /// true if the query contains scroll-state() queries.
-    pub fn queriesScrollState(mut self, queriesScrollState: bool) -> Self { self.queriesScrollState = Some(queriesScrollState); self }
+    pub fn queries_scroll_state(mut self, queries_scroll_state: bool) -> Self { self.queries_scroll_state = Some(queries_scroll_state); self }
     /// true if the query contains anchored() queries.
-    pub fn queriesAnchored(mut self, queriesAnchored: bool) -> Self { self.queriesAnchored = Some(queriesAnchored); self }
+    pub fn queries_anchored(mut self, queries_anchored: bool) -> Self { self.queries_anchored = Some(queries_anchored); self }
     pub fn build(self) -> CSSContainerQuery<'a> {
         CSSContainerQuery {
             text: self.text,
             range: self.range,
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
             name: self.name,
-            physicalAxes: self.physicalAxes,
-            logicalAxes: self.logicalAxes,
-            queriesScrollState: self.queriesScrollState,
-            queriesAnchored: self.queriesAnchored,
-            conditionText: self.conditionText,
+            physical_axes: self.physical_axes,
+            logical_axes: self.logical_axes,
+            queries_scroll_state: self.queries_scroll_state,
+            queries_anchored: self.queries_anchored,
+            condition_text: self.condition_text,
         }
     }
 }
@@ -1404,23 +1639,31 @@ pub struct CSSSupports<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     range: Option<SourceRange>,
     /// Identifier of the stylesheet containing this object (if exists).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "styleSheetId")]
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
 }
 
 impl<'a> CSSSupports<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `text`: Supports rule text.
+    /// * `active`: Whether the supports condition is satisfied.
     pub fn builder(text: impl Into<Cow<'a, str>>, active: bool) -> CSSSupportsBuilder<'a> {
         CSSSupportsBuilder {
             text: text.into(),
             active: active,
             range: None,
-            styleSheetId: None,
+            style_sheet_id: None,
         }
     }
+    /// Supports rule text.
     pub fn text(&self) -> &str { self.text.as_ref() }
+    /// Whether the supports condition is satisfied.
     pub fn active(&self) -> bool { self.active }
+    /// The associated rule header range in the enclosing stylesheet (if
+    /// available).
     pub fn range(&self) -> Option<&SourceRange> { self.range.as_ref() }
-    pub fn styleSheetId(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.styleSheetId.as_ref() }
+    /// Identifier of the stylesheet containing this object (if exists).
+    pub fn style_sheet_id(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.style_sheet_id.as_ref() }
 }
 
 
@@ -1428,7 +1671,7 @@ pub struct CSSSupportsBuilder<'a> {
     text: Cow<'a, str>,
     active: bool,
     range: Option<SourceRange>,
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
 }
 
 impl<'a> CSSSupportsBuilder<'a> {
@@ -1436,13 +1679,13 @@ impl<'a> CSSSupportsBuilder<'a> {
     /// available).
     pub fn range(mut self, range: SourceRange) -> Self { self.range = Some(range); self }
     /// Identifier of the stylesheet containing this object (if exists).
-    pub fn styleSheetId(mut self, styleSheetId: crate::dom::StyleSheetId<'a>) -> Self { self.styleSheetId = Some(styleSheetId); self }
+    pub fn style_sheet_id(mut self, style_sheet_id: crate::dom::StyleSheetId<'a>) -> Self { self.style_sheet_id = Some(style_sheet_id); self }
     pub fn build(self) -> CSSSupports<'a> {
         CSSSupports {
             text: self.text,
             active: self.active,
             range: self.range,
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
         }
     }
 }
@@ -1462,23 +1705,30 @@ pub struct CSSNavigation<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     range: Option<SourceRange>,
     /// Identifier of the stylesheet containing this object (if exists).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "styleSheetId")]
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
 }
 
 impl<'a> CSSNavigation<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `text`: Navigation rule text.
     pub fn builder(text: impl Into<Cow<'a, str>>) -> CSSNavigationBuilder<'a> {
         CSSNavigationBuilder {
             text: text.into(),
             active: None,
             range: None,
-            styleSheetId: None,
+            style_sheet_id: None,
         }
     }
+    /// Navigation rule text.
     pub fn text(&self) -> &str { self.text.as_ref() }
+    /// Whether the navigation condition is satisfied.
     pub fn active(&self) -> Option<bool> { self.active }
+    /// The associated rule header range in the enclosing stylesheet (if
+    /// available).
     pub fn range(&self) -> Option<&SourceRange> { self.range.as_ref() }
-    pub fn styleSheetId(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.styleSheetId.as_ref() }
+    /// Identifier of the stylesheet containing this object (if exists).
+    pub fn style_sheet_id(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.style_sheet_id.as_ref() }
 }
 
 
@@ -1486,7 +1736,7 @@ pub struct CSSNavigationBuilder<'a> {
     text: Cow<'a, str>,
     active: Option<bool>,
     range: Option<SourceRange>,
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
 }
 
 impl<'a> CSSNavigationBuilder<'a> {
@@ -1496,13 +1746,13 @@ impl<'a> CSSNavigationBuilder<'a> {
     /// available).
     pub fn range(mut self, range: SourceRange) -> Self { self.range = Some(range); self }
     /// Identifier of the stylesheet containing this object (if exists).
-    pub fn styleSheetId(mut self, styleSheetId: crate::dom::StyleSheetId<'a>) -> Self { self.styleSheetId = Some(styleSheetId); self }
+    pub fn style_sheet_id(mut self, style_sheet_id: crate::dom::StyleSheetId<'a>) -> Self { self.style_sheet_id = Some(style_sheet_id); self }
     pub fn build(self) -> CSSNavigation<'a> {
         CSSNavigation {
             text: self.text,
             active: self.active,
             range: self.range,
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
         }
     }
 }
@@ -1519,28 +1769,34 @@ pub struct CSSScope<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     range: Option<SourceRange>,
     /// Identifier of the stylesheet containing this object (if exists).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "styleSheetId")]
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
 }
 
 impl<'a> CSSScope<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `text`: Scope rule text.
     pub fn builder(text: impl Into<Cow<'a, str>>) -> CSSScopeBuilder<'a> {
         CSSScopeBuilder {
             text: text.into(),
             range: None,
-            styleSheetId: None,
+            style_sheet_id: None,
         }
     }
+    /// Scope rule text.
     pub fn text(&self) -> &str { self.text.as_ref() }
+    /// The associated rule header range in the enclosing stylesheet (if
+    /// available).
     pub fn range(&self) -> Option<&SourceRange> { self.range.as_ref() }
-    pub fn styleSheetId(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.styleSheetId.as_ref() }
+    /// Identifier of the stylesheet containing this object (if exists).
+    pub fn style_sheet_id(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.style_sheet_id.as_ref() }
 }
 
 
 pub struct CSSScopeBuilder<'a> {
     text: Cow<'a, str>,
     range: Option<SourceRange>,
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
 }
 
 impl<'a> CSSScopeBuilder<'a> {
@@ -1548,12 +1804,12 @@ impl<'a> CSSScopeBuilder<'a> {
     /// available).
     pub fn range(mut self, range: SourceRange) -> Self { self.range = Some(range); self }
     /// Identifier of the stylesheet containing this object (if exists).
-    pub fn styleSheetId(mut self, styleSheetId: crate::dom::StyleSheetId<'a>) -> Self { self.styleSheetId = Some(styleSheetId); self }
+    pub fn style_sheet_id(mut self, style_sheet_id: crate::dom::StyleSheetId<'a>) -> Self { self.style_sheet_id = Some(style_sheet_id); self }
     pub fn build(self) -> CSSScope<'a> {
         CSSScope {
             text: self.text,
             range: self.range,
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
         }
     }
 }
@@ -1570,28 +1826,34 @@ pub struct CSSLayer<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     range: Option<SourceRange>,
     /// Identifier of the stylesheet containing this object (if exists).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "styleSheetId")]
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
 }
 
 impl<'a> CSSLayer<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `text`: Layer name.
     pub fn builder(text: impl Into<Cow<'a, str>>) -> CSSLayerBuilder<'a> {
         CSSLayerBuilder {
             text: text.into(),
             range: None,
-            styleSheetId: None,
+            style_sheet_id: None,
         }
     }
+    /// Layer name.
     pub fn text(&self) -> &str { self.text.as_ref() }
+    /// The associated rule header range in the enclosing stylesheet (if
+    /// available).
     pub fn range(&self) -> Option<&SourceRange> { self.range.as_ref() }
-    pub fn styleSheetId(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.styleSheetId.as_ref() }
+    /// Identifier of the stylesheet containing this object (if exists).
+    pub fn style_sheet_id(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.style_sheet_id.as_ref() }
 }
 
 
 pub struct CSSLayerBuilder<'a> {
     text: Cow<'a, str>,
     range: Option<SourceRange>,
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
 }
 
 impl<'a> CSSLayerBuilder<'a> {
@@ -1599,12 +1861,12 @@ impl<'a> CSSLayerBuilder<'a> {
     /// available).
     pub fn range(mut self, range: SourceRange) -> Self { self.range = Some(range); self }
     /// Identifier of the stylesheet containing this object (if exists).
-    pub fn styleSheetId(mut self, styleSheetId: crate::dom::StyleSheetId<'a>) -> Self { self.styleSheetId = Some(styleSheetId); self }
+    pub fn style_sheet_id(mut self, style_sheet_id: crate::dom::StyleSheetId<'a>) -> Self { self.style_sheet_id = Some(style_sheet_id); self }
     pub fn build(self) -> CSSLayer<'a> {
         CSSLayer {
             text: self.text,
             range: self.range,
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
         }
     }
 }
@@ -1619,25 +1881,29 @@ pub struct CSSStartingStyle<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     range: Option<SourceRange>,
     /// Identifier of the stylesheet containing this object (if exists).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "styleSheetId")]
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
 }
 
 impl<'a> CSSStartingStyle<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> CSSStartingStyleBuilder<'a> {
         CSSStartingStyleBuilder {
             range: None,
-            styleSheetId: None,
+            style_sheet_id: None,
         }
     }
+    /// The associated rule header range in the enclosing stylesheet (if
+    /// available).
     pub fn range(&self) -> Option<&SourceRange> { self.range.as_ref() }
-    pub fn styleSheetId(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.styleSheetId.as_ref() }
+    /// Identifier of the stylesheet containing this object (if exists).
+    pub fn style_sheet_id(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.style_sheet_id.as_ref() }
 }
 
 #[derive(Default)]
 pub struct CSSStartingStyleBuilder<'a> {
     range: Option<SourceRange>,
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
 }
 
 impl<'a> CSSStartingStyleBuilder<'a> {
@@ -1645,11 +1911,11 @@ impl<'a> CSSStartingStyleBuilder<'a> {
     /// available).
     pub fn range(mut self, range: SourceRange) -> Self { self.range = Some(range); self }
     /// Identifier of the stylesheet containing this object (if exists).
-    pub fn styleSheetId(mut self, styleSheetId: crate::dom::StyleSheetId<'a>) -> Self { self.styleSheetId = Some(styleSheetId); self }
+    pub fn style_sheet_id(mut self, style_sheet_id: crate::dom::StyleSheetId<'a>) -> Self { self.style_sheet_id = Some(style_sheet_id); self }
     pub fn build(self) -> CSSStartingStyle<'a> {
         CSSStartingStyle {
             range: self.range,
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
         }
     }
 }
@@ -1662,40 +1928,47 @@ pub struct CSSLayerData<'a> {
     /// Layer name.
     name: Cow<'a, str>,
     /// Direct sub-layers
-    #[serde(skip_serializing_if = "Option::is_none")]
-    subLayers: Option<Vec<Box<CSSLayerData<'a>>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "subLayers")]
+    sub_layers: Option<Vec<Box<CSSLayerData<'a>>>>,
     /// Layer order. The order determines the order of the layer in the cascade order.
     /// A higher number has higher priority in the cascade order.
     order: f64,
 }
 
 impl<'a> CSSLayerData<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: Layer name.
+    /// * `order`: Layer order. The order determines the order of the layer in the cascade order. A higher number has higher priority in the cascade order.
     pub fn builder(name: impl Into<Cow<'a, str>>, order: f64) -> CSSLayerDataBuilder<'a> {
         CSSLayerDataBuilder {
             name: name.into(),
-            subLayers: None,
+            sub_layers: None,
             order: order,
         }
     }
+    /// Layer name.
     pub fn name(&self) -> &str { self.name.as_ref() }
-    pub fn subLayers(&self) -> Option<&[Box<CSSLayerData<'a>>]> { self.subLayers.as_deref() }
+    /// Direct sub-layers
+    pub fn sub_layers(&self) -> Option<&[Box<CSSLayerData<'a>>]> { self.sub_layers.as_deref() }
+    /// Layer order. The order determines the order of the layer in the cascade order.
+    /// A higher number has higher priority in the cascade order.
     pub fn order(&self) -> f64 { self.order }
 }
 
 
 pub struct CSSLayerDataBuilder<'a> {
     name: Cow<'a, str>,
-    subLayers: Option<Vec<Box<CSSLayerData<'a>>>>,
+    sub_layers: Option<Vec<Box<CSSLayerData<'a>>>>,
     order: f64,
 }
 
 impl<'a> CSSLayerDataBuilder<'a> {
     /// Direct sub-layers
-    pub fn subLayers(mut self, subLayers: Vec<Box<CSSLayerData<'a>>>) -> Self { self.subLayers = Some(subLayers); self }
+    pub fn sub_layers(mut self, sub_layers: Vec<Box<CSSLayerData<'a>>>) -> Self { self.sub_layers = Some(sub_layers); self }
     pub fn build(self) -> CSSLayerData<'a> {
         CSSLayerData {
             name: self.name,
-            subLayers: self.subLayers,
+            sub_layers: self.sub_layers,
             order: self.order,
         }
     }
@@ -1707,45 +1980,58 @@ impl<'a> CSSLayerDataBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct PlatformFontUsage<'a> {
     /// Font's family name reported by platform.
-    familyName: Cow<'a, str>,
+    #[serde(rename = "familyName")]
+    family_name: Cow<'a, str>,
     /// Font's PostScript name reported by platform.
-    postScriptName: Cow<'a, str>,
+    #[serde(rename = "postScriptName")]
+    post_script_name: Cow<'a, str>,
     /// Indicates if the font was downloaded or resolved locally.
-    isCustomFont: bool,
+    #[serde(rename = "isCustomFont")]
+    is_custom_font: bool,
     /// Amount of glyphs that were rendered with this font.
-    glyphCount: f64,
+    #[serde(rename = "glyphCount")]
+    glyph_count: f64,
 }
 
 impl<'a> PlatformFontUsage<'a> {
-    pub fn builder(familyName: impl Into<Cow<'a, str>>, postScriptName: impl Into<Cow<'a, str>>, isCustomFont: bool, glyphCount: f64) -> PlatformFontUsageBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `family_name`: Font's family name reported by platform.
+    /// * `post_script_name`: Font's PostScript name reported by platform.
+    /// * `is_custom_font`: Indicates if the font was downloaded or resolved locally.
+    /// * `glyph_count`: Amount of glyphs that were rendered with this font.
+    pub fn builder(family_name: impl Into<Cow<'a, str>>, post_script_name: impl Into<Cow<'a, str>>, is_custom_font: bool, glyph_count: f64) -> PlatformFontUsageBuilder<'a> {
         PlatformFontUsageBuilder {
-            familyName: familyName.into(),
-            postScriptName: postScriptName.into(),
-            isCustomFont: isCustomFont,
-            glyphCount: glyphCount,
+            family_name: family_name.into(),
+            post_script_name: post_script_name.into(),
+            is_custom_font: is_custom_font,
+            glyph_count: glyph_count,
         }
     }
-    pub fn familyName(&self) -> &str { self.familyName.as_ref() }
-    pub fn postScriptName(&self) -> &str { self.postScriptName.as_ref() }
-    pub fn isCustomFont(&self) -> bool { self.isCustomFont }
-    pub fn glyphCount(&self) -> f64 { self.glyphCount }
+    /// Font's family name reported by platform.
+    pub fn family_name(&self) -> &str { self.family_name.as_ref() }
+    /// Font's PostScript name reported by platform.
+    pub fn post_script_name(&self) -> &str { self.post_script_name.as_ref() }
+    /// Indicates if the font was downloaded or resolved locally.
+    pub fn is_custom_font(&self) -> bool { self.is_custom_font }
+    /// Amount of glyphs that were rendered with this font.
+    pub fn glyph_count(&self) -> f64 { self.glyph_count }
 }
 
 
 pub struct PlatformFontUsageBuilder<'a> {
-    familyName: Cow<'a, str>,
-    postScriptName: Cow<'a, str>,
-    isCustomFont: bool,
-    glyphCount: f64,
+    family_name: Cow<'a, str>,
+    post_script_name: Cow<'a, str>,
+    is_custom_font: bool,
+    glyph_count: f64,
 }
 
 impl<'a> PlatformFontUsageBuilder<'a> {
     pub fn build(self) -> PlatformFontUsage<'a> {
         PlatformFontUsage {
-            familyName: self.familyName,
-            postScriptName: self.postScriptName,
-            isCustomFont: self.isCustomFont,
-            glyphCount: self.glyphCount,
+            family_name: self.family_name,
+            post_script_name: self.post_script_name,
+            is_custom_font: self.is_custom_font,
+            glyph_count: self.glyph_count,
         }
     }
 }
@@ -1760,37 +2046,51 @@ pub struct FontVariationAxis<'a> {
     /// Human-readable variation name in the default language (normally, "en").
     name: Cow<'a, str>,
     /// The minimum value (inclusive) the font supports for this tag.
-    minValue: f64,
+    #[serde(rename = "minValue")]
+    min_value: f64,
     /// The maximum value (inclusive) the font supports for this tag.
-    maxValue: f64,
+    #[serde(rename = "maxValue")]
+    max_value: f64,
     /// The default value.
-    defaultValue: f64,
+    #[serde(rename = "defaultValue")]
+    default_value: f64,
 }
 
 impl<'a> FontVariationAxis<'a> {
-    pub fn builder(tag: impl Into<Cow<'a, str>>, name: impl Into<Cow<'a, str>>, minValue: f64, maxValue: f64, defaultValue: f64) -> FontVariationAxisBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `tag`: The font-variation-setting tag (a.k.a. "axis tag").
+    /// * `name`: Human-readable variation name in the default language (normally, "en").
+    /// * `min_value`: The minimum value (inclusive) the font supports for this tag.
+    /// * `max_value`: The maximum value (inclusive) the font supports for this tag.
+    /// * `default_value`: The default value.
+    pub fn builder(tag: impl Into<Cow<'a, str>>, name: impl Into<Cow<'a, str>>, min_value: f64, max_value: f64, default_value: f64) -> FontVariationAxisBuilder<'a> {
         FontVariationAxisBuilder {
             tag: tag.into(),
             name: name.into(),
-            minValue: minValue,
-            maxValue: maxValue,
-            defaultValue: defaultValue,
+            min_value: min_value,
+            max_value: max_value,
+            default_value: default_value,
         }
     }
+    /// The font-variation-setting tag (a.k.a. "axis tag").
     pub fn tag(&self) -> &str { self.tag.as_ref() }
+    /// Human-readable variation name in the default language (normally, "en").
     pub fn name(&self) -> &str { self.name.as_ref() }
-    pub fn minValue(&self) -> f64 { self.minValue }
-    pub fn maxValue(&self) -> f64 { self.maxValue }
-    pub fn defaultValue(&self) -> f64 { self.defaultValue }
+    /// The minimum value (inclusive) the font supports for this tag.
+    pub fn min_value(&self) -> f64 { self.min_value }
+    /// The maximum value (inclusive) the font supports for this tag.
+    pub fn max_value(&self) -> f64 { self.max_value }
+    /// The default value.
+    pub fn default_value(&self) -> f64 { self.default_value }
 }
 
 
 pub struct FontVariationAxisBuilder<'a> {
     tag: Cow<'a, str>,
     name: Cow<'a, str>,
-    minValue: f64,
-    maxValue: f64,
-    defaultValue: f64,
+    min_value: f64,
+    max_value: f64,
+    default_value: f64,
 }
 
 impl<'a> FontVariationAxisBuilder<'a> {
@@ -1798,98 +2098,126 @@ impl<'a> FontVariationAxisBuilder<'a> {
         FontVariationAxis {
             tag: self.tag,
             name: self.name,
-            minValue: self.minValue,
-            maxValue: self.maxValue,
-            defaultValue: self.defaultValue,
+            min_value: self.min_value,
+            max_value: self.max_value,
+            default_value: self.default_value,
         }
     }
 }
 
-/// Properties of a web font: https://www.w3.org/TR/2008/REC-CSS2-20080411/fonts.html#font-descriptions
+/// Properties of a web font: <https://www.w3.org/TR/2008/REC-CSS2-20080411/fonts.html#font-descriptions>
 /// and additional information such as platformFontFamily and fontVariationAxes.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct FontFace<'a> {
     /// The font-family.
-    fontFamily: Cow<'a, str>,
+    #[serde(rename = "fontFamily")]
+    font_family: Cow<'a, str>,
     /// The font-style.
-    fontStyle: Cow<'a, str>,
+    #[serde(rename = "fontStyle")]
+    font_style: Cow<'a, str>,
     /// The font-variant.
-    fontVariant: Cow<'a, str>,
+    #[serde(rename = "fontVariant")]
+    font_variant: Cow<'a, str>,
     /// The font-weight.
-    fontWeight: Cow<'a, str>,
+    #[serde(rename = "fontWeight")]
+    font_weight: Cow<'a, str>,
     /// The font-stretch.
-    fontStretch: Cow<'a, str>,
+    #[serde(rename = "fontStretch")]
+    font_stretch: Cow<'a, str>,
     /// The font-display.
-    fontDisplay: Cow<'a, str>,
+    #[serde(rename = "fontDisplay")]
+    font_display: Cow<'a, str>,
     /// The unicode-range.
-    unicodeRange: Cow<'a, str>,
+    #[serde(rename = "unicodeRange")]
+    unicode_range: Cow<'a, str>,
     /// The src.
     src: Cow<'a, str>,
     /// The resolved platform font family
-    platformFontFamily: Cow<'a, str>,
+    #[serde(rename = "platformFontFamily")]
+    platform_font_family: Cow<'a, str>,
     /// Available variation settings (a.k.a. "axes").
-    #[serde(skip_serializing_if = "Option::is_none")]
-    fontVariationAxes: Option<Vec<FontVariationAxis<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "fontVariationAxes")]
+    font_variation_axes: Option<Vec<FontVariationAxis<'a>>>,
 }
 
 impl<'a> FontFace<'a> {
-    pub fn builder(fontFamily: impl Into<Cow<'a, str>>, fontStyle: impl Into<Cow<'a, str>>, fontVariant: impl Into<Cow<'a, str>>, fontWeight: impl Into<Cow<'a, str>>, fontStretch: impl Into<Cow<'a, str>>, fontDisplay: impl Into<Cow<'a, str>>, unicodeRange: impl Into<Cow<'a, str>>, src: impl Into<Cow<'a, str>>, platformFontFamily: impl Into<Cow<'a, str>>) -> FontFaceBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `font_family`: The font-family.
+    /// * `font_style`: The font-style.
+    /// * `font_variant`: The font-variant.
+    /// * `font_weight`: The font-weight.
+    /// * `font_stretch`: The font-stretch.
+    /// * `font_display`: The font-display.
+    /// * `unicode_range`: The unicode-range.
+    /// * `src`: The src.
+    /// * `platform_font_family`: The resolved platform font family
+    pub fn builder(font_family: impl Into<Cow<'a, str>>, font_style: impl Into<Cow<'a, str>>, font_variant: impl Into<Cow<'a, str>>, font_weight: impl Into<Cow<'a, str>>, font_stretch: impl Into<Cow<'a, str>>, font_display: impl Into<Cow<'a, str>>, unicode_range: impl Into<Cow<'a, str>>, src: impl Into<Cow<'a, str>>, platform_font_family: impl Into<Cow<'a, str>>) -> FontFaceBuilder<'a> {
         FontFaceBuilder {
-            fontFamily: fontFamily.into(),
-            fontStyle: fontStyle.into(),
-            fontVariant: fontVariant.into(),
-            fontWeight: fontWeight.into(),
-            fontStretch: fontStretch.into(),
-            fontDisplay: fontDisplay.into(),
-            unicodeRange: unicodeRange.into(),
+            font_family: font_family.into(),
+            font_style: font_style.into(),
+            font_variant: font_variant.into(),
+            font_weight: font_weight.into(),
+            font_stretch: font_stretch.into(),
+            font_display: font_display.into(),
+            unicode_range: unicode_range.into(),
             src: src.into(),
-            platformFontFamily: platformFontFamily.into(),
-            fontVariationAxes: None,
+            platform_font_family: platform_font_family.into(),
+            font_variation_axes: None,
         }
     }
-    pub fn fontFamily(&self) -> &str { self.fontFamily.as_ref() }
-    pub fn fontStyle(&self) -> &str { self.fontStyle.as_ref() }
-    pub fn fontVariant(&self) -> &str { self.fontVariant.as_ref() }
-    pub fn fontWeight(&self) -> &str { self.fontWeight.as_ref() }
-    pub fn fontStretch(&self) -> &str { self.fontStretch.as_ref() }
-    pub fn fontDisplay(&self) -> &str { self.fontDisplay.as_ref() }
-    pub fn unicodeRange(&self) -> &str { self.unicodeRange.as_ref() }
+    /// The font-family.
+    pub fn font_family(&self) -> &str { self.font_family.as_ref() }
+    /// The font-style.
+    pub fn font_style(&self) -> &str { self.font_style.as_ref() }
+    /// The font-variant.
+    pub fn font_variant(&self) -> &str { self.font_variant.as_ref() }
+    /// The font-weight.
+    pub fn font_weight(&self) -> &str { self.font_weight.as_ref() }
+    /// The font-stretch.
+    pub fn font_stretch(&self) -> &str { self.font_stretch.as_ref() }
+    /// The font-display.
+    pub fn font_display(&self) -> &str { self.font_display.as_ref() }
+    /// The unicode-range.
+    pub fn unicode_range(&self) -> &str { self.unicode_range.as_ref() }
+    /// The src.
     pub fn src(&self) -> &str { self.src.as_ref() }
-    pub fn platformFontFamily(&self) -> &str { self.platformFontFamily.as_ref() }
-    pub fn fontVariationAxes(&self) -> Option<&[FontVariationAxis<'a>]> { self.fontVariationAxes.as_deref() }
+    /// The resolved platform font family
+    pub fn platform_font_family(&self) -> &str { self.platform_font_family.as_ref() }
+    /// Available variation settings (a.k.a. "axes").
+    pub fn font_variation_axes(&self) -> Option<&[FontVariationAxis<'a>]> { self.font_variation_axes.as_deref() }
 }
 
 
 pub struct FontFaceBuilder<'a> {
-    fontFamily: Cow<'a, str>,
-    fontStyle: Cow<'a, str>,
-    fontVariant: Cow<'a, str>,
-    fontWeight: Cow<'a, str>,
-    fontStretch: Cow<'a, str>,
-    fontDisplay: Cow<'a, str>,
-    unicodeRange: Cow<'a, str>,
+    font_family: Cow<'a, str>,
+    font_style: Cow<'a, str>,
+    font_variant: Cow<'a, str>,
+    font_weight: Cow<'a, str>,
+    font_stretch: Cow<'a, str>,
+    font_display: Cow<'a, str>,
+    unicode_range: Cow<'a, str>,
     src: Cow<'a, str>,
-    platformFontFamily: Cow<'a, str>,
-    fontVariationAxes: Option<Vec<FontVariationAxis<'a>>>,
+    platform_font_family: Cow<'a, str>,
+    font_variation_axes: Option<Vec<FontVariationAxis<'a>>>,
 }
 
 impl<'a> FontFaceBuilder<'a> {
     /// Available variation settings (a.k.a. "axes").
-    pub fn fontVariationAxes(mut self, fontVariationAxes: Vec<FontVariationAxis<'a>>) -> Self { self.fontVariationAxes = Some(fontVariationAxes); self }
+    pub fn font_variation_axes(mut self, font_variation_axes: Vec<FontVariationAxis<'a>>) -> Self { self.font_variation_axes = Some(font_variation_axes); self }
     pub fn build(self) -> FontFace<'a> {
         FontFace {
-            fontFamily: self.fontFamily,
-            fontStyle: self.fontStyle,
-            fontVariant: self.fontVariant,
-            fontWeight: self.fontWeight,
-            fontStretch: self.fontStretch,
-            fontDisplay: self.fontDisplay,
-            unicodeRange: self.unicodeRange,
+            font_family: self.font_family,
+            font_style: self.font_style,
+            font_variant: self.font_variant,
+            font_weight: self.font_weight,
+            font_stretch: self.font_stretch,
+            font_display: self.font_display,
+            unicode_range: self.unicode_range,
             src: self.src,
-            platformFontFamily: self.platformFontFamily,
-            fontVariationAxes: self.fontVariationAxes,
+            platform_font_family: self.platform_font_family,
+            font_variation_axes: self.font_variation_axes,
         }
     }
 }
@@ -1901,8 +2229,8 @@ impl<'a> FontFaceBuilder<'a> {
 pub struct CSSTryRule<'a> {
     /// The css style sheet identifier (absent for user agent stylesheet and user-specified
     /// stylesheet rules) this rule came from.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "styleSheetId")]
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
     /// Parent stylesheet's origin.
     origin: StyleSheetOrigin,
     /// Associated style declaration.
@@ -1910,21 +2238,28 @@ pub struct CSSTryRule<'a> {
 }
 
 impl<'a> CSSTryRule<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `origin`: Parent stylesheet's origin.
+    /// * `style`: Associated style declaration.
     pub fn builder(origin: impl Into<StyleSheetOrigin>, style: CSSStyle<'a>) -> CSSTryRuleBuilder<'a> {
         CSSTryRuleBuilder {
-            styleSheetId: None,
+            style_sheet_id: None,
             origin: origin.into(),
             style: style,
         }
     }
-    pub fn styleSheetId(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.styleSheetId.as_ref() }
+    /// The css style sheet identifier (absent for user agent stylesheet and user-specified
+    /// stylesheet rules) this rule came from.
+    pub fn style_sheet_id(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.style_sheet_id.as_ref() }
+    /// Parent stylesheet's origin.
     pub fn origin(&self) -> &StyleSheetOrigin { &self.origin }
+    /// Associated style declaration.
     pub fn style(&self) -> &CSSStyle<'a> { &self.style }
 }
 
 
 pub struct CSSTryRuleBuilder<'a> {
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
     origin: StyleSheetOrigin,
     style: CSSStyle<'a>,
 }
@@ -1932,10 +2267,10 @@ pub struct CSSTryRuleBuilder<'a> {
 impl<'a> CSSTryRuleBuilder<'a> {
     /// The css style sheet identifier (absent for user agent stylesheet and user-specified
     /// stylesheet rules) this rule came from.
-    pub fn styleSheetId(mut self, styleSheetId: crate::dom::StyleSheetId<'a>) -> Self { self.styleSheetId = Some(styleSheetId); self }
+    pub fn style_sheet_id(mut self, style_sheet_id: crate::dom::StyleSheetId<'a>) -> Self { self.style_sheet_id = Some(style_sheet_id); self }
     pub fn build(self) -> CSSTryRule<'a> {
         CSSTryRule {
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
             origin: self.origin,
             style: self.style,
         }
@@ -1951,8 +2286,8 @@ pub struct CSSPositionTryRule<'a> {
     name: ProtocolValue<'a>,
     /// The css style sheet identifier (absent for user agent stylesheet and user-specified
     /// stylesheet rules) this rule came from.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "styleSheetId")]
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
     /// Parent stylesheet's origin.
     origin: StyleSheetOrigin,
     /// Associated style declaration.
@@ -1961,18 +2296,28 @@ pub struct CSSPositionTryRule<'a> {
 }
 
 impl<'a> CSSPositionTryRule<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: The prelude dashed-ident name
+    /// * `origin`: Parent stylesheet's origin.
+    /// * `style`: Associated style declaration.
+    /// * `active`: 
     pub fn builder(name: ProtocolValue<'a>, origin: impl Into<StyleSheetOrigin>, style: CSSStyle<'a>, active: bool) -> CSSPositionTryRuleBuilder<'a> {
         CSSPositionTryRuleBuilder {
             name: name,
-            styleSheetId: None,
+            style_sheet_id: None,
             origin: origin.into(),
             style: style,
             active: active,
         }
     }
+    /// The prelude dashed-ident name
     pub fn name(&self) -> &ProtocolValue<'a> { &self.name }
-    pub fn styleSheetId(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.styleSheetId.as_ref() }
+    /// The css style sheet identifier (absent for user agent stylesheet and user-specified
+    /// stylesheet rules) this rule came from.
+    pub fn style_sheet_id(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.style_sheet_id.as_ref() }
+    /// Parent stylesheet's origin.
     pub fn origin(&self) -> &StyleSheetOrigin { &self.origin }
+    /// Associated style declaration.
     pub fn style(&self) -> &CSSStyle<'a> { &self.style }
     pub fn active(&self) -> bool { self.active }
 }
@@ -1980,7 +2325,7 @@ impl<'a> CSSPositionTryRule<'a> {
 
 pub struct CSSPositionTryRuleBuilder<'a> {
     name: ProtocolValue<'a>,
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
     origin: StyleSheetOrigin,
     style: CSSStyle<'a>,
     active: bool,
@@ -1989,11 +2334,11 @@ pub struct CSSPositionTryRuleBuilder<'a> {
 impl<'a> CSSPositionTryRuleBuilder<'a> {
     /// The css style sheet identifier (absent for user agent stylesheet and user-specified
     /// stylesheet rules) this rule came from.
-    pub fn styleSheetId(mut self, styleSheetId: crate::dom::StyleSheetId<'a>) -> Self { self.styleSheetId = Some(styleSheetId); self }
+    pub fn style_sheet_id(mut self, style_sheet_id: crate::dom::StyleSheetId<'a>) -> Self { self.style_sheet_id = Some(style_sheet_id); self }
     pub fn build(self) -> CSSPositionTryRule<'a> {
         CSSPositionTryRule {
             name: self.name,
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
             origin: self.origin,
             style: self.style,
             active: self.active,
@@ -2007,32 +2352,38 @@ impl<'a> CSSPositionTryRuleBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct CSSKeyframesRule<'a> {
     /// Animation name.
-    animationName: ProtocolValue<'a>,
+    #[serde(rename = "animationName")]
+    animation_name: ProtocolValue<'a>,
     /// List of keyframes.
     keyframes: Vec<CSSKeyframeRule<'a>>,
 }
 
 impl<'a> CSSKeyframesRule<'a> {
-    pub fn builder(animationName: ProtocolValue<'a>, keyframes: Vec<CSSKeyframeRule<'a>>) -> CSSKeyframesRuleBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `animation_name`: Animation name.
+    /// * `keyframes`: List of keyframes.
+    pub fn builder(animation_name: ProtocolValue<'a>, keyframes: Vec<CSSKeyframeRule<'a>>) -> CSSKeyframesRuleBuilder<'a> {
         CSSKeyframesRuleBuilder {
-            animationName: animationName,
+            animation_name: animation_name,
             keyframes: keyframes,
         }
     }
-    pub fn animationName(&self) -> &ProtocolValue<'a> { &self.animationName }
+    /// Animation name.
+    pub fn animation_name(&self) -> &ProtocolValue<'a> { &self.animation_name }
+    /// List of keyframes.
     pub fn keyframes(&self) -> &[CSSKeyframeRule<'a>] { &self.keyframes }
 }
 
 
 pub struct CSSKeyframesRuleBuilder<'a> {
-    animationName: ProtocolValue<'a>,
+    animation_name: ProtocolValue<'a>,
     keyframes: Vec<CSSKeyframeRule<'a>>,
 }
 
 impl<'a> CSSKeyframesRuleBuilder<'a> {
     pub fn build(self) -> CSSKeyframesRule<'a> {
         CSSKeyframesRule {
-            animationName: self.animationName,
+            animation_name: self.animation_name,
             keyframes: self.keyframes,
         }
     }
@@ -2043,42 +2394,47 @@ impl<'a> CSSKeyframesRuleBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct CSSPropertyRegistration<'a> {
-    propertyName: Cow<'a, str>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    initialValue: Option<ProtocolValue<'a>>,
+    #[serde(rename = "propertyName")]
+    property_name: Cow<'a, str>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "initialValue")]
+    initial_value: Option<ProtocolValue<'a>>,
     inherits: bool,
     syntax: Cow<'a, str>,
 }
 
 impl<'a> CSSPropertyRegistration<'a> {
-    pub fn builder(propertyName: impl Into<Cow<'a, str>>, inherits: bool, syntax: impl Into<Cow<'a, str>>) -> CSSPropertyRegistrationBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `property_name`: 
+    /// * `inherits`: 
+    /// * `syntax`: 
+    pub fn builder(property_name: impl Into<Cow<'a, str>>, inherits: bool, syntax: impl Into<Cow<'a, str>>) -> CSSPropertyRegistrationBuilder<'a> {
         CSSPropertyRegistrationBuilder {
-            propertyName: propertyName.into(),
-            initialValue: None,
+            property_name: property_name.into(),
+            initial_value: None,
             inherits: inherits,
             syntax: syntax.into(),
         }
     }
-    pub fn propertyName(&self) -> &str { self.propertyName.as_ref() }
-    pub fn initialValue(&self) -> Option<&ProtocolValue<'a>> { self.initialValue.as_ref() }
+    pub fn property_name(&self) -> &str { self.property_name.as_ref() }
+    pub fn initial_value(&self) -> Option<&ProtocolValue<'a>> { self.initial_value.as_ref() }
     pub fn inherits(&self) -> bool { self.inherits }
     pub fn syntax(&self) -> &str { self.syntax.as_ref() }
 }
 
 
 pub struct CSSPropertyRegistrationBuilder<'a> {
-    propertyName: Cow<'a, str>,
-    initialValue: Option<ProtocolValue<'a>>,
+    property_name: Cow<'a, str>,
+    initial_value: Option<ProtocolValue<'a>>,
     inherits: bool,
     syntax: Cow<'a, str>,
 }
 
 impl<'a> CSSPropertyRegistrationBuilder<'a> {
-    pub fn initialValue(mut self, initialValue: ProtocolValue<'a>) -> Self { self.initialValue = Some(initialValue); self }
+    pub fn initial_value(mut self, initial_value: ProtocolValue<'a>) -> Self { self.initial_value = Some(initial_value); self }
     pub fn build(self) -> CSSPropertyRegistration<'a> {
         CSSPropertyRegistration {
-            propertyName: self.propertyName,
-            initialValue: self.initialValue,
+            property_name: self.property_name,
+            initial_value: self.initial_value,
             inherits: self.inherits,
             syntax: self.syntax,
         }
@@ -2102,8 +2458,8 @@ pub struct CSSAtRule<'a> {
     name: Option<ProtocolValue<'a>>,
     /// The css style sheet identifier (absent for user agent stylesheet and user-specified
     /// stylesheet rules) this rule came from.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "styleSheetId")]
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
     /// Parent stylesheet's origin.
     origin: StyleSheetOrigin,
     /// Associated style declaration.
@@ -2111,21 +2467,33 @@ pub struct CSSAtRule<'a> {
 }
 
 impl<'a> CSSAtRule<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `type_`: Type of at-rule.
+    /// * `origin`: Parent stylesheet's origin.
+    /// * `style`: Associated style declaration.
     pub fn builder(type_: impl Into<Cow<'a, str>>, origin: impl Into<StyleSheetOrigin>, style: CSSStyle<'a>) -> CSSAtRuleBuilder<'a> {
         CSSAtRuleBuilder {
             type_: type_.into(),
             subsection: None,
             name: None,
-            styleSheetId: None,
+            style_sheet_id: None,
             origin: origin.into(),
             style: style,
         }
     }
+    /// Type of at-rule.
     pub fn type_(&self) -> &str { self.type_.as_ref() }
+    /// Subsection of font-feature-values, if this is a subsection.
     pub fn subsection(&self) -> Option<&str> { self.subsection.as_deref() }
+    /// LINT.ThenChange(//third_party/blink/renderer/core/inspector/inspector_style_sheet.cc:FontVariantAlternatesFeatureType,//third_party/blink/renderer/core/inspector/inspector_css_agent.cc:FontVariantAlternatesFeatureType)
+    /// Associated name, if applicable.
     pub fn name(&self) -> Option<&ProtocolValue<'a>> { self.name.as_ref() }
-    pub fn styleSheetId(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.styleSheetId.as_ref() }
+    /// The css style sheet identifier (absent for user agent stylesheet and user-specified
+    /// stylesheet rules) this rule came from.
+    pub fn style_sheet_id(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.style_sheet_id.as_ref() }
+    /// Parent stylesheet's origin.
     pub fn origin(&self) -> &StyleSheetOrigin { &self.origin }
+    /// Associated style declaration.
     pub fn style(&self) -> &CSSStyle<'a> { &self.style }
 }
 
@@ -2134,7 +2502,7 @@ pub struct CSSAtRuleBuilder<'a> {
     type_: Cow<'a, str>,
     subsection: Option<Cow<'a, str>>,
     name: Option<ProtocolValue<'a>>,
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
     origin: StyleSheetOrigin,
     style: CSSStyle<'a>,
 }
@@ -2147,13 +2515,13 @@ impl<'a> CSSAtRuleBuilder<'a> {
     pub fn name(mut self, name: ProtocolValue<'a>) -> Self { self.name = Some(name); self }
     /// The css style sheet identifier (absent for user agent stylesheet and user-specified
     /// stylesheet rules) this rule came from.
-    pub fn styleSheetId(mut self, styleSheetId: crate::dom::StyleSheetId<'a>) -> Self { self.styleSheetId = Some(styleSheetId); self }
+    pub fn style_sheet_id(mut self, style_sheet_id: crate::dom::StyleSheetId<'a>) -> Self { self.style_sheet_id = Some(style_sheet_id); self }
     pub fn build(self) -> CSSAtRule<'a> {
         CSSAtRule {
             type_: self.type_,
             subsection: self.subsection,
             name: self.name,
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
             origin: self.origin,
             style: self.style,
         }
@@ -2167,48 +2535,58 @@ impl<'a> CSSAtRuleBuilder<'a> {
 pub struct CSSPropertyRule<'a> {
     /// The css style sheet identifier (absent for user agent stylesheet and user-specified
     /// stylesheet rules) this rule came from.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "styleSheetId")]
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
     /// Parent stylesheet's origin.
     origin: StyleSheetOrigin,
     /// Associated property name.
-    propertyName: ProtocolValue<'a>,
+    #[serde(rename = "propertyName")]
+    property_name: ProtocolValue<'a>,
     /// Associated style declaration.
     style: CSSStyle<'a>,
 }
 
 impl<'a> CSSPropertyRule<'a> {
-    pub fn builder(origin: impl Into<StyleSheetOrigin>, propertyName: ProtocolValue<'a>, style: CSSStyle<'a>) -> CSSPropertyRuleBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `origin`: Parent stylesheet's origin.
+    /// * `property_name`: Associated property name.
+    /// * `style`: Associated style declaration.
+    pub fn builder(origin: impl Into<StyleSheetOrigin>, property_name: ProtocolValue<'a>, style: CSSStyle<'a>) -> CSSPropertyRuleBuilder<'a> {
         CSSPropertyRuleBuilder {
-            styleSheetId: None,
+            style_sheet_id: None,
             origin: origin.into(),
-            propertyName: propertyName,
+            property_name: property_name,
             style: style,
         }
     }
-    pub fn styleSheetId(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.styleSheetId.as_ref() }
+    /// The css style sheet identifier (absent for user agent stylesheet and user-specified
+    /// stylesheet rules) this rule came from.
+    pub fn style_sheet_id(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.style_sheet_id.as_ref() }
+    /// Parent stylesheet's origin.
     pub fn origin(&self) -> &StyleSheetOrigin { &self.origin }
-    pub fn propertyName(&self) -> &ProtocolValue<'a> { &self.propertyName }
+    /// Associated property name.
+    pub fn property_name(&self) -> &ProtocolValue<'a> { &self.property_name }
+    /// Associated style declaration.
     pub fn style(&self) -> &CSSStyle<'a> { &self.style }
 }
 
 
 pub struct CSSPropertyRuleBuilder<'a> {
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
     origin: StyleSheetOrigin,
-    propertyName: ProtocolValue<'a>,
+    property_name: ProtocolValue<'a>,
     style: CSSStyle<'a>,
 }
 
 impl<'a> CSSPropertyRuleBuilder<'a> {
     /// The css style sheet identifier (absent for user agent stylesheet and user-specified
     /// stylesheet rules) this rule came from.
-    pub fn styleSheetId(mut self, styleSheetId: crate::dom::StyleSheetId<'a>) -> Self { self.styleSheetId = Some(styleSheetId); self }
+    pub fn style_sheet_id(mut self, style_sheet_id: crate::dom::StyleSheetId<'a>) -> Self { self.style_sheet_id = Some(style_sheet_id); self }
     pub fn build(self) -> CSSPropertyRule<'a> {
         CSSPropertyRule {
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
             origin: self.origin,
-            propertyName: self.propertyName,
+            property_name: self.property_name,
             style: self.style,
         }
     }
@@ -2227,13 +2605,18 @@ pub struct CSSFunctionParameter<'a> {
 }
 
 impl<'a> CSSFunctionParameter<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: The parameter name.
+    /// * `type_`: The parameter type.
     pub fn builder(name: impl Into<Cow<'a, str>>, type_: impl Into<Cow<'a, str>>) -> CSSFunctionParameterBuilder<'a> {
         CSSFunctionParameterBuilder {
             name: name.into(),
             type_: type_.into(),
         }
     }
+    /// The parameter name.
     pub fn name(&self) -> &str { self.name.as_ref() }
+    /// The parameter type.
     pub fn type_(&self) -> &str { self.type_.as_ref() }
 }
 
@@ -2261,8 +2644,8 @@ pub struct CSSFunctionConditionNode<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     media: Option<CSSMedia<'a>>,
     /// Container query for this conditional block. Only one type of condition should be set.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    containerQueries: Option<CSSContainerQuery<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "containerQueries")]
+    container_queries: Option<CSSContainerQuery<'a>>,
     /// @supports CSS at-rule condition. Only one type of condition should be set.
     #[serde(skip_serializing_if = "Option::is_none")]
     supports: Option<CSSSupports<'a>>,
@@ -2272,43 +2655,53 @@ pub struct CSSFunctionConditionNode<'a> {
     /// Block body.
     children: Vec<CSSFunctionNode<'a>>,
     /// The condition text.
-    conditionText: Cow<'a, str>,
+    #[serde(rename = "conditionText")]
+    condition_text: Cow<'a, str>,
 }
 
 impl<'a> CSSFunctionConditionNode<'a> {
-    pub fn builder(children: Vec<CSSFunctionNode<'a>>, conditionText: impl Into<Cow<'a, str>>) -> CSSFunctionConditionNodeBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `children`: Block body.
+    /// * `condition_text`: The condition text.
+    pub fn builder(children: Vec<CSSFunctionNode<'a>>, condition_text: impl Into<Cow<'a, str>>) -> CSSFunctionConditionNodeBuilder<'a> {
         CSSFunctionConditionNodeBuilder {
             media: None,
-            containerQueries: None,
+            container_queries: None,
             supports: None,
             navigation: None,
             children: children,
-            conditionText: conditionText.into(),
+            condition_text: condition_text.into(),
         }
     }
+    /// Media query for this conditional block. Only one type of condition should be set.
     pub fn media(&self) -> Option<&CSSMedia<'a>> { self.media.as_ref() }
-    pub fn containerQueries(&self) -> Option<&CSSContainerQuery<'a>> { self.containerQueries.as_ref() }
+    /// Container query for this conditional block. Only one type of condition should be set.
+    pub fn container_queries(&self) -> Option<&CSSContainerQuery<'a>> { self.container_queries.as_ref() }
+    /// @supports CSS at-rule condition. Only one type of condition should be set.
     pub fn supports(&self) -> Option<&CSSSupports<'a>> { self.supports.as_ref() }
+    /// @navigation condition. Only one type of condition should be set.
     pub fn navigation(&self) -> Option<&CSSNavigation<'a>> { self.navigation.as_ref() }
+    /// Block body.
     pub fn children(&self) -> &[CSSFunctionNode<'a>] { &self.children }
-    pub fn conditionText(&self) -> &str { self.conditionText.as_ref() }
+    /// The condition text.
+    pub fn condition_text(&self) -> &str { self.condition_text.as_ref() }
 }
 
 
 pub struct CSSFunctionConditionNodeBuilder<'a> {
     media: Option<CSSMedia<'a>>,
-    containerQueries: Option<CSSContainerQuery<'a>>,
+    container_queries: Option<CSSContainerQuery<'a>>,
     supports: Option<CSSSupports<'a>>,
     navigation: Option<CSSNavigation<'a>>,
     children: Vec<CSSFunctionNode<'a>>,
-    conditionText: Cow<'a, str>,
+    condition_text: Cow<'a, str>,
 }
 
 impl<'a> CSSFunctionConditionNodeBuilder<'a> {
     /// Media query for this conditional block. Only one type of condition should be set.
     pub fn media(mut self, media: CSSMedia<'a>) -> Self { self.media = Some(media); self }
     /// Container query for this conditional block. Only one type of condition should be set.
-    pub fn containerQueries(mut self, containerQueries: CSSContainerQuery<'a>) -> Self { self.containerQueries = Some(containerQueries); self }
+    pub fn container_queries(mut self, container_queries: CSSContainerQuery<'a>) -> Self { self.container_queries = Some(container_queries); self }
     /// @supports CSS at-rule condition. Only one type of condition should be set.
     pub fn supports(mut self, supports: CSSSupports<'a>) -> Self { self.supports = Some(supports); self }
     /// @navigation condition. Only one type of condition should be set.
@@ -2316,11 +2709,11 @@ impl<'a> CSSFunctionConditionNodeBuilder<'a> {
     pub fn build(self) -> CSSFunctionConditionNode<'a> {
         CSSFunctionConditionNode {
             media: self.media,
-            containerQueries: self.containerQueries,
+            container_queries: self.container_queries,
             supports: self.supports,
             navigation: self.navigation,
             children: self.children,
-            conditionText: self.conditionText,
+            condition_text: self.condition_text,
         }
     }
 }
@@ -2339,13 +2732,16 @@ pub struct CSSFunctionNode<'a> {
 }
 
 impl<'a> CSSFunctionNode<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> CSSFunctionNodeBuilder<'a> {
         CSSFunctionNodeBuilder {
             condition: None,
             style: None,
         }
     }
+    /// A conditional block. If set, style should not be set.
     pub fn condition(&self) -> Option<&CSSFunctionConditionNode<'a>> { self.condition.as_ref() }
+    /// Values set by this node. If set, condition should not be set.
     pub fn style(&self) -> Option<&CSSStyle<'a>> { self.style.as_ref() }
 }
 
@@ -2377,8 +2773,8 @@ pub struct CSSFunctionRule<'a> {
     name: ProtocolValue<'a>,
     /// The css style sheet identifier (absent for user agent stylesheet and user-specified
     /// stylesheet rules) this rule came from.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "styleSheetId")]
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
     /// Parent stylesheet's origin.
     origin: StyleSheetOrigin,
     /// List of parameters.
@@ -2386,53 +2782,65 @@ pub struct CSSFunctionRule<'a> {
     /// Function body.
     children: Vec<CSSFunctionNode<'a>>,
     /// The BackendNodeId of the DOM node that constitutes the origin tree scope of this rule.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    originTreeScopeNodeId: Option<crate::dom::BackendNodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "originTreeScopeNodeId")]
+    origin_tree_scope_node_id: Option<crate::dom::BackendNodeId>,
 }
 
 impl<'a> CSSFunctionRule<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: Name of the function.
+    /// * `origin`: Parent stylesheet's origin.
+    /// * `parameters`: List of parameters.
+    /// * `children`: Function body.
     pub fn builder(name: ProtocolValue<'a>, origin: impl Into<StyleSheetOrigin>, parameters: Vec<CSSFunctionParameter<'a>>, children: Vec<CSSFunctionNode<'a>>) -> CSSFunctionRuleBuilder<'a> {
         CSSFunctionRuleBuilder {
             name: name,
-            styleSheetId: None,
+            style_sheet_id: None,
             origin: origin.into(),
             parameters: parameters,
             children: children,
-            originTreeScopeNodeId: None,
+            origin_tree_scope_node_id: None,
         }
     }
+    /// Name of the function.
     pub fn name(&self) -> &ProtocolValue<'a> { &self.name }
-    pub fn styleSheetId(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.styleSheetId.as_ref() }
+    /// The css style sheet identifier (absent for user agent stylesheet and user-specified
+    /// stylesheet rules) this rule came from.
+    pub fn style_sheet_id(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.style_sheet_id.as_ref() }
+    /// Parent stylesheet's origin.
     pub fn origin(&self) -> &StyleSheetOrigin { &self.origin }
+    /// List of parameters.
     pub fn parameters(&self) -> &[CSSFunctionParameter<'a>] { &self.parameters }
+    /// Function body.
     pub fn children(&self) -> &[CSSFunctionNode<'a>] { &self.children }
-    pub fn originTreeScopeNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.originTreeScopeNodeId.as_ref() }
+    /// The BackendNodeId of the DOM node that constitutes the origin tree scope of this rule.
+    pub fn origin_tree_scope_node_id(&self) -> Option<&crate::dom::BackendNodeId> { self.origin_tree_scope_node_id.as_ref() }
 }
 
 
 pub struct CSSFunctionRuleBuilder<'a> {
     name: ProtocolValue<'a>,
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
     origin: StyleSheetOrigin,
     parameters: Vec<CSSFunctionParameter<'a>>,
     children: Vec<CSSFunctionNode<'a>>,
-    originTreeScopeNodeId: Option<crate::dom::BackendNodeId>,
+    origin_tree_scope_node_id: Option<crate::dom::BackendNodeId>,
 }
 
 impl<'a> CSSFunctionRuleBuilder<'a> {
     /// The css style sheet identifier (absent for user agent stylesheet and user-specified
     /// stylesheet rules) this rule came from.
-    pub fn styleSheetId(mut self, styleSheetId: crate::dom::StyleSheetId<'a>) -> Self { self.styleSheetId = Some(styleSheetId); self }
+    pub fn style_sheet_id(mut self, style_sheet_id: crate::dom::StyleSheetId<'a>) -> Self { self.style_sheet_id = Some(style_sheet_id); self }
     /// The BackendNodeId of the DOM node that constitutes the origin tree scope of this rule.
-    pub fn originTreeScopeNodeId(mut self, originTreeScopeNodeId: crate::dom::BackendNodeId) -> Self { self.originTreeScopeNodeId = Some(originTreeScopeNodeId); self }
+    pub fn origin_tree_scope_node_id(mut self, origin_tree_scope_node_id: crate::dom::BackendNodeId) -> Self { self.origin_tree_scope_node_id = Some(origin_tree_scope_node_id); self }
     pub fn build(self) -> CSSFunctionRule<'a> {
         CSSFunctionRule {
             name: self.name,
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
             origin: self.origin,
             parameters: self.parameters,
             children: self.children,
-            originTreeScopeNodeId: self.originTreeScopeNodeId,
+            origin_tree_scope_node_id: self.origin_tree_scope_node_id,
         }
     }
 }
@@ -2444,48 +2852,58 @@ impl<'a> CSSFunctionRuleBuilder<'a> {
 pub struct CSSKeyframeRule<'a> {
     /// The css style sheet identifier (absent for user agent stylesheet and user-specified
     /// stylesheet rules) this rule came from.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "styleSheetId")]
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
     /// Parent stylesheet's origin.
     origin: StyleSheetOrigin,
     /// Associated key text.
-    keyText: ProtocolValue<'a>,
+    #[serde(rename = "keyText")]
+    key_text: ProtocolValue<'a>,
     /// Associated style declaration.
     style: CSSStyle<'a>,
 }
 
 impl<'a> CSSKeyframeRule<'a> {
-    pub fn builder(origin: impl Into<StyleSheetOrigin>, keyText: ProtocolValue<'a>, style: CSSStyle<'a>) -> CSSKeyframeRuleBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `origin`: Parent stylesheet's origin.
+    /// * `key_text`: Associated key text.
+    /// * `style`: Associated style declaration.
+    pub fn builder(origin: impl Into<StyleSheetOrigin>, key_text: ProtocolValue<'a>, style: CSSStyle<'a>) -> CSSKeyframeRuleBuilder<'a> {
         CSSKeyframeRuleBuilder {
-            styleSheetId: None,
+            style_sheet_id: None,
             origin: origin.into(),
-            keyText: keyText,
+            key_text: key_text,
             style: style,
         }
     }
-    pub fn styleSheetId(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.styleSheetId.as_ref() }
+    /// The css style sheet identifier (absent for user agent stylesheet and user-specified
+    /// stylesheet rules) this rule came from.
+    pub fn style_sheet_id(&self) -> Option<&crate::dom::StyleSheetId<'a>> { self.style_sheet_id.as_ref() }
+    /// Parent stylesheet's origin.
     pub fn origin(&self) -> &StyleSheetOrigin { &self.origin }
-    pub fn keyText(&self) -> &ProtocolValue<'a> { &self.keyText }
+    /// Associated key text.
+    pub fn key_text(&self) -> &ProtocolValue<'a> { &self.key_text }
+    /// Associated style declaration.
     pub fn style(&self) -> &CSSStyle<'a> { &self.style }
 }
 
 
 pub struct CSSKeyframeRuleBuilder<'a> {
-    styleSheetId: Option<crate::dom::StyleSheetId<'a>>,
+    style_sheet_id: Option<crate::dom::StyleSheetId<'a>>,
     origin: StyleSheetOrigin,
-    keyText: ProtocolValue<'a>,
+    key_text: ProtocolValue<'a>,
     style: CSSStyle<'a>,
 }
 
 impl<'a> CSSKeyframeRuleBuilder<'a> {
     /// The css style sheet identifier (absent for user agent stylesheet and user-specified
     /// stylesheet rules) this rule came from.
-    pub fn styleSheetId(mut self, styleSheetId: crate::dom::StyleSheetId<'a>) -> Self { self.styleSheetId = Some(styleSheetId); self }
+    pub fn style_sheet_id(mut self, style_sheet_id: crate::dom::StyleSheetId<'a>) -> Self { self.style_sheet_id = Some(style_sheet_id); self }
     pub fn build(self) -> CSSKeyframeRule<'a> {
         CSSKeyframeRule {
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
             origin: self.origin,
-            keyText: self.keyText,
+            key_text: self.key_text,
             style: self.style,
         }
     }
@@ -2497,7 +2915,8 @@ impl<'a> CSSKeyframeRuleBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct StyleDeclarationEdit<'a> {
     /// The css style sheet identifier.
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    #[serde(rename = "styleSheetId")]
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     /// The range of the style text in the enclosing stylesheet.
     range: SourceRange,
     /// New style text.
@@ -2505,21 +2924,28 @@ pub struct StyleDeclarationEdit<'a> {
 }
 
 impl<'a> StyleDeclarationEdit<'a> {
-    pub fn builder(styleSheetId: crate::dom::StyleSheetId<'a>, range: SourceRange, text: impl Into<Cow<'a, str>>) -> StyleDeclarationEditBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `style_sheet_id`: The css style sheet identifier.
+    /// * `range`: The range of the style text in the enclosing stylesheet.
+    /// * `text`: New style text.
+    pub fn builder(style_sheet_id: crate::dom::StyleSheetId<'a>, range: SourceRange, text: impl Into<Cow<'a, str>>) -> StyleDeclarationEditBuilder<'a> {
         StyleDeclarationEditBuilder {
-            styleSheetId: styleSheetId,
+            style_sheet_id: style_sheet_id,
             range: range,
             text: text.into(),
         }
     }
-    pub fn styleSheetId(&self) -> &crate::dom::StyleSheetId<'a> { &self.styleSheetId }
+    /// The css style sheet identifier.
+    pub fn style_sheet_id(&self) -> &crate::dom::StyleSheetId<'a> { &self.style_sheet_id }
+    /// The range of the style text in the enclosing stylesheet.
     pub fn range(&self) -> &SourceRange { &self.range }
+    /// New style text.
     pub fn text(&self) -> &str { self.text.as_ref() }
 }
 
 
 pub struct StyleDeclarationEditBuilder<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     range: SourceRange,
     text: Cow<'a, str>,
 }
@@ -2527,7 +2953,7 @@ pub struct StyleDeclarationEditBuilder<'a> {
 impl<'a> StyleDeclarationEditBuilder<'a> {
     pub fn build(self) -> StyleDeclarationEdit<'a> {
         StyleDeclarationEdit {
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
             range: self.range,
             text: self.text,
         }
@@ -2541,52 +2967,64 @@ impl<'a> StyleDeclarationEditBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct AddRuleParams<'a> {
     /// The css style sheet identifier where a new rule should be inserted.
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    #[serde(rename = "styleSheetId")]
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     /// The text of a new rule.
-    ruleText: Cow<'a, str>,
+    #[serde(rename = "ruleText")]
+    rule_text: Cow<'a, str>,
     /// Text position of a new rule in the target style sheet.
     location: SourceRange,
     /// NodeId for the DOM node in whose context custom property declarations for registered properties should be
     /// validated. If omitted, declarations in the new rule text can only be validated statically, which may produce
     /// incorrect results if the declaration contains a var() for example.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    nodeForPropertySyntaxValidation: Option<crate::dom::NodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "nodeForPropertySyntaxValidation")]
+    node_for_property_syntax_validation: Option<crate::dom::NodeId>,
 }
 
 impl<'a> AddRuleParams<'a> {
-    pub fn builder(styleSheetId: crate::dom::StyleSheetId<'a>, ruleText: impl Into<Cow<'a, str>>, location: SourceRange) -> AddRuleParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `style_sheet_id`: The css style sheet identifier where a new rule should be inserted.
+    /// * `rule_text`: The text of a new rule.
+    /// * `location`: Text position of a new rule in the target style sheet.
+    pub fn builder(style_sheet_id: crate::dom::StyleSheetId<'a>, rule_text: impl Into<Cow<'a, str>>, location: SourceRange) -> AddRuleParamsBuilder<'a> {
         AddRuleParamsBuilder {
-            styleSheetId: styleSheetId,
-            ruleText: ruleText.into(),
+            style_sheet_id: style_sheet_id,
+            rule_text: rule_text.into(),
             location: location,
-            nodeForPropertySyntaxValidation: None,
+            node_for_property_syntax_validation: None,
         }
     }
-    pub fn styleSheetId(&self) -> &crate::dom::StyleSheetId<'a> { &self.styleSheetId }
-    pub fn ruleText(&self) -> &str { self.ruleText.as_ref() }
+    /// The css style sheet identifier where a new rule should be inserted.
+    pub fn style_sheet_id(&self) -> &crate::dom::StyleSheetId<'a> { &self.style_sheet_id }
+    /// The text of a new rule.
+    pub fn rule_text(&self) -> &str { self.rule_text.as_ref() }
+    /// Text position of a new rule in the target style sheet.
     pub fn location(&self) -> &SourceRange { &self.location }
-    pub fn nodeForPropertySyntaxValidation(&self) -> Option<&crate::dom::NodeId> { self.nodeForPropertySyntaxValidation.as_ref() }
+    /// NodeId for the DOM node in whose context custom property declarations for registered properties should be
+    /// validated. If omitted, declarations in the new rule text can only be validated statically, which may produce
+    /// incorrect results if the declaration contains a var() for example.
+    pub fn node_for_property_syntax_validation(&self) -> Option<&crate::dom::NodeId> { self.node_for_property_syntax_validation.as_ref() }
 }
 
 
 pub struct AddRuleParamsBuilder<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
-    ruleText: Cow<'a, str>,
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
+    rule_text: Cow<'a, str>,
     location: SourceRange,
-    nodeForPropertySyntaxValidation: Option<crate::dom::NodeId>,
+    node_for_property_syntax_validation: Option<crate::dom::NodeId>,
 }
 
 impl<'a> AddRuleParamsBuilder<'a> {
     /// NodeId for the DOM node in whose context custom property declarations for registered properties should be
     /// validated. If omitted, declarations in the new rule text can only be validated statically, which may produce
     /// incorrect results if the declaration contains a var() for example.
-    pub fn nodeForPropertySyntaxValidation(mut self, nodeForPropertySyntaxValidation: crate::dom::NodeId) -> Self { self.nodeForPropertySyntaxValidation = Some(nodeForPropertySyntaxValidation); self }
+    pub fn node_for_property_syntax_validation(mut self, node_for_property_syntax_validation: crate::dom::NodeId) -> Self { self.node_for_property_syntax_validation = Some(node_for_property_syntax_validation); self }
     pub fn build(self) -> AddRuleParams<'a> {
         AddRuleParams {
-            styleSheetId: self.styleSheetId,
-            ruleText: self.ruleText,
+            style_sheet_id: self.style_sheet_id,
+            rule_text: self.rule_text,
             location: self.location,
-            nodeForPropertySyntaxValidation: self.nodeForPropertySyntaxValidation,
+            node_for_property_syntax_validation: self.node_for_property_syntax_validation,
         }
     }
 }
@@ -2602,11 +3040,14 @@ pub struct AddRuleReturns<'a> {
 }
 
 impl<'a> AddRuleReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `rule`: The newly created rule.
     pub fn builder(rule: CSSRule<'a>) -> AddRuleReturnsBuilder<'a> {
         AddRuleReturnsBuilder {
             rule: rule,
         }
     }
+    /// The newly created rule.
     pub fn rule(&self) -> &CSSRule<'a> { &self.rule }
 }
 
@@ -2635,27 +3076,30 @@ impl<'a> crate::CdpCommand<'a> for AddRuleParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct CollectClassNamesParams<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    #[serde(rename = "styleSheetId")]
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
 }
 
 impl<'a> CollectClassNamesParams<'a> {
-    pub fn builder(styleSheetId: crate::dom::StyleSheetId<'a>) -> CollectClassNamesParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `style_sheet_id`: 
+    pub fn builder(style_sheet_id: crate::dom::StyleSheetId<'a>) -> CollectClassNamesParamsBuilder<'a> {
         CollectClassNamesParamsBuilder {
-            styleSheetId: styleSheetId,
+            style_sheet_id: style_sheet_id,
         }
     }
-    pub fn styleSheetId(&self) -> &crate::dom::StyleSheetId<'a> { &self.styleSheetId }
+    pub fn style_sheet_id(&self) -> &crate::dom::StyleSheetId<'a> { &self.style_sheet_id }
 }
 
 
 pub struct CollectClassNamesParamsBuilder<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
 }
 
 impl<'a> CollectClassNamesParamsBuilder<'a> {
     pub fn build(self) -> CollectClassNamesParams<'a> {
         CollectClassNamesParams {
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
         }
     }
 }
@@ -2666,27 +3110,31 @@ impl<'a> CollectClassNamesParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct CollectClassNamesReturns<'a> {
     /// Class name list.
-    classNames: Vec<Cow<'a, str>>,
+    #[serde(rename = "classNames")]
+    class_names: Vec<Cow<'a, str>>,
 }
 
 impl<'a> CollectClassNamesReturns<'a> {
-    pub fn builder(classNames: Vec<Cow<'a, str>>) -> CollectClassNamesReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `class_names`: Class name list.
+    pub fn builder(class_names: Vec<Cow<'a, str>>) -> CollectClassNamesReturnsBuilder<'a> {
         CollectClassNamesReturnsBuilder {
-            classNames: classNames,
+            class_names: class_names,
         }
     }
-    pub fn classNames(&self) -> &[Cow<'a, str>] { &self.classNames }
+    /// Class name list.
+    pub fn class_names(&self) -> &[Cow<'a, str>] { &self.class_names }
 }
 
 
 pub struct CollectClassNamesReturnsBuilder<'a> {
-    classNames: Vec<Cow<'a, str>>,
+    class_names: Vec<Cow<'a, str>>,
 }
 
 impl<'a> CollectClassNamesReturnsBuilder<'a> {
     pub fn build(self) -> CollectClassNamesReturns<'a> {
         CollectClassNamesReturns {
-            classNames: self.classNames,
+            class_names: self.class_names,
         }
     }
 }
@@ -2704,7 +3152,8 @@ impl<'a> crate::CdpCommand<'a> for CollectClassNamesParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct CreateStyleSheetParams<'a> {
     /// Identifier of the frame where "via-inspector" stylesheet should be created.
-    frameId: crate::page::FrameId<'a>,
+    #[serde(rename = "frameId")]
+    frame_id: crate::page::FrameId<'a>,
     /// If true, creates a new stylesheet for every call. If false,
     /// returns a stylesheet previously created by a call with force=false
     /// for the frame's document if it exists or creates a new stylesheet
@@ -2714,19 +3163,26 @@ pub struct CreateStyleSheetParams<'a> {
 }
 
 impl<'a> CreateStyleSheetParams<'a> {
-    pub fn builder(frameId: crate::page::FrameId<'a>) -> CreateStyleSheetParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `frame_id`: Identifier of the frame where "via-inspector" stylesheet should be created.
+    pub fn builder(frame_id: crate::page::FrameId<'a>) -> CreateStyleSheetParamsBuilder<'a> {
         CreateStyleSheetParamsBuilder {
-            frameId: frameId,
+            frame_id: frame_id,
             force: None,
         }
     }
-    pub fn frameId(&self) -> &crate::page::FrameId<'a> { &self.frameId }
+    /// Identifier of the frame where "via-inspector" stylesheet should be created.
+    pub fn frame_id(&self) -> &crate::page::FrameId<'a> { &self.frame_id }
+    /// If true, creates a new stylesheet for every call. If false,
+    /// returns a stylesheet previously created by a call with force=false
+    /// for the frame's document if it exists or creates a new stylesheet
+    /// (default: false).
     pub fn force(&self) -> Option<bool> { self.force }
 }
 
 
 pub struct CreateStyleSheetParamsBuilder<'a> {
-    frameId: crate::page::FrameId<'a>,
+    frame_id: crate::page::FrameId<'a>,
     force: Option<bool>,
 }
 
@@ -2738,7 +3194,7 @@ impl<'a> CreateStyleSheetParamsBuilder<'a> {
     pub fn force(mut self, force: bool) -> Self { self.force = Some(force); self }
     pub fn build(self) -> CreateStyleSheetParams<'a> {
         CreateStyleSheetParams {
-            frameId: self.frameId,
+            frame_id: self.frame_id,
             force: self.force,
         }
     }
@@ -2750,27 +3206,31 @@ impl<'a> CreateStyleSheetParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct CreateStyleSheetReturns<'a> {
     /// Identifier of the created "via-inspector" stylesheet.
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    #[serde(rename = "styleSheetId")]
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
 }
 
 impl<'a> CreateStyleSheetReturns<'a> {
-    pub fn builder(styleSheetId: crate::dom::StyleSheetId<'a>) -> CreateStyleSheetReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `style_sheet_id`: Identifier of the created "via-inspector" stylesheet.
+    pub fn builder(style_sheet_id: crate::dom::StyleSheetId<'a>) -> CreateStyleSheetReturnsBuilder<'a> {
         CreateStyleSheetReturnsBuilder {
-            styleSheetId: styleSheetId,
+            style_sheet_id: style_sheet_id,
         }
     }
-    pub fn styleSheetId(&self) -> &crate::dom::StyleSheetId<'a> { &self.styleSheetId }
+    /// Identifier of the created "via-inspector" stylesheet.
+    pub fn style_sheet_id(&self) -> &crate::dom::StyleSheetId<'a> { &self.style_sheet_id }
 }
 
 
 pub struct CreateStyleSheetReturnsBuilder<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
 }
 
 impl<'a> CreateStyleSheetReturnsBuilder<'a> {
     pub fn build(self) -> CreateStyleSheetReturns<'a> {
         CreateStyleSheetReturns {
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
         }
     }
 }
@@ -2809,33 +3269,40 @@ impl<'a> crate::CdpCommand<'a> for EnableParams {
 #[serde(rename_all = "camelCase")]
 pub struct ForcePseudoStateParams<'a> {
     /// The element id for which to force the pseudo state.
-    nodeId: crate::dom::NodeId,
+    #[serde(rename = "nodeId")]
+    node_id: crate::dom::NodeId,
     /// Element pseudo classes to force when computing the element's style.
-    forcedPseudoClasses: Vec<Cow<'a, str>>,
+    #[serde(rename = "forcedPseudoClasses")]
+    forced_pseudo_classes: Vec<Cow<'a, str>>,
 }
 
 impl<'a> ForcePseudoStateParams<'a> {
-    pub fn builder(nodeId: crate::dom::NodeId, forcedPseudoClasses: Vec<Cow<'a, str>>) -> ForcePseudoStateParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `node_id`: The element id for which to force the pseudo state.
+    /// * `forced_pseudo_classes`: Element pseudo classes to force when computing the element's style.
+    pub fn builder(node_id: crate::dom::NodeId, forced_pseudo_classes: Vec<Cow<'a, str>>) -> ForcePseudoStateParamsBuilder<'a> {
         ForcePseudoStateParamsBuilder {
-            nodeId: nodeId,
-            forcedPseudoClasses: forcedPseudoClasses,
+            node_id: node_id,
+            forced_pseudo_classes: forced_pseudo_classes,
         }
     }
-    pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
-    pub fn forcedPseudoClasses(&self) -> &[Cow<'a, str>] { &self.forcedPseudoClasses }
+    /// The element id for which to force the pseudo state.
+    pub fn node_id(&self) -> &crate::dom::NodeId { &self.node_id }
+    /// Element pseudo classes to force when computing the element's style.
+    pub fn forced_pseudo_classes(&self) -> &[Cow<'a, str>] { &self.forced_pseudo_classes }
 }
 
 
 pub struct ForcePseudoStateParamsBuilder<'a> {
-    nodeId: crate::dom::NodeId,
-    forcedPseudoClasses: Vec<Cow<'a, str>>,
+    node_id: crate::dom::NodeId,
+    forced_pseudo_classes: Vec<Cow<'a, str>>,
 }
 
 impl<'a> ForcePseudoStateParamsBuilder<'a> {
     pub fn build(self) -> ForcePseudoStateParams<'a> {
         ForcePseudoStateParams {
-            nodeId: self.nodeId,
-            forcedPseudoClasses: self.forcedPseudoClasses,
+            node_id: self.node_id,
+            forced_pseudo_classes: self.forced_pseudo_classes,
         }
     }
 }
@@ -2853,32 +3320,38 @@ impl<'a> crate::CdpCommand<'a> for ForcePseudoStateParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ForceStartingStyleParams {
     /// The element id for which to force the starting-style state.
-    nodeId: crate::dom::NodeId,
+    #[serde(rename = "nodeId")]
+    node_id: crate::dom::NodeId,
     /// Boolean indicating if this is on or off.
     forced: bool,
 }
 
 impl ForceStartingStyleParams {
-    pub fn builder(nodeId: crate::dom::NodeId, forced: bool) -> ForceStartingStyleParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `node_id`: The element id for which to force the starting-style state.
+    /// * `forced`: Boolean indicating if this is on or off.
+    pub fn builder(node_id: crate::dom::NodeId, forced: bool) -> ForceStartingStyleParamsBuilder {
         ForceStartingStyleParamsBuilder {
-            nodeId: nodeId,
+            node_id: node_id,
             forced: forced,
         }
     }
-    pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
+    /// The element id for which to force the starting-style state.
+    pub fn node_id(&self) -> &crate::dom::NodeId { &self.node_id }
+    /// Boolean indicating if this is on or off.
     pub fn forced(&self) -> bool { self.forced }
 }
 
 
 pub struct ForceStartingStyleParamsBuilder {
-    nodeId: crate::dom::NodeId,
+    node_id: crate::dom::NodeId,
     forced: bool,
 }
 
 impl ForceStartingStyleParamsBuilder {
     pub fn build(self) -> ForceStartingStyleParams {
         ForceStartingStyleParams {
-            nodeId: self.nodeId,
+            node_id: self.node_id,
             forced: self.forced,
         }
     }
@@ -2896,27 +3369,31 @@ impl<'a> crate::CdpCommand<'a> for ForceStartingStyleParams {
 #[serde(rename_all = "camelCase")]
 pub struct GetBackgroundColorsParams {
     /// Id of the node to get background colors for.
-    nodeId: crate::dom::NodeId,
+    #[serde(rename = "nodeId")]
+    node_id: crate::dom::NodeId,
 }
 
 impl GetBackgroundColorsParams {
-    pub fn builder(nodeId: crate::dom::NodeId) -> GetBackgroundColorsParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `node_id`: Id of the node to get background colors for.
+    pub fn builder(node_id: crate::dom::NodeId) -> GetBackgroundColorsParamsBuilder {
         GetBackgroundColorsParamsBuilder {
-            nodeId: nodeId,
+            node_id: node_id,
         }
     }
-    pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
+    /// Id of the node to get background colors for.
+    pub fn node_id(&self) -> &crate::dom::NodeId { &self.node_id }
 }
 
 
 pub struct GetBackgroundColorsParamsBuilder {
-    nodeId: crate::dom::NodeId,
+    node_id: crate::dom::NodeId,
 }
 
 impl GetBackgroundColorsParamsBuilder {
     pub fn build(self) -> GetBackgroundColorsParams {
         GetBackgroundColorsParams {
-            nodeId: self.nodeId,
+            node_id: self.node_id,
         }
     }
 }
@@ -2930,35 +3407,44 @@ pub struct GetBackgroundColorsReturns<'a> {
     /// this will consist of simply that color. In the case of a gradient, this will consist of each
     /// of the color stops. For anything more complicated, this will be an empty array. Images will
     /// be ignored (as if the image had failed to load).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    backgroundColors: Option<Vec<Cow<'a, str>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "backgroundColors")]
+    background_colors: Option<Vec<Cow<'a, str>>>,
     /// The computed font size for this node, as a CSS computed value string (e.g. '12px').
-    #[serde(skip_serializing_if = "Option::is_none")]
-    computedFontSize: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "computedFontSize")]
+    computed_font_size: Option<Cow<'a, str>>,
     /// The computed font weight for this node, as a CSS computed value string (e.g. 'normal' or
     /// '100').
-    #[serde(skip_serializing_if = "Option::is_none")]
-    computedFontWeight: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "computedFontWeight")]
+    computed_font_weight: Option<Cow<'a, str>>,
 }
 
 impl<'a> GetBackgroundColorsReturns<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> GetBackgroundColorsReturnsBuilder<'a> {
         GetBackgroundColorsReturnsBuilder {
-            backgroundColors: None,
-            computedFontSize: None,
-            computedFontWeight: None,
+            background_colors: None,
+            computed_font_size: None,
+            computed_font_weight: None,
         }
     }
-    pub fn backgroundColors(&self) -> Option<&[Cow<'a, str>]> { self.backgroundColors.as_deref() }
-    pub fn computedFontSize(&self) -> Option<&str> { self.computedFontSize.as_deref() }
-    pub fn computedFontWeight(&self) -> Option<&str> { self.computedFontWeight.as_deref() }
+    /// The range of background colors behind this element, if it contains any visible text. If no
+    /// visible text is present, this will be undefined. In the case of a flat background color,
+    /// this will consist of simply that color. In the case of a gradient, this will consist of each
+    /// of the color stops. For anything more complicated, this will be an empty array. Images will
+    /// be ignored (as if the image had failed to load).
+    pub fn background_colors(&self) -> Option<&[Cow<'a, str>]> { self.background_colors.as_deref() }
+    /// The computed font size for this node, as a CSS computed value string (e.g. '12px').
+    pub fn computed_font_size(&self) -> Option<&str> { self.computed_font_size.as_deref() }
+    /// The computed font weight for this node, as a CSS computed value string (e.g. 'normal' or
+    /// '100').
+    pub fn computed_font_weight(&self) -> Option<&str> { self.computed_font_weight.as_deref() }
 }
 
 #[derive(Default)]
 pub struct GetBackgroundColorsReturnsBuilder<'a> {
-    backgroundColors: Option<Vec<Cow<'a, str>>>,
-    computedFontSize: Option<Cow<'a, str>>,
-    computedFontWeight: Option<Cow<'a, str>>,
+    background_colors: Option<Vec<Cow<'a, str>>>,
+    computed_font_size: Option<Cow<'a, str>>,
+    computed_font_weight: Option<Cow<'a, str>>,
 }
 
 impl<'a> GetBackgroundColorsReturnsBuilder<'a> {
@@ -2967,17 +3453,17 @@ impl<'a> GetBackgroundColorsReturnsBuilder<'a> {
     /// this will consist of simply that color. In the case of a gradient, this will consist of each
     /// of the color stops. For anything more complicated, this will be an empty array. Images will
     /// be ignored (as if the image had failed to load).
-    pub fn backgroundColors(mut self, backgroundColors: Vec<Cow<'a, str>>) -> Self { self.backgroundColors = Some(backgroundColors); self }
+    pub fn background_colors(mut self, background_colors: Vec<Cow<'a, str>>) -> Self { self.background_colors = Some(background_colors); self }
     /// The computed font size for this node, as a CSS computed value string (e.g. '12px').
-    pub fn computedFontSize(mut self, computedFontSize: impl Into<Cow<'a, str>>) -> Self { self.computedFontSize = Some(computedFontSize.into()); self }
+    pub fn computed_font_size(mut self, computed_font_size: impl Into<Cow<'a, str>>) -> Self { self.computed_font_size = Some(computed_font_size.into()); self }
     /// The computed font weight for this node, as a CSS computed value string (e.g. 'normal' or
     /// '100').
-    pub fn computedFontWeight(mut self, computedFontWeight: impl Into<Cow<'a, str>>) -> Self { self.computedFontWeight = Some(computedFontWeight.into()); self }
+    pub fn computed_font_weight(mut self, computed_font_weight: impl Into<Cow<'a, str>>) -> Self { self.computed_font_weight = Some(computed_font_weight.into()); self }
     pub fn build(self) -> GetBackgroundColorsReturns<'a> {
         GetBackgroundColorsReturns {
-            backgroundColors: self.backgroundColors,
-            computedFontSize: self.computedFontSize,
-            computedFontWeight: self.computedFontWeight,
+            background_colors: self.background_colors,
+            computed_font_size: self.computed_font_size,
+            computed_font_weight: self.computed_font_weight,
         }
     }
 }
@@ -2994,27 +3480,30 @@ impl<'a> crate::CdpCommand<'a> for GetBackgroundColorsParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetComputedStyleForNodeParams {
-    nodeId: crate::dom::NodeId,
+    #[serde(rename = "nodeId")]
+    node_id: crate::dom::NodeId,
 }
 
 impl GetComputedStyleForNodeParams {
-    pub fn builder(nodeId: crate::dom::NodeId) -> GetComputedStyleForNodeParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `node_id`: 
+    pub fn builder(node_id: crate::dom::NodeId) -> GetComputedStyleForNodeParamsBuilder {
         GetComputedStyleForNodeParamsBuilder {
-            nodeId: nodeId,
+            node_id: node_id,
         }
     }
-    pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
+    pub fn node_id(&self) -> &crate::dom::NodeId { &self.node_id }
 }
 
 
 pub struct GetComputedStyleForNodeParamsBuilder {
-    nodeId: crate::dom::NodeId,
+    node_id: crate::dom::NodeId,
 }
 
 impl GetComputedStyleForNodeParamsBuilder {
     pub fn build(self) -> GetComputedStyleForNodeParams {
         GetComputedStyleForNodeParams {
-            nodeId: self.nodeId,
+            node_id: self.node_id,
         }
     }
 }
@@ -3025,34 +3514,42 @@ impl GetComputedStyleForNodeParamsBuilder {
 #[serde(rename_all = "camelCase")]
 pub struct GetComputedStyleForNodeReturns<'a> {
     /// Computed style for the specified DOM node.
-    computedStyle: Vec<CSSComputedStyleProperty<'a>>,
+    #[serde(rename = "computedStyle")]
+    computed_style: Vec<CSSComputedStyleProperty<'a>>,
     /// A list of non-standard "extra fields" which blink stores alongside each
     /// computed style.
-    extraFields: ComputedStyleExtraFields,
+    #[serde(rename = "extraFields")]
+    extra_fields: ComputedStyleExtraFields,
 }
 
 impl<'a> GetComputedStyleForNodeReturns<'a> {
-    pub fn builder(computedStyle: Vec<CSSComputedStyleProperty<'a>>, extraFields: ComputedStyleExtraFields) -> GetComputedStyleForNodeReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `computed_style`: Computed style for the specified DOM node.
+    /// * `extra_fields`: A list of non-standard "extra fields" which blink stores alongside each computed style.
+    pub fn builder(computed_style: Vec<CSSComputedStyleProperty<'a>>, extra_fields: ComputedStyleExtraFields) -> GetComputedStyleForNodeReturnsBuilder<'a> {
         GetComputedStyleForNodeReturnsBuilder {
-            computedStyle: computedStyle,
-            extraFields: extraFields,
+            computed_style: computed_style,
+            extra_fields: extra_fields,
         }
     }
-    pub fn computedStyle(&self) -> &[CSSComputedStyleProperty<'a>] { &self.computedStyle }
-    pub fn extraFields(&self) -> &ComputedStyleExtraFields { &self.extraFields }
+    /// Computed style for the specified DOM node.
+    pub fn computed_style(&self) -> &[CSSComputedStyleProperty<'a>] { &self.computed_style }
+    /// A list of non-standard "extra fields" which blink stores alongside each
+    /// computed style.
+    pub fn extra_fields(&self) -> &ComputedStyleExtraFields { &self.extra_fields }
 }
 
 
 pub struct GetComputedStyleForNodeReturnsBuilder<'a> {
-    computedStyle: Vec<CSSComputedStyleProperty<'a>>,
-    extraFields: ComputedStyleExtraFields,
+    computed_style: Vec<CSSComputedStyleProperty<'a>>,
+    extra_fields: ComputedStyleExtraFields,
 }
 
 impl<'a> GetComputedStyleForNodeReturnsBuilder<'a> {
     pub fn build(self) -> GetComputedStyleForNodeReturns<'a> {
         GetComputedStyleForNodeReturns {
-            computedStyle: self.computedStyle,
-            extraFields: self.extraFields,
+            computed_style: self.computed_style,
+            extra_fields: self.extra_fields,
         }
     }
 }
@@ -3082,60 +3579,70 @@ pub struct ResolveValuesParams<'a> {
     /// Cascade-dependent keywords (revert/revert-layer) do not work.
     values: Vec<Cow<'a, str>>,
     /// Id of the node in whose context the expression is evaluated
-    nodeId: crate::dom::NodeId,
+    #[serde(rename = "nodeId")]
+    node_id: crate::dom::NodeId,
     /// Only longhands and custom property names are accepted.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    propertyName: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "propertyName")]
+    property_name: Option<Cow<'a, str>>,
     /// Pseudo element type, only works for pseudo elements that generate
     /// elements in the tree, such as ::before and ::after.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pseudoType: Option<crate::dom::PseudoType>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "pseudoType")]
+    pseudo_type: Option<crate::dom::PseudoType>,
     /// Pseudo element custom ident.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pseudoIdentifier: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "pseudoIdentifier")]
+    pseudo_identifier: Option<Cow<'a, str>>,
 }
 
 impl<'a> ResolveValuesParams<'a> {
-    pub fn builder(values: Vec<Cow<'a, str>>, nodeId: crate::dom::NodeId) -> ResolveValuesParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `values`: Cascade-dependent keywords (revert/revert-layer) do not work.
+    /// * `node_id`: Id of the node in whose context the expression is evaluated
+    pub fn builder(values: Vec<Cow<'a, str>>, node_id: crate::dom::NodeId) -> ResolveValuesParamsBuilder<'a> {
         ResolveValuesParamsBuilder {
             values: values,
-            nodeId: nodeId,
-            propertyName: None,
-            pseudoType: None,
-            pseudoIdentifier: None,
+            node_id: node_id,
+            property_name: None,
+            pseudo_type: None,
+            pseudo_identifier: None,
         }
     }
+    /// Cascade-dependent keywords (revert/revert-layer) do not work.
     pub fn values(&self) -> &[Cow<'a, str>] { &self.values }
-    pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
-    pub fn propertyName(&self) -> Option<&str> { self.propertyName.as_deref() }
-    pub fn pseudoType(&self) -> Option<&crate::dom::PseudoType> { self.pseudoType.as_ref() }
-    pub fn pseudoIdentifier(&self) -> Option<&str> { self.pseudoIdentifier.as_deref() }
+    /// Id of the node in whose context the expression is evaluated
+    pub fn node_id(&self) -> &crate::dom::NodeId { &self.node_id }
+    /// Only longhands and custom property names are accepted.
+    pub fn property_name(&self) -> Option<&str> { self.property_name.as_deref() }
+    /// Pseudo element type, only works for pseudo elements that generate
+    /// elements in the tree, such as ::before and ::after.
+    pub fn pseudo_type(&self) -> Option<&crate::dom::PseudoType> { self.pseudo_type.as_ref() }
+    /// Pseudo element custom ident.
+    pub fn pseudo_identifier(&self) -> Option<&str> { self.pseudo_identifier.as_deref() }
 }
 
 
 pub struct ResolveValuesParamsBuilder<'a> {
     values: Vec<Cow<'a, str>>,
-    nodeId: crate::dom::NodeId,
-    propertyName: Option<Cow<'a, str>>,
-    pseudoType: Option<crate::dom::PseudoType>,
-    pseudoIdentifier: Option<Cow<'a, str>>,
+    node_id: crate::dom::NodeId,
+    property_name: Option<Cow<'a, str>>,
+    pseudo_type: Option<crate::dom::PseudoType>,
+    pseudo_identifier: Option<Cow<'a, str>>,
 }
 
 impl<'a> ResolveValuesParamsBuilder<'a> {
     /// Only longhands and custom property names are accepted.
-    pub fn propertyName(mut self, propertyName: impl Into<Cow<'a, str>>) -> Self { self.propertyName = Some(propertyName.into()); self }
+    pub fn property_name(mut self, property_name: impl Into<Cow<'a, str>>) -> Self { self.property_name = Some(property_name.into()); self }
     /// Pseudo element type, only works for pseudo elements that generate
     /// elements in the tree, such as ::before and ::after.
-    pub fn pseudoType(mut self, pseudoType: crate::dom::PseudoType) -> Self { self.pseudoType = Some(pseudoType); self }
+    pub fn pseudo_type(mut self, pseudo_type: crate::dom::PseudoType) -> Self { self.pseudo_type = Some(pseudo_type); self }
     /// Pseudo element custom ident.
-    pub fn pseudoIdentifier(mut self, pseudoIdentifier: impl Into<Cow<'a, str>>) -> Self { self.pseudoIdentifier = Some(pseudoIdentifier.into()); self }
+    pub fn pseudo_identifier(mut self, pseudo_identifier: impl Into<Cow<'a, str>>) -> Self { self.pseudo_identifier = Some(pseudo_identifier.into()); self }
     pub fn build(self) -> ResolveValuesParams<'a> {
         ResolveValuesParams {
             values: self.values,
-            nodeId: self.nodeId,
-            propertyName: self.propertyName,
-            pseudoType: self.pseudoType,
-            pseudoIdentifier: self.pseudoIdentifier,
+            node_id: self.node_id,
+            property_name: self.property_name,
+            pseudo_type: self.pseudo_type,
+            pseudo_identifier: self.pseudo_identifier,
         }
     }
 }
@@ -3159,6 +3666,8 @@ pub struct ResolveValuesReturns<'a> {
 }
 
 impl<'a> ResolveValuesReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `results`: 
     pub fn builder(results: Vec<Cow<'a, str>>) -> ResolveValuesReturnsBuilder<'a> {
         ResolveValuesReturnsBuilder {
             results: results,
@@ -3191,31 +3700,35 @@ impl<'a> crate::CdpCommand<'a> for ResolveValuesParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetLonghandPropertiesParams<'a> {
-    shorthandName: Cow<'a, str>,
+    #[serde(rename = "shorthandName")]
+    shorthand_name: Cow<'a, str>,
     value: Cow<'a, str>,
 }
 
 impl<'a> GetLonghandPropertiesParams<'a> {
-    pub fn builder(shorthandName: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> GetLonghandPropertiesParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `shorthand_name`: 
+    /// * `value`: 
+    pub fn builder(shorthand_name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> GetLonghandPropertiesParamsBuilder<'a> {
         GetLonghandPropertiesParamsBuilder {
-            shorthandName: shorthandName.into(),
+            shorthand_name: shorthand_name.into(),
             value: value.into(),
         }
     }
-    pub fn shorthandName(&self) -> &str { self.shorthandName.as_ref() }
+    pub fn shorthand_name(&self) -> &str { self.shorthand_name.as_ref() }
     pub fn value(&self) -> &str { self.value.as_ref() }
 }
 
 
 pub struct GetLonghandPropertiesParamsBuilder<'a> {
-    shorthandName: Cow<'a, str>,
+    shorthand_name: Cow<'a, str>,
     value: Cow<'a, str>,
 }
 
 impl<'a> GetLonghandPropertiesParamsBuilder<'a> {
     pub fn build(self) -> GetLonghandPropertiesParams<'a> {
         GetLonghandPropertiesParams {
-            shorthandName: self.shorthandName,
+            shorthand_name: self.shorthand_name,
             value: self.value,
         }
     }
@@ -3225,27 +3738,30 @@ impl<'a> GetLonghandPropertiesParamsBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetLonghandPropertiesReturns<'a> {
-    longhandProperties: Vec<CSSProperty<'a>>,
+    #[serde(rename = "longhandProperties")]
+    longhand_properties: Vec<CSSProperty<'a>>,
 }
 
 impl<'a> GetLonghandPropertiesReturns<'a> {
-    pub fn builder(longhandProperties: Vec<CSSProperty<'a>>) -> GetLonghandPropertiesReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `longhand_properties`: 
+    pub fn builder(longhand_properties: Vec<CSSProperty<'a>>) -> GetLonghandPropertiesReturnsBuilder<'a> {
         GetLonghandPropertiesReturnsBuilder {
-            longhandProperties: longhandProperties,
+            longhand_properties: longhand_properties,
         }
     }
-    pub fn longhandProperties(&self) -> &[CSSProperty<'a>] { &self.longhandProperties }
+    pub fn longhand_properties(&self) -> &[CSSProperty<'a>] { &self.longhand_properties }
 }
 
 
 pub struct GetLonghandPropertiesReturnsBuilder<'a> {
-    longhandProperties: Vec<CSSProperty<'a>>,
+    longhand_properties: Vec<CSSProperty<'a>>,
 }
 
 impl<'a> GetLonghandPropertiesReturnsBuilder<'a> {
     pub fn build(self) -> GetLonghandPropertiesReturns<'a> {
         GetLonghandPropertiesReturns {
-            longhandProperties: self.longhandProperties,
+            longhand_properties: self.longhand_properties,
         }
     }
 }
@@ -3263,27 +3779,30 @@ impl<'a> crate::CdpCommand<'a> for GetLonghandPropertiesParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetInlineStylesForNodeParams {
-    nodeId: crate::dom::NodeId,
+    #[serde(rename = "nodeId")]
+    node_id: crate::dom::NodeId,
 }
 
 impl GetInlineStylesForNodeParams {
-    pub fn builder(nodeId: crate::dom::NodeId) -> GetInlineStylesForNodeParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `node_id`: 
+    pub fn builder(node_id: crate::dom::NodeId) -> GetInlineStylesForNodeParamsBuilder {
         GetInlineStylesForNodeParamsBuilder {
-            nodeId: nodeId,
+            node_id: node_id,
         }
     }
-    pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
+    pub fn node_id(&self) -> &crate::dom::NodeId { &self.node_id }
 }
 
 
 pub struct GetInlineStylesForNodeParamsBuilder {
-    nodeId: crate::dom::NodeId,
+    node_id: crate::dom::NodeId,
 }
 
 impl GetInlineStylesForNodeParamsBuilder {
     pub fn build(self) -> GetInlineStylesForNodeParams {
         GetInlineStylesForNodeParams {
-            nodeId: self.nodeId,
+            node_id: self.node_id,
         }
     }
 }
@@ -3295,39 +3814,42 @@ impl GetInlineStylesForNodeParamsBuilder {
 #[serde(rename_all = "camelCase")]
 pub struct GetInlineStylesForNodeReturns<'a> {
     /// Inline style for the specified DOM node.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    inlineStyle: Option<CSSStyle<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "inlineStyle")]
+    inline_style: Option<CSSStyle<'a>>,
     /// Attribute-defined element style (e.g. resulting from "width=20 height=100%").
-    #[serde(skip_serializing_if = "Option::is_none")]
-    attributesStyle: Option<CSSStyle<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "attributesStyle")]
+    attributes_style: Option<CSSStyle<'a>>,
 }
 
 impl<'a> GetInlineStylesForNodeReturns<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> GetInlineStylesForNodeReturnsBuilder<'a> {
         GetInlineStylesForNodeReturnsBuilder {
-            inlineStyle: None,
-            attributesStyle: None,
+            inline_style: None,
+            attributes_style: None,
         }
     }
-    pub fn inlineStyle(&self) -> Option<&CSSStyle<'a>> { self.inlineStyle.as_ref() }
-    pub fn attributesStyle(&self) -> Option<&CSSStyle<'a>> { self.attributesStyle.as_ref() }
+    /// Inline style for the specified DOM node.
+    pub fn inline_style(&self) -> Option<&CSSStyle<'a>> { self.inline_style.as_ref() }
+    /// Attribute-defined element style (e.g. resulting from "width=20 height=100%").
+    pub fn attributes_style(&self) -> Option<&CSSStyle<'a>> { self.attributes_style.as_ref() }
 }
 
 #[derive(Default)]
 pub struct GetInlineStylesForNodeReturnsBuilder<'a> {
-    inlineStyle: Option<CSSStyle<'a>>,
-    attributesStyle: Option<CSSStyle<'a>>,
+    inline_style: Option<CSSStyle<'a>>,
+    attributes_style: Option<CSSStyle<'a>>,
 }
 
 impl<'a> GetInlineStylesForNodeReturnsBuilder<'a> {
     /// Inline style for the specified DOM node.
-    pub fn inlineStyle(mut self, inlineStyle: CSSStyle<'a>) -> Self { self.inlineStyle = Some(inlineStyle); self }
+    pub fn inline_style(mut self, inline_style: CSSStyle<'a>) -> Self { self.inline_style = Some(inline_style); self }
     /// Attribute-defined element style (e.g. resulting from "width=20 height=100%").
-    pub fn attributesStyle(mut self, attributesStyle: CSSStyle<'a>) -> Self { self.attributesStyle = Some(attributesStyle); self }
+    pub fn attributes_style(mut self, attributes_style: CSSStyle<'a>) -> Self { self.attributes_style = Some(attributes_style); self }
     pub fn build(self) -> GetInlineStylesForNodeReturns<'a> {
         GetInlineStylesForNodeReturns {
-            inlineStyle: self.inlineStyle,
-            attributesStyle: self.attributesStyle,
+            inline_style: self.inline_style,
+            attributes_style: self.attributes_style,
         }
     }
 }
@@ -3345,27 +3867,30 @@ impl<'a> crate::CdpCommand<'a> for GetInlineStylesForNodeParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetAnimatedStylesForNodeParams {
-    nodeId: crate::dom::NodeId,
+    #[serde(rename = "nodeId")]
+    node_id: crate::dom::NodeId,
 }
 
 impl GetAnimatedStylesForNodeParams {
-    pub fn builder(nodeId: crate::dom::NodeId) -> GetAnimatedStylesForNodeParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `node_id`: 
+    pub fn builder(node_id: crate::dom::NodeId) -> GetAnimatedStylesForNodeParamsBuilder {
         GetAnimatedStylesForNodeParamsBuilder {
-            nodeId: nodeId,
+            node_id: node_id,
         }
     }
-    pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
+    pub fn node_id(&self) -> &crate::dom::NodeId { &self.node_id }
 }
 
 
 pub struct GetAnimatedStylesForNodeParamsBuilder {
-    nodeId: crate::dom::NodeId,
+    node_id: crate::dom::NodeId,
 }
 
 impl GetAnimatedStylesForNodeParamsBuilder {
     pub fn build(self) -> GetAnimatedStylesForNodeParams {
         GetAnimatedStylesForNodeParams {
-            nodeId: self.nodeId,
+            node_id: self.node_id,
         }
     }
 }
@@ -3377,11 +3902,11 @@ impl GetAnimatedStylesForNodeParamsBuilder {
 #[serde(rename_all = "camelCase")]
 pub struct GetAnimatedStylesForNodeReturns<'a> {
     /// Styles coming from animations.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    animationStyles: Option<Vec<CSSAnimationStyle<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "animationStyles")]
+    animation_styles: Option<Vec<CSSAnimationStyle<'a>>>,
     /// Style coming from transitions.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    transitionsStyle: Option<CSSStyle<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "transitionsStyle")]
+    transitions_style: Option<CSSStyle<'a>>,
     /// Inherited style entries for animationsStyle and transitionsStyle from
     /// the inheritance chain of the element.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -3389,37 +3914,42 @@ pub struct GetAnimatedStylesForNodeReturns<'a> {
 }
 
 impl<'a> GetAnimatedStylesForNodeReturns<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> GetAnimatedStylesForNodeReturnsBuilder<'a> {
         GetAnimatedStylesForNodeReturnsBuilder {
-            animationStyles: None,
-            transitionsStyle: None,
+            animation_styles: None,
+            transitions_style: None,
             inherited: None,
         }
     }
-    pub fn animationStyles(&self) -> Option<&[CSSAnimationStyle<'a>]> { self.animationStyles.as_deref() }
-    pub fn transitionsStyle(&self) -> Option<&CSSStyle<'a>> { self.transitionsStyle.as_ref() }
+    /// Styles coming from animations.
+    pub fn animation_styles(&self) -> Option<&[CSSAnimationStyle<'a>]> { self.animation_styles.as_deref() }
+    /// Style coming from transitions.
+    pub fn transitions_style(&self) -> Option<&CSSStyle<'a>> { self.transitions_style.as_ref() }
+    /// Inherited style entries for animationsStyle and transitionsStyle from
+    /// the inheritance chain of the element.
     pub fn inherited(&self) -> Option<&[InheritedAnimatedStyleEntry<'a>]> { self.inherited.as_deref() }
 }
 
 #[derive(Default)]
 pub struct GetAnimatedStylesForNodeReturnsBuilder<'a> {
-    animationStyles: Option<Vec<CSSAnimationStyle<'a>>>,
-    transitionsStyle: Option<CSSStyle<'a>>,
+    animation_styles: Option<Vec<CSSAnimationStyle<'a>>>,
+    transitions_style: Option<CSSStyle<'a>>,
     inherited: Option<Vec<InheritedAnimatedStyleEntry<'a>>>,
 }
 
 impl<'a> GetAnimatedStylesForNodeReturnsBuilder<'a> {
     /// Styles coming from animations.
-    pub fn animationStyles(mut self, animationStyles: Vec<CSSAnimationStyle<'a>>) -> Self { self.animationStyles = Some(animationStyles); self }
+    pub fn animation_styles(mut self, animation_styles: Vec<CSSAnimationStyle<'a>>) -> Self { self.animation_styles = Some(animation_styles); self }
     /// Style coming from transitions.
-    pub fn transitionsStyle(mut self, transitionsStyle: CSSStyle<'a>) -> Self { self.transitionsStyle = Some(transitionsStyle); self }
+    pub fn transitions_style(mut self, transitions_style: CSSStyle<'a>) -> Self { self.transitions_style = Some(transitions_style); self }
     /// Inherited style entries for animationsStyle and transitionsStyle from
     /// the inheritance chain of the element.
     pub fn inherited(mut self, inherited: Vec<InheritedAnimatedStyleEntry<'a>>) -> Self { self.inherited = Some(inherited); self }
     pub fn build(self) -> GetAnimatedStylesForNodeReturns<'a> {
         GetAnimatedStylesForNodeReturns {
-            animationStyles: self.animationStyles,
-            transitionsStyle: self.transitionsStyle,
+            animation_styles: self.animation_styles,
+            transitions_style: self.transitions_style,
             inherited: self.inherited,
         }
     }
@@ -3437,27 +3967,30 @@ impl<'a> crate::CdpCommand<'a> for GetAnimatedStylesForNodeParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetMatchedStylesForNodeParams {
-    nodeId: crate::dom::NodeId,
+    #[serde(rename = "nodeId")]
+    node_id: crate::dom::NodeId,
 }
 
 impl GetMatchedStylesForNodeParams {
-    pub fn builder(nodeId: crate::dom::NodeId) -> GetMatchedStylesForNodeParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `node_id`: 
+    pub fn builder(node_id: crate::dom::NodeId) -> GetMatchedStylesForNodeParamsBuilder {
         GetMatchedStylesForNodeParamsBuilder {
-            nodeId: nodeId,
+            node_id: node_id,
         }
     }
-    pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
+    pub fn node_id(&self) -> &crate::dom::NodeId { &self.node_id }
 }
 
 
 pub struct GetMatchedStylesForNodeParamsBuilder {
-    nodeId: crate::dom::NodeId,
+    node_id: crate::dom::NodeId,
 }
 
 impl GetMatchedStylesForNodeParamsBuilder {
     pub fn build(self) -> GetMatchedStylesForNodeParams {
         GetMatchedStylesForNodeParams {
-            nodeId: self.nodeId,
+            node_id: self.node_id,
         }
     }
 }
@@ -3468,149 +4001,165 @@ impl GetMatchedStylesForNodeParamsBuilder {
 #[serde(rename_all = "camelCase")]
 pub struct GetMatchedStylesForNodeReturns<'a> {
     /// Inline style for the specified DOM node.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    inlineStyle: Option<CSSStyle<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "inlineStyle")]
+    inline_style: Option<CSSStyle<'a>>,
     /// Attribute-defined element style (e.g. resulting from "width=20 height=100%").
-    #[serde(skip_serializing_if = "Option::is_none")]
-    attributesStyle: Option<CSSStyle<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "attributesStyle")]
+    attributes_style: Option<CSSStyle<'a>>,
     /// CSS rules matching this node, from all applicable stylesheets.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    matchedCSSRules: Option<Vec<RuleMatch<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "matchedCSSRules")]
+    matched_css_rules: Option<Vec<RuleMatch<'a>>>,
     /// Pseudo style matches for this node.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pseudoElements: Option<Vec<PseudoElementMatches<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "pseudoElements")]
+    pseudo_elements: Option<Vec<PseudoElementMatches<'a>>>,
     /// A chain of inherited styles (from the immediate node parent up to the DOM tree root).
     #[serde(skip_serializing_if = "Option::is_none")]
     inherited: Option<Vec<InheritedStyleEntry<'a>>>,
     /// A chain of inherited pseudo element styles (from the immediate node parent up to the DOM tree root).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    inheritedPseudoElements: Option<Vec<InheritedPseudoElementMatches<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "inheritedPseudoElements")]
+    inherited_pseudo_elements: Option<Vec<InheritedPseudoElementMatches<'a>>>,
     /// A list of CSS keyframed animations matching this node.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    cssKeyframesRules: Option<Vec<CSSKeyframesRule<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "cssKeyframesRules")]
+    css_keyframes_rules: Option<Vec<CSSKeyframesRule<'a>>>,
     /// A list of CSS @position-try rules matching this node, based on the position-try-fallbacks property.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    cssPositionTryRules: Option<Vec<CSSPositionTryRule<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "cssPositionTryRules")]
+    css_position_try_rules: Option<Vec<CSSPositionTryRule<'a>>>,
     /// Index of the active fallback in the applied position-try-fallback property,
     /// will not be set if there is no active position-try fallback.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    activePositionFallbackIndex: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "activePositionFallbackIndex")]
+    active_position_fallback_index: Option<u64>,
     /// A list of CSS at-property rules matching this node.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    cssPropertyRules: Option<Vec<CSSPropertyRule<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "cssPropertyRules")]
+    css_property_rules: Option<Vec<CSSPropertyRule<'a>>>,
     /// A list of CSS property registrations matching this node.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    cssPropertyRegistrations: Option<Vec<CSSPropertyRegistration<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "cssPropertyRegistrations")]
+    css_property_registrations: Option<Vec<CSSPropertyRegistration<'a>>>,
     /// A list of simple @rules matching this node or its pseudo-elements.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    cssAtRules: Option<Vec<CSSAtRule<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "cssAtRules")]
+    css_at_rules: Option<Vec<CSSAtRule<'a>>>,
     /// Id of the first parent element that does not have display: contents.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    parentLayoutNodeId: Option<crate::dom::NodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "parentLayoutNodeId")]
+    parent_layout_node_id: Option<crate::dom::NodeId>,
     /// A list of CSS at-function rules referenced by styles of this node.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    cssFunctionRules: Option<Vec<CSSFunctionRule<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "cssFunctionRules")]
+    css_function_rules: Option<Vec<CSSFunctionRule<'a>>>,
 }
 
 impl<'a> GetMatchedStylesForNodeReturns<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> GetMatchedStylesForNodeReturnsBuilder<'a> {
         GetMatchedStylesForNodeReturnsBuilder {
-            inlineStyle: None,
-            attributesStyle: None,
-            matchedCSSRules: None,
-            pseudoElements: None,
+            inline_style: None,
+            attributes_style: None,
+            matched_css_rules: None,
+            pseudo_elements: None,
             inherited: None,
-            inheritedPseudoElements: None,
-            cssKeyframesRules: None,
-            cssPositionTryRules: None,
-            activePositionFallbackIndex: None,
-            cssPropertyRules: None,
-            cssPropertyRegistrations: None,
-            cssAtRules: None,
-            parentLayoutNodeId: None,
-            cssFunctionRules: None,
+            inherited_pseudo_elements: None,
+            css_keyframes_rules: None,
+            css_position_try_rules: None,
+            active_position_fallback_index: None,
+            css_property_rules: None,
+            css_property_registrations: None,
+            css_at_rules: None,
+            parent_layout_node_id: None,
+            css_function_rules: None,
         }
     }
-    pub fn inlineStyle(&self) -> Option<&CSSStyle<'a>> { self.inlineStyle.as_ref() }
-    pub fn attributesStyle(&self) -> Option<&CSSStyle<'a>> { self.attributesStyle.as_ref() }
-    pub fn matchedCSSRules(&self) -> Option<&[RuleMatch<'a>]> { self.matchedCSSRules.as_deref() }
-    pub fn pseudoElements(&self) -> Option<&[PseudoElementMatches<'a>]> { self.pseudoElements.as_deref() }
+    /// Inline style for the specified DOM node.
+    pub fn inline_style(&self) -> Option<&CSSStyle<'a>> { self.inline_style.as_ref() }
+    /// Attribute-defined element style (e.g. resulting from "width=20 height=100%").
+    pub fn attributes_style(&self) -> Option<&CSSStyle<'a>> { self.attributes_style.as_ref() }
+    /// CSS rules matching this node, from all applicable stylesheets.
+    pub fn matched_css_rules(&self) -> Option<&[RuleMatch<'a>]> { self.matched_css_rules.as_deref() }
+    /// Pseudo style matches for this node.
+    pub fn pseudo_elements(&self) -> Option<&[PseudoElementMatches<'a>]> { self.pseudo_elements.as_deref() }
+    /// A chain of inherited styles (from the immediate node parent up to the DOM tree root).
     pub fn inherited(&self) -> Option<&[InheritedStyleEntry<'a>]> { self.inherited.as_deref() }
-    pub fn inheritedPseudoElements(&self) -> Option<&[InheritedPseudoElementMatches<'a>]> { self.inheritedPseudoElements.as_deref() }
-    pub fn cssKeyframesRules(&self) -> Option<&[CSSKeyframesRule<'a>]> { self.cssKeyframesRules.as_deref() }
-    pub fn cssPositionTryRules(&self) -> Option<&[CSSPositionTryRule<'a>]> { self.cssPositionTryRules.as_deref() }
-    pub fn activePositionFallbackIndex(&self) -> Option<u64> { self.activePositionFallbackIndex }
-    pub fn cssPropertyRules(&self) -> Option<&[CSSPropertyRule<'a>]> { self.cssPropertyRules.as_deref() }
-    pub fn cssPropertyRegistrations(&self) -> Option<&[CSSPropertyRegistration<'a>]> { self.cssPropertyRegistrations.as_deref() }
-    pub fn cssAtRules(&self) -> Option<&[CSSAtRule<'a>]> { self.cssAtRules.as_deref() }
-    pub fn parentLayoutNodeId(&self) -> Option<&crate::dom::NodeId> { self.parentLayoutNodeId.as_ref() }
-    pub fn cssFunctionRules(&self) -> Option<&[CSSFunctionRule<'a>]> { self.cssFunctionRules.as_deref() }
+    /// A chain of inherited pseudo element styles (from the immediate node parent up to the DOM tree root).
+    pub fn inherited_pseudo_elements(&self) -> Option<&[InheritedPseudoElementMatches<'a>]> { self.inherited_pseudo_elements.as_deref() }
+    /// A list of CSS keyframed animations matching this node.
+    pub fn css_keyframes_rules(&self) -> Option<&[CSSKeyframesRule<'a>]> { self.css_keyframes_rules.as_deref() }
+    /// A list of CSS @position-try rules matching this node, based on the position-try-fallbacks property.
+    pub fn css_position_try_rules(&self) -> Option<&[CSSPositionTryRule<'a>]> { self.css_position_try_rules.as_deref() }
+    /// Index of the active fallback in the applied position-try-fallback property,
+    /// will not be set if there is no active position-try fallback.
+    pub fn active_position_fallback_index(&self) -> Option<u64> { self.active_position_fallback_index }
+    /// A list of CSS at-property rules matching this node.
+    pub fn css_property_rules(&self) -> Option<&[CSSPropertyRule<'a>]> { self.css_property_rules.as_deref() }
+    /// A list of CSS property registrations matching this node.
+    pub fn css_property_registrations(&self) -> Option<&[CSSPropertyRegistration<'a>]> { self.css_property_registrations.as_deref() }
+    /// A list of simple @rules matching this node or its pseudo-elements.
+    pub fn css_at_rules(&self) -> Option<&[CSSAtRule<'a>]> { self.css_at_rules.as_deref() }
+    /// Id of the first parent element that does not have display: contents.
+    pub fn parent_layout_node_id(&self) -> Option<&crate::dom::NodeId> { self.parent_layout_node_id.as_ref() }
+    /// A list of CSS at-function rules referenced by styles of this node.
+    pub fn css_function_rules(&self) -> Option<&[CSSFunctionRule<'a>]> { self.css_function_rules.as_deref() }
 }
 
 #[derive(Default)]
 pub struct GetMatchedStylesForNodeReturnsBuilder<'a> {
-    inlineStyle: Option<CSSStyle<'a>>,
-    attributesStyle: Option<CSSStyle<'a>>,
-    matchedCSSRules: Option<Vec<RuleMatch<'a>>>,
-    pseudoElements: Option<Vec<PseudoElementMatches<'a>>>,
+    inline_style: Option<CSSStyle<'a>>,
+    attributes_style: Option<CSSStyle<'a>>,
+    matched_css_rules: Option<Vec<RuleMatch<'a>>>,
+    pseudo_elements: Option<Vec<PseudoElementMatches<'a>>>,
     inherited: Option<Vec<InheritedStyleEntry<'a>>>,
-    inheritedPseudoElements: Option<Vec<InheritedPseudoElementMatches<'a>>>,
-    cssKeyframesRules: Option<Vec<CSSKeyframesRule<'a>>>,
-    cssPositionTryRules: Option<Vec<CSSPositionTryRule<'a>>>,
-    activePositionFallbackIndex: Option<u64>,
-    cssPropertyRules: Option<Vec<CSSPropertyRule<'a>>>,
-    cssPropertyRegistrations: Option<Vec<CSSPropertyRegistration<'a>>>,
-    cssAtRules: Option<Vec<CSSAtRule<'a>>>,
-    parentLayoutNodeId: Option<crate::dom::NodeId>,
-    cssFunctionRules: Option<Vec<CSSFunctionRule<'a>>>,
+    inherited_pseudo_elements: Option<Vec<InheritedPseudoElementMatches<'a>>>,
+    css_keyframes_rules: Option<Vec<CSSKeyframesRule<'a>>>,
+    css_position_try_rules: Option<Vec<CSSPositionTryRule<'a>>>,
+    active_position_fallback_index: Option<u64>,
+    css_property_rules: Option<Vec<CSSPropertyRule<'a>>>,
+    css_property_registrations: Option<Vec<CSSPropertyRegistration<'a>>>,
+    css_at_rules: Option<Vec<CSSAtRule<'a>>>,
+    parent_layout_node_id: Option<crate::dom::NodeId>,
+    css_function_rules: Option<Vec<CSSFunctionRule<'a>>>,
 }
 
 impl<'a> GetMatchedStylesForNodeReturnsBuilder<'a> {
     /// Inline style for the specified DOM node.
-    pub fn inlineStyle(mut self, inlineStyle: CSSStyle<'a>) -> Self { self.inlineStyle = Some(inlineStyle); self }
+    pub fn inline_style(mut self, inline_style: CSSStyle<'a>) -> Self { self.inline_style = Some(inline_style); self }
     /// Attribute-defined element style (e.g. resulting from "width=20 height=100%").
-    pub fn attributesStyle(mut self, attributesStyle: CSSStyle<'a>) -> Self { self.attributesStyle = Some(attributesStyle); self }
+    pub fn attributes_style(mut self, attributes_style: CSSStyle<'a>) -> Self { self.attributes_style = Some(attributes_style); self }
     /// CSS rules matching this node, from all applicable stylesheets.
-    pub fn matchedCSSRules(mut self, matchedCSSRules: Vec<RuleMatch<'a>>) -> Self { self.matchedCSSRules = Some(matchedCSSRules); self }
+    pub fn matched_css_rules(mut self, matched_css_rules: Vec<RuleMatch<'a>>) -> Self { self.matched_css_rules = Some(matched_css_rules); self }
     /// Pseudo style matches for this node.
-    pub fn pseudoElements(mut self, pseudoElements: Vec<PseudoElementMatches<'a>>) -> Self { self.pseudoElements = Some(pseudoElements); self }
+    pub fn pseudo_elements(mut self, pseudo_elements: Vec<PseudoElementMatches<'a>>) -> Self { self.pseudo_elements = Some(pseudo_elements); self }
     /// A chain of inherited styles (from the immediate node parent up to the DOM tree root).
     pub fn inherited(mut self, inherited: Vec<InheritedStyleEntry<'a>>) -> Self { self.inherited = Some(inherited); self }
     /// A chain of inherited pseudo element styles (from the immediate node parent up to the DOM tree root).
-    pub fn inheritedPseudoElements(mut self, inheritedPseudoElements: Vec<InheritedPseudoElementMatches<'a>>) -> Self { self.inheritedPseudoElements = Some(inheritedPseudoElements); self }
+    pub fn inherited_pseudo_elements(mut self, inherited_pseudo_elements: Vec<InheritedPseudoElementMatches<'a>>) -> Self { self.inherited_pseudo_elements = Some(inherited_pseudo_elements); self }
     /// A list of CSS keyframed animations matching this node.
-    pub fn cssKeyframesRules(mut self, cssKeyframesRules: Vec<CSSKeyframesRule<'a>>) -> Self { self.cssKeyframesRules = Some(cssKeyframesRules); self }
+    pub fn css_keyframes_rules(mut self, css_keyframes_rules: Vec<CSSKeyframesRule<'a>>) -> Self { self.css_keyframes_rules = Some(css_keyframes_rules); self }
     /// A list of CSS @position-try rules matching this node, based on the position-try-fallbacks property.
-    pub fn cssPositionTryRules(mut self, cssPositionTryRules: Vec<CSSPositionTryRule<'a>>) -> Self { self.cssPositionTryRules = Some(cssPositionTryRules); self }
+    pub fn css_position_try_rules(mut self, css_position_try_rules: Vec<CSSPositionTryRule<'a>>) -> Self { self.css_position_try_rules = Some(css_position_try_rules); self }
     /// Index of the active fallback in the applied position-try-fallback property,
     /// will not be set if there is no active position-try fallback.
-    pub fn activePositionFallbackIndex(mut self, activePositionFallbackIndex: u64) -> Self { self.activePositionFallbackIndex = Some(activePositionFallbackIndex); self }
+    pub fn active_position_fallback_index(mut self, active_position_fallback_index: u64) -> Self { self.active_position_fallback_index = Some(active_position_fallback_index); self }
     /// A list of CSS at-property rules matching this node.
-    pub fn cssPropertyRules(mut self, cssPropertyRules: Vec<CSSPropertyRule<'a>>) -> Self { self.cssPropertyRules = Some(cssPropertyRules); self }
+    pub fn css_property_rules(mut self, css_property_rules: Vec<CSSPropertyRule<'a>>) -> Self { self.css_property_rules = Some(css_property_rules); self }
     /// A list of CSS property registrations matching this node.
-    pub fn cssPropertyRegistrations(mut self, cssPropertyRegistrations: Vec<CSSPropertyRegistration<'a>>) -> Self { self.cssPropertyRegistrations = Some(cssPropertyRegistrations); self }
+    pub fn css_property_registrations(mut self, css_property_registrations: Vec<CSSPropertyRegistration<'a>>) -> Self { self.css_property_registrations = Some(css_property_registrations); self }
     /// A list of simple @rules matching this node or its pseudo-elements.
-    pub fn cssAtRules(mut self, cssAtRules: Vec<CSSAtRule<'a>>) -> Self { self.cssAtRules = Some(cssAtRules); self }
+    pub fn css_at_rules(mut self, css_at_rules: Vec<CSSAtRule<'a>>) -> Self { self.css_at_rules = Some(css_at_rules); self }
     /// Id of the first parent element that does not have display: contents.
-    pub fn parentLayoutNodeId(mut self, parentLayoutNodeId: crate::dom::NodeId) -> Self { self.parentLayoutNodeId = Some(parentLayoutNodeId); self }
+    pub fn parent_layout_node_id(mut self, parent_layout_node_id: crate::dom::NodeId) -> Self { self.parent_layout_node_id = Some(parent_layout_node_id); self }
     /// A list of CSS at-function rules referenced by styles of this node.
-    pub fn cssFunctionRules(mut self, cssFunctionRules: Vec<CSSFunctionRule<'a>>) -> Self { self.cssFunctionRules = Some(cssFunctionRules); self }
+    pub fn css_function_rules(mut self, css_function_rules: Vec<CSSFunctionRule<'a>>) -> Self { self.css_function_rules = Some(css_function_rules); self }
     pub fn build(self) -> GetMatchedStylesForNodeReturns<'a> {
         GetMatchedStylesForNodeReturns {
-            inlineStyle: self.inlineStyle,
-            attributesStyle: self.attributesStyle,
-            matchedCSSRules: self.matchedCSSRules,
-            pseudoElements: self.pseudoElements,
+            inline_style: self.inline_style,
+            attributes_style: self.attributes_style,
+            matched_css_rules: self.matched_css_rules,
+            pseudo_elements: self.pseudo_elements,
             inherited: self.inherited,
-            inheritedPseudoElements: self.inheritedPseudoElements,
-            cssKeyframesRules: self.cssKeyframesRules,
-            cssPositionTryRules: self.cssPositionTryRules,
-            activePositionFallbackIndex: self.activePositionFallbackIndex,
-            cssPropertyRules: self.cssPropertyRules,
-            cssPropertyRegistrations: self.cssPropertyRegistrations,
-            cssAtRules: self.cssAtRules,
-            parentLayoutNodeId: self.parentLayoutNodeId,
-            cssFunctionRules: self.cssFunctionRules,
+            inherited_pseudo_elements: self.inherited_pseudo_elements,
+            css_keyframes_rules: self.css_keyframes_rules,
+            css_position_try_rules: self.css_position_try_rules,
+            active_position_fallback_index: self.active_position_fallback_index,
+            css_property_rules: self.css_property_rules,
+            css_property_registrations: self.css_property_registrations,
+            css_at_rules: self.css_at_rules,
+            parent_layout_node_id: self.parent_layout_node_id,
+            css_function_rules: self.css_function_rules,
         }
     }
 }
@@ -3627,27 +4176,30 @@ impl<'a> crate::CdpCommand<'a> for GetMatchedStylesForNodeParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetEnvironmentVariablesReturns {
-    environmentVariables: serde_json::Map<String, JsonValue>,
+    #[serde(rename = "environmentVariables")]
+    environment_variables: serde_json::Map<String, JsonValue>,
 }
 
 impl GetEnvironmentVariablesReturns {
-    pub fn builder(environmentVariables: serde_json::Map<String, JsonValue>) -> GetEnvironmentVariablesReturnsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `environment_variables`: 
+    pub fn builder(environment_variables: serde_json::Map<String, JsonValue>) -> GetEnvironmentVariablesReturnsBuilder {
         GetEnvironmentVariablesReturnsBuilder {
-            environmentVariables: environmentVariables,
+            environment_variables: environment_variables,
         }
     }
-    pub fn environmentVariables(&self) -> &serde_json::Map<String, JsonValue> { &self.environmentVariables }
+    pub fn environment_variables(&self) -> &serde_json::Map<String, JsonValue> { &self.environment_variables }
 }
 
 
 pub struct GetEnvironmentVariablesReturnsBuilder {
-    environmentVariables: serde_json::Map<String, JsonValue>,
+    environment_variables: serde_json::Map<String, JsonValue>,
 }
 
 impl GetEnvironmentVariablesReturnsBuilder {
     pub fn build(self) -> GetEnvironmentVariablesReturns {
         GetEnvironmentVariablesReturns {
-            environmentVariables: self.environmentVariables,
+            environment_variables: self.environment_variables,
         }
     }
 }
@@ -3671,6 +4223,8 @@ pub struct GetMediaQueriesReturns<'a> {
 }
 
 impl<'a> GetMediaQueriesReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `medias`: 
     pub fn builder(medias: Vec<CSSMedia<'a>>) -> GetMediaQueriesReturnsBuilder<'a> {
         GetMediaQueriesReturnsBuilder {
             medias: medias,
@@ -3708,27 +4262,30 @@ impl<'a> crate::CdpCommand<'a> for GetMediaQueriesParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetPlatformFontsForNodeParams {
-    nodeId: crate::dom::NodeId,
+    #[serde(rename = "nodeId")]
+    node_id: crate::dom::NodeId,
 }
 
 impl GetPlatformFontsForNodeParams {
-    pub fn builder(nodeId: crate::dom::NodeId) -> GetPlatformFontsForNodeParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `node_id`: 
+    pub fn builder(node_id: crate::dom::NodeId) -> GetPlatformFontsForNodeParamsBuilder {
         GetPlatformFontsForNodeParamsBuilder {
-            nodeId: nodeId,
+            node_id: node_id,
         }
     }
-    pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
+    pub fn node_id(&self) -> &crate::dom::NodeId { &self.node_id }
 }
 
 
 pub struct GetPlatformFontsForNodeParamsBuilder {
-    nodeId: crate::dom::NodeId,
+    node_id: crate::dom::NodeId,
 }
 
 impl GetPlatformFontsForNodeParamsBuilder {
     pub fn build(self) -> GetPlatformFontsForNodeParams {
         GetPlatformFontsForNodeParams {
-            nodeId: self.nodeId,
+            node_id: self.node_id,
         }
     }
 }
@@ -3744,11 +4301,14 @@ pub struct GetPlatformFontsForNodeReturns<'a> {
 }
 
 impl<'a> GetPlatformFontsForNodeReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `fonts`: Usage statistics for every employed platform font.
     pub fn builder(fonts: Vec<PlatformFontUsage<'a>>) -> GetPlatformFontsForNodeReturnsBuilder<'a> {
         GetPlatformFontsForNodeReturnsBuilder {
             fonts: fonts,
         }
     }
+    /// Usage statistics for every employed platform font.
     pub fn fonts(&self) -> &[PlatformFontUsage<'a>] { &self.fonts }
 }
 
@@ -3777,27 +4337,30 @@ impl<'a> crate::CdpCommand<'a> for GetPlatformFontsForNodeParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetStyleSheetTextParams<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    #[serde(rename = "styleSheetId")]
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
 }
 
 impl<'a> GetStyleSheetTextParams<'a> {
-    pub fn builder(styleSheetId: crate::dom::StyleSheetId<'a>) -> GetStyleSheetTextParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `style_sheet_id`: 
+    pub fn builder(style_sheet_id: crate::dom::StyleSheetId<'a>) -> GetStyleSheetTextParamsBuilder<'a> {
         GetStyleSheetTextParamsBuilder {
-            styleSheetId: styleSheetId,
+            style_sheet_id: style_sheet_id,
         }
     }
-    pub fn styleSheetId(&self) -> &crate::dom::StyleSheetId<'a> { &self.styleSheetId }
+    pub fn style_sheet_id(&self) -> &crate::dom::StyleSheetId<'a> { &self.style_sheet_id }
 }
 
 
 pub struct GetStyleSheetTextParamsBuilder<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
 }
 
 impl<'a> GetStyleSheetTextParamsBuilder<'a> {
     pub fn build(self) -> GetStyleSheetTextParams<'a> {
         GetStyleSheetTextParams {
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
         }
     }
 }
@@ -3812,11 +4375,14 @@ pub struct GetStyleSheetTextReturns<'a> {
 }
 
 impl<'a> GetStyleSheetTextReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `text`: The stylesheet text.
     pub fn builder(text: impl Into<Cow<'a, str>>) -> GetStyleSheetTextReturnsBuilder<'a> {
         GetStyleSheetTextReturnsBuilder {
             text: text.into(),
         }
     }
+    /// The stylesheet text.
     pub fn text(&self) -> &str { self.text.as_ref() }
 }
 
@@ -3848,27 +4414,30 @@ impl<'a> crate::CdpCommand<'a> for GetStyleSheetTextParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetLayersForNodeParams {
-    nodeId: crate::dom::NodeId,
+    #[serde(rename = "nodeId")]
+    node_id: crate::dom::NodeId,
 }
 
 impl GetLayersForNodeParams {
-    pub fn builder(nodeId: crate::dom::NodeId) -> GetLayersForNodeParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `node_id`: 
+    pub fn builder(node_id: crate::dom::NodeId) -> GetLayersForNodeParamsBuilder {
         GetLayersForNodeParamsBuilder {
-            nodeId: nodeId,
+            node_id: node_id,
         }
     }
-    pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
+    pub fn node_id(&self) -> &crate::dom::NodeId { &self.node_id }
 }
 
 
 pub struct GetLayersForNodeParamsBuilder {
-    nodeId: crate::dom::NodeId,
+    node_id: crate::dom::NodeId,
 }
 
 impl GetLayersForNodeParamsBuilder {
     pub fn build(self) -> GetLayersForNodeParams {
         GetLayersForNodeParams {
-            nodeId: self.nodeId,
+            node_id: self.node_id,
         }
     }
 }
@@ -3881,27 +4450,30 @@ impl GetLayersForNodeParamsBuilder {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetLayersForNodeReturns<'a> {
-    rootLayer: CSSLayerData<'a>,
+    #[serde(rename = "rootLayer")]
+    root_layer: CSSLayerData<'a>,
 }
 
 impl<'a> GetLayersForNodeReturns<'a> {
-    pub fn builder(rootLayer: CSSLayerData<'a>) -> GetLayersForNodeReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `root_layer`: 
+    pub fn builder(root_layer: CSSLayerData<'a>) -> GetLayersForNodeReturnsBuilder<'a> {
         GetLayersForNodeReturnsBuilder {
-            rootLayer: rootLayer,
+            root_layer: root_layer,
         }
     }
-    pub fn rootLayer(&self) -> &CSSLayerData<'a> { &self.rootLayer }
+    pub fn root_layer(&self) -> &CSSLayerData<'a> { &self.root_layer }
 }
 
 
 pub struct GetLayersForNodeReturnsBuilder<'a> {
-    rootLayer: CSSLayerData<'a>,
+    root_layer: CSSLayerData<'a>,
 }
 
 impl<'a> GetLayersForNodeReturnsBuilder<'a> {
     pub fn build(self) -> GetLayersForNodeReturns<'a> {
         GetLayersForNodeReturns {
-            rootLayer: self.rootLayer,
+            root_layer: self.root_layer,
         }
     }
 }
@@ -3919,32 +4491,37 @@ impl<'a> crate::CdpCommand<'a> for GetLayersForNodeParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetLocationForSelectorParams<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
-    selectorText: Cow<'a, str>,
+    #[serde(rename = "styleSheetId")]
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
+    #[serde(rename = "selectorText")]
+    selector_text: Cow<'a, str>,
 }
 
 impl<'a> GetLocationForSelectorParams<'a> {
-    pub fn builder(styleSheetId: crate::dom::StyleSheetId<'a>, selectorText: impl Into<Cow<'a, str>>) -> GetLocationForSelectorParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `style_sheet_id`: 
+    /// * `selector_text`: 
+    pub fn builder(style_sheet_id: crate::dom::StyleSheetId<'a>, selector_text: impl Into<Cow<'a, str>>) -> GetLocationForSelectorParamsBuilder<'a> {
         GetLocationForSelectorParamsBuilder {
-            styleSheetId: styleSheetId,
-            selectorText: selectorText.into(),
+            style_sheet_id: style_sheet_id,
+            selector_text: selector_text.into(),
         }
     }
-    pub fn styleSheetId(&self) -> &crate::dom::StyleSheetId<'a> { &self.styleSheetId }
-    pub fn selectorText(&self) -> &str { self.selectorText.as_ref() }
+    pub fn style_sheet_id(&self) -> &crate::dom::StyleSheetId<'a> { &self.style_sheet_id }
+    pub fn selector_text(&self) -> &str { self.selector_text.as_ref() }
 }
 
 
 pub struct GetLocationForSelectorParamsBuilder<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
-    selectorText: Cow<'a, str>,
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
+    selector_text: Cow<'a, str>,
 }
 
 impl<'a> GetLocationForSelectorParamsBuilder<'a> {
     pub fn build(self) -> GetLocationForSelectorParams<'a> {
         GetLocationForSelectorParams {
-            styleSheetId: self.styleSheetId,
-            selectorText: self.selectorText,
+            style_sheet_id: self.style_sheet_id,
+            selector_text: self.selector_text,
         }
     }
 }
@@ -3959,6 +4536,8 @@ pub struct GetLocationForSelectorReturns {
 }
 
 impl GetLocationForSelectorReturns {
+    /// Creates a builder for this type with the required parameters:
+    /// * `ranges`: 
     pub fn builder(ranges: Vec<SourceRange>) -> GetLocationForSelectorReturnsBuilder {
         GetLocationForSelectorReturnsBuilder {
             ranges: ranges,
@@ -3997,29 +4576,30 @@ impl<'a> crate::CdpCommand<'a> for GetLocationForSelectorParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct TrackComputedStyleUpdatesForNodeParams {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    nodeId: Option<crate::dom::NodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "nodeId")]
+    node_id: Option<crate::dom::NodeId>,
 }
 
 impl TrackComputedStyleUpdatesForNodeParams {
+    /// Creates a builder for this type.
     pub fn builder() -> TrackComputedStyleUpdatesForNodeParamsBuilder {
         TrackComputedStyleUpdatesForNodeParamsBuilder {
-            nodeId: None,
+            node_id: None,
         }
     }
-    pub fn nodeId(&self) -> Option<&crate::dom::NodeId> { self.nodeId.as_ref() }
+    pub fn node_id(&self) -> Option<&crate::dom::NodeId> { self.node_id.as_ref() }
 }
 
 #[derive(Default)]
 pub struct TrackComputedStyleUpdatesForNodeParamsBuilder {
-    nodeId: Option<crate::dom::NodeId>,
+    node_id: Option<crate::dom::NodeId>,
 }
 
 impl TrackComputedStyleUpdatesForNodeParamsBuilder {
-    pub fn nodeId(mut self, nodeId: crate::dom::NodeId) -> Self { self.nodeId = Some(nodeId); self }
+    pub fn node_id(mut self, node_id: crate::dom::NodeId) -> Self { self.node_id = Some(node_id); self }
     pub fn build(self) -> TrackComputedStyleUpdatesForNodeParams {
         TrackComputedStyleUpdatesForNodeParams {
-            nodeId: self.nodeId,
+            node_id: self.node_id,
         }
     }
 }
@@ -4041,27 +4621,30 @@ impl<'a> crate::CdpCommand<'a> for TrackComputedStyleUpdatesForNodeParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct TrackComputedStyleUpdatesParams<'a> {
-    propertiesToTrack: Vec<CSSComputedStyleProperty<'a>>,
+    #[serde(rename = "propertiesToTrack")]
+    properties_to_track: Vec<CSSComputedStyleProperty<'a>>,
 }
 
 impl<'a> TrackComputedStyleUpdatesParams<'a> {
-    pub fn builder(propertiesToTrack: Vec<CSSComputedStyleProperty<'a>>) -> TrackComputedStyleUpdatesParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `properties_to_track`: 
+    pub fn builder(properties_to_track: Vec<CSSComputedStyleProperty<'a>>) -> TrackComputedStyleUpdatesParamsBuilder<'a> {
         TrackComputedStyleUpdatesParamsBuilder {
-            propertiesToTrack: propertiesToTrack,
+            properties_to_track: properties_to_track,
         }
     }
-    pub fn propertiesToTrack(&self) -> &[CSSComputedStyleProperty<'a>] { &self.propertiesToTrack }
+    pub fn properties_to_track(&self) -> &[CSSComputedStyleProperty<'a>] { &self.properties_to_track }
 }
 
 
 pub struct TrackComputedStyleUpdatesParamsBuilder<'a> {
-    propertiesToTrack: Vec<CSSComputedStyleProperty<'a>>,
+    properties_to_track: Vec<CSSComputedStyleProperty<'a>>,
 }
 
 impl<'a> TrackComputedStyleUpdatesParamsBuilder<'a> {
     pub fn build(self) -> TrackComputedStyleUpdatesParams<'a> {
         TrackComputedStyleUpdatesParams {
-            propertiesToTrack: self.propertiesToTrack,
+            properties_to_track: self.properties_to_track,
         }
     }
 }
@@ -4079,27 +4662,31 @@ impl<'a> crate::CdpCommand<'a> for TrackComputedStyleUpdatesParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct TakeComputedStyleUpdatesReturns {
     /// The list of node Ids that have their tracked computed styles updated.
-    nodeIds: Vec<crate::dom::NodeId>,
+    #[serde(rename = "nodeIds")]
+    node_ids: Vec<crate::dom::NodeId>,
 }
 
 impl TakeComputedStyleUpdatesReturns {
-    pub fn builder(nodeIds: Vec<crate::dom::NodeId>) -> TakeComputedStyleUpdatesReturnsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `node_ids`: The list of node Ids that have their tracked computed styles updated.
+    pub fn builder(node_ids: Vec<crate::dom::NodeId>) -> TakeComputedStyleUpdatesReturnsBuilder {
         TakeComputedStyleUpdatesReturnsBuilder {
-            nodeIds: nodeIds,
+            node_ids: node_ids,
         }
     }
-    pub fn nodeIds(&self) -> &[crate::dom::NodeId] { &self.nodeIds }
+    /// The list of node Ids that have their tracked computed styles updated.
+    pub fn node_ids(&self) -> &[crate::dom::NodeId] { &self.node_ids }
 }
 
 
 pub struct TakeComputedStyleUpdatesReturnsBuilder {
-    nodeIds: Vec<crate::dom::NodeId>,
+    node_ids: Vec<crate::dom::NodeId>,
 }
 
 impl TakeComputedStyleUpdatesReturnsBuilder {
     pub fn build(self) -> TakeComputedStyleUpdatesReturns {
         TakeComputedStyleUpdatesReturns {
-            nodeIds: self.nodeIds,
+            node_ids: self.node_ids,
         }
     }
 }
@@ -4121,36 +4708,43 @@ impl<'a> crate::CdpCommand<'a> for TakeComputedStyleUpdatesParams {
 #[serde(rename_all = "camelCase")]
 pub struct SetEffectivePropertyValueForNodeParams<'a> {
     /// The element id for which to set property.
-    nodeId: crate::dom::NodeId,
-    propertyName: Cow<'a, str>,
+    #[serde(rename = "nodeId")]
+    node_id: crate::dom::NodeId,
+    #[serde(rename = "propertyName")]
+    property_name: Cow<'a, str>,
     value: Cow<'a, str>,
 }
 
 impl<'a> SetEffectivePropertyValueForNodeParams<'a> {
-    pub fn builder(nodeId: crate::dom::NodeId, propertyName: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> SetEffectivePropertyValueForNodeParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `node_id`: The element id for which to set property.
+    /// * `property_name`: 
+    /// * `value`: 
+    pub fn builder(node_id: crate::dom::NodeId, property_name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> SetEffectivePropertyValueForNodeParamsBuilder<'a> {
         SetEffectivePropertyValueForNodeParamsBuilder {
-            nodeId: nodeId,
-            propertyName: propertyName.into(),
+            node_id: node_id,
+            property_name: property_name.into(),
             value: value.into(),
         }
     }
-    pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
-    pub fn propertyName(&self) -> &str { self.propertyName.as_ref() }
+    /// The element id for which to set property.
+    pub fn node_id(&self) -> &crate::dom::NodeId { &self.node_id }
+    pub fn property_name(&self) -> &str { self.property_name.as_ref() }
     pub fn value(&self) -> &str { self.value.as_ref() }
 }
 
 
 pub struct SetEffectivePropertyValueForNodeParamsBuilder<'a> {
-    nodeId: crate::dom::NodeId,
-    propertyName: Cow<'a, str>,
+    node_id: crate::dom::NodeId,
+    property_name: Cow<'a, str>,
     value: Cow<'a, str>,
 }
 
 impl<'a> SetEffectivePropertyValueForNodeParamsBuilder<'a> {
     pub fn build(self) -> SetEffectivePropertyValueForNodeParams<'a> {
         SetEffectivePropertyValueForNodeParams {
-            nodeId: self.nodeId,
-            propertyName: self.propertyName,
+            node_id: self.node_id,
+            property_name: self.property_name,
             value: self.value,
         }
     }
@@ -4168,37 +4762,43 @@ impl<'a> crate::CdpCommand<'a> for SetEffectivePropertyValueForNodeParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetPropertyRulePropertyNameParams<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    #[serde(rename = "styleSheetId")]
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     range: SourceRange,
-    propertyName: Cow<'a, str>,
+    #[serde(rename = "propertyName")]
+    property_name: Cow<'a, str>,
 }
 
 impl<'a> SetPropertyRulePropertyNameParams<'a> {
-    pub fn builder(styleSheetId: crate::dom::StyleSheetId<'a>, range: SourceRange, propertyName: impl Into<Cow<'a, str>>) -> SetPropertyRulePropertyNameParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `style_sheet_id`: 
+    /// * `range`: 
+    /// * `property_name`: 
+    pub fn builder(style_sheet_id: crate::dom::StyleSheetId<'a>, range: SourceRange, property_name: impl Into<Cow<'a, str>>) -> SetPropertyRulePropertyNameParamsBuilder<'a> {
         SetPropertyRulePropertyNameParamsBuilder {
-            styleSheetId: styleSheetId,
+            style_sheet_id: style_sheet_id,
             range: range,
-            propertyName: propertyName.into(),
+            property_name: property_name.into(),
         }
     }
-    pub fn styleSheetId(&self) -> &crate::dom::StyleSheetId<'a> { &self.styleSheetId }
+    pub fn style_sheet_id(&self) -> &crate::dom::StyleSheetId<'a> { &self.style_sheet_id }
     pub fn range(&self) -> &SourceRange { &self.range }
-    pub fn propertyName(&self) -> &str { self.propertyName.as_ref() }
+    pub fn property_name(&self) -> &str { self.property_name.as_ref() }
 }
 
 
 pub struct SetPropertyRulePropertyNameParamsBuilder<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     range: SourceRange,
-    propertyName: Cow<'a, str>,
+    property_name: Cow<'a, str>,
 }
 
 impl<'a> SetPropertyRulePropertyNameParamsBuilder<'a> {
     pub fn build(self) -> SetPropertyRulePropertyNameParams<'a> {
         SetPropertyRulePropertyNameParams {
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
             range: self.range,
-            propertyName: self.propertyName,
+            property_name: self.property_name,
         }
     }
 }
@@ -4209,27 +4809,31 @@ impl<'a> SetPropertyRulePropertyNameParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SetPropertyRulePropertyNameReturns<'a> {
     /// The resulting key text after modification.
-    propertyName: ProtocolValue<'a>,
+    #[serde(rename = "propertyName")]
+    property_name: ProtocolValue<'a>,
 }
 
 impl<'a> SetPropertyRulePropertyNameReturns<'a> {
-    pub fn builder(propertyName: ProtocolValue<'a>) -> SetPropertyRulePropertyNameReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `property_name`: The resulting key text after modification.
+    pub fn builder(property_name: ProtocolValue<'a>) -> SetPropertyRulePropertyNameReturnsBuilder<'a> {
         SetPropertyRulePropertyNameReturnsBuilder {
-            propertyName: propertyName,
+            property_name: property_name,
         }
     }
-    pub fn propertyName(&self) -> &ProtocolValue<'a> { &self.propertyName }
+    /// The resulting key text after modification.
+    pub fn property_name(&self) -> &ProtocolValue<'a> { &self.property_name }
 }
 
 
 pub struct SetPropertyRulePropertyNameReturnsBuilder<'a> {
-    propertyName: ProtocolValue<'a>,
+    property_name: ProtocolValue<'a>,
 }
 
 impl<'a> SetPropertyRulePropertyNameReturnsBuilder<'a> {
     pub fn build(self) -> SetPropertyRulePropertyNameReturns<'a> {
         SetPropertyRulePropertyNameReturns {
-            propertyName: self.propertyName,
+            property_name: self.property_name,
         }
     }
 }
@@ -4246,37 +4850,43 @@ impl<'a> crate::CdpCommand<'a> for SetPropertyRulePropertyNameParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetKeyframeKeyParams<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    #[serde(rename = "styleSheetId")]
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     range: SourceRange,
-    keyText: Cow<'a, str>,
+    #[serde(rename = "keyText")]
+    key_text: Cow<'a, str>,
 }
 
 impl<'a> SetKeyframeKeyParams<'a> {
-    pub fn builder(styleSheetId: crate::dom::StyleSheetId<'a>, range: SourceRange, keyText: impl Into<Cow<'a, str>>) -> SetKeyframeKeyParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `style_sheet_id`: 
+    /// * `range`: 
+    /// * `key_text`: 
+    pub fn builder(style_sheet_id: crate::dom::StyleSheetId<'a>, range: SourceRange, key_text: impl Into<Cow<'a, str>>) -> SetKeyframeKeyParamsBuilder<'a> {
         SetKeyframeKeyParamsBuilder {
-            styleSheetId: styleSheetId,
+            style_sheet_id: style_sheet_id,
             range: range,
-            keyText: keyText.into(),
+            key_text: key_text.into(),
         }
     }
-    pub fn styleSheetId(&self) -> &crate::dom::StyleSheetId<'a> { &self.styleSheetId }
+    pub fn style_sheet_id(&self) -> &crate::dom::StyleSheetId<'a> { &self.style_sheet_id }
     pub fn range(&self) -> &SourceRange { &self.range }
-    pub fn keyText(&self) -> &str { self.keyText.as_ref() }
+    pub fn key_text(&self) -> &str { self.key_text.as_ref() }
 }
 
 
 pub struct SetKeyframeKeyParamsBuilder<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     range: SourceRange,
-    keyText: Cow<'a, str>,
+    key_text: Cow<'a, str>,
 }
 
 impl<'a> SetKeyframeKeyParamsBuilder<'a> {
     pub fn build(self) -> SetKeyframeKeyParams<'a> {
         SetKeyframeKeyParams {
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
             range: self.range,
-            keyText: self.keyText,
+            key_text: self.key_text,
         }
     }
 }
@@ -4287,27 +4897,31 @@ impl<'a> SetKeyframeKeyParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SetKeyframeKeyReturns<'a> {
     /// The resulting key text after modification.
-    keyText: ProtocolValue<'a>,
+    #[serde(rename = "keyText")]
+    key_text: ProtocolValue<'a>,
 }
 
 impl<'a> SetKeyframeKeyReturns<'a> {
-    pub fn builder(keyText: ProtocolValue<'a>) -> SetKeyframeKeyReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `key_text`: The resulting key text after modification.
+    pub fn builder(key_text: ProtocolValue<'a>) -> SetKeyframeKeyReturnsBuilder<'a> {
         SetKeyframeKeyReturnsBuilder {
-            keyText: keyText,
+            key_text: key_text,
         }
     }
-    pub fn keyText(&self) -> &ProtocolValue<'a> { &self.keyText }
+    /// The resulting key text after modification.
+    pub fn key_text(&self) -> &ProtocolValue<'a> { &self.key_text }
 }
 
 
 pub struct SetKeyframeKeyReturnsBuilder<'a> {
-    keyText: ProtocolValue<'a>,
+    key_text: ProtocolValue<'a>,
 }
 
 impl<'a> SetKeyframeKeyReturnsBuilder<'a> {
     pub fn build(self) -> SetKeyframeKeyReturns<'a> {
         SetKeyframeKeyReturns {
-            keyText: self.keyText,
+            key_text: self.key_text,
         }
     }
 }
@@ -4324,27 +4938,32 @@ impl<'a> crate::CdpCommand<'a> for SetKeyframeKeyParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetMediaTextParams<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    #[serde(rename = "styleSheetId")]
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     range: SourceRange,
     text: Cow<'a, str>,
 }
 
 impl<'a> SetMediaTextParams<'a> {
-    pub fn builder(styleSheetId: crate::dom::StyleSheetId<'a>, range: SourceRange, text: impl Into<Cow<'a, str>>) -> SetMediaTextParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `style_sheet_id`: 
+    /// * `range`: 
+    /// * `text`: 
+    pub fn builder(style_sheet_id: crate::dom::StyleSheetId<'a>, range: SourceRange, text: impl Into<Cow<'a, str>>) -> SetMediaTextParamsBuilder<'a> {
         SetMediaTextParamsBuilder {
-            styleSheetId: styleSheetId,
+            style_sheet_id: style_sheet_id,
             range: range,
             text: text.into(),
         }
     }
-    pub fn styleSheetId(&self) -> &crate::dom::StyleSheetId<'a> { &self.styleSheetId }
+    pub fn style_sheet_id(&self) -> &crate::dom::StyleSheetId<'a> { &self.style_sheet_id }
     pub fn range(&self) -> &SourceRange { &self.range }
     pub fn text(&self) -> &str { self.text.as_ref() }
 }
 
 
 pub struct SetMediaTextParamsBuilder<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     range: SourceRange,
     text: Cow<'a, str>,
 }
@@ -4352,7 +4971,7 @@ pub struct SetMediaTextParamsBuilder<'a> {
 impl<'a> SetMediaTextParamsBuilder<'a> {
     pub fn build(self) -> SetMediaTextParams<'a> {
         SetMediaTextParams {
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
             range: self.range,
             text: self.text,
         }
@@ -4369,11 +4988,14 @@ pub struct SetMediaTextReturns<'a> {
 }
 
 impl<'a> SetMediaTextReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `media`: The resulting CSS media rule after modification.
     pub fn builder(media: CSSMedia<'a>) -> SetMediaTextReturnsBuilder<'a> {
         SetMediaTextReturnsBuilder {
             media: media,
         }
     }
+    /// The resulting CSS media rule after modification.
     pub fn media(&self) -> &CSSMedia<'a> { &self.media }
 }
 
@@ -4403,27 +5025,32 @@ impl<'a> crate::CdpCommand<'a> for SetMediaTextParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetContainerQueryTextParams<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    #[serde(rename = "styleSheetId")]
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     range: SourceRange,
     text: Cow<'a, str>,
 }
 
 impl<'a> SetContainerQueryTextParams<'a> {
-    pub fn builder(styleSheetId: crate::dom::StyleSheetId<'a>, range: SourceRange, text: impl Into<Cow<'a, str>>) -> SetContainerQueryTextParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `style_sheet_id`: 
+    /// * `range`: 
+    /// * `text`: 
+    pub fn builder(style_sheet_id: crate::dom::StyleSheetId<'a>, range: SourceRange, text: impl Into<Cow<'a, str>>) -> SetContainerQueryTextParamsBuilder<'a> {
         SetContainerQueryTextParamsBuilder {
-            styleSheetId: styleSheetId,
+            style_sheet_id: style_sheet_id,
             range: range,
             text: text.into(),
         }
     }
-    pub fn styleSheetId(&self) -> &crate::dom::StyleSheetId<'a> { &self.styleSheetId }
+    pub fn style_sheet_id(&self) -> &crate::dom::StyleSheetId<'a> { &self.style_sheet_id }
     pub fn range(&self) -> &SourceRange { &self.range }
     pub fn text(&self) -> &str { self.text.as_ref() }
 }
 
 
 pub struct SetContainerQueryTextParamsBuilder<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     range: SourceRange,
     text: Cow<'a, str>,
 }
@@ -4431,7 +5058,7 @@ pub struct SetContainerQueryTextParamsBuilder<'a> {
 impl<'a> SetContainerQueryTextParamsBuilder<'a> {
     pub fn build(self) -> SetContainerQueryTextParams<'a> {
         SetContainerQueryTextParams {
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
             range: self.range,
             text: self.text,
         }
@@ -4445,27 +5072,31 @@ impl<'a> SetContainerQueryTextParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SetContainerQueryTextReturns<'a> {
     /// The resulting CSS container query rule after modification.
-    containerQuery: CSSContainerQuery<'a>,
+    #[serde(rename = "containerQuery")]
+    container_query: CSSContainerQuery<'a>,
 }
 
 impl<'a> SetContainerQueryTextReturns<'a> {
-    pub fn builder(containerQuery: CSSContainerQuery<'a>) -> SetContainerQueryTextReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `container_query`: The resulting CSS container query rule after modification.
+    pub fn builder(container_query: CSSContainerQuery<'a>) -> SetContainerQueryTextReturnsBuilder<'a> {
         SetContainerQueryTextReturnsBuilder {
-            containerQuery: containerQuery,
+            container_query: container_query,
         }
     }
-    pub fn containerQuery(&self) -> &CSSContainerQuery<'a> { &self.containerQuery }
+    /// The resulting CSS container query rule after modification.
+    pub fn container_query(&self) -> &CSSContainerQuery<'a> { &self.container_query }
 }
 
 
 pub struct SetContainerQueryTextReturnsBuilder<'a> {
-    containerQuery: CSSContainerQuery<'a>,
+    container_query: CSSContainerQuery<'a>,
 }
 
 impl<'a> SetContainerQueryTextReturnsBuilder<'a> {
     pub fn build(self) -> SetContainerQueryTextReturns<'a> {
         SetContainerQueryTextReturns {
-            containerQuery: self.containerQuery,
+            container_query: self.container_query,
         }
     }
 }
@@ -4481,27 +5112,32 @@ impl<'a> crate::CdpCommand<'a> for SetContainerQueryTextParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetContainerQueryConditionTextParams<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    #[serde(rename = "styleSheetId")]
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     range: SourceRange,
     text: Cow<'a, str>,
 }
 
 impl<'a> SetContainerQueryConditionTextParams<'a> {
-    pub fn builder(styleSheetId: crate::dom::StyleSheetId<'a>, range: SourceRange, text: impl Into<Cow<'a, str>>) -> SetContainerQueryConditionTextParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `style_sheet_id`: 
+    /// * `range`: 
+    /// * `text`: 
+    pub fn builder(style_sheet_id: crate::dom::StyleSheetId<'a>, range: SourceRange, text: impl Into<Cow<'a, str>>) -> SetContainerQueryConditionTextParamsBuilder<'a> {
         SetContainerQueryConditionTextParamsBuilder {
-            styleSheetId: styleSheetId,
+            style_sheet_id: style_sheet_id,
             range: range,
             text: text.into(),
         }
     }
-    pub fn styleSheetId(&self) -> &crate::dom::StyleSheetId<'a> { &self.styleSheetId }
+    pub fn style_sheet_id(&self) -> &crate::dom::StyleSheetId<'a> { &self.style_sheet_id }
     pub fn range(&self) -> &SourceRange { &self.range }
     pub fn text(&self) -> &str { self.text.as_ref() }
 }
 
 
 pub struct SetContainerQueryConditionTextParamsBuilder<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     range: SourceRange,
     text: Cow<'a, str>,
 }
@@ -4509,7 +5145,7 @@ pub struct SetContainerQueryConditionTextParamsBuilder<'a> {
 impl<'a> SetContainerQueryConditionTextParamsBuilder<'a> {
     pub fn build(self) -> SetContainerQueryConditionTextParams<'a> {
         SetContainerQueryConditionTextParams {
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
             range: self.range,
             text: self.text,
         }
@@ -4521,27 +5157,31 @@ impl<'a> SetContainerQueryConditionTextParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SetContainerQueryConditionTextReturns<'a> {
     /// The resulting CSS container query rule after modification.
-    containerQuery: CSSContainerQuery<'a>,
+    #[serde(rename = "containerQuery")]
+    container_query: CSSContainerQuery<'a>,
 }
 
 impl<'a> SetContainerQueryConditionTextReturns<'a> {
-    pub fn builder(containerQuery: CSSContainerQuery<'a>) -> SetContainerQueryConditionTextReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `container_query`: The resulting CSS container query rule after modification.
+    pub fn builder(container_query: CSSContainerQuery<'a>) -> SetContainerQueryConditionTextReturnsBuilder<'a> {
         SetContainerQueryConditionTextReturnsBuilder {
-            containerQuery: containerQuery,
+            container_query: container_query,
         }
     }
-    pub fn containerQuery(&self) -> &CSSContainerQuery<'a> { &self.containerQuery }
+    /// The resulting CSS container query rule after modification.
+    pub fn container_query(&self) -> &CSSContainerQuery<'a> { &self.container_query }
 }
 
 
 pub struct SetContainerQueryConditionTextReturnsBuilder<'a> {
-    containerQuery: CSSContainerQuery<'a>,
+    container_query: CSSContainerQuery<'a>,
 }
 
 impl<'a> SetContainerQueryConditionTextReturnsBuilder<'a> {
     pub fn build(self) -> SetContainerQueryConditionTextReturns<'a> {
         SetContainerQueryConditionTextReturns {
-            containerQuery: self.containerQuery,
+            container_query: self.container_query,
         }
     }
 }
@@ -4558,27 +5198,32 @@ impl<'a> crate::CdpCommand<'a> for SetContainerQueryConditionTextParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetSupportsTextParams<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    #[serde(rename = "styleSheetId")]
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     range: SourceRange,
     text: Cow<'a, str>,
 }
 
 impl<'a> SetSupportsTextParams<'a> {
-    pub fn builder(styleSheetId: crate::dom::StyleSheetId<'a>, range: SourceRange, text: impl Into<Cow<'a, str>>) -> SetSupportsTextParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `style_sheet_id`: 
+    /// * `range`: 
+    /// * `text`: 
+    pub fn builder(style_sheet_id: crate::dom::StyleSheetId<'a>, range: SourceRange, text: impl Into<Cow<'a, str>>) -> SetSupportsTextParamsBuilder<'a> {
         SetSupportsTextParamsBuilder {
-            styleSheetId: styleSheetId,
+            style_sheet_id: style_sheet_id,
             range: range,
             text: text.into(),
         }
     }
-    pub fn styleSheetId(&self) -> &crate::dom::StyleSheetId<'a> { &self.styleSheetId }
+    pub fn style_sheet_id(&self) -> &crate::dom::StyleSheetId<'a> { &self.style_sheet_id }
     pub fn range(&self) -> &SourceRange { &self.range }
     pub fn text(&self) -> &str { self.text.as_ref() }
 }
 
 
 pub struct SetSupportsTextParamsBuilder<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     range: SourceRange,
     text: Cow<'a, str>,
 }
@@ -4586,7 +5231,7 @@ pub struct SetSupportsTextParamsBuilder<'a> {
 impl<'a> SetSupportsTextParamsBuilder<'a> {
     pub fn build(self) -> SetSupportsTextParams<'a> {
         SetSupportsTextParams {
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
             range: self.range,
             text: self.text,
         }
@@ -4603,11 +5248,14 @@ pub struct SetSupportsTextReturns<'a> {
 }
 
 impl<'a> SetSupportsTextReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `supports`: The resulting CSS Supports rule after modification.
     pub fn builder(supports: CSSSupports<'a>) -> SetSupportsTextReturnsBuilder<'a> {
         SetSupportsTextReturnsBuilder {
             supports: supports,
         }
     }
+    /// The resulting CSS Supports rule after modification.
     pub fn supports(&self) -> &CSSSupports<'a> { &self.supports }
 }
 
@@ -4636,27 +5284,32 @@ impl<'a> crate::CdpCommand<'a> for SetSupportsTextParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetNavigationTextParams<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    #[serde(rename = "styleSheetId")]
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     range: SourceRange,
     text: Cow<'a, str>,
 }
 
 impl<'a> SetNavigationTextParams<'a> {
-    pub fn builder(styleSheetId: crate::dom::StyleSheetId<'a>, range: SourceRange, text: impl Into<Cow<'a, str>>) -> SetNavigationTextParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `style_sheet_id`: 
+    /// * `range`: 
+    /// * `text`: 
+    pub fn builder(style_sheet_id: crate::dom::StyleSheetId<'a>, range: SourceRange, text: impl Into<Cow<'a, str>>) -> SetNavigationTextParamsBuilder<'a> {
         SetNavigationTextParamsBuilder {
-            styleSheetId: styleSheetId,
+            style_sheet_id: style_sheet_id,
             range: range,
             text: text.into(),
         }
     }
-    pub fn styleSheetId(&self) -> &crate::dom::StyleSheetId<'a> { &self.styleSheetId }
+    pub fn style_sheet_id(&self) -> &crate::dom::StyleSheetId<'a> { &self.style_sheet_id }
     pub fn range(&self) -> &SourceRange { &self.range }
     pub fn text(&self) -> &str { self.text.as_ref() }
 }
 
 
 pub struct SetNavigationTextParamsBuilder<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     range: SourceRange,
     text: Cow<'a, str>,
 }
@@ -4664,7 +5317,7 @@ pub struct SetNavigationTextParamsBuilder<'a> {
 impl<'a> SetNavigationTextParamsBuilder<'a> {
     pub fn build(self) -> SetNavigationTextParams<'a> {
         SetNavigationTextParams {
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
             range: self.range,
             text: self.text,
         }
@@ -4681,11 +5334,14 @@ pub struct SetNavigationTextReturns<'a> {
 }
 
 impl<'a> SetNavigationTextReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `navigation`: The resulting CSS Navigation rule after modification.
     pub fn builder(navigation: CSSNavigation<'a>) -> SetNavigationTextReturnsBuilder<'a> {
         SetNavigationTextReturnsBuilder {
             navigation: navigation,
         }
     }
+    /// The resulting CSS Navigation rule after modification.
     pub fn navigation(&self) -> &CSSNavigation<'a> { &self.navigation }
 }
 
@@ -4714,27 +5370,32 @@ impl<'a> crate::CdpCommand<'a> for SetNavigationTextParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetScopeTextParams<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    #[serde(rename = "styleSheetId")]
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     range: SourceRange,
     text: Cow<'a, str>,
 }
 
 impl<'a> SetScopeTextParams<'a> {
-    pub fn builder(styleSheetId: crate::dom::StyleSheetId<'a>, range: SourceRange, text: impl Into<Cow<'a, str>>) -> SetScopeTextParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `style_sheet_id`: 
+    /// * `range`: 
+    /// * `text`: 
+    pub fn builder(style_sheet_id: crate::dom::StyleSheetId<'a>, range: SourceRange, text: impl Into<Cow<'a, str>>) -> SetScopeTextParamsBuilder<'a> {
         SetScopeTextParamsBuilder {
-            styleSheetId: styleSheetId,
+            style_sheet_id: style_sheet_id,
             range: range,
             text: text.into(),
         }
     }
-    pub fn styleSheetId(&self) -> &crate::dom::StyleSheetId<'a> { &self.styleSheetId }
+    pub fn style_sheet_id(&self) -> &crate::dom::StyleSheetId<'a> { &self.style_sheet_id }
     pub fn range(&self) -> &SourceRange { &self.range }
     pub fn text(&self) -> &str { self.text.as_ref() }
 }
 
 
 pub struct SetScopeTextParamsBuilder<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     range: SourceRange,
     text: Cow<'a, str>,
 }
@@ -4742,7 +5403,7 @@ pub struct SetScopeTextParamsBuilder<'a> {
 impl<'a> SetScopeTextParamsBuilder<'a> {
     pub fn build(self) -> SetScopeTextParams<'a> {
         SetScopeTextParams {
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
             range: self.range,
             text: self.text,
         }
@@ -4759,11 +5420,14 @@ pub struct SetScopeTextReturns<'a> {
 }
 
 impl<'a> SetScopeTextReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `scope`: The resulting CSS Scope rule after modification.
     pub fn builder(scope: CSSScope<'a>) -> SetScopeTextReturnsBuilder<'a> {
         SetScopeTextReturnsBuilder {
             scope: scope,
         }
     }
+    /// The resulting CSS Scope rule after modification.
     pub fn scope(&self) -> &CSSScope<'a> { &self.scope }
 }
 
@@ -4792,27 +5456,32 @@ impl<'a> crate::CdpCommand<'a> for SetScopeTextParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetRuleSelectorParams<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    #[serde(rename = "styleSheetId")]
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     range: SourceRange,
     selector: Cow<'a, str>,
 }
 
 impl<'a> SetRuleSelectorParams<'a> {
-    pub fn builder(styleSheetId: crate::dom::StyleSheetId<'a>, range: SourceRange, selector: impl Into<Cow<'a, str>>) -> SetRuleSelectorParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `style_sheet_id`: 
+    /// * `range`: 
+    /// * `selector`: 
+    pub fn builder(style_sheet_id: crate::dom::StyleSheetId<'a>, range: SourceRange, selector: impl Into<Cow<'a, str>>) -> SetRuleSelectorParamsBuilder<'a> {
         SetRuleSelectorParamsBuilder {
-            styleSheetId: styleSheetId,
+            style_sheet_id: style_sheet_id,
             range: range,
             selector: selector.into(),
         }
     }
-    pub fn styleSheetId(&self) -> &crate::dom::StyleSheetId<'a> { &self.styleSheetId }
+    pub fn style_sheet_id(&self) -> &crate::dom::StyleSheetId<'a> { &self.style_sheet_id }
     pub fn range(&self) -> &SourceRange { &self.range }
     pub fn selector(&self) -> &str { self.selector.as_ref() }
 }
 
 
 pub struct SetRuleSelectorParamsBuilder<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     range: SourceRange,
     selector: Cow<'a, str>,
 }
@@ -4820,7 +5489,7 @@ pub struct SetRuleSelectorParamsBuilder<'a> {
 impl<'a> SetRuleSelectorParamsBuilder<'a> {
     pub fn build(self) -> SetRuleSelectorParams<'a> {
         SetRuleSelectorParams {
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
             range: self.range,
             selector: self.selector,
         }
@@ -4833,27 +5502,31 @@ impl<'a> SetRuleSelectorParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SetRuleSelectorReturns<'a> {
     /// The resulting selector list after modification.
-    selectorList: SelectorList<'a>,
+    #[serde(rename = "selectorList")]
+    selector_list: SelectorList<'a>,
 }
 
 impl<'a> SetRuleSelectorReturns<'a> {
-    pub fn builder(selectorList: SelectorList<'a>) -> SetRuleSelectorReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `selector_list`: The resulting selector list after modification.
+    pub fn builder(selector_list: SelectorList<'a>) -> SetRuleSelectorReturnsBuilder<'a> {
         SetRuleSelectorReturnsBuilder {
-            selectorList: selectorList,
+            selector_list: selector_list,
         }
     }
-    pub fn selectorList(&self) -> &SelectorList<'a> { &self.selectorList }
+    /// The resulting selector list after modification.
+    pub fn selector_list(&self) -> &SelectorList<'a> { &self.selector_list }
 }
 
 
 pub struct SetRuleSelectorReturnsBuilder<'a> {
-    selectorList: SelectorList<'a>,
+    selector_list: SelectorList<'a>,
 }
 
 impl<'a> SetRuleSelectorReturnsBuilder<'a> {
     pub fn build(self) -> SetRuleSelectorReturns<'a> {
         SetRuleSelectorReturns {
-            selectorList: self.selectorList,
+            selector_list: self.selector_list,
         }
     }
 }
@@ -4870,31 +5543,35 @@ impl<'a> crate::CdpCommand<'a> for SetRuleSelectorParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetStyleSheetTextParams<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    #[serde(rename = "styleSheetId")]
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     text: Cow<'a, str>,
 }
 
 impl<'a> SetStyleSheetTextParams<'a> {
-    pub fn builder(styleSheetId: crate::dom::StyleSheetId<'a>, text: impl Into<Cow<'a, str>>) -> SetStyleSheetTextParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `style_sheet_id`: 
+    /// * `text`: 
+    pub fn builder(style_sheet_id: crate::dom::StyleSheetId<'a>, text: impl Into<Cow<'a, str>>) -> SetStyleSheetTextParamsBuilder<'a> {
         SetStyleSheetTextParamsBuilder {
-            styleSheetId: styleSheetId,
+            style_sheet_id: style_sheet_id,
             text: text.into(),
         }
     }
-    pub fn styleSheetId(&self) -> &crate::dom::StyleSheetId<'a> { &self.styleSheetId }
+    pub fn style_sheet_id(&self) -> &crate::dom::StyleSheetId<'a> { &self.style_sheet_id }
     pub fn text(&self) -> &str { self.text.as_ref() }
 }
 
 
 pub struct SetStyleSheetTextParamsBuilder<'a> {
-    styleSheetId: crate::dom::StyleSheetId<'a>,
+    style_sheet_id: crate::dom::StyleSheetId<'a>,
     text: Cow<'a, str>,
 }
 
 impl<'a> SetStyleSheetTextParamsBuilder<'a> {
     pub fn build(self) -> SetStyleSheetTextParams<'a> {
         SetStyleSheetTextParams {
-            styleSheetId: self.styleSheetId,
+            style_sheet_id: self.style_sheet_id,
             text: self.text,
         }
     }
@@ -4906,30 +5583,32 @@ impl<'a> SetStyleSheetTextParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SetStyleSheetTextReturns<'a> {
     /// URL of source map associated with script (if any).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    sourceMapURL: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sourceMapURL")]
+    source_map_url: Option<Cow<'a, str>>,
 }
 
 impl<'a> SetStyleSheetTextReturns<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> SetStyleSheetTextReturnsBuilder<'a> {
         SetStyleSheetTextReturnsBuilder {
-            sourceMapURL: None,
+            source_map_url: None,
         }
     }
-    pub fn sourceMapURL(&self) -> Option<&str> { self.sourceMapURL.as_deref() }
+    /// URL of source map associated with script (if any).
+    pub fn source_map_url(&self) -> Option<&str> { self.source_map_url.as_deref() }
 }
 
 #[derive(Default)]
 pub struct SetStyleSheetTextReturnsBuilder<'a> {
-    sourceMapURL: Option<Cow<'a, str>>,
+    source_map_url: Option<Cow<'a, str>>,
 }
 
 impl<'a> SetStyleSheetTextReturnsBuilder<'a> {
     /// URL of source map associated with script (if any).
-    pub fn sourceMapURL(mut self, sourceMapURL: impl Into<Cow<'a, str>>) -> Self { self.sourceMapURL = Some(sourceMapURL.into()); self }
+    pub fn source_map_url(mut self, source_map_url: impl Into<Cow<'a, str>>) -> Self { self.source_map_url = Some(source_map_url.into()); self }
     pub fn build(self) -> SetStyleSheetTextReturns<'a> {
         SetStyleSheetTextReturns {
-            sourceMapURL: self.sourceMapURL,
+            source_map_url: self.source_map_url,
         }
     }
 }
@@ -4950,36 +5629,41 @@ pub struct SetStyleTextsParams<'a> {
     /// NodeId for the DOM node in whose context custom property declarations for registered properties should be
     /// validated. If omitted, declarations in the new rule text can only be validated statically, which may produce
     /// incorrect results if the declaration contains a var() for example.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    nodeForPropertySyntaxValidation: Option<crate::dom::NodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "nodeForPropertySyntaxValidation")]
+    node_for_property_syntax_validation: Option<crate::dom::NodeId>,
 }
 
 impl<'a> SetStyleTextsParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `edits`: 
     pub fn builder(edits: Vec<StyleDeclarationEdit<'a>>) -> SetStyleTextsParamsBuilder<'a> {
         SetStyleTextsParamsBuilder {
             edits: edits,
-            nodeForPropertySyntaxValidation: None,
+            node_for_property_syntax_validation: None,
         }
     }
     pub fn edits(&self) -> &[StyleDeclarationEdit<'a>] { &self.edits }
-    pub fn nodeForPropertySyntaxValidation(&self) -> Option<&crate::dom::NodeId> { self.nodeForPropertySyntaxValidation.as_ref() }
+    /// NodeId for the DOM node in whose context custom property declarations for registered properties should be
+    /// validated. If omitted, declarations in the new rule text can only be validated statically, which may produce
+    /// incorrect results if the declaration contains a var() for example.
+    pub fn node_for_property_syntax_validation(&self) -> Option<&crate::dom::NodeId> { self.node_for_property_syntax_validation.as_ref() }
 }
 
 
 pub struct SetStyleTextsParamsBuilder<'a> {
     edits: Vec<StyleDeclarationEdit<'a>>,
-    nodeForPropertySyntaxValidation: Option<crate::dom::NodeId>,
+    node_for_property_syntax_validation: Option<crate::dom::NodeId>,
 }
 
 impl<'a> SetStyleTextsParamsBuilder<'a> {
     /// NodeId for the DOM node in whose context custom property declarations for registered properties should be
     /// validated. If omitted, declarations in the new rule text can only be validated statically, which may produce
     /// incorrect results if the declaration contains a var() for example.
-    pub fn nodeForPropertySyntaxValidation(mut self, nodeForPropertySyntaxValidation: crate::dom::NodeId) -> Self { self.nodeForPropertySyntaxValidation = Some(nodeForPropertySyntaxValidation); self }
+    pub fn node_for_property_syntax_validation(mut self, node_for_property_syntax_validation: crate::dom::NodeId) -> Self { self.node_for_property_syntax_validation = Some(node_for_property_syntax_validation); self }
     pub fn build(self) -> SetStyleTextsParams<'a> {
         SetStyleTextsParams {
             edits: self.edits,
-            nodeForPropertySyntaxValidation: self.nodeForPropertySyntaxValidation,
+            node_for_property_syntax_validation: self.node_for_property_syntax_validation,
         }
     }
 }
@@ -4994,11 +5678,14 @@ pub struct SetStyleTextsReturns<'a> {
 }
 
 impl<'a> SetStyleTextsReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `styles`: The resulting styles after modification.
     pub fn builder(styles: Vec<CSSStyle<'a>>) -> SetStyleTextsReturnsBuilder<'a> {
         SetStyleTextsReturnsBuilder {
             styles: styles,
         }
     }
+    /// The resulting styles after modification.
     pub fn styles(&self) -> &[CSSStyle<'a>] { &self.styles }
 }
 
@@ -5038,27 +5725,30 @@ impl<'a> crate::CdpCommand<'a> for StartRuleUsageTrackingParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct StopRuleUsageTrackingReturns<'a> {
-    ruleUsage: Vec<RuleUsage<'a>>,
+    #[serde(rename = "ruleUsage")]
+    rule_usage: Vec<RuleUsage<'a>>,
 }
 
 impl<'a> StopRuleUsageTrackingReturns<'a> {
-    pub fn builder(ruleUsage: Vec<RuleUsage<'a>>) -> StopRuleUsageTrackingReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `rule_usage`: 
+    pub fn builder(rule_usage: Vec<RuleUsage<'a>>) -> StopRuleUsageTrackingReturnsBuilder<'a> {
         StopRuleUsageTrackingReturnsBuilder {
-            ruleUsage: ruleUsage,
+            rule_usage: rule_usage,
         }
     }
-    pub fn ruleUsage(&self) -> &[RuleUsage<'a>] { &self.ruleUsage }
+    pub fn rule_usage(&self) -> &[RuleUsage<'a>] { &self.rule_usage }
 }
 
 
 pub struct StopRuleUsageTrackingReturnsBuilder<'a> {
-    ruleUsage: Vec<RuleUsage<'a>>,
+    rule_usage: Vec<RuleUsage<'a>>,
 }
 
 impl<'a> StopRuleUsageTrackingReturnsBuilder<'a> {
     pub fn build(self) -> StopRuleUsageTrackingReturns<'a> {
         StopRuleUsageTrackingReturns {
-            ruleUsage: self.ruleUsage,
+            rule_usage: self.rule_usage,
         }
     }
 }
@@ -5085,6 +5775,9 @@ pub struct TakeCoverageDeltaReturns<'a> {
 }
 
 impl<'a> TakeCoverageDeltaReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `coverage`: 
+    /// * `timestamp`: Monotonically increasing time, in seconds.
     pub fn builder(coverage: Vec<RuleUsage<'a>>, timestamp: f64) -> TakeCoverageDeltaReturnsBuilder<'a> {
         TakeCoverageDeltaReturnsBuilder {
             coverage: coverage,
@@ -5092,6 +5785,7 @@ impl<'a> TakeCoverageDeltaReturns<'a> {
         }
     }
     pub fn coverage(&self) -> &[RuleUsage<'a>] { &self.coverage }
+    /// Monotonically increasing time, in seconds.
     pub fn timestamp(&self) -> f64 { self.timestamp }
 }
 
@@ -5130,11 +5824,14 @@ pub struct SetLocalFontsEnabledParams {
 }
 
 impl SetLocalFontsEnabledParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `enabled`: Whether rendering of local fonts is enabled.
     pub fn builder(enabled: bool) -> SetLocalFontsEnabledParamsBuilder {
         SetLocalFontsEnabledParamsBuilder {
             enabled: enabled,
         }
     }
+    /// Whether rendering of local fonts is enabled.
     pub fn enabled(&self) -> bool { self.enabled }
 }
 

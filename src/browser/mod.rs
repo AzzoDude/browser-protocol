@@ -44,25 +44,31 @@ pub struct Bounds {
     #[serde(skip_serializing_if = "Option::is_none")]
     height: Option<i64>,
     /// The window state. Default to normal.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    windowState: Option<WindowState>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "windowState")]
+    window_state: Option<WindowState>,
 }
 
 impl Bounds {
+    /// Creates a builder for this type.
     pub fn builder() -> BoundsBuilder {
         BoundsBuilder {
             left: None,
             top: None,
             width: None,
             height: None,
-            windowState: None,
+            window_state: None,
         }
     }
+    /// The offset from the left edge of the screen to the window in pixels.
     pub fn left(&self) -> Option<i64> { self.left }
+    /// The offset from the top edge of the screen to the window in pixels.
     pub fn top(&self) -> Option<i64> { self.top }
+    /// The window width in pixels.
     pub fn width(&self) -> Option<u64> { self.width }
+    /// The window height in pixels.
     pub fn height(&self) -> Option<i64> { self.height }
-    pub fn windowState(&self) -> Option<&WindowState> { self.windowState.as_ref() }
+    /// The window state. Default to normal.
+    pub fn window_state(&self) -> Option<&WindowState> { self.window_state.as_ref() }
 }
 
 #[derive(Default)]
@@ -71,7 +77,7 @@ pub struct BoundsBuilder {
     top: Option<i64>,
     width: Option<u64>,
     height: Option<i64>,
-    windowState: Option<WindowState>,
+    window_state: Option<WindowState>,
 }
 
 impl BoundsBuilder {
@@ -84,14 +90,14 @@ impl BoundsBuilder {
     /// The window height in pixels.
     pub fn height(mut self, height: i64) -> Self { self.height = Some(height); self }
     /// The window state. Default to normal.
-    pub fn windowState(mut self, windowState: impl Into<WindowState>) -> Self { self.windowState = Some(windowState.into()); self }
+    pub fn window_state(mut self, window_state: impl Into<WindowState>) -> Self { self.window_state = Some(window_state.into()); self }
     pub fn build(self) -> Bounds {
         Bounds {
             left: self.left,
             top: self.top,
             width: self.width,
             height: self.height,
-            windowState: self.windowState,
+            window_state: self.window_state,
         }
     }
 }
@@ -193,59 +199,69 @@ pub enum PermissionSetting {
 }
 
 /// Definition of PermissionDescriptor defined in the Permissions API:
-/// https://w3c.github.io/permissions/#dom-permissiondescriptor.
+/// <https://w3c.github.io/permissions/#dom-permissiondescriptor>.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct PermissionDescriptor<'a> {
     /// Name of permission.
-    /// See https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/permissions/permission_descriptor.idl for valid permission names.
+    /// See <https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/permissions/permission_descriptor.idl> for valid permission names.
     name: Cow<'a, str>,
     /// For "midi" permission, may also specify sysex control.
     #[serde(skip_serializing_if = "Option::is_none")]
     sysex: Option<bool>,
     /// For "push" permission, may specify userVisibleOnly.
     /// Note that userVisibleOnly = true is the only currently supported type.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    userVisibleOnly: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "userVisibleOnly")]
+    user_visible_only: Option<bool>,
     /// For "clipboard" permission, may specify allowWithoutSanitization.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    allowWithoutSanitization: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "allowWithoutSanitization")]
+    allow_without_sanitization: Option<bool>,
     /// For "fullscreen" permission, must specify allowWithoutGesture:true.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    allowWithoutGesture: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "allowWithoutGesture")]
+    allow_without_gesture: Option<bool>,
     /// For "camera" permission, may specify panTiltZoom.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    panTiltZoom: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "panTiltZoom")]
+    pan_tilt_zoom: Option<bool>,
 }
 
 impl<'a> PermissionDescriptor<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: Name of permission. See <https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/permissions/permission_descriptor.idl> for valid permission names.
     pub fn builder(name: impl Into<Cow<'a, str>>) -> PermissionDescriptorBuilder<'a> {
         PermissionDescriptorBuilder {
             name: name.into(),
             sysex: None,
-            userVisibleOnly: None,
-            allowWithoutSanitization: None,
-            allowWithoutGesture: None,
-            panTiltZoom: None,
+            user_visible_only: None,
+            allow_without_sanitization: None,
+            allow_without_gesture: None,
+            pan_tilt_zoom: None,
         }
     }
+    /// Name of permission.
+    /// See <https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/permissions/permission_descriptor.idl> for valid permission names.
     pub fn name(&self) -> &str { self.name.as_ref() }
+    /// For "midi" permission, may also specify sysex control.
     pub fn sysex(&self) -> Option<bool> { self.sysex }
-    pub fn userVisibleOnly(&self) -> Option<bool> { self.userVisibleOnly }
-    pub fn allowWithoutSanitization(&self) -> Option<bool> { self.allowWithoutSanitization }
-    pub fn allowWithoutGesture(&self) -> Option<bool> { self.allowWithoutGesture }
-    pub fn panTiltZoom(&self) -> Option<bool> { self.panTiltZoom }
+    /// For "push" permission, may specify userVisibleOnly.
+    /// Note that userVisibleOnly = true is the only currently supported type.
+    pub fn user_visible_only(&self) -> Option<bool> { self.user_visible_only }
+    /// For "clipboard" permission, may specify allowWithoutSanitization.
+    pub fn allow_without_sanitization(&self) -> Option<bool> { self.allow_without_sanitization }
+    /// For "fullscreen" permission, must specify allowWithoutGesture:true.
+    pub fn allow_without_gesture(&self) -> Option<bool> { self.allow_without_gesture }
+    /// For "camera" permission, may specify panTiltZoom.
+    pub fn pan_tilt_zoom(&self) -> Option<bool> { self.pan_tilt_zoom }
 }
 
 
 pub struct PermissionDescriptorBuilder<'a> {
     name: Cow<'a, str>,
     sysex: Option<bool>,
-    userVisibleOnly: Option<bool>,
-    allowWithoutSanitization: Option<bool>,
-    allowWithoutGesture: Option<bool>,
-    panTiltZoom: Option<bool>,
+    user_visible_only: Option<bool>,
+    allow_without_sanitization: Option<bool>,
+    allow_without_gesture: Option<bool>,
+    pan_tilt_zoom: Option<bool>,
 }
 
 impl<'a> PermissionDescriptorBuilder<'a> {
@@ -253,21 +269,21 @@ impl<'a> PermissionDescriptorBuilder<'a> {
     pub fn sysex(mut self, sysex: bool) -> Self { self.sysex = Some(sysex); self }
     /// For "push" permission, may specify userVisibleOnly.
     /// Note that userVisibleOnly = true is the only currently supported type.
-    pub fn userVisibleOnly(mut self, userVisibleOnly: bool) -> Self { self.userVisibleOnly = Some(userVisibleOnly); self }
+    pub fn user_visible_only(mut self, user_visible_only: bool) -> Self { self.user_visible_only = Some(user_visible_only); self }
     /// For "clipboard" permission, may specify allowWithoutSanitization.
-    pub fn allowWithoutSanitization(mut self, allowWithoutSanitization: bool) -> Self { self.allowWithoutSanitization = Some(allowWithoutSanitization); self }
+    pub fn allow_without_sanitization(mut self, allow_without_sanitization: bool) -> Self { self.allow_without_sanitization = Some(allow_without_sanitization); self }
     /// For "fullscreen" permission, must specify allowWithoutGesture:true.
-    pub fn allowWithoutGesture(mut self, allowWithoutGesture: bool) -> Self { self.allowWithoutGesture = Some(allowWithoutGesture); self }
+    pub fn allow_without_gesture(mut self, allow_without_gesture: bool) -> Self { self.allow_without_gesture = Some(allow_without_gesture); self }
     /// For "camera" permission, may specify panTiltZoom.
-    pub fn panTiltZoom(mut self, panTiltZoom: bool) -> Self { self.panTiltZoom = Some(panTiltZoom); self }
+    pub fn pan_tilt_zoom(mut self, pan_tilt_zoom: bool) -> Self { self.pan_tilt_zoom = Some(pan_tilt_zoom); self }
     pub fn build(self) -> PermissionDescriptor<'a> {
         PermissionDescriptor {
             name: self.name,
             sysex: self.sysex,
-            userVisibleOnly: self.userVisibleOnly,
-            allowWithoutSanitization: self.allowWithoutSanitization,
-            allowWithoutGesture: self.allowWithoutGesture,
-            panTiltZoom: self.panTiltZoom,
+            user_visible_only: self.user_visible_only,
+            allow_without_sanitization: self.allow_without_sanitization,
+            allow_without_gesture: self.allow_without_gesture,
+            pan_tilt_zoom: self.pan_tilt_zoom,
         }
     }
 }
@@ -299,6 +315,10 @@ pub struct Bucket {
 }
 
 impl Bucket {
+    /// Creates a builder for this type with the required parameters:
+    /// * `low`: Minimum value (inclusive).
+    /// * `high`: Maximum value (exclusive).
+    /// * `count`: Number of samples.
     pub fn builder(low: i64, high: i64, count: u64) -> BucketBuilder {
         BucketBuilder {
             low: low,
@@ -306,8 +326,11 @@ impl Bucket {
             count: count,
         }
     }
+    /// Minimum value (inclusive).
     pub fn low(&self) -> i64 { self.low }
+    /// Maximum value (exclusive).
     pub fn high(&self) -> i64 { self.high }
+    /// Number of samples.
     pub fn count(&self) -> u64 { self.count }
 }
 
@@ -344,6 +367,11 @@ pub struct Histogram<'a> {
 }
 
 impl<'a> Histogram<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: Name.
+    /// * `sum`: Sum of sample values.
+    /// * `count`: Total number of samples.
+    /// * `buckets`: Buckets.
     pub fn builder(name: impl Into<Cow<'a, str>>, sum: i64, count: u64, buckets: Vec<Bucket>) -> HistogramBuilder<'a> {
         HistogramBuilder {
             name: name.into(),
@@ -352,9 +380,13 @@ impl<'a> Histogram<'a> {
             buckets: buckets,
         }
     }
+    /// Name.
     pub fn name(&self) -> &str { self.name.as_ref() }
+    /// Sum of sample values.
     pub fn sum(&self) -> i64 { self.sum }
+    /// Total number of samples.
     pub fn count(&self) -> u64 { self.count }
+    /// Buckets.
     pub fn buckets(&self) -> &[Bucket] { &self.buckets }
 }
 
@@ -402,28 +434,38 @@ pub struct SetPermissionParams<'a> {
     /// Embedded origin the permission applies to. It is ignored unless the embedding origin is
     /// present and valid. If the embedding origin is provided but the embedded origin isn't, the
     /// embedding origin is used as the embedded origin.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    embeddedOrigin: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "embeddedOrigin")]
+    embedded_origin: Option<Cow<'a, str>>,
     /// Context to override. When omitted, default browser context is used.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    browserContextId: Option<BrowserContextID<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "browserContextId")]
+    browser_context_id: Option<BrowserContextID<'a>>,
 }
 
 impl<'a> SetPermissionParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `permission`: Descriptor of permission to override.
+    /// * `setting`: Setting of the permission.
     pub fn builder(permission: PermissionDescriptor<'a>, setting: impl Into<PermissionSetting>) -> SetPermissionParamsBuilder<'a> {
         SetPermissionParamsBuilder {
             permission: permission,
             setting: setting.into(),
             origin: None,
-            embeddedOrigin: None,
-            browserContextId: None,
+            embedded_origin: None,
+            browser_context_id: None,
         }
     }
+    /// Descriptor of permission to override.
     pub fn permission(&self) -> &PermissionDescriptor<'a> { &self.permission }
+    /// Setting of the permission.
     pub fn setting(&self) -> &PermissionSetting { &self.setting }
+    /// Embedding origin the permission applies to, all origins if not specified.
     pub fn origin(&self) -> Option<&str> { self.origin.as_deref() }
-    pub fn embeddedOrigin(&self) -> Option<&str> { self.embeddedOrigin.as_deref() }
-    pub fn browserContextId(&self) -> Option<&BrowserContextID<'a>> { self.browserContextId.as_ref() }
+    /// Embedded origin the permission applies to. It is ignored unless the embedding origin is
+    /// present and valid. If the embedding origin is provided but the embedded origin isn't, the
+    /// embedding origin is used as the embedded origin.
+    pub fn embedded_origin(&self) -> Option<&str> { self.embedded_origin.as_deref() }
+    /// Context to override. When omitted, default browser context is used.
+    pub fn browser_context_id(&self) -> Option<&BrowserContextID<'a>> { self.browser_context_id.as_ref() }
 }
 
 
@@ -431,8 +473,8 @@ pub struct SetPermissionParamsBuilder<'a> {
     permission: PermissionDescriptor<'a>,
     setting: PermissionSetting,
     origin: Option<Cow<'a, str>>,
-    embeddedOrigin: Option<Cow<'a, str>>,
-    browserContextId: Option<BrowserContextID<'a>>,
+    embedded_origin: Option<Cow<'a, str>>,
+    browser_context_id: Option<BrowserContextID<'a>>,
 }
 
 impl<'a> SetPermissionParamsBuilder<'a> {
@@ -441,16 +483,16 @@ impl<'a> SetPermissionParamsBuilder<'a> {
     /// Embedded origin the permission applies to. It is ignored unless the embedding origin is
     /// present and valid. If the embedding origin is provided but the embedded origin isn't, the
     /// embedding origin is used as the embedded origin.
-    pub fn embeddedOrigin(mut self, embeddedOrigin: impl Into<Cow<'a, str>>) -> Self { self.embeddedOrigin = Some(embeddedOrigin.into()); self }
+    pub fn embedded_origin(mut self, embedded_origin: impl Into<Cow<'a, str>>) -> Self { self.embedded_origin = Some(embedded_origin.into()); self }
     /// Context to override. When omitted, default browser context is used.
-    pub fn browserContextId(mut self, browserContextId: impl Into<BrowserContextID<'a>>) -> Self { self.browserContextId = Some(browserContextId.into()); self }
+    pub fn browser_context_id(mut self, browser_context_id: impl Into<BrowserContextID<'a>>) -> Self { self.browser_context_id = Some(browser_context_id.into()); self }
     pub fn build(self) -> SetPermissionParams<'a> {
         SetPermissionParams {
             permission: self.permission,
             setting: self.setting,
             origin: self.origin,
-            embeddedOrigin: self.embeddedOrigin,
-            browserContextId: self.browserContextId,
+            embedded_origin: self.embedded_origin,
+            browser_context_id: self.browser_context_id,
         }
     }
 }
@@ -473,40 +515,44 @@ pub struct GrantPermissionsParams<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     origin: Option<Cow<'a, str>>,
     /// BrowserContext to override permissions. When omitted, default browser context is used.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    browserContextId: Option<BrowserContextID<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "browserContextId")]
+    browser_context_id: Option<BrowserContextID<'a>>,
 }
 
 impl<'a> GrantPermissionsParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `permissions`: 
     pub fn builder(permissions: Vec<PermissionType>) -> GrantPermissionsParamsBuilder<'a> {
         GrantPermissionsParamsBuilder {
             permissions: permissions,
             origin: None,
-            browserContextId: None,
+            browser_context_id: None,
         }
     }
     pub fn permissions(&self) -> &[PermissionType] { &self.permissions }
+    /// Origin the permission applies to, all origins if not specified.
     pub fn origin(&self) -> Option<&str> { self.origin.as_deref() }
-    pub fn browserContextId(&self) -> Option<&BrowserContextID<'a>> { self.browserContextId.as_ref() }
+    /// BrowserContext to override permissions. When omitted, default browser context is used.
+    pub fn browser_context_id(&self) -> Option<&BrowserContextID<'a>> { self.browser_context_id.as_ref() }
 }
 
 
 pub struct GrantPermissionsParamsBuilder<'a> {
     permissions: Vec<PermissionType>,
     origin: Option<Cow<'a, str>>,
-    browserContextId: Option<BrowserContextID<'a>>,
+    browser_context_id: Option<BrowserContextID<'a>>,
 }
 
 impl<'a> GrantPermissionsParamsBuilder<'a> {
     /// Origin the permission applies to, all origins if not specified.
     pub fn origin(mut self, origin: impl Into<Cow<'a, str>>) -> Self { self.origin = Some(origin.into()); self }
     /// BrowserContext to override permissions. When omitted, default browser context is used.
-    pub fn browserContextId(mut self, browserContextId: impl Into<BrowserContextID<'a>>) -> Self { self.browserContextId = Some(browserContextId.into()); self }
+    pub fn browser_context_id(mut self, browser_context_id: impl Into<BrowserContextID<'a>>) -> Self { self.browser_context_id = Some(browser_context_id.into()); self }
     pub fn build(self) -> GrantPermissionsParams<'a> {
         GrantPermissionsParams {
             permissions: self.permissions,
             origin: self.origin,
-            browserContextId: self.browserContextId,
+            browser_context_id: self.browser_context_id,
         }
     }
 }
@@ -524,30 +570,32 @@ impl<'a> crate::CdpCommand<'a> for GrantPermissionsParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ResetPermissionsParams<'a> {
     /// BrowserContext to reset permissions. When omitted, default browser context is used.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    browserContextId: Option<BrowserContextID<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "browserContextId")]
+    browser_context_id: Option<BrowserContextID<'a>>,
 }
 
 impl<'a> ResetPermissionsParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> ResetPermissionsParamsBuilder<'a> {
         ResetPermissionsParamsBuilder {
-            browserContextId: None,
+            browser_context_id: None,
         }
     }
-    pub fn browserContextId(&self) -> Option<&BrowserContextID<'a>> { self.browserContextId.as_ref() }
+    /// BrowserContext to reset permissions. When omitted, default browser context is used.
+    pub fn browser_context_id(&self) -> Option<&BrowserContextID<'a>> { self.browser_context_id.as_ref() }
 }
 
 #[derive(Default)]
 pub struct ResetPermissionsParamsBuilder<'a> {
-    browserContextId: Option<BrowserContextID<'a>>,
+    browser_context_id: Option<BrowserContextID<'a>>,
 }
 
 impl<'a> ResetPermissionsParamsBuilder<'a> {
     /// BrowserContext to reset permissions. When omitted, default browser context is used.
-    pub fn browserContextId(mut self, browserContextId: impl Into<BrowserContextID<'a>>) -> Self { self.browserContextId = Some(browserContextId.into()); self }
+    pub fn browser_context_id(mut self, browser_context_id: impl Into<BrowserContextID<'a>>) -> Self { self.browser_context_id = Some(browser_context_id.into()); self }
     pub fn build(self) -> ResetPermissionsParams<'a> {
         ResetPermissionsParams {
-            browserContextId: self.browserContextId,
+            browser_context_id: self.browser_context_id,
         }
     }
 }
@@ -569,54 +617,63 @@ pub struct SetDownloadBehaviorParams<'a> {
     /// their download guids.
     behavior: Cow<'a, str>,
     /// BrowserContext to set download behavior. When omitted, default browser context is used.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    browserContextId: Option<BrowserContextID<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "browserContextId")]
+    browser_context_id: Option<BrowserContextID<'a>>,
     /// The default path to save downloaded files to. This is required if behavior is set to 'allow'
     /// or 'allowAndName'.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    downloadPath: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "downloadPath")]
+    download_path: Option<Cow<'a, str>>,
     /// Whether to emit download events (defaults to false).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    eventsEnabled: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "eventsEnabled")]
+    events_enabled: Option<bool>,
 }
 
 impl<'a> SetDownloadBehaviorParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `behavior`: Whether to allow all or deny all download requests, or use default Chrome behavior if available (otherwise deny). |allowAndName| allows download and names files according to their download guids.
     pub fn builder(behavior: impl Into<Cow<'a, str>>) -> SetDownloadBehaviorParamsBuilder<'a> {
         SetDownloadBehaviorParamsBuilder {
             behavior: behavior.into(),
-            browserContextId: None,
-            downloadPath: None,
-            eventsEnabled: None,
+            browser_context_id: None,
+            download_path: None,
+            events_enabled: None,
         }
     }
+    /// Whether to allow all or deny all download requests, or use default Chrome behavior if
+    /// available (otherwise deny). |allowAndName| allows download and names files according to
+    /// their download guids.
     pub fn behavior(&self) -> &str { self.behavior.as_ref() }
-    pub fn browserContextId(&self) -> Option<&BrowserContextID<'a>> { self.browserContextId.as_ref() }
-    pub fn downloadPath(&self) -> Option<&str> { self.downloadPath.as_deref() }
-    pub fn eventsEnabled(&self) -> Option<bool> { self.eventsEnabled }
+    /// BrowserContext to set download behavior. When omitted, default browser context is used.
+    pub fn browser_context_id(&self) -> Option<&BrowserContextID<'a>> { self.browser_context_id.as_ref() }
+    /// The default path to save downloaded files to. This is required if behavior is set to 'allow'
+    /// or 'allowAndName'.
+    pub fn download_path(&self) -> Option<&str> { self.download_path.as_deref() }
+    /// Whether to emit download events (defaults to false).
+    pub fn events_enabled(&self) -> Option<bool> { self.events_enabled }
 }
 
 
 pub struct SetDownloadBehaviorParamsBuilder<'a> {
     behavior: Cow<'a, str>,
-    browserContextId: Option<BrowserContextID<'a>>,
-    downloadPath: Option<Cow<'a, str>>,
-    eventsEnabled: Option<bool>,
+    browser_context_id: Option<BrowserContextID<'a>>,
+    download_path: Option<Cow<'a, str>>,
+    events_enabled: Option<bool>,
 }
 
 impl<'a> SetDownloadBehaviorParamsBuilder<'a> {
     /// BrowserContext to set download behavior. When omitted, default browser context is used.
-    pub fn browserContextId(mut self, browserContextId: impl Into<BrowserContextID<'a>>) -> Self { self.browserContextId = Some(browserContextId.into()); self }
+    pub fn browser_context_id(mut self, browser_context_id: impl Into<BrowserContextID<'a>>) -> Self { self.browser_context_id = Some(browser_context_id.into()); self }
     /// The default path to save downloaded files to. This is required if behavior is set to 'allow'
     /// or 'allowAndName'.
-    pub fn downloadPath(mut self, downloadPath: impl Into<Cow<'a, str>>) -> Self { self.downloadPath = Some(downloadPath.into()); self }
+    pub fn download_path(mut self, download_path: impl Into<Cow<'a, str>>) -> Self { self.download_path = Some(download_path.into()); self }
     /// Whether to emit download events (defaults to false).
-    pub fn eventsEnabled(mut self, eventsEnabled: bool) -> Self { self.eventsEnabled = Some(eventsEnabled); self }
+    pub fn events_enabled(mut self, events_enabled: bool) -> Self { self.events_enabled = Some(events_enabled); self }
     pub fn build(self) -> SetDownloadBehaviorParams<'a> {
         SetDownloadBehaviorParams {
             behavior: self.behavior,
-            browserContextId: self.browserContextId,
-            downloadPath: self.downloadPath,
-            eventsEnabled: self.eventsEnabled,
+            browser_context_id: self.browser_context_id,
+            download_path: self.download_path,
+            events_enabled: self.events_enabled,
         }
     }
 }
@@ -636,34 +693,38 @@ pub struct CancelDownloadParams<'a> {
     /// Global unique identifier of the download.
     guid: Cow<'a, str>,
     /// BrowserContext to perform the action in. When omitted, default browser context is used.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    browserContextId: Option<BrowserContextID<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "browserContextId")]
+    browser_context_id: Option<BrowserContextID<'a>>,
 }
 
 impl<'a> CancelDownloadParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `guid`: Global unique identifier of the download.
     pub fn builder(guid: impl Into<Cow<'a, str>>) -> CancelDownloadParamsBuilder<'a> {
         CancelDownloadParamsBuilder {
             guid: guid.into(),
-            browserContextId: None,
+            browser_context_id: None,
         }
     }
+    /// Global unique identifier of the download.
     pub fn guid(&self) -> &str { self.guid.as_ref() }
-    pub fn browserContextId(&self) -> Option<&BrowserContextID<'a>> { self.browserContextId.as_ref() }
+    /// BrowserContext to perform the action in. When omitted, default browser context is used.
+    pub fn browser_context_id(&self) -> Option<&BrowserContextID<'a>> { self.browser_context_id.as_ref() }
 }
 
 
 pub struct CancelDownloadParamsBuilder<'a> {
     guid: Cow<'a, str>,
-    browserContextId: Option<BrowserContextID<'a>>,
+    browser_context_id: Option<BrowserContextID<'a>>,
 }
 
 impl<'a> CancelDownloadParamsBuilder<'a> {
     /// BrowserContext to perform the action in. When omitted, default browser context is used.
-    pub fn browserContextId(mut self, browserContextId: impl Into<BrowserContextID<'a>>) -> Self { self.browserContextId = Some(browserContextId.into()); self }
+    pub fn browser_context_id(mut self, browser_context_id: impl Into<BrowserContextID<'a>>) -> Self { self.browser_context_id = Some(browser_context_id.into()); self }
     pub fn build(self) -> CancelDownloadParams<'a> {
         CancelDownloadParams {
             guid: self.guid,
-            browserContextId: self.browserContextId,
+            browser_context_id: self.browser_context_id,
         }
     }
 }
@@ -711,51 +772,65 @@ impl<'a> crate::CdpCommand<'a> for CrashGpuProcessParams {
 #[serde(rename_all = "camelCase")]
 pub struct GetVersionReturns<'a> {
     /// Protocol version.
-    protocolVersion: Cow<'a, str>,
+    #[serde(rename = "protocolVersion")]
+    protocol_version: Cow<'a, str>,
     /// Product name.
     product: Cow<'a, str>,
     /// Product revision.
     revision: Cow<'a, str>,
     /// User-Agent.
-    userAgent: Cow<'a, str>,
+    #[serde(rename = "userAgent")]
+    user_agent: Cow<'a, str>,
     /// V8 version.
-    jsVersion: Cow<'a, str>,
+    #[serde(rename = "jsVersion")]
+    js_version: Cow<'a, str>,
 }
 
 impl<'a> GetVersionReturns<'a> {
-    pub fn builder(protocolVersion: impl Into<Cow<'a, str>>, product: impl Into<Cow<'a, str>>, revision: impl Into<Cow<'a, str>>, userAgent: impl Into<Cow<'a, str>>, jsVersion: impl Into<Cow<'a, str>>) -> GetVersionReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `protocol_version`: Protocol version.
+    /// * `product`: Product name.
+    /// * `revision`: Product revision.
+    /// * `user_agent`: User-Agent.
+    /// * `js_version`: V8 version.
+    pub fn builder(protocol_version: impl Into<Cow<'a, str>>, product: impl Into<Cow<'a, str>>, revision: impl Into<Cow<'a, str>>, user_agent: impl Into<Cow<'a, str>>, js_version: impl Into<Cow<'a, str>>) -> GetVersionReturnsBuilder<'a> {
         GetVersionReturnsBuilder {
-            protocolVersion: protocolVersion.into(),
+            protocol_version: protocol_version.into(),
             product: product.into(),
             revision: revision.into(),
-            userAgent: userAgent.into(),
-            jsVersion: jsVersion.into(),
+            user_agent: user_agent.into(),
+            js_version: js_version.into(),
         }
     }
-    pub fn protocolVersion(&self) -> &str { self.protocolVersion.as_ref() }
+    /// Protocol version.
+    pub fn protocol_version(&self) -> &str { self.protocol_version.as_ref() }
+    /// Product name.
     pub fn product(&self) -> &str { self.product.as_ref() }
+    /// Product revision.
     pub fn revision(&self) -> &str { self.revision.as_ref() }
-    pub fn userAgent(&self) -> &str { self.userAgent.as_ref() }
-    pub fn jsVersion(&self) -> &str { self.jsVersion.as_ref() }
+    /// User-Agent.
+    pub fn user_agent(&self) -> &str { self.user_agent.as_ref() }
+    /// V8 version.
+    pub fn js_version(&self) -> &str { self.js_version.as_ref() }
 }
 
 
 pub struct GetVersionReturnsBuilder<'a> {
-    protocolVersion: Cow<'a, str>,
+    protocol_version: Cow<'a, str>,
     product: Cow<'a, str>,
     revision: Cow<'a, str>,
-    userAgent: Cow<'a, str>,
-    jsVersion: Cow<'a, str>,
+    user_agent: Cow<'a, str>,
+    js_version: Cow<'a, str>,
 }
 
 impl<'a> GetVersionReturnsBuilder<'a> {
     pub fn build(self) -> GetVersionReturns<'a> {
         GetVersionReturns {
-            protocolVersion: self.protocolVersion,
+            protocol_version: self.protocol_version,
             product: self.product,
             revision: self.revision,
-            userAgent: self.userAgent,
-            jsVersion: self.jsVersion,
+            user_agent: self.user_agent,
+            js_version: self.js_version,
         }
     }
 }
@@ -781,11 +856,14 @@ pub struct GetBrowserCommandLineReturns<'a> {
 }
 
 impl<'a> GetBrowserCommandLineReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `arguments`: Commandline parameters
     pub fn builder(arguments: Vec<Cow<'a, str>>) -> GetBrowserCommandLineReturnsBuilder<'a> {
         GetBrowserCommandLineReturnsBuilder {
             arguments: arguments,
         }
     }
+    /// Commandline parameters
     pub fn arguments(&self) -> &[Cow<'a, str>] { &self.arguments }
 }
 
@@ -828,13 +906,18 @@ pub struct GetHistogramsParams<'a> {
 }
 
 impl<'a> GetHistogramsParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> GetHistogramsParamsBuilder<'a> {
         GetHistogramsParamsBuilder {
             query: None,
             delta: None,
         }
     }
+    /// Requested substring in name. Only histograms which have query as a
+    /// substring in their name are extracted. An empty or absent query returns
+    /// all histograms.
     pub fn query(&self) -> Option<&str> { self.query.as_deref() }
+    /// If true, retrieve delta since last delta call.
     pub fn delta(&self) -> Option<bool> { self.delta }
 }
 
@@ -869,11 +952,14 @@ pub struct GetHistogramsReturns<'a> {
 }
 
 impl<'a> GetHistogramsReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `histograms`: Histograms.
     pub fn builder(histograms: Vec<Histogram<'a>>) -> GetHistogramsReturnsBuilder<'a> {
         GetHistogramsReturnsBuilder {
             histograms: histograms,
         }
     }
+    /// Histograms.
     pub fn histograms(&self) -> &[Histogram<'a>] { &self.histograms }
 }
 
@@ -910,13 +996,17 @@ pub struct GetHistogramParams<'a> {
 }
 
 impl<'a> GetHistogramParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: Requested histogram name.
     pub fn builder(name: impl Into<Cow<'a, str>>) -> GetHistogramParamsBuilder<'a> {
         GetHistogramParamsBuilder {
             name: name.into(),
             delta: None,
         }
     }
+    /// Requested histogram name.
     pub fn name(&self) -> &str { self.name.as_ref() }
+    /// If true, retrieve delta since last delta call.
     pub fn delta(&self) -> Option<bool> { self.delta }
 }
 
@@ -947,11 +1037,14 @@ pub struct GetHistogramReturns<'a> {
 }
 
 impl<'a> GetHistogramReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `histogram`: Histogram.
     pub fn builder(histogram: Histogram<'a>) -> GetHistogramReturnsBuilder<'a> {
         GetHistogramReturnsBuilder {
             histogram: histogram,
         }
     }
+    /// Histogram.
     pub fn histogram(&self) -> &Histogram<'a> { &self.histogram }
 }
 
@@ -981,27 +1074,31 @@ impl<'a> crate::CdpCommand<'a> for GetHistogramParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct GetWindowBoundsParams {
     /// Browser window id.
-    windowId: WindowID,
+    #[serde(rename = "windowId")]
+    window_id: WindowID,
 }
 
 impl GetWindowBoundsParams {
-    pub fn builder(windowId: WindowID) -> GetWindowBoundsParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `window_id`: Browser window id.
+    pub fn builder(window_id: WindowID) -> GetWindowBoundsParamsBuilder {
         GetWindowBoundsParamsBuilder {
-            windowId: windowId,
+            window_id: window_id,
         }
     }
-    pub fn windowId(&self) -> &WindowID { &self.windowId }
+    /// Browser window id.
+    pub fn window_id(&self) -> &WindowID { &self.window_id }
 }
 
 
 pub struct GetWindowBoundsParamsBuilder {
-    windowId: WindowID,
+    window_id: WindowID,
 }
 
 impl GetWindowBoundsParamsBuilder {
     pub fn build(self) -> GetWindowBoundsParams {
         GetWindowBoundsParams {
-            windowId: self.windowId,
+            window_id: self.window_id,
         }
     }
 }
@@ -1017,11 +1114,15 @@ pub struct GetWindowBoundsReturns {
 }
 
 impl GetWindowBoundsReturns {
+    /// Creates a builder for this type with the required parameters:
+    /// * `bounds`: Bounds information of the window. When window state is 'minimized', the restored window position and size are returned.
     pub fn builder(bounds: Bounds) -> GetWindowBoundsReturnsBuilder {
         GetWindowBoundsReturnsBuilder {
             bounds: bounds,
         }
     }
+    /// Bounds information of the window. When window state is 'minimized', the restored window
+    /// position and size are returned.
     pub fn bounds(&self) -> &Bounds { &self.bounds }
 }
 
@@ -1051,30 +1152,32 @@ impl<'a> crate::CdpCommand<'a> for GetWindowBoundsParams {
 #[serde(rename_all = "camelCase")]
 pub struct GetWindowForTargetParams<'a> {
     /// Devtools agent host id. If called as a part of the session, associated targetId is used.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    targetId: Option<crate::target::TargetID<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "targetId")]
+    target_id: Option<crate::target::TargetID<'a>>,
 }
 
 impl<'a> GetWindowForTargetParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> GetWindowForTargetParamsBuilder<'a> {
         GetWindowForTargetParamsBuilder {
-            targetId: None,
+            target_id: None,
         }
     }
-    pub fn targetId(&self) -> Option<&crate::target::TargetID<'a>> { self.targetId.as_ref() }
+    /// Devtools agent host id. If called as a part of the session, associated targetId is used.
+    pub fn target_id(&self) -> Option<&crate::target::TargetID<'a>> { self.target_id.as_ref() }
 }
 
 #[derive(Default)]
 pub struct GetWindowForTargetParamsBuilder<'a> {
-    targetId: Option<crate::target::TargetID<'a>>,
+    target_id: Option<crate::target::TargetID<'a>>,
 }
 
 impl<'a> GetWindowForTargetParamsBuilder<'a> {
     /// Devtools agent host id. If called as a part of the session, associated targetId is used.
-    pub fn targetId(mut self, targetId: crate::target::TargetID<'a>) -> Self { self.targetId = Some(targetId); self }
+    pub fn target_id(mut self, target_id: crate::target::TargetID<'a>) -> Self { self.target_id = Some(target_id); self }
     pub fn build(self) -> GetWindowForTargetParams<'a> {
         GetWindowForTargetParams {
-            targetId: self.targetId,
+            target_id: self.target_id,
         }
     }
 }
@@ -1085,33 +1188,40 @@ impl<'a> GetWindowForTargetParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct GetWindowForTargetReturns {
     /// Browser window id.
-    windowId: WindowID,
+    #[serde(rename = "windowId")]
+    window_id: WindowID,
     /// Bounds information of the window. When window state is 'minimized', the restored window
     /// position and size are returned.
     bounds: Bounds,
 }
 
 impl GetWindowForTargetReturns {
-    pub fn builder(windowId: WindowID, bounds: Bounds) -> GetWindowForTargetReturnsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `window_id`: Browser window id.
+    /// * `bounds`: Bounds information of the window. When window state is 'minimized', the restored window position and size are returned.
+    pub fn builder(window_id: WindowID, bounds: Bounds) -> GetWindowForTargetReturnsBuilder {
         GetWindowForTargetReturnsBuilder {
-            windowId: windowId,
+            window_id: window_id,
             bounds: bounds,
         }
     }
-    pub fn windowId(&self) -> &WindowID { &self.windowId }
+    /// Browser window id.
+    pub fn window_id(&self) -> &WindowID { &self.window_id }
+    /// Bounds information of the window. When window state is 'minimized', the restored window
+    /// position and size are returned.
     pub fn bounds(&self) -> &Bounds { &self.bounds }
 }
 
 
 pub struct GetWindowForTargetReturnsBuilder {
-    windowId: WindowID,
+    window_id: WindowID,
     bounds: Bounds,
 }
 
 impl GetWindowForTargetReturnsBuilder {
     pub fn build(self) -> GetWindowForTargetReturns {
         GetWindowForTargetReturns {
-            windowId: self.windowId,
+            window_id: self.window_id,
             bounds: self.bounds,
         }
     }
@@ -1130,33 +1240,40 @@ impl<'a> crate::CdpCommand<'a> for GetWindowForTargetParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SetWindowBoundsParams {
     /// Browser window id.
-    windowId: WindowID,
+    #[serde(rename = "windowId")]
+    window_id: WindowID,
     /// New window bounds. The 'minimized', 'maximized' and 'fullscreen' states cannot be combined
     /// with 'left', 'top', 'width' or 'height'. Leaves unspecified fields unchanged.
     bounds: Bounds,
 }
 
 impl SetWindowBoundsParams {
-    pub fn builder(windowId: WindowID, bounds: Bounds) -> SetWindowBoundsParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `window_id`: Browser window id.
+    /// * `bounds`: New window bounds. The 'minimized', 'maximized' and 'fullscreen' states cannot be combined with 'left', 'top', 'width' or 'height'. Leaves unspecified fields unchanged.
+    pub fn builder(window_id: WindowID, bounds: Bounds) -> SetWindowBoundsParamsBuilder {
         SetWindowBoundsParamsBuilder {
-            windowId: windowId,
+            window_id: window_id,
             bounds: bounds,
         }
     }
-    pub fn windowId(&self) -> &WindowID { &self.windowId }
+    /// Browser window id.
+    pub fn window_id(&self) -> &WindowID { &self.window_id }
+    /// New window bounds. The 'minimized', 'maximized' and 'fullscreen' states cannot be combined
+    /// with 'left', 'top', 'width' or 'height'. Leaves unspecified fields unchanged.
     pub fn bounds(&self) -> &Bounds { &self.bounds }
 }
 
 
 pub struct SetWindowBoundsParamsBuilder {
-    windowId: WindowID,
+    window_id: WindowID,
     bounds: Bounds,
 }
 
 impl SetWindowBoundsParamsBuilder {
     pub fn build(self) -> SetWindowBoundsParams {
         SetWindowBoundsParams {
-            windowId: self.windowId,
+            window_id: self.window_id,
             bounds: self.bounds,
         }
     }
@@ -1175,7 +1292,8 @@ impl<'a> crate::CdpCommand<'a> for SetWindowBoundsParams {
 #[serde(rename_all = "camelCase")]
 pub struct SetContentsSizeParams {
     /// Browser window id.
-    windowId: WindowID,
+    #[serde(rename = "windowId")]
+    window_id: WindowID,
     /// The window contents width in DIP. Assumes current width if omitted.
     /// Must be specified if 'height' is omitted.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1187,21 +1305,28 @@ pub struct SetContentsSizeParams {
 }
 
 impl SetContentsSizeParams {
-    pub fn builder(windowId: WindowID) -> SetContentsSizeParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `window_id`: Browser window id.
+    pub fn builder(window_id: WindowID) -> SetContentsSizeParamsBuilder {
         SetContentsSizeParamsBuilder {
-            windowId: windowId,
+            window_id: window_id,
             width: None,
             height: None,
         }
     }
-    pub fn windowId(&self) -> &WindowID { &self.windowId }
+    /// Browser window id.
+    pub fn window_id(&self) -> &WindowID { &self.window_id }
+    /// The window contents width in DIP. Assumes current width if omitted.
+    /// Must be specified if 'height' is omitted.
     pub fn width(&self) -> Option<u64> { self.width }
+    /// The window contents height in DIP. Assumes current height if omitted.
+    /// Must be specified if 'width' is omitted.
     pub fn height(&self) -> Option<i64> { self.height }
 }
 
 
 pub struct SetContentsSizeParamsBuilder {
-    windowId: WindowID,
+    window_id: WindowID,
     width: Option<u64>,
     height: Option<i64>,
 }
@@ -1215,7 +1340,7 @@ impl SetContentsSizeParamsBuilder {
     pub fn height(mut self, height: i64) -> Self { self.height = Some(height); self }
     pub fn build(self) -> SetContentsSizeParams {
         SetContentsSizeParams {
-            windowId: self.windowId,
+            window_id: self.window_id,
             width: self.width,
             height: self.height,
         }
@@ -1234,37 +1359,39 @@ impl<'a> crate::CdpCommand<'a> for SetContentsSizeParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetDockTileParams<'a> {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    badgeLabel: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "badgeLabel")]
+    badge_label: Option<Cow<'a, str>>,
     /// Png encoded image. (Encoded as a base64 string when passed over JSON)
     #[serde(skip_serializing_if = "Option::is_none")]
     image: Option<Cow<'a, str>>,
 }
 
 impl<'a> SetDockTileParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> SetDockTileParamsBuilder<'a> {
         SetDockTileParamsBuilder {
-            badgeLabel: None,
+            badge_label: None,
             image: None,
         }
     }
-    pub fn badgeLabel(&self) -> Option<&str> { self.badgeLabel.as_deref() }
+    pub fn badge_label(&self) -> Option<&str> { self.badge_label.as_deref() }
+    /// Png encoded image. (Encoded as a base64 string when passed over JSON)
     pub fn image(&self) -> Option<&str> { self.image.as_deref() }
 }
 
 #[derive(Default)]
 pub struct SetDockTileParamsBuilder<'a> {
-    badgeLabel: Option<Cow<'a, str>>,
+    badge_label: Option<Cow<'a, str>>,
     image: Option<Cow<'a, str>>,
 }
 
 impl<'a> SetDockTileParamsBuilder<'a> {
-    pub fn badgeLabel(mut self, badgeLabel: impl Into<Cow<'a, str>>) -> Self { self.badgeLabel = Some(badgeLabel.into()); self }
+    pub fn badge_label(mut self, badge_label: impl Into<Cow<'a, str>>) -> Self { self.badge_label = Some(badge_label.into()); self }
     /// Png encoded image. (Encoded as a base64 string when passed over JSON)
     pub fn image(mut self, image: impl Into<Cow<'a, str>>) -> Self { self.image = Some(image.into()); self }
     pub fn build(self) -> SetDockTileParams<'a> {
         SetDockTileParams {
-            badgeLabel: self.badgeLabel,
+            badge_label: self.badge_label,
             image: self.image,
         }
     }
@@ -1282,27 +1409,30 @@ impl<'a> crate::CdpCommand<'a> for SetDockTileParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ExecuteBrowserCommandParams {
-    commandId: BrowserCommandId,
+    #[serde(rename = "commandId")]
+    command_id: BrowserCommandId,
 }
 
 impl ExecuteBrowserCommandParams {
-    pub fn builder(commandId: impl Into<BrowserCommandId>) -> ExecuteBrowserCommandParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `command_id`: 
+    pub fn builder(command_id: impl Into<BrowserCommandId>) -> ExecuteBrowserCommandParamsBuilder {
         ExecuteBrowserCommandParamsBuilder {
-            commandId: commandId.into(),
+            command_id: command_id.into(),
         }
     }
-    pub fn commandId(&self) -> &BrowserCommandId { &self.commandId }
+    pub fn command_id(&self) -> &BrowserCommandId { &self.command_id }
 }
 
 
 pub struct ExecuteBrowserCommandParamsBuilder {
-    commandId: BrowserCommandId,
+    command_id: BrowserCommandId,
 }
 
 impl ExecuteBrowserCommandParamsBuilder {
     pub fn build(self) -> ExecuteBrowserCommandParams {
         ExecuteBrowserCommandParams {
-            commandId: self.commandId,
+            command_id: self.command_id,
         }
     }
 }
@@ -1324,6 +1454,8 @@ pub struct AddPrivacySandboxEnrollmentOverrideParams<'a> {
 }
 
 impl<'a> AddPrivacySandboxEnrollmentOverrideParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url`: 
     pub fn builder(url: impl Into<Cow<'a, str>>) -> AddPrivacySandboxEnrollmentOverrideParamsBuilder<'a> {
         AddPrivacySandboxEnrollmentOverrideParamsBuilder {
             url: url.into(),
@@ -1361,47 +1493,55 @@ impl<'a> crate::CdpCommand<'a> for AddPrivacySandboxEnrollmentOverrideParams<'a>
 #[serde(rename_all = "camelCase")]
 pub struct AddPrivacySandboxCoordinatorKeyConfigParams<'a> {
     api: PrivacySandboxAPI,
-    coordinatorOrigin: Cow<'a, str>,
-    keyConfig: Cow<'a, str>,
+    #[serde(rename = "coordinatorOrigin")]
+    coordinator_origin: Cow<'a, str>,
+    #[serde(rename = "keyConfig")]
+    key_config: Cow<'a, str>,
     /// BrowserContext to perform the action in. When omitted, default browser
     /// context is used.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    browserContextId: Option<BrowserContextID<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "browserContextId")]
+    browser_context_id: Option<BrowserContextID<'a>>,
 }
 
 impl<'a> AddPrivacySandboxCoordinatorKeyConfigParams<'a> {
-    pub fn builder(api: impl Into<PrivacySandboxAPI>, coordinatorOrigin: impl Into<Cow<'a, str>>, keyConfig: impl Into<Cow<'a, str>>) -> AddPrivacySandboxCoordinatorKeyConfigParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `api`: 
+    /// * `coordinator_origin`: 
+    /// * `key_config`: 
+    pub fn builder(api: impl Into<PrivacySandboxAPI>, coordinator_origin: impl Into<Cow<'a, str>>, key_config: impl Into<Cow<'a, str>>) -> AddPrivacySandboxCoordinatorKeyConfigParamsBuilder<'a> {
         AddPrivacySandboxCoordinatorKeyConfigParamsBuilder {
             api: api.into(),
-            coordinatorOrigin: coordinatorOrigin.into(),
-            keyConfig: keyConfig.into(),
-            browserContextId: None,
+            coordinator_origin: coordinator_origin.into(),
+            key_config: key_config.into(),
+            browser_context_id: None,
         }
     }
     pub fn api(&self) -> &PrivacySandboxAPI { &self.api }
-    pub fn coordinatorOrigin(&self) -> &str { self.coordinatorOrigin.as_ref() }
-    pub fn keyConfig(&self) -> &str { self.keyConfig.as_ref() }
-    pub fn browserContextId(&self) -> Option<&BrowserContextID<'a>> { self.browserContextId.as_ref() }
+    pub fn coordinator_origin(&self) -> &str { self.coordinator_origin.as_ref() }
+    pub fn key_config(&self) -> &str { self.key_config.as_ref() }
+    /// BrowserContext to perform the action in. When omitted, default browser
+    /// context is used.
+    pub fn browser_context_id(&self) -> Option<&BrowserContextID<'a>> { self.browser_context_id.as_ref() }
 }
 
 
 pub struct AddPrivacySandboxCoordinatorKeyConfigParamsBuilder<'a> {
     api: PrivacySandboxAPI,
-    coordinatorOrigin: Cow<'a, str>,
-    keyConfig: Cow<'a, str>,
-    browserContextId: Option<BrowserContextID<'a>>,
+    coordinator_origin: Cow<'a, str>,
+    key_config: Cow<'a, str>,
+    browser_context_id: Option<BrowserContextID<'a>>,
 }
 
 impl<'a> AddPrivacySandboxCoordinatorKeyConfigParamsBuilder<'a> {
     /// BrowserContext to perform the action in. When omitted, default browser
     /// context is used.
-    pub fn browserContextId(mut self, browserContextId: impl Into<BrowserContextID<'a>>) -> Self { self.browserContextId = Some(browserContextId.into()); self }
+    pub fn browser_context_id(mut self, browser_context_id: impl Into<BrowserContextID<'a>>) -> Self { self.browser_context_id = Some(browser_context_id.into()); self }
     pub fn build(self) -> AddPrivacySandboxCoordinatorKeyConfigParams<'a> {
         AddPrivacySandboxCoordinatorKeyConfigParams {
             api: self.api,
-            coordinatorOrigin: self.coordinatorOrigin,
-            keyConfig: self.keyConfig,
-            browserContextId: self.browserContextId,
+            coordinator_origin: self.coordinator_origin,
+            key_config: self.key_config,
+            browser_context_id: self.browser_context_id,
         }
     }
 }

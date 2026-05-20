@@ -38,6 +38,12 @@ pub struct ExtensionInfo<'a> {
 }
 
 impl<'a> ExtensionInfo<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `id`: Extension id.
+    /// * `name`: Extension name.
+    /// * `version`: Extension version.
+    /// * `path`: The path from which the extension was loaded.
+    /// * `enabled`: Extension enabled status.
     pub fn builder(id: impl Into<Cow<'a, str>>, name: impl Into<Cow<'a, str>>, version: impl Into<Cow<'a, str>>, path: impl Into<Cow<'a, str>>, enabled: bool) -> ExtensionInfoBuilder<'a> {
         ExtensionInfoBuilder {
             id: id.into(),
@@ -47,10 +53,15 @@ impl<'a> ExtensionInfo<'a> {
             enabled: enabled,
         }
     }
+    /// Extension id.
     pub fn id(&self) -> &str { self.id.as_ref() }
+    /// Extension name.
     pub fn name(&self) -> &str { self.name.as_ref() }
+    /// Extension version.
     pub fn version(&self) -> &str { self.version.as_ref() }
+    /// The path from which the extension was loaded.
     pub fn path(&self) -> &str { self.path.as_ref() }
+    /// Extension enabled status.
     pub fn enabled(&self) -> bool { self.enabled }
 }
 
@@ -83,31 +94,37 @@ pub struct TriggerActionParams<'a> {
     /// Extension id.
     id: Cow<'a, str>,
     /// A tab target ID to trigger the default extension action on.
-    targetId: Cow<'a, str>,
+    #[serde(rename = "targetId")]
+    target_id: Cow<'a, str>,
 }
 
 impl<'a> TriggerActionParams<'a> {
-    pub fn builder(id: impl Into<Cow<'a, str>>, targetId: impl Into<Cow<'a, str>>) -> TriggerActionParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `id`: Extension id.
+    /// * `target_id`: A tab target ID to trigger the default extension action on.
+    pub fn builder(id: impl Into<Cow<'a, str>>, target_id: impl Into<Cow<'a, str>>) -> TriggerActionParamsBuilder<'a> {
         TriggerActionParamsBuilder {
             id: id.into(),
-            targetId: targetId.into(),
+            target_id: target_id.into(),
         }
     }
+    /// Extension id.
     pub fn id(&self) -> &str { self.id.as_ref() }
-    pub fn targetId(&self) -> &str { self.targetId.as_ref() }
+    /// A tab target ID to trigger the default extension action on.
+    pub fn target_id(&self) -> &str { self.target_id.as_ref() }
 }
 
 
 pub struct TriggerActionParamsBuilder<'a> {
     id: Cow<'a, str>,
-    targetId: Cow<'a, str>,
+    target_id: Cow<'a, str>,
 }
 
 impl<'a> TriggerActionParamsBuilder<'a> {
     pub fn build(self) -> TriggerActionParams<'a> {
         TriggerActionParams {
             id: self.id,
-            targetId: self.targetId,
+            target_id: self.target_id,
         }
     }
 }
@@ -129,34 +146,38 @@ pub struct LoadUnpackedParams<'a> {
     /// Absolute file path.
     path: Cow<'a, str>,
     /// Enable the extension in incognito
-    #[serde(skip_serializing_if = "Option::is_none")]
-    enableInIncognito: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "enableInIncognito")]
+    enable_in_incognito: Option<bool>,
 }
 
 impl<'a> LoadUnpackedParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `path`: Absolute file path.
     pub fn builder(path: impl Into<Cow<'a, str>>) -> LoadUnpackedParamsBuilder<'a> {
         LoadUnpackedParamsBuilder {
             path: path.into(),
-            enableInIncognito: None,
+            enable_in_incognito: None,
         }
     }
+    /// Absolute file path.
     pub fn path(&self) -> &str { self.path.as_ref() }
-    pub fn enableInIncognito(&self) -> Option<bool> { self.enableInIncognito }
+    /// Enable the extension in incognito
+    pub fn enable_in_incognito(&self) -> Option<bool> { self.enable_in_incognito }
 }
 
 
 pub struct LoadUnpackedParamsBuilder<'a> {
     path: Cow<'a, str>,
-    enableInIncognito: Option<bool>,
+    enable_in_incognito: Option<bool>,
 }
 
 impl<'a> LoadUnpackedParamsBuilder<'a> {
     /// Enable the extension in incognito
-    pub fn enableInIncognito(mut self, enableInIncognito: bool) -> Self { self.enableInIncognito = Some(enableInIncognito); self }
+    pub fn enable_in_incognito(mut self, enable_in_incognito: bool) -> Self { self.enable_in_incognito = Some(enable_in_incognito); self }
     pub fn build(self) -> LoadUnpackedParams<'a> {
         LoadUnpackedParams {
             path: self.path,
-            enableInIncognito: self.enableInIncognito,
+            enable_in_incognito: self.enable_in_incognito,
         }
     }
 }
@@ -173,11 +194,14 @@ pub struct LoadUnpackedReturns<'a> {
 }
 
 impl<'a> LoadUnpackedReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `id`: Extension id.
     pub fn builder(id: impl Into<Cow<'a, str>>) -> LoadUnpackedReturnsBuilder<'a> {
         LoadUnpackedReturnsBuilder {
             id: id.into(),
         }
     }
+    /// Extension id.
     pub fn id(&self) -> &str { self.id.as_ref() }
 }
 
@@ -210,6 +234,8 @@ pub struct GetExtensionsReturns<'a> {
 }
 
 impl<'a> GetExtensionsReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `extensions`: 
     pub fn builder(extensions: Vec<ExtensionInfo<'a>>) -> GetExtensionsReturnsBuilder<'a> {
         GetExtensionsReturnsBuilder {
             extensions: extensions,
@@ -251,11 +277,14 @@ pub struct UninstallParams<'a> {
 }
 
 impl<'a> UninstallParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `id`: Extension id.
     pub fn builder(id: impl Into<Cow<'a, str>>) -> UninstallParamsBuilder<'a> {
         UninstallParamsBuilder {
             id: id.into(),
         }
     }
+    /// Extension id.
     pub fn id(&self) -> &str { self.id.as_ref() }
 }
 
@@ -288,29 +317,36 @@ pub struct GetStorageItemsParams<'a> {
     /// ID of extension.
     id: Cow<'a, str>,
     /// StorageArea to retrieve data from.
-    storageArea: StorageArea,
+    #[serde(rename = "storageArea")]
+    storage_area: StorageArea,
     /// Keys to retrieve.
     #[serde(skip_serializing_if = "Option::is_none")]
     keys: Option<Vec<Cow<'a, str>>>,
 }
 
 impl<'a> GetStorageItemsParams<'a> {
-    pub fn builder(id: impl Into<Cow<'a, str>>, storageArea: impl Into<StorageArea>) -> GetStorageItemsParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `id`: ID of extension.
+    /// * `storage_area`: StorageArea to retrieve data from.
+    pub fn builder(id: impl Into<Cow<'a, str>>, storage_area: impl Into<StorageArea>) -> GetStorageItemsParamsBuilder<'a> {
         GetStorageItemsParamsBuilder {
             id: id.into(),
-            storageArea: storageArea.into(),
+            storage_area: storage_area.into(),
             keys: None,
         }
     }
+    /// ID of extension.
     pub fn id(&self) -> &str { self.id.as_ref() }
-    pub fn storageArea(&self) -> &StorageArea { &self.storageArea }
+    /// StorageArea to retrieve data from.
+    pub fn storage_area(&self) -> &StorageArea { &self.storage_area }
+    /// Keys to retrieve.
     pub fn keys(&self) -> Option<&[Cow<'a, str>]> { self.keys.as_deref() }
 }
 
 
 pub struct GetStorageItemsParamsBuilder<'a> {
     id: Cow<'a, str>,
-    storageArea: StorageArea,
+    storage_area: StorageArea,
     keys: Option<Vec<Cow<'a, str>>>,
 }
 
@@ -320,7 +356,7 @@ impl<'a> GetStorageItemsParamsBuilder<'a> {
     pub fn build(self) -> GetStorageItemsParams<'a> {
         GetStorageItemsParams {
             id: self.id,
-            storageArea: self.storageArea,
+            storage_area: self.storage_area,
             keys: self.keys,
         }
     }
@@ -336,6 +372,8 @@ pub struct GetStorageItemsReturns {
 }
 
 impl GetStorageItemsReturns {
+    /// Creates a builder for this type with the required parameters:
+    /// * `data`: 
     pub fn builder(data: serde_json::Map<String, JsonValue>) -> GetStorageItemsReturnsBuilder {
         GetStorageItemsReturnsBuilder {
             data: data,
@@ -372,28 +410,36 @@ pub struct RemoveStorageItemsParams<'a> {
     /// ID of extension.
     id: Cow<'a, str>,
     /// StorageArea to remove data from.
-    storageArea: StorageArea,
+    #[serde(rename = "storageArea")]
+    storage_area: StorageArea,
     /// Keys to remove.
     keys: Vec<Cow<'a, str>>,
 }
 
 impl<'a> RemoveStorageItemsParams<'a> {
-    pub fn builder(id: impl Into<Cow<'a, str>>, storageArea: impl Into<StorageArea>, keys: Vec<Cow<'a, str>>) -> RemoveStorageItemsParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `id`: ID of extension.
+    /// * `storage_area`: StorageArea to remove data from.
+    /// * `keys`: Keys to remove.
+    pub fn builder(id: impl Into<Cow<'a, str>>, storage_area: impl Into<StorageArea>, keys: Vec<Cow<'a, str>>) -> RemoveStorageItemsParamsBuilder<'a> {
         RemoveStorageItemsParamsBuilder {
             id: id.into(),
-            storageArea: storageArea.into(),
+            storage_area: storage_area.into(),
             keys: keys,
         }
     }
+    /// ID of extension.
     pub fn id(&self) -> &str { self.id.as_ref() }
-    pub fn storageArea(&self) -> &StorageArea { &self.storageArea }
+    /// StorageArea to remove data from.
+    pub fn storage_area(&self) -> &StorageArea { &self.storage_area }
+    /// Keys to remove.
     pub fn keys(&self) -> &[Cow<'a, str>] { &self.keys }
 }
 
 
 pub struct RemoveStorageItemsParamsBuilder<'a> {
     id: Cow<'a, str>,
-    storageArea: StorageArea,
+    storage_area: StorageArea,
     keys: Vec<Cow<'a, str>>,
 }
 
@@ -401,7 +447,7 @@ impl<'a> RemoveStorageItemsParamsBuilder<'a> {
     pub fn build(self) -> RemoveStorageItemsParams<'a> {
         RemoveStorageItemsParams {
             id: self.id,
-            storageArea: self.storageArea,
+            storage_area: self.storage_area,
             keys: self.keys,
         }
     }
@@ -422,31 +468,37 @@ pub struct ClearStorageItemsParams<'a> {
     /// ID of extension.
     id: Cow<'a, str>,
     /// StorageArea to remove data from.
-    storageArea: StorageArea,
+    #[serde(rename = "storageArea")]
+    storage_area: StorageArea,
 }
 
 impl<'a> ClearStorageItemsParams<'a> {
-    pub fn builder(id: impl Into<Cow<'a, str>>, storageArea: impl Into<StorageArea>) -> ClearStorageItemsParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `id`: ID of extension.
+    /// * `storage_area`: StorageArea to remove data from.
+    pub fn builder(id: impl Into<Cow<'a, str>>, storage_area: impl Into<StorageArea>) -> ClearStorageItemsParamsBuilder<'a> {
         ClearStorageItemsParamsBuilder {
             id: id.into(),
-            storageArea: storageArea.into(),
+            storage_area: storage_area.into(),
         }
     }
+    /// ID of extension.
     pub fn id(&self) -> &str { self.id.as_ref() }
-    pub fn storageArea(&self) -> &StorageArea { &self.storageArea }
+    /// StorageArea to remove data from.
+    pub fn storage_area(&self) -> &StorageArea { &self.storage_area }
 }
 
 
 pub struct ClearStorageItemsParamsBuilder<'a> {
     id: Cow<'a, str>,
-    storageArea: StorageArea,
+    storage_area: StorageArea,
 }
 
 impl<'a> ClearStorageItemsParamsBuilder<'a> {
     pub fn build(self) -> ClearStorageItemsParams<'a> {
         ClearStorageItemsParams {
             id: self.id,
-            storageArea: self.storageArea,
+            storage_area: self.storage_area,
         }
     }
 }
@@ -467,28 +519,36 @@ pub struct SetStorageItemsParams<'a> {
     /// ID of extension.
     id: Cow<'a, str>,
     /// StorageArea to set data in.
-    storageArea: StorageArea,
+    #[serde(rename = "storageArea")]
+    storage_area: StorageArea,
     /// Values to set.
     values: serde_json::Map<String, JsonValue>,
 }
 
 impl<'a> SetStorageItemsParams<'a> {
-    pub fn builder(id: impl Into<Cow<'a, str>>, storageArea: impl Into<StorageArea>, values: serde_json::Map<String, JsonValue>) -> SetStorageItemsParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `id`: ID of extension.
+    /// * `storage_area`: StorageArea to set data in.
+    /// * `values`: Values to set.
+    pub fn builder(id: impl Into<Cow<'a, str>>, storage_area: impl Into<StorageArea>, values: serde_json::Map<String, JsonValue>) -> SetStorageItemsParamsBuilder<'a> {
         SetStorageItemsParamsBuilder {
             id: id.into(),
-            storageArea: storageArea.into(),
+            storage_area: storage_area.into(),
             values: values,
         }
     }
+    /// ID of extension.
     pub fn id(&self) -> &str { self.id.as_ref() }
-    pub fn storageArea(&self) -> &StorageArea { &self.storageArea }
+    /// StorageArea to set data in.
+    pub fn storage_area(&self) -> &StorageArea { &self.storage_area }
+    /// Values to set.
     pub fn values(&self) -> &serde_json::Map<String, JsonValue> { &self.values }
 }
 
 
 pub struct SetStorageItemsParamsBuilder<'a> {
     id: Cow<'a, str>,
-    storageArea: StorageArea,
+    storage_area: StorageArea,
     values: serde_json::Map<String, JsonValue>,
 }
 
@@ -496,7 +556,7 @@ impl<'a> SetStorageItemsParamsBuilder<'a> {
     pub fn build(self) -> SetStorageItemsParams<'a> {
         SetStorageItemsParams {
             id: self.id,
-            storageArea: self.storageArea,
+            storage_area: self.storage_area,
             values: self.values,
         }
     }

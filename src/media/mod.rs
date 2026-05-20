@@ -32,12 +32,24 @@ pub struct PlayerMessage<'a> {
 }
 
 impl<'a> PlayerMessage<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `level`: Keep in sync with MediaLogMessageLevel We are currently keeping the message level 'error' separate from the PlayerError type because right now they represent different things, this one being a DVLOG(ERROR) style log message that gets printed based on what log level is selected in the UI, and the other is a representation of a media::PipelineStatus object. Soon however we're going to be moving away from using PipelineStatus for errors and introducing a new error type which should hopefully let us integrate the error log level into the PlayerError type.
+    /// * `message`: 
     pub fn builder(level: impl Into<Cow<'a, str>>, message: impl Into<Cow<'a, str>>) -> PlayerMessageBuilder<'a> {
         PlayerMessageBuilder {
             level: level.into(),
             message: message.into(),
         }
     }
+    /// Keep in sync with MediaLogMessageLevel
+    /// We are currently keeping the message level 'error' separate from the
+    /// PlayerError type because right now they represent different things,
+    /// this one being a DVLOG(ERROR) style log message that gets printed
+    /// based on what log level is selected in the UI, and the other is a
+    /// representation of a media::PipelineStatus object. Soon however we're
+    /// going to be moving away from using PipelineStatus for errors and
+    /// introducing a new error type which should hopefully let us integrate
+    /// the error log level into the PlayerError type.
     pub fn level(&self) -> &str { self.level.as_ref() }
     pub fn message(&self) -> &str { self.message.as_ref() }
 }
@@ -67,6 +79,9 @@ pub struct PlayerProperty<'a> {
 }
 
 impl<'a> PlayerProperty<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: 
+    /// * `value`: 
     pub fn builder(name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> PlayerPropertyBuilder<'a> {
         PlayerPropertyBuilder {
             name: name.into(),
@@ -102,6 +117,9 @@ pub struct PlayerEvent<'a> {
 }
 
 impl<'a> PlayerEvent<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `timestamp`: 
+    /// * `value`: 
     pub fn builder(timestamp: Timestamp, value: impl Into<Cow<'a, str>>) -> PlayerEventBuilder<'a> {
         PlayerEventBuilder {
             timestamp: timestamp,
@@ -138,6 +156,9 @@ pub struct PlayerErrorSourceLocation<'a> {
 }
 
 impl<'a> PlayerErrorSourceLocation<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `file`: 
+    /// * `line`: 
     pub fn builder(file: impl Into<Cow<'a, str>>, line: i64) -> PlayerErrorSourceLocationBuilder<'a> {
         PlayerErrorSourceLocationBuilder {
             file: file.into(),
@@ -168,7 +189,8 @@ impl<'a> PlayerErrorSourceLocationBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct PlayerError<'a> {
-    errorType: Cow<'a, str>,
+    #[serde(rename = "errorType")]
+    error_type: Cow<'a, str>,
     /// Code is the numeric enum entry for a specific set of error codes, such
     /// as PipelineStatusCodes in media/base/pipeline_status.h
     code: i64,
@@ -182,25 +204,37 @@ pub struct PlayerError<'a> {
 }
 
 impl<'a> PlayerError<'a> {
-    pub fn builder(errorType: impl Into<Cow<'a, str>>, code: i64, stack: Vec<PlayerErrorSourceLocation<'a>>, cause: Vec<Box<PlayerError<'a>>>, data: serde_json::Map<String, JsonValue>) -> PlayerErrorBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `error_type`: 
+    /// * `code`: Code is the numeric enum entry for a specific set of error codes, such as PipelineStatusCodes in media/base/pipeline_status.h
+    /// * `stack`: A trace of where this error was caused / where it passed through.
+    /// * `cause`: Errors potentially have a root cause error, ie, a DecoderError might be caused by an WindowsError
+    /// * `data`: Extra data attached to an error, such as an HRESULT, Video Codec, etc.
+    pub fn builder(error_type: impl Into<Cow<'a, str>>, code: i64, stack: Vec<PlayerErrorSourceLocation<'a>>, cause: Vec<Box<PlayerError<'a>>>, data: serde_json::Map<String, JsonValue>) -> PlayerErrorBuilder<'a> {
         PlayerErrorBuilder {
-            errorType: errorType.into(),
+            error_type: error_type.into(),
             code: code,
             stack: stack,
             cause: cause,
             data: data,
         }
     }
-    pub fn errorType(&self) -> &str { self.errorType.as_ref() }
+    pub fn error_type(&self) -> &str { self.error_type.as_ref() }
+    /// Code is the numeric enum entry for a specific set of error codes, such
+    /// as PipelineStatusCodes in media/base/pipeline_status.h
     pub fn code(&self) -> i64 { self.code }
+    /// A trace of where this error was caused / where it passed through.
     pub fn stack(&self) -> &[PlayerErrorSourceLocation<'a>] { &self.stack }
+    /// Errors potentially have a root cause error, ie, a DecoderError might be
+    /// caused by an WindowsError
     pub fn cause(&self) -> &[Box<PlayerError<'a>>] { &self.cause }
+    /// Extra data attached to an error, such as an HRESULT, Video Codec, etc.
     pub fn data(&self) -> &serde_json::Map<String, JsonValue> { &self.data }
 }
 
 
 pub struct PlayerErrorBuilder<'a> {
-    errorType: Cow<'a, str>,
+    error_type: Cow<'a, str>,
     code: i64,
     stack: Vec<PlayerErrorSourceLocation<'a>>,
     cause: Vec<Box<PlayerError<'a>>>,
@@ -210,7 +244,7 @@ pub struct PlayerErrorBuilder<'a> {
 impl<'a> PlayerErrorBuilder<'a> {
     pub fn build(self) -> PlayerError<'a> {
         PlayerError {
-            errorType: self.errorType,
+            error_type: self.error_type,
             code: self.code,
             stack: self.stack,
             cause: self.cause,
@@ -223,34 +257,37 @@ impl<'a> PlayerErrorBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Player<'a> {
-    playerId: PlayerId<'a>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    domNodeId: Option<crate::dom::BackendNodeId>,
+    #[serde(rename = "playerId")]
+    player_id: PlayerId<'a>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "domNodeId")]
+    dom_node_id: Option<crate::dom::BackendNodeId>,
 }
 
 impl<'a> Player<'a> {
-    pub fn builder(playerId: impl Into<PlayerId<'a>>) -> PlayerBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `player_id`: 
+    pub fn builder(player_id: impl Into<PlayerId<'a>>) -> PlayerBuilder<'a> {
         PlayerBuilder {
-            playerId: playerId.into(),
-            domNodeId: None,
+            player_id: player_id.into(),
+            dom_node_id: None,
         }
     }
-    pub fn playerId(&self) -> &PlayerId<'a> { &self.playerId }
-    pub fn domNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.domNodeId.as_ref() }
+    pub fn player_id(&self) -> &PlayerId<'a> { &self.player_id }
+    pub fn dom_node_id(&self) -> Option<&crate::dom::BackendNodeId> { self.dom_node_id.as_ref() }
 }
 
 
 pub struct PlayerBuilder<'a> {
-    playerId: PlayerId<'a>,
-    domNodeId: Option<crate::dom::BackendNodeId>,
+    player_id: PlayerId<'a>,
+    dom_node_id: Option<crate::dom::BackendNodeId>,
 }
 
 impl<'a> PlayerBuilder<'a> {
-    pub fn domNodeId(mut self, domNodeId: crate::dom::BackendNodeId) -> Self { self.domNodeId = Some(domNodeId); self }
+    pub fn dom_node_id(mut self, dom_node_id: crate::dom::BackendNodeId) -> Self { self.dom_node_id = Some(dom_node_id); self }
     pub fn build(self) -> Player<'a> {
         Player {
-            playerId: self.playerId,
-            domNodeId: self.domNodeId,
+            player_id: self.player_id,
+            dom_node_id: self.dom_node_id,
         }
     }
 }

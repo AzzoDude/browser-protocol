@@ -13,46 +13,50 @@ pub struct ScreenshotParams<'a> {
     /// Image compression format (defaults to png).
     #[serde(skip_serializing_if = "Option::is_none")]
     format: Option<Cow<'a, str>>,
-    /// Compression quality from range [0..100] (jpeg and webp only).
+    /// Compression quality from range \[0..100\] (jpeg and webp only).
     #[serde(skip_serializing_if = "Option::is_none")]
     quality: Option<i64>,
     /// Optimize image encoding for speed, not for resulting size (defaults to false)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    optimizeForSpeed: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "optimizeForSpeed")]
+    optimize_for_speed: Option<bool>,
 }
 
 impl<'a> ScreenshotParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> ScreenshotParamsBuilder<'a> {
         ScreenshotParamsBuilder {
             format: None,
             quality: None,
-            optimizeForSpeed: None,
+            optimize_for_speed: None,
         }
     }
+    /// Image compression format (defaults to png).
     pub fn format(&self) -> Option<&str> { self.format.as_deref() }
+    /// Compression quality from range \[0..100\] (jpeg and webp only).
     pub fn quality(&self) -> Option<i64> { self.quality }
-    pub fn optimizeForSpeed(&self) -> Option<bool> { self.optimizeForSpeed }
+    /// Optimize image encoding for speed, not for resulting size (defaults to false)
+    pub fn optimize_for_speed(&self) -> Option<bool> { self.optimize_for_speed }
 }
 
 #[derive(Default)]
 pub struct ScreenshotParamsBuilder<'a> {
     format: Option<Cow<'a, str>>,
     quality: Option<i64>,
-    optimizeForSpeed: Option<bool>,
+    optimize_for_speed: Option<bool>,
 }
 
 impl<'a> ScreenshotParamsBuilder<'a> {
     /// Image compression format (defaults to png).
     pub fn format(mut self, format: impl Into<Cow<'a, str>>) -> Self { self.format = Some(format.into()); self }
-    /// Compression quality from range [0..100] (jpeg and webp only).
+    /// Compression quality from range \[0..100\] (jpeg and webp only).
     pub fn quality(mut self, quality: i64) -> Self { self.quality = Some(quality); self }
     /// Optimize image encoding for speed, not for resulting size (defaults to false)
-    pub fn optimizeForSpeed(mut self, optimizeForSpeed: bool) -> Self { self.optimizeForSpeed = Some(optimizeForSpeed); self }
+    pub fn optimize_for_speed(mut self, optimize_for_speed: bool) -> Self { self.optimize_for_speed = Some(optimize_for_speed); self }
     pub fn build(self) -> ScreenshotParams<'a> {
         ScreenshotParams {
             format: self.format,
             quality: self.quality,
-            optimizeForSpeed: self.optimizeForSpeed,
+            optimize_for_speed: self.optimize_for_speed,
         }
     }
 }
@@ -60,15 +64,15 @@ impl<'a> ScreenshotParamsBuilder<'a> {
 /// Sends a BeginFrame to the target and returns when the frame was completed. Optionally captures a
 /// screenshot from the resulting frame. Requires that the target was created with enabled
 /// BeginFrameControl. Designed for use with --run-all-compositor-stages-before-draw, see also
-/// https://goo.gle/chrome-headless-rendering for more background.
+/// <https://goo.gle/chrome-headless-rendering> for more background.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct BeginFrameParams<'a> {
     /// Timestamp of this BeginFrame in Renderer TimeTicks (milliseconds of uptime). If not set,
     /// the current time will be used.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    frameTimeTicks: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "frameTimeTicks")]
+    frame_time_ticks: Option<f64>,
     /// The interval between BeginFrames that is reported to the compositor, in milliseconds.
     /// Defaults to a 60 frames/second interval, i.e. about 16.666 milliseconds.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -76,8 +80,8 @@ pub struct BeginFrameParams<'a> {
     /// Whether updates should not be committed and drawn onto the display. False by default. If
     /// true, only side effects of the BeginFrame will be run, such as layout and animations, but
     /// any visual updates may not be visible on the display or in screenshots.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    noDisplayUpdates: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "noDisplayUpdates")]
+    no_display_updates: Option<bool>,
     /// If set, a screenshot of the frame will be captured and returned in the response. Otherwise,
     /// no screenshot will be captured. Note that capturing a screenshot can fail, for example,
     /// during renderer initialization. In such a case, no screenshot data will be returned.
@@ -86,48 +90,59 @@ pub struct BeginFrameParams<'a> {
 }
 
 impl<'a> BeginFrameParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> BeginFrameParamsBuilder<'a> {
         BeginFrameParamsBuilder {
-            frameTimeTicks: None,
+            frame_time_ticks: None,
             interval: None,
-            noDisplayUpdates: None,
+            no_display_updates: None,
             screenshot: None,
         }
     }
-    pub fn frameTimeTicks(&self) -> Option<f64> { self.frameTimeTicks }
+    /// Timestamp of this BeginFrame in Renderer TimeTicks (milliseconds of uptime). If not set,
+    /// the current time will be used.
+    pub fn frame_time_ticks(&self) -> Option<f64> { self.frame_time_ticks }
+    /// The interval between BeginFrames that is reported to the compositor, in milliseconds.
+    /// Defaults to a 60 frames/second interval, i.e. about 16.666 milliseconds.
     pub fn interval(&self) -> Option<f64> { self.interval }
-    pub fn noDisplayUpdates(&self) -> Option<bool> { self.noDisplayUpdates }
+    /// Whether updates should not be committed and drawn onto the display. False by default. If
+    /// true, only side effects of the BeginFrame will be run, such as layout and animations, but
+    /// any visual updates may not be visible on the display or in screenshots.
+    pub fn no_display_updates(&self) -> Option<bool> { self.no_display_updates }
+    /// If set, a screenshot of the frame will be captured and returned in the response. Otherwise,
+    /// no screenshot will be captured. Note that capturing a screenshot can fail, for example,
+    /// during renderer initialization. In such a case, no screenshot data will be returned.
     pub fn screenshot(&self) -> Option<&ScreenshotParams<'a>> { self.screenshot.as_ref() }
 }
 
 #[derive(Default)]
 pub struct BeginFrameParamsBuilder<'a> {
-    frameTimeTicks: Option<f64>,
+    frame_time_ticks: Option<f64>,
     interval: Option<f64>,
-    noDisplayUpdates: Option<bool>,
+    no_display_updates: Option<bool>,
     screenshot: Option<ScreenshotParams<'a>>,
 }
 
 impl<'a> BeginFrameParamsBuilder<'a> {
     /// Timestamp of this BeginFrame in Renderer TimeTicks (milliseconds of uptime). If not set,
     /// the current time will be used.
-    pub fn frameTimeTicks(mut self, frameTimeTicks: f64) -> Self { self.frameTimeTicks = Some(frameTimeTicks); self }
+    pub fn frame_time_ticks(mut self, frame_time_ticks: f64) -> Self { self.frame_time_ticks = Some(frame_time_ticks); self }
     /// The interval between BeginFrames that is reported to the compositor, in milliseconds.
     /// Defaults to a 60 frames/second interval, i.e. about 16.666 milliseconds.
     pub fn interval(mut self, interval: f64) -> Self { self.interval = Some(interval); self }
     /// Whether updates should not be committed and drawn onto the display. False by default. If
     /// true, only side effects of the BeginFrame will be run, such as layout and animations, but
     /// any visual updates may not be visible on the display or in screenshots.
-    pub fn noDisplayUpdates(mut self, noDisplayUpdates: bool) -> Self { self.noDisplayUpdates = Some(noDisplayUpdates); self }
+    pub fn no_display_updates(mut self, no_display_updates: bool) -> Self { self.no_display_updates = Some(no_display_updates); self }
     /// If set, a screenshot of the frame will be captured and returned in the response. Otherwise,
     /// no screenshot will be captured. Note that capturing a screenshot can fail, for example,
     /// during renderer initialization. In such a case, no screenshot data will be returned.
     pub fn screenshot(mut self, screenshot: ScreenshotParams<'a>) -> Self { self.screenshot = Some(screenshot); self }
     pub fn build(self) -> BeginFrameParams<'a> {
         BeginFrameParams {
-            frameTimeTicks: self.frameTimeTicks,
+            frame_time_ticks: self.frame_time_ticks,
             interval: self.interval,
-            noDisplayUpdates: self.noDisplayUpdates,
+            no_display_updates: self.no_display_updates,
             screenshot: self.screenshot,
         }
     }
@@ -136,43 +151,49 @@ impl<'a> BeginFrameParamsBuilder<'a> {
 /// Sends a BeginFrame to the target and returns when the frame was completed. Optionally captures a
 /// screenshot from the resulting frame. Requires that the target was created with enabled
 /// BeginFrameControl. Designed for use with --run-all-compositor-stages-before-draw, see also
-/// https://goo.gle/chrome-headless-rendering for more background.
+/// <https://goo.gle/chrome-headless-rendering> for more background.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct BeginFrameReturns<'a> {
     /// Whether the BeginFrame resulted in damage and, thus, a new frame was committed to the
     /// display. Reported for diagnostic uses, may be removed in the future.
-    hasDamage: bool,
+    #[serde(rename = "hasDamage")]
+    has_damage: bool,
     /// Base64-encoded image data of the screenshot, if one was requested and successfully taken. (Encoded as a base64 string when passed over JSON)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    screenshotData: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "screenshotData")]
+    screenshot_data: Option<Cow<'a, str>>,
 }
 
 impl<'a> BeginFrameReturns<'a> {
-    pub fn builder(hasDamage: bool) -> BeginFrameReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `has_damage`: Whether the BeginFrame resulted in damage and, thus, a new frame was committed to the display. Reported for diagnostic uses, may be removed in the future.
+    pub fn builder(has_damage: bool) -> BeginFrameReturnsBuilder<'a> {
         BeginFrameReturnsBuilder {
-            hasDamage: hasDamage,
-            screenshotData: None,
+            has_damage: has_damage,
+            screenshot_data: None,
         }
     }
-    pub fn hasDamage(&self) -> bool { self.hasDamage }
-    pub fn screenshotData(&self) -> Option<&str> { self.screenshotData.as_deref() }
+    /// Whether the BeginFrame resulted in damage and, thus, a new frame was committed to the
+    /// display. Reported for diagnostic uses, may be removed in the future.
+    pub fn has_damage(&self) -> bool { self.has_damage }
+    /// Base64-encoded image data of the screenshot, if one was requested and successfully taken. (Encoded as a base64 string when passed over JSON)
+    pub fn screenshot_data(&self) -> Option<&str> { self.screenshot_data.as_deref() }
 }
 
 
 pub struct BeginFrameReturnsBuilder<'a> {
-    hasDamage: bool,
-    screenshotData: Option<Cow<'a, str>>,
+    has_damage: bool,
+    screenshot_data: Option<Cow<'a, str>>,
 }
 
 impl<'a> BeginFrameReturnsBuilder<'a> {
     /// Base64-encoded image data of the screenshot, if one was requested and successfully taken. (Encoded as a base64 string when passed over JSON)
-    pub fn screenshotData(mut self, screenshotData: impl Into<Cow<'a, str>>) -> Self { self.screenshotData = Some(screenshotData.into()); self }
+    pub fn screenshot_data(mut self, screenshot_data: impl Into<Cow<'a, str>>) -> Self { self.screenshot_data = Some(screenshot_data.into()); self }
     pub fn build(self) -> BeginFrameReturns<'a> {
         BeginFrameReturns {
-            hasDamage: self.hasDamage,
-            screenshotData: self.screenshotData,
+            has_damage: self.has_damage,
+            screenshot_data: self.screenshot_data,
         }
     }
 }

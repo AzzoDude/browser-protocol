@@ -14,45 +14,51 @@ pub type SerializedStorageKey<'a> = Cow<'a, str>;
 #[serde(rename_all = "camelCase")]
 pub struct StorageId<'a> {
     /// Security origin for the storage.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    securityOrigin: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "securityOrigin")]
+    security_origin: Option<Cow<'a, str>>,
     /// Represents a key by which DOM Storage keys its CachedStorageAreas
-    #[serde(skip_serializing_if = "Option::is_none")]
-    storageKey: Option<SerializedStorageKey<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "storageKey")]
+    storage_key: Option<SerializedStorageKey<'a>>,
     /// Whether the storage is local storage (not session storage).
-    isLocalStorage: bool,
+    #[serde(rename = "isLocalStorage")]
+    is_local_storage: bool,
 }
 
 impl<'a> StorageId<'a> {
-    pub fn builder(isLocalStorage: bool) -> StorageIdBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `is_local_storage`: Whether the storage is local storage (not session storage).
+    pub fn builder(is_local_storage: bool) -> StorageIdBuilder<'a> {
         StorageIdBuilder {
-            securityOrigin: None,
-            storageKey: None,
-            isLocalStorage: isLocalStorage,
+            security_origin: None,
+            storage_key: None,
+            is_local_storage: is_local_storage,
         }
     }
-    pub fn securityOrigin(&self) -> Option<&str> { self.securityOrigin.as_deref() }
-    pub fn storageKey(&self) -> Option<&SerializedStorageKey<'a>> { self.storageKey.as_ref() }
-    pub fn isLocalStorage(&self) -> bool { self.isLocalStorage }
+    /// Security origin for the storage.
+    pub fn security_origin(&self) -> Option<&str> { self.security_origin.as_deref() }
+    /// Represents a key by which DOM Storage keys its CachedStorageAreas
+    pub fn storage_key(&self) -> Option<&SerializedStorageKey<'a>> { self.storage_key.as_ref() }
+    /// Whether the storage is local storage (not session storage).
+    pub fn is_local_storage(&self) -> bool { self.is_local_storage }
 }
 
 
 pub struct StorageIdBuilder<'a> {
-    securityOrigin: Option<Cow<'a, str>>,
-    storageKey: Option<SerializedStorageKey<'a>>,
-    isLocalStorage: bool,
+    security_origin: Option<Cow<'a, str>>,
+    storage_key: Option<SerializedStorageKey<'a>>,
+    is_local_storage: bool,
 }
 
 impl<'a> StorageIdBuilder<'a> {
     /// Security origin for the storage.
-    pub fn securityOrigin(mut self, securityOrigin: impl Into<Cow<'a, str>>) -> Self { self.securityOrigin = Some(securityOrigin.into()); self }
+    pub fn security_origin(mut self, security_origin: impl Into<Cow<'a, str>>) -> Self { self.security_origin = Some(security_origin.into()); self }
     /// Represents a key by which DOM Storage keys its CachedStorageAreas
-    pub fn storageKey(mut self, storageKey: impl Into<SerializedStorageKey<'a>>) -> Self { self.storageKey = Some(storageKey.into()); self }
+    pub fn storage_key(mut self, storage_key: impl Into<SerializedStorageKey<'a>>) -> Self { self.storage_key = Some(storage_key.into()); self }
     pub fn build(self) -> StorageId<'a> {
         StorageId {
-            securityOrigin: self.securityOrigin,
-            storageKey: self.storageKey,
-            isLocalStorage: self.isLocalStorage,
+            security_origin: self.security_origin,
+            storage_key: self.storage_key,
+            is_local_storage: self.is_local_storage,
         }
     }
 }
@@ -65,27 +71,30 @@ pub type Item<'a> = Vec<Cow<'a, str>>;
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ClearParams<'a> {
-    storageId: StorageId<'a>,
+    #[serde(rename = "storageId")]
+    storage_id: StorageId<'a>,
 }
 
 impl<'a> ClearParams<'a> {
-    pub fn builder(storageId: StorageId<'a>) -> ClearParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `storage_id`: 
+    pub fn builder(storage_id: StorageId<'a>) -> ClearParamsBuilder<'a> {
         ClearParamsBuilder {
-            storageId: storageId,
+            storage_id: storage_id,
         }
     }
-    pub fn storageId(&self) -> &StorageId<'a> { &self.storageId }
+    pub fn storage_id(&self) -> &StorageId<'a> { &self.storage_id }
 }
 
 
 pub struct ClearParamsBuilder<'a> {
-    storageId: StorageId<'a>,
+    storage_id: StorageId<'a>,
 }
 
 impl<'a> ClearParamsBuilder<'a> {
     pub fn build(self) -> ClearParams<'a> {
         ClearParams {
-            storageId: self.storageId,
+            storage_id: self.storage_id,
         }
     }
 }
@@ -121,27 +130,30 @@ impl<'a> crate::CdpCommand<'a> for EnableParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetDOMStorageItemsParams<'a> {
-    storageId: StorageId<'a>,
+    #[serde(rename = "storageId")]
+    storage_id: StorageId<'a>,
 }
 
 impl<'a> GetDOMStorageItemsParams<'a> {
-    pub fn builder(storageId: StorageId<'a>) -> GetDOMStorageItemsParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `storage_id`: 
+    pub fn builder(storage_id: StorageId<'a>) -> GetDOMStorageItemsParamsBuilder<'a> {
         GetDOMStorageItemsParamsBuilder {
-            storageId: storageId,
+            storage_id: storage_id,
         }
     }
-    pub fn storageId(&self) -> &StorageId<'a> { &self.storageId }
+    pub fn storage_id(&self) -> &StorageId<'a> { &self.storage_id }
 }
 
 
 pub struct GetDOMStorageItemsParamsBuilder<'a> {
-    storageId: StorageId<'a>,
+    storage_id: StorageId<'a>,
 }
 
 impl<'a> GetDOMStorageItemsParamsBuilder<'a> {
     pub fn build(self) -> GetDOMStorageItemsParams<'a> {
         GetDOMStorageItemsParams {
-            storageId: self.storageId,
+            storage_id: self.storage_id,
         }
     }
 }
@@ -154,6 +166,8 @@ pub struct GetDOMStorageItemsReturns<'a> {
 }
 
 impl<'a> GetDOMStorageItemsReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `entries`: 
     pub fn builder(entries: Vec<Item<'a>>) -> GetDOMStorageItemsReturnsBuilder<'a> {
         GetDOMStorageItemsReturnsBuilder {
             entries: entries,
@@ -186,31 +200,35 @@ impl<'a> crate::CdpCommand<'a> for GetDOMStorageItemsParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveDOMStorageItemParams<'a> {
-    storageId: StorageId<'a>,
+    #[serde(rename = "storageId")]
+    storage_id: StorageId<'a>,
     key: Cow<'a, str>,
 }
 
 impl<'a> RemoveDOMStorageItemParams<'a> {
-    pub fn builder(storageId: StorageId<'a>, key: impl Into<Cow<'a, str>>) -> RemoveDOMStorageItemParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `storage_id`: 
+    /// * `key`: 
+    pub fn builder(storage_id: StorageId<'a>, key: impl Into<Cow<'a, str>>) -> RemoveDOMStorageItemParamsBuilder<'a> {
         RemoveDOMStorageItemParamsBuilder {
-            storageId: storageId,
+            storage_id: storage_id,
             key: key.into(),
         }
     }
-    pub fn storageId(&self) -> &StorageId<'a> { &self.storageId }
+    pub fn storage_id(&self) -> &StorageId<'a> { &self.storage_id }
     pub fn key(&self) -> &str { self.key.as_ref() }
 }
 
 
 pub struct RemoveDOMStorageItemParamsBuilder<'a> {
-    storageId: StorageId<'a>,
+    storage_id: StorageId<'a>,
     key: Cow<'a, str>,
 }
 
 impl<'a> RemoveDOMStorageItemParamsBuilder<'a> {
     pub fn build(self) -> RemoveDOMStorageItemParams<'a> {
         RemoveDOMStorageItemParams {
-            storageId: self.storageId,
+            storage_id: self.storage_id,
             key: self.key,
         }
     }
@@ -227,27 +245,32 @@ impl<'a> crate::CdpCommand<'a> for RemoveDOMStorageItemParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetDOMStorageItemParams<'a> {
-    storageId: StorageId<'a>,
+    #[serde(rename = "storageId")]
+    storage_id: StorageId<'a>,
     key: Cow<'a, str>,
     value: Cow<'a, str>,
 }
 
 impl<'a> SetDOMStorageItemParams<'a> {
-    pub fn builder(storageId: StorageId<'a>, key: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> SetDOMStorageItemParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `storage_id`: 
+    /// * `key`: 
+    /// * `value`: 
+    pub fn builder(storage_id: StorageId<'a>, key: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> SetDOMStorageItemParamsBuilder<'a> {
         SetDOMStorageItemParamsBuilder {
-            storageId: storageId,
+            storage_id: storage_id,
             key: key.into(),
             value: value.into(),
         }
     }
-    pub fn storageId(&self) -> &StorageId<'a> { &self.storageId }
+    pub fn storage_id(&self) -> &StorageId<'a> { &self.storage_id }
     pub fn key(&self) -> &str { self.key.as_ref() }
     pub fn value(&self) -> &str { self.value.as_ref() }
 }
 
 
 pub struct SetDOMStorageItemParamsBuilder<'a> {
-    storageId: StorageId<'a>,
+    storage_id: StorageId<'a>,
     key: Cow<'a, str>,
     value: Cow<'a, str>,
 }
@@ -255,7 +278,7 @@ pub struct SetDOMStorageItemParamsBuilder<'a> {
 impl<'a> SetDOMStorageItemParamsBuilder<'a> {
     pub fn build(self) -> SetDOMStorageItemParams<'a> {
         SetDOMStorageItemParams {
-            storageId: self.storageId,
+            storage_id: self.storage_id,
             key: self.key,
             value: self.value,
         }

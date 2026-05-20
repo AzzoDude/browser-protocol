@@ -13,27 +13,33 @@ pub struct CrashReportContextEntry<'a> {
     key: Cow<'a, str>,
     value: Cow<'a, str>,
     /// The ID of the frame where the key-value pair was set.
-    frameId: crate::page::FrameId<'a>,
+    #[serde(rename = "frameId")]
+    frame_id: crate::page::FrameId<'a>,
 }
 
 impl<'a> CrashReportContextEntry<'a> {
-    pub fn builder(key: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>, frameId: crate::page::FrameId<'a>) -> CrashReportContextEntryBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `key`: 
+    /// * `value`: 
+    /// * `frame_id`: The ID of the frame where the key-value pair was set.
+    pub fn builder(key: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>, frame_id: crate::page::FrameId<'a>) -> CrashReportContextEntryBuilder<'a> {
         CrashReportContextEntryBuilder {
             key: key.into(),
             value: value.into(),
-            frameId: frameId,
+            frame_id: frame_id,
         }
     }
     pub fn key(&self) -> &str { self.key.as_ref() }
     pub fn value(&self) -> &str { self.value.as_ref() }
-    pub fn frameId(&self) -> &crate::page::FrameId<'a> { &self.frameId }
+    /// The ID of the frame where the key-value pair was set.
+    pub fn frame_id(&self) -> &crate::page::FrameId<'a> { &self.frame_id }
 }
 
 
 pub struct CrashReportContextEntryBuilder<'a> {
     key: Cow<'a, str>,
     value: Cow<'a, str>,
-    frameId: crate::page::FrameId<'a>,
+    frame_id: crate::page::FrameId<'a>,
 }
 
 impl<'a> CrashReportContextEntryBuilder<'a> {
@@ -41,7 +47,7 @@ impl<'a> CrashReportContextEntryBuilder<'a> {
         CrashReportContextEntry {
             key: self.key,
             value: self.value,
-            frameId: self.frameId,
+            frame_id: self.frame_id,
         }
     }
 }
@@ -55,6 +61,8 @@ pub struct GetEntriesReturns<'a> {
 }
 
 impl<'a> GetEntriesReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `entries`: 
     pub fn builder(entries: Vec<CrashReportContextEntry<'a>>) -> GetEntriesReturnsBuilder<'a> {
         GetEntriesReturnsBuilder {
             entries: entries,

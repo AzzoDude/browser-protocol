@@ -13,90 +13,99 @@ pub struct SafeAreaInsets {
     #[serde(skip_serializing_if = "Option::is_none")]
     top: Option<i64>,
     /// Overrides safe-area-max-inset-top.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    topMax: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "topMax")]
+    top_max: Option<i64>,
     /// Overrides safe-area-inset-left.
     #[serde(skip_serializing_if = "Option::is_none")]
     left: Option<i64>,
     /// Overrides safe-area-max-inset-left.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    leftMax: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "leftMax")]
+    left_max: Option<i64>,
     /// Overrides safe-area-inset-bottom.
     #[serde(skip_serializing_if = "Option::is_none")]
     bottom: Option<i64>,
     /// Overrides safe-area-max-inset-bottom.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    bottomMax: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "bottomMax")]
+    bottom_max: Option<i64>,
     /// Overrides safe-area-inset-right.
     #[serde(skip_serializing_if = "Option::is_none")]
     right: Option<i64>,
     /// Overrides safe-area-max-inset-right.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    rightMax: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "rightMax")]
+    right_max: Option<i64>,
 }
 
 impl SafeAreaInsets {
+    /// Creates a builder for this type.
     pub fn builder() -> SafeAreaInsetsBuilder {
         SafeAreaInsetsBuilder {
             top: None,
-            topMax: None,
+            top_max: None,
             left: None,
-            leftMax: None,
+            left_max: None,
             bottom: None,
-            bottomMax: None,
+            bottom_max: None,
             right: None,
-            rightMax: None,
+            right_max: None,
         }
     }
+    /// Overrides safe-area-inset-top.
     pub fn top(&self) -> Option<i64> { self.top }
-    pub fn topMax(&self) -> Option<i64> { self.topMax }
+    /// Overrides safe-area-max-inset-top.
+    pub fn top_max(&self) -> Option<i64> { self.top_max }
+    /// Overrides safe-area-inset-left.
     pub fn left(&self) -> Option<i64> { self.left }
-    pub fn leftMax(&self) -> Option<i64> { self.leftMax }
+    /// Overrides safe-area-max-inset-left.
+    pub fn left_max(&self) -> Option<i64> { self.left_max }
+    /// Overrides safe-area-inset-bottom.
     pub fn bottom(&self) -> Option<i64> { self.bottom }
-    pub fn bottomMax(&self) -> Option<i64> { self.bottomMax }
+    /// Overrides safe-area-max-inset-bottom.
+    pub fn bottom_max(&self) -> Option<i64> { self.bottom_max }
+    /// Overrides safe-area-inset-right.
     pub fn right(&self) -> Option<i64> { self.right }
-    pub fn rightMax(&self) -> Option<i64> { self.rightMax }
+    /// Overrides safe-area-max-inset-right.
+    pub fn right_max(&self) -> Option<i64> { self.right_max }
 }
 
 #[derive(Default)]
 pub struct SafeAreaInsetsBuilder {
     top: Option<i64>,
-    topMax: Option<i64>,
+    top_max: Option<i64>,
     left: Option<i64>,
-    leftMax: Option<i64>,
+    left_max: Option<i64>,
     bottom: Option<i64>,
-    bottomMax: Option<i64>,
+    bottom_max: Option<i64>,
     right: Option<i64>,
-    rightMax: Option<i64>,
+    right_max: Option<i64>,
 }
 
 impl SafeAreaInsetsBuilder {
     /// Overrides safe-area-inset-top.
     pub fn top(mut self, top: i64) -> Self { self.top = Some(top); self }
     /// Overrides safe-area-max-inset-top.
-    pub fn topMax(mut self, topMax: i64) -> Self { self.topMax = Some(topMax); self }
+    pub fn top_max(mut self, top_max: i64) -> Self { self.top_max = Some(top_max); self }
     /// Overrides safe-area-inset-left.
     pub fn left(mut self, left: i64) -> Self { self.left = Some(left); self }
     /// Overrides safe-area-max-inset-left.
-    pub fn leftMax(mut self, leftMax: i64) -> Self { self.leftMax = Some(leftMax); self }
+    pub fn left_max(mut self, left_max: i64) -> Self { self.left_max = Some(left_max); self }
     /// Overrides safe-area-inset-bottom.
     pub fn bottom(mut self, bottom: i64) -> Self { self.bottom = Some(bottom); self }
     /// Overrides safe-area-max-inset-bottom.
-    pub fn bottomMax(mut self, bottomMax: i64) -> Self { self.bottomMax = Some(bottomMax); self }
+    pub fn bottom_max(mut self, bottom_max: i64) -> Self { self.bottom_max = Some(bottom_max); self }
     /// Overrides safe-area-inset-right.
     pub fn right(mut self, right: i64) -> Self { self.right = Some(right); self }
     /// Overrides safe-area-max-inset-right.
-    pub fn rightMax(mut self, rightMax: i64) -> Self { self.rightMax = Some(rightMax); self }
+    pub fn right_max(mut self, right_max: i64) -> Self { self.right_max = Some(right_max); self }
     pub fn build(self) -> SafeAreaInsets {
         SafeAreaInsets {
             top: self.top,
-            topMax: self.topMax,
+            top_max: self.top_max,
             left: self.left,
-            leftMax: self.leftMax,
+            left_max: self.left_max,
             bottom: self.bottom,
-            bottomMax: self.bottomMax,
+            bottom_max: self.bottom_max,
             right: self.right,
-            rightMax: self.rightMax,
+            right_max: self.right_max,
         }
     }
 }
@@ -114,13 +123,18 @@ pub struct ScreenOrientation<'a> {
 }
 
 impl<'a> ScreenOrientation<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `type_`: Orientation type.
+    /// * `angle`: Orientation angle.
     pub fn builder(type_: impl Into<Cow<'a, str>>, angle: i64) -> ScreenOrientationBuilder<'a> {
         ScreenOrientationBuilder {
             type_: type_.into(),
             angle: angle,
         }
     }
+    /// Orientation type.
     pub fn type_(&self) -> &str { self.type_.as_ref() }
+    /// Orientation angle.
     pub fn angle(&self) -> i64 { self.angle }
 }
 
@@ -151,27 +165,38 @@ pub struct DisplayFeature<'a> {
     /// A display feature may mask content such that it is not physically
     /// displayed - this length along with the offset describes this area.
     /// A display feature that only splits content will have a 0 mask_length.
-    maskLength: u64,
+    #[serde(rename = "maskLength")]
+    mask_length: u64,
 }
 
 impl<'a> DisplayFeature<'a> {
-    pub fn builder(orientation: impl Into<Cow<'a, str>>, offset: i32, maskLength: u64) -> DisplayFeatureBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `orientation`: Orientation of a display feature in relation to screen
+    /// * `offset`: The offset from the screen origin in either the x (for vertical orientation) or y (for horizontal orientation) direction.
+    /// * `mask_length`: A display feature may mask content such that it is not physically displayed - this length along with the offset describes this area. A display feature that only splits content will have a 0 mask_length.
+    pub fn builder(orientation: impl Into<Cow<'a, str>>, offset: i32, mask_length: u64) -> DisplayFeatureBuilder<'a> {
         DisplayFeatureBuilder {
             orientation: orientation.into(),
             offset: offset,
-            maskLength: maskLength,
+            mask_length: mask_length,
         }
     }
+    /// Orientation of a display feature in relation to screen
     pub fn orientation(&self) -> &str { self.orientation.as_ref() }
+    /// The offset from the screen origin in either the x (for vertical
+    /// orientation) or y (for horizontal orientation) direction.
     pub fn offset(&self) -> i32 { self.offset }
-    pub fn maskLength(&self) -> u64 { self.maskLength }
+    /// A display feature may mask content such that it is not physically
+    /// displayed - this length along with the offset describes this area.
+    /// A display feature that only splits content will have a 0 mask_length.
+    pub fn mask_length(&self) -> u64 { self.mask_length }
 }
 
 
 pub struct DisplayFeatureBuilder<'a> {
     orientation: Cow<'a, str>,
     offset: i32,
-    maskLength: u64,
+    mask_length: u64,
 }
 
 impl<'a> DisplayFeatureBuilder<'a> {
@@ -179,7 +204,7 @@ impl<'a> DisplayFeatureBuilder<'a> {
         DisplayFeature {
             orientation: self.orientation,
             offset: self.offset,
-            maskLength: self.maskLength,
+            mask_length: self.mask_length,
         }
     }
 }
@@ -194,11 +219,14 @@ pub struct DevicePosture<'a> {
 }
 
 impl<'a> DevicePosture<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `type_`: Current posture of the device
     pub fn builder(type_: impl Into<Cow<'a, str>>) -> DevicePostureBuilder<'a> {
         DevicePostureBuilder {
             type_: type_.into(),
         }
     }
+    /// Current posture of the device
     pub fn type_(&self) -> &str { self.type_.as_ref() }
 }
 
@@ -224,6 +252,9 @@ pub struct MediaFeature<'a> {
 }
 
 impl<'a> MediaFeature<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: 
+    /// * `value`: 
     pub fn builder(name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> MediaFeatureBuilder<'a> {
         MediaFeatureBuilder {
             name: name.into(),
@@ -265,7 +296,7 @@ pub enum VirtualTimePolicy {
     PauseIfNetworkFetchesPending,
 }
 
-/// Used to specify User Agent Client Hints to emulate. See https://wicg.github.io/ua-client-hints
+/// Used to specify User Agent Client Hints to emulate. See <https://wicg.github.io/ua-client-hints>
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -275,6 +306,9 @@ pub struct UserAgentBrandVersion<'a> {
 }
 
 impl<'a> UserAgentBrandVersion<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `brand`: 
+    /// * `version`: 
     pub fn builder(brand: impl Into<Cow<'a, str>>, version: impl Into<Cow<'a, str>>) -> UserAgentBrandVersionBuilder<'a> {
         UserAgentBrandVersionBuilder {
             brand: brand.into(),
@@ -300,7 +334,7 @@ impl<'a> UserAgentBrandVersionBuilder<'a> {
     }
 }
 
-/// Used to specify User Agent Client Hints to emulate. See https://wicg.github.io/ua-client-hints
+/// Used to specify User Agent Client Hints to emulate. See <https://wicg.github.io/ua-client-hints>
 /// Missing optional values will be filled in by the target with what it would normally use.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -310,12 +344,13 @@ pub struct UserAgentMetadata<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     brands: Option<Vec<UserAgentBrandVersion<'a>>>,
     /// Brands appearing in Sec-CH-UA-Full-Version-List.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    fullVersionList: Option<Vec<UserAgentBrandVersion<'a>>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    fullVersion: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "fullVersionList")]
+    full_version_list: Option<Vec<UserAgentBrandVersion<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "fullVersion")]
+    full_version: Option<Cow<'a, str>>,
     platform: Cow<'a, str>,
-    platformVersion: Cow<'a, str>,
+    #[serde(rename = "platformVersion")]
+    platform_version: Cow<'a, str>,
     architecture: Cow<'a, str>,
     model: Cow<'a, str>,
     mobile: bool,
@@ -324,85 +359,95 @@ pub struct UserAgentMetadata<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     wow64: Option<bool>,
     /// Used to specify User Agent form-factor values.
-    /// See https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factors
-    #[serde(skip_serializing_if = "Option::is_none")]
-    formFactors: Option<Vec<Cow<'a, str>>>,
+    /// See <https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factors>
+    #[serde(skip_serializing_if = "Option::is_none", rename = "formFactors")]
+    form_factors: Option<Vec<Cow<'a, str>>>,
 }
 
 impl<'a> UserAgentMetadata<'a> {
-    pub fn builder(platform: impl Into<Cow<'a, str>>, platformVersion: impl Into<Cow<'a, str>>, architecture: impl Into<Cow<'a, str>>, model: impl Into<Cow<'a, str>>, mobile: bool) -> UserAgentMetadataBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `platform`: 
+    /// * `platform_version`: 
+    /// * `architecture`: 
+    /// * `model`: 
+    /// * `mobile`: 
+    pub fn builder(platform: impl Into<Cow<'a, str>>, platform_version: impl Into<Cow<'a, str>>, architecture: impl Into<Cow<'a, str>>, model: impl Into<Cow<'a, str>>, mobile: bool) -> UserAgentMetadataBuilder<'a> {
         UserAgentMetadataBuilder {
             brands: None,
-            fullVersionList: None,
-            fullVersion: None,
+            full_version_list: None,
+            full_version: None,
             platform: platform.into(),
-            platformVersion: platformVersion.into(),
+            platform_version: platform_version.into(),
             architecture: architecture.into(),
             model: model.into(),
             mobile: mobile,
             bitness: None,
             wow64: None,
-            formFactors: None,
+            form_factors: None,
         }
     }
+    /// Brands appearing in Sec-CH-UA.
     pub fn brands(&self) -> Option<&[UserAgentBrandVersion<'a>]> { self.brands.as_deref() }
-    pub fn fullVersionList(&self) -> Option<&[UserAgentBrandVersion<'a>]> { self.fullVersionList.as_deref() }
-    pub fn fullVersion(&self) -> Option<&str> { self.fullVersion.as_deref() }
+    /// Brands appearing in Sec-CH-UA-Full-Version-List.
+    pub fn full_version_list(&self) -> Option<&[UserAgentBrandVersion<'a>]> { self.full_version_list.as_deref() }
+    pub fn full_version(&self) -> Option<&str> { self.full_version.as_deref() }
     pub fn platform(&self) -> &str { self.platform.as_ref() }
-    pub fn platformVersion(&self) -> &str { self.platformVersion.as_ref() }
+    pub fn platform_version(&self) -> &str { self.platform_version.as_ref() }
     pub fn architecture(&self) -> &str { self.architecture.as_ref() }
     pub fn model(&self) -> &str { self.model.as_ref() }
     pub fn mobile(&self) -> bool { self.mobile }
     pub fn bitness(&self) -> Option<&str> { self.bitness.as_deref() }
     pub fn wow64(&self) -> Option<bool> { self.wow64 }
-    pub fn formFactors(&self) -> Option<&[Cow<'a, str>]> { self.formFactors.as_deref() }
+    /// Used to specify User Agent form-factor values.
+    /// See <https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factors>
+    pub fn form_factors(&self) -> Option<&[Cow<'a, str>]> { self.form_factors.as_deref() }
 }
 
 
 pub struct UserAgentMetadataBuilder<'a> {
     brands: Option<Vec<UserAgentBrandVersion<'a>>>,
-    fullVersionList: Option<Vec<UserAgentBrandVersion<'a>>>,
-    fullVersion: Option<Cow<'a, str>>,
+    full_version_list: Option<Vec<UserAgentBrandVersion<'a>>>,
+    full_version: Option<Cow<'a, str>>,
     platform: Cow<'a, str>,
-    platformVersion: Cow<'a, str>,
+    platform_version: Cow<'a, str>,
     architecture: Cow<'a, str>,
     model: Cow<'a, str>,
     mobile: bool,
     bitness: Option<Cow<'a, str>>,
     wow64: Option<bool>,
-    formFactors: Option<Vec<Cow<'a, str>>>,
+    form_factors: Option<Vec<Cow<'a, str>>>,
 }
 
 impl<'a> UserAgentMetadataBuilder<'a> {
     /// Brands appearing in Sec-CH-UA.
     pub fn brands(mut self, brands: Vec<UserAgentBrandVersion<'a>>) -> Self { self.brands = Some(brands); self }
     /// Brands appearing in Sec-CH-UA-Full-Version-List.
-    pub fn fullVersionList(mut self, fullVersionList: Vec<UserAgentBrandVersion<'a>>) -> Self { self.fullVersionList = Some(fullVersionList); self }
-    pub fn fullVersion(mut self, fullVersion: impl Into<Cow<'a, str>>) -> Self { self.fullVersion = Some(fullVersion.into()); self }
+    pub fn full_version_list(mut self, full_version_list: Vec<UserAgentBrandVersion<'a>>) -> Self { self.full_version_list = Some(full_version_list); self }
+    pub fn full_version(mut self, full_version: impl Into<Cow<'a, str>>) -> Self { self.full_version = Some(full_version.into()); self }
     pub fn bitness(mut self, bitness: impl Into<Cow<'a, str>>) -> Self { self.bitness = Some(bitness.into()); self }
     pub fn wow64(mut self, wow64: bool) -> Self { self.wow64 = Some(wow64); self }
     /// Used to specify User Agent form-factor values.
-    /// See https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factors
-    pub fn formFactors(mut self, formFactors: Vec<Cow<'a, str>>) -> Self { self.formFactors = Some(formFactors); self }
+    /// See <https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factors>
+    pub fn form_factors(mut self, form_factors: Vec<Cow<'a, str>>) -> Self { self.form_factors = Some(form_factors); self }
     pub fn build(self) -> UserAgentMetadata<'a> {
         UserAgentMetadata {
             brands: self.brands,
-            fullVersionList: self.fullVersionList,
-            fullVersion: self.fullVersion,
+            full_version_list: self.full_version_list,
+            full_version: self.full_version,
             platform: self.platform,
-            platformVersion: self.platformVersion,
+            platform_version: self.platform_version,
             architecture: self.architecture,
             model: self.model,
             mobile: self.mobile,
             bitness: self.bitness,
             wow64: self.wow64,
-            formFactors: self.formFactors,
+            form_factors: self.form_factors,
         }
     }
 }
 
 /// Used to specify sensor types to emulate.
-/// See https://w3c.github.io/sensors/#automation for more information.
+/// See <https://w3c.github.io/sensors/#automation> for more information.
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum SensorType {
@@ -431,41 +476,42 @@ pub enum SensorType {
 pub struct SensorMetadata {
     #[serde(skip_serializing_if = "Option::is_none")]
     available: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    minimumFrequency: Option<f64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    maximumFrequency: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "minimumFrequency")]
+    minimum_frequency: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "maximumFrequency")]
+    maximum_frequency: Option<f64>,
 }
 
 impl SensorMetadata {
+    /// Creates a builder for this type.
     pub fn builder() -> SensorMetadataBuilder {
         SensorMetadataBuilder {
             available: None,
-            minimumFrequency: None,
-            maximumFrequency: None,
+            minimum_frequency: None,
+            maximum_frequency: None,
         }
     }
     pub fn available(&self) -> Option<bool> { self.available }
-    pub fn minimumFrequency(&self) -> Option<f64> { self.minimumFrequency }
-    pub fn maximumFrequency(&self) -> Option<f64> { self.maximumFrequency }
+    pub fn minimum_frequency(&self) -> Option<f64> { self.minimum_frequency }
+    pub fn maximum_frequency(&self) -> Option<f64> { self.maximum_frequency }
 }
 
 #[derive(Default)]
 pub struct SensorMetadataBuilder {
     available: Option<bool>,
-    minimumFrequency: Option<f64>,
-    maximumFrequency: Option<f64>,
+    minimum_frequency: Option<f64>,
+    maximum_frequency: Option<f64>,
 }
 
 impl SensorMetadataBuilder {
     pub fn available(mut self, available: bool) -> Self { self.available = Some(available); self }
-    pub fn minimumFrequency(mut self, minimumFrequency: f64) -> Self { self.minimumFrequency = Some(minimumFrequency); self }
-    pub fn maximumFrequency(mut self, maximumFrequency: f64) -> Self { self.maximumFrequency = Some(maximumFrequency); self }
+    pub fn minimum_frequency(mut self, minimum_frequency: f64) -> Self { self.minimum_frequency = Some(minimum_frequency); self }
+    pub fn maximum_frequency(mut self, maximum_frequency: f64) -> Self { self.maximum_frequency = Some(maximum_frequency); self }
     pub fn build(self) -> SensorMetadata {
         SensorMetadata {
             available: self.available,
-            minimumFrequency: self.minimumFrequency,
-            maximumFrequency: self.maximumFrequency,
+            minimum_frequency: self.minimum_frequency,
+            maximum_frequency: self.maximum_frequency,
         }
     }
 }
@@ -478,6 +524,8 @@ pub struct SensorReadingSingle {
 }
 
 impl SensorReadingSingle {
+    /// Creates a builder for this type with the required parameters:
+    /// * `value`: 
     pub fn builder(value: f64) -> SensorReadingSingleBuilder {
         SensorReadingSingleBuilder {
             value: value,
@@ -509,6 +557,10 @@ pub struct SensorReadingXYZ {
 }
 
 impl SensorReadingXYZ {
+    /// Creates a builder for this type with the required parameters:
+    /// * `x`: 
+    /// * `y`: 
+    /// * `z`: 
     pub fn builder(x: f64, y: f64, z: f64) -> SensorReadingXYZBuilder {
         SensorReadingXYZBuilder {
             x: x,
@@ -549,6 +601,11 @@ pub struct SensorReadingQuaternion {
 }
 
 impl SensorReadingQuaternion {
+    /// Creates a builder for this type with the required parameters:
+    /// * `x`: 
+    /// * `y`: 
+    /// * `z`: 
+    /// * `w`: 
     pub fn builder(x: f64, y: f64, z: f64, w: f64) -> SensorReadingQuaternionBuilder {
         SensorReadingQuaternionBuilder {
             x: x,
@@ -595,6 +652,7 @@ pub struct SensorReading {
 }
 
 impl SensorReading {
+    /// Creates a builder for this type.
     pub fn builder() -> SensorReadingBuilder {
         SensorReadingBuilder {
             single: None,
@@ -658,6 +716,7 @@ pub struct PressureMetadata {
 }
 
 impl PressureMetadata {
+    /// Creates a builder for this type.
     pub fn builder() -> PressureMetadataBuilder {
         PressureMetadataBuilder {
             available: None,
@@ -699,6 +758,7 @@ pub struct WorkAreaInsets {
 }
 
 impl WorkAreaInsets {
+    /// Creates a builder for this type.
     pub fn builder() -> WorkAreaInsetsBuilder {
         WorkAreaInsetsBuilder {
             top: None,
@@ -707,9 +767,13 @@ impl WorkAreaInsets {
             right: None,
         }
     }
+    /// Work area top inset in pixels. Default is 0;
     pub fn top(&self) -> Option<i64> { self.top }
+    /// Work area left inset in pixels. Default is 0;
     pub fn left(&self) -> Option<i64> { self.left }
+    /// Work area bottom inset in pixels. Default is 0;
     pub fn bottom(&self) -> Option<i64> { self.bottom }
+    /// Work area right inset in pixels. Default is 0;
     pub fn right(&self) -> Option<i64> { self.right }
 }
 
@@ -744,7 +808,7 @@ impl WorkAreaInsetsBuilder {
 pub type ScreenId<'a> = Cow<'a, str>;
 
 /// Screen information similar to the one returned by window.getScreenDetails() method,
-/// see https://w3c.github.io/window-management/#screendetailed.
+/// see <https://w3c.github.io/window-management/#screendetailed>.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -758,25 +822,34 @@ pub struct ScreenInfo<'a> {
     /// Height of the screen.
     height: i64,
     /// Offset of the left edge of the available screen area.
-    availLeft: i64,
+    #[serde(rename = "availLeft")]
+    avail_left: i64,
     /// Offset of the top edge of the available screen area.
-    availTop: i64,
+    #[serde(rename = "availTop")]
+    avail_top: i64,
     /// Width of the available screen area.
-    availWidth: u64,
+    #[serde(rename = "availWidth")]
+    avail_width: u64,
     /// Height of the available screen area.
-    availHeight: i64,
+    #[serde(rename = "availHeight")]
+    avail_height: i64,
     /// Specifies the screen's device pixel ratio.
-    devicePixelRatio: f64,
+    #[serde(rename = "devicePixelRatio")]
+    device_pixel_ratio: f64,
     /// Specifies the screen's orientation.
     orientation: ScreenOrientation<'a>,
     /// Specifies the screen's color depth in bits.
-    colorDepth: i64,
+    #[serde(rename = "colorDepth")]
+    color_depth: i64,
     /// Indicates whether the device has multiple screens.
-    isExtended: bool,
+    #[serde(rename = "isExtended")]
+    is_extended: bool,
     /// Indicates whether the screen is internal to the device or external, attached to the device.
-    isInternal: bool,
+    #[serde(rename = "isInternal")]
+    is_internal: bool,
     /// Indicates whether the screen is set as the the operating system primary screen.
-    isPrimary: bool,
+    #[serde(rename = "isPrimary")]
+    is_primary: bool,
     /// Specifies the descriptive label for the screen.
     label: Cow<'a, str>,
     /// Specifies the unique identifier of the screen.
@@ -784,41 +857,74 @@ pub struct ScreenInfo<'a> {
 }
 
 impl<'a> ScreenInfo<'a> {
-    pub fn builder(left: i64, top: i64, width: u64, height: i64, availLeft: i64, availTop: i64, availWidth: u64, availHeight: i64, devicePixelRatio: f64, orientation: ScreenOrientation<'a>, colorDepth: i64, isExtended: bool, isInternal: bool, isPrimary: bool, label: impl Into<Cow<'a, str>>, id: impl Into<ScreenId<'a>>) -> ScreenInfoBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `left`: Offset of the left edge of the screen.
+    /// * `top`: Offset of the top edge of the screen.
+    /// * `width`: Width of the screen.
+    /// * `height`: Height of the screen.
+    /// * `avail_left`: Offset of the left edge of the available screen area.
+    /// * `avail_top`: Offset of the top edge of the available screen area.
+    /// * `avail_width`: Width of the available screen area.
+    /// * `avail_height`: Height of the available screen area.
+    /// * `device_pixel_ratio`: Specifies the screen's device pixel ratio.
+    /// * `orientation`: Specifies the screen's orientation.
+    /// * `color_depth`: Specifies the screen's color depth in bits.
+    /// * `is_extended`: Indicates whether the device has multiple screens.
+    /// * `is_internal`: Indicates whether the screen is internal to the device or external, attached to the device.
+    /// * `is_primary`: Indicates whether the screen is set as the the operating system primary screen.
+    /// * `label`: Specifies the descriptive label for the screen.
+    /// * `id`: Specifies the unique identifier of the screen.
+    pub fn builder(left: i64, top: i64, width: u64, height: i64, avail_left: i64, avail_top: i64, avail_width: u64, avail_height: i64, device_pixel_ratio: f64, orientation: ScreenOrientation<'a>, color_depth: i64, is_extended: bool, is_internal: bool, is_primary: bool, label: impl Into<Cow<'a, str>>, id: impl Into<ScreenId<'a>>) -> ScreenInfoBuilder<'a> {
         ScreenInfoBuilder {
             left: left,
             top: top,
             width: width,
             height: height,
-            availLeft: availLeft,
-            availTop: availTop,
-            availWidth: availWidth,
-            availHeight: availHeight,
-            devicePixelRatio: devicePixelRatio,
+            avail_left: avail_left,
+            avail_top: avail_top,
+            avail_width: avail_width,
+            avail_height: avail_height,
+            device_pixel_ratio: device_pixel_ratio,
             orientation: orientation,
-            colorDepth: colorDepth,
-            isExtended: isExtended,
-            isInternal: isInternal,
-            isPrimary: isPrimary,
+            color_depth: color_depth,
+            is_extended: is_extended,
+            is_internal: is_internal,
+            is_primary: is_primary,
             label: label.into(),
             id: id.into(),
         }
     }
+    /// Offset of the left edge of the screen.
     pub fn left(&self) -> i64 { self.left }
+    /// Offset of the top edge of the screen.
     pub fn top(&self) -> i64 { self.top }
+    /// Width of the screen.
     pub fn width(&self) -> u64 { self.width }
+    /// Height of the screen.
     pub fn height(&self) -> i64 { self.height }
-    pub fn availLeft(&self) -> i64 { self.availLeft }
-    pub fn availTop(&self) -> i64 { self.availTop }
-    pub fn availWidth(&self) -> u64 { self.availWidth }
-    pub fn availHeight(&self) -> i64 { self.availHeight }
-    pub fn devicePixelRatio(&self) -> f64 { self.devicePixelRatio }
+    /// Offset of the left edge of the available screen area.
+    pub fn avail_left(&self) -> i64 { self.avail_left }
+    /// Offset of the top edge of the available screen area.
+    pub fn avail_top(&self) -> i64 { self.avail_top }
+    /// Width of the available screen area.
+    pub fn avail_width(&self) -> u64 { self.avail_width }
+    /// Height of the available screen area.
+    pub fn avail_height(&self) -> i64 { self.avail_height }
+    /// Specifies the screen's device pixel ratio.
+    pub fn device_pixel_ratio(&self) -> f64 { self.device_pixel_ratio }
+    /// Specifies the screen's orientation.
     pub fn orientation(&self) -> &ScreenOrientation<'a> { &self.orientation }
-    pub fn colorDepth(&self) -> i64 { self.colorDepth }
-    pub fn isExtended(&self) -> bool { self.isExtended }
-    pub fn isInternal(&self) -> bool { self.isInternal }
-    pub fn isPrimary(&self) -> bool { self.isPrimary }
+    /// Specifies the screen's color depth in bits.
+    pub fn color_depth(&self) -> i64 { self.color_depth }
+    /// Indicates whether the device has multiple screens.
+    pub fn is_extended(&self) -> bool { self.is_extended }
+    /// Indicates whether the screen is internal to the device or external, attached to the device.
+    pub fn is_internal(&self) -> bool { self.is_internal }
+    /// Indicates whether the screen is set as the the operating system primary screen.
+    pub fn is_primary(&self) -> bool { self.is_primary }
+    /// Specifies the descriptive label for the screen.
     pub fn label(&self) -> &str { self.label.as_ref() }
+    /// Specifies the unique identifier of the screen.
     pub fn id(&self) -> &ScreenId<'a> { &self.id }
 }
 
@@ -828,16 +934,16 @@ pub struct ScreenInfoBuilder<'a> {
     top: i64,
     width: u64,
     height: i64,
-    availLeft: i64,
-    availTop: i64,
-    availWidth: u64,
-    availHeight: i64,
-    devicePixelRatio: f64,
+    avail_left: i64,
+    avail_top: i64,
+    avail_width: u64,
+    avail_height: i64,
+    device_pixel_ratio: f64,
     orientation: ScreenOrientation<'a>,
-    colorDepth: i64,
-    isExtended: bool,
-    isInternal: bool,
-    isPrimary: bool,
+    color_depth: i64,
+    is_extended: bool,
+    is_internal: bool,
+    is_primary: bool,
     label: Cow<'a, str>,
     id: ScreenId<'a>,
 }
@@ -849,16 +955,16 @@ impl<'a> ScreenInfoBuilder<'a> {
             top: self.top,
             width: self.width,
             height: self.height,
-            availLeft: self.availLeft,
-            availTop: self.availTop,
-            availWidth: self.availWidth,
-            availHeight: self.availHeight,
-            devicePixelRatio: self.devicePixelRatio,
+            avail_left: self.avail_left,
+            avail_top: self.avail_top,
+            avail_width: self.avail_width,
+            avail_height: self.avail_height,
+            device_pixel_ratio: self.device_pixel_ratio,
             orientation: self.orientation,
-            colorDepth: self.colorDepth,
-            isExtended: self.isExtended,
-            isInternal: self.isInternal,
-            isPrimary: self.isPrimary,
+            color_depth: self.color_depth,
+            is_extended: self.is_extended,
+            is_internal: self.is_internal,
+            is_primary: self.is_primary,
             label: self.label,
             id: self.id,
         }
@@ -888,11 +994,14 @@ pub struct CanEmulateReturns {
 }
 
 impl CanEmulateReturns {
+    /// Creates a builder for this type with the required parameters:
+    /// * `result`: True if emulation is supported.
     pub fn builder(result: bool) -> CanEmulateReturnsBuilder {
         CanEmulateReturnsBuilder {
             result: result,
         }
     }
+    /// True if emulation is supported.
     pub fn result(&self) -> bool { self.result }
 }
 
@@ -959,11 +1068,14 @@ pub struct SetFocusEmulationEnabledParams {
 }
 
 impl SetFocusEmulationEnabledParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `enabled`: Whether to enable to disable focus emulation.
     pub fn builder(enabled: bool) -> SetFocusEmulationEnabledParamsBuilder {
         SetFocusEmulationEnabledParamsBuilder {
             enabled: enabled,
         }
     }
+    /// Whether to enable to disable focus emulation.
     pub fn enabled(&self) -> bool { self.enabled }
 }
 
@@ -999,11 +1111,14 @@ pub struct SetAutoDarkModeOverrideParams {
 }
 
 impl SetAutoDarkModeOverrideParams {
+    /// Creates a builder for this type.
     pub fn builder() -> SetAutoDarkModeOverrideParamsBuilder {
         SetAutoDarkModeOverrideParamsBuilder {
             enabled: None,
         }
     }
+    /// Whether to enable or disable automatic dark mode.
+    /// If not specified, any existing override will be cleared.
     pub fn enabled(&self) -> Option<bool> { self.enabled }
 }
 
@@ -1040,11 +1155,14 @@ pub struct SetCPUThrottlingRateParams {
 }
 
 impl SetCPUThrottlingRateParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `rate`: Throttling rate as a slowdown factor (1 is no throttle, 2 is 2x slowdown, etc).
     pub fn builder(rate: f64) -> SetCPUThrottlingRateParamsBuilder {
         SetCPUThrottlingRateParamsBuilder {
             rate: rate,
         }
     }
+    /// Throttling rate as a slowdown factor (1 is no throttle, 2 is 2x slowdown, etc).
     pub fn rate(&self) -> f64 { self.rate }
 }
 
@@ -1081,11 +1199,14 @@ pub struct SetDefaultBackgroundColorOverrideParams {
 }
 
 impl SetDefaultBackgroundColorOverrideParams {
+    /// Creates a builder for this type.
     pub fn builder() -> SetDefaultBackgroundColorOverrideParamsBuilder {
         SetDefaultBackgroundColorOverrideParamsBuilder {
             color: None,
         }
     }
+    /// RGBA of the default background color. If not specified, any existing override will be
+    /// cleared.
     pub fn color(&self) -> Option<&crate::dom::RGBA> { self.color.as_ref() }
 }
 
@@ -1122,6 +1243,8 @@ pub struct SetSafeAreaInsetsOverrideParams {
 }
 
 impl SetSafeAreaInsetsOverrideParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `insets`: 
     pub fn builder(insets: SafeAreaInsets) -> SetSafeAreaInsetsOverrideParamsBuilder {
         SetSafeAreaInsetsOverrideParamsBuilder {
             insets: insets,
@@ -1162,7 +1285,8 @@ pub struct SetDeviceMetricsOverrideParams<'a> {
     /// Overriding height value in pixels (minimum 0, maximum 10000000). 0 disables the override.
     height: i64,
     /// Overriding device scale factor value. 0 disables the override.
-    deviceScaleFactor: f64,
+    #[serde(rename = "deviceScaleFactor")]
+    device_scale_factor: f64,
     /// Whether to emulate mobile device. This includes viewport meta tag, overlay scrollbars, text
     /// autosizing and more.
     mobile: bool,
@@ -1170,23 +1294,23 @@ pub struct SetDeviceMetricsOverrideParams<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     scale: Option<f64>,
     /// Overriding screen width value in pixels (minimum 0, maximum 10000000).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    screenWidth: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "screenWidth")]
+    screen_width: Option<u64>,
     /// Overriding screen height value in pixels (minimum 0, maximum 10000000).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    screenHeight: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "screenHeight")]
+    screen_height: Option<i64>,
     /// Overriding view X position on screen in pixels (minimum 0, maximum 10000000).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    positionX: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "positionX")]
+    position_x: Option<i64>,
     /// Overriding view Y position on screen in pixels (minimum 0, maximum 10000000).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    positionY: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "positionY")]
+    position_y: Option<i64>,
     /// Do not set visible view size, rely upon explicit setVisibleSize call.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    dontSetVisibleSize: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "dontSetVisibleSize")]
+    dont_set_visible_size: Option<bool>,
     /// Screen orientation override.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    screenOrientation: Option<ScreenOrientation<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "screenOrientation")]
+    screen_orientation: Option<ScreenOrientation<'a>>,
     /// If set, the visible area of the page will be overridden to this viewport. This viewport
     /// change is not observed by the page, e.g. viewport-relative elements do not change positions.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1194,136 +1318,167 @@ pub struct SetDeviceMetricsOverrideParams<'a> {
     /// If set, the display feature of a multi-segment screen. If not set, multi-segment support
     /// is turned-off.
     /// Deprecated, use Emulation.setDisplayFeaturesOverride.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    displayFeature: Option<DisplayFeature<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "displayFeature")]
+    display_feature: Option<DisplayFeature<'a>>,
     /// If set, the posture of a foldable device. If not set the posture is set
     /// to continuous.
     /// Deprecated, use Emulation.setDevicePostureOverride.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    devicePosture: Option<DevicePosture<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "devicePosture")]
+    device_posture: Option<DevicePosture<'a>>,
     /// Scrollbar type. Default: 'default'.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    scrollbarType: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "scrollbarType")]
+    scrollbar_type: Option<Cow<'a, str>>,
     /// If set to true, enables screen orientation lock emulation, which
     /// intercepts screen.orientation.lock() calls from the page and reports
     /// orientation changes via screenOrientationLockChanged events. This is
     /// useful for emulating mobile device orientation lock behavior in
     /// responsive design mode.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    screenOrientationLockEmulation: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "screenOrientationLockEmulation")]
+    screen_orientation_lock_emulation: Option<bool>,
 }
 
 impl<'a> SetDeviceMetricsOverrideParams<'a> {
-    pub fn builder(width: u64, height: i64, deviceScaleFactor: f64, mobile: bool) -> SetDeviceMetricsOverrideParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `width`: Overriding width value in pixels (minimum 0, maximum 10000000). 0 disables the override.
+    /// * `height`: Overriding height value in pixels (minimum 0, maximum 10000000). 0 disables the override.
+    /// * `device_scale_factor`: Overriding device scale factor value. 0 disables the override.
+    /// * `mobile`: Whether to emulate mobile device. This includes viewport meta tag, overlay scrollbars, text autosizing and more.
+    pub fn builder(width: u64, height: i64, device_scale_factor: f64, mobile: bool) -> SetDeviceMetricsOverrideParamsBuilder<'a> {
         SetDeviceMetricsOverrideParamsBuilder {
             width: width,
             height: height,
-            deviceScaleFactor: deviceScaleFactor,
+            device_scale_factor: device_scale_factor,
             mobile: mobile,
             scale: None,
-            screenWidth: None,
-            screenHeight: None,
-            positionX: None,
-            positionY: None,
-            dontSetVisibleSize: None,
-            screenOrientation: None,
+            screen_width: None,
+            screen_height: None,
+            position_x: None,
+            position_y: None,
+            dont_set_visible_size: None,
+            screen_orientation: None,
             viewport: None,
-            displayFeature: None,
-            devicePosture: None,
-            scrollbarType: None,
-            screenOrientationLockEmulation: None,
+            display_feature: None,
+            device_posture: None,
+            scrollbar_type: None,
+            screen_orientation_lock_emulation: None,
         }
     }
+    /// Overriding width value in pixels (minimum 0, maximum 10000000). 0 disables the override.
     pub fn width(&self) -> u64 { self.width }
+    /// Overriding height value in pixels (minimum 0, maximum 10000000). 0 disables the override.
     pub fn height(&self) -> i64 { self.height }
-    pub fn deviceScaleFactor(&self) -> f64 { self.deviceScaleFactor }
+    /// Overriding device scale factor value. 0 disables the override.
+    pub fn device_scale_factor(&self) -> f64 { self.device_scale_factor }
+    /// Whether to emulate mobile device. This includes viewport meta tag, overlay scrollbars, text
+    /// autosizing and more.
     pub fn mobile(&self) -> bool { self.mobile }
+    /// Scale to apply to resulting view image.
     pub fn scale(&self) -> Option<f64> { self.scale }
-    pub fn screenWidth(&self) -> Option<u64> { self.screenWidth }
-    pub fn screenHeight(&self) -> Option<i64> { self.screenHeight }
-    pub fn positionX(&self) -> Option<i64> { self.positionX }
-    pub fn positionY(&self) -> Option<i64> { self.positionY }
-    pub fn dontSetVisibleSize(&self) -> Option<bool> { self.dontSetVisibleSize }
-    pub fn screenOrientation(&self) -> Option<&ScreenOrientation<'a>> { self.screenOrientation.as_ref() }
+    /// Overriding screen width value in pixels (minimum 0, maximum 10000000).
+    pub fn screen_width(&self) -> Option<u64> { self.screen_width }
+    /// Overriding screen height value in pixels (minimum 0, maximum 10000000).
+    pub fn screen_height(&self) -> Option<i64> { self.screen_height }
+    /// Overriding view X position on screen in pixels (minimum 0, maximum 10000000).
+    pub fn position_x(&self) -> Option<i64> { self.position_x }
+    /// Overriding view Y position on screen in pixels (minimum 0, maximum 10000000).
+    pub fn position_y(&self) -> Option<i64> { self.position_y }
+    /// Do not set visible view size, rely upon explicit setVisibleSize call.
+    pub fn dont_set_visible_size(&self) -> Option<bool> { self.dont_set_visible_size }
+    /// Screen orientation override.
+    pub fn screen_orientation(&self) -> Option<&ScreenOrientation<'a>> { self.screen_orientation.as_ref() }
+    /// If set, the visible area of the page will be overridden to this viewport. This viewport
+    /// change is not observed by the page, e.g. viewport-relative elements do not change positions.
     pub fn viewport(&self) -> Option<&crate::page::Viewport> { self.viewport.as_ref() }
-    pub fn displayFeature(&self) -> Option<&DisplayFeature<'a>> { self.displayFeature.as_ref() }
-    pub fn devicePosture(&self) -> Option<&DevicePosture<'a>> { self.devicePosture.as_ref() }
-    pub fn scrollbarType(&self) -> Option<&str> { self.scrollbarType.as_deref() }
-    pub fn screenOrientationLockEmulation(&self) -> Option<bool> { self.screenOrientationLockEmulation }
+    /// If set, the display feature of a multi-segment screen. If not set, multi-segment support
+    /// is turned-off.
+    /// Deprecated, use Emulation.setDisplayFeaturesOverride.
+    pub fn display_feature(&self) -> Option<&DisplayFeature<'a>> { self.display_feature.as_ref() }
+    /// If set, the posture of a foldable device. If not set the posture is set
+    /// to continuous.
+    /// Deprecated, use Emulation.setDevicePostureOverride.
+    pub fn device_posture(&self) -> Option<&DevicePosture<'a>> { self.device_posture.as_ref() }
+    /// Scrollbar type. Default: 'default'.
+    pub fn scrollbar_type(&self) -> Option<&str> { self.scrollbar_type.as_deref() }
+    /// If set to true, enables screen orientation lock emulation, which
+    /// intercepts screen.orientation.lock() calls from the page and reports
+    /// orientation changes via screenOrientationLockChanged events. This is
+    /// useful for emulating mobile device orientation lock behavior in
+    /// responsive design mode.
+    pub fn screen_orientation_lock_emulation(&self) -> Option<bool> { self.screen_orientation_lock_emulation }
 }
 
 
 pub struct SetDeviceMetricsOverrideParamsBuilder<'a> {
     width: u64,
     height: i64,
-    deviceScaleFactor: f64,
+    device_scale_factor: f64,
     mobile: bool,
     scale: Option<f64>,
-    screenWidth: Option<u64>,
-    screenHeight: Option<i64>,
-    positionX: Option<i64>,
-    positionY: Option<i64>,
-    dontSetVisibleSize: Option<bool>,
-    screenOrientation: Option<ScreenOrientation<'a>>,
+    screen_width: Option<u64>,
+    screen_height: Option<i64>,
+    position_x: Option<i64>,
+    position_y: Option<i64>,
+    dont_set_visible_size: Option<bool>,
+    screen_orientation: Option<ScreenOrientation<'a>>,
     viewport: Option<crate::page::Viewport>,
-    displayFeature: Option<DisplayFeature<'a>>,
-    devicePosture: Option<DevicePosture<'a>>,
-    scrollbarType: Option<Cow<'a, str>>,
-    screenOrientationLockEmulation: Option<bool>,
+    display_feature: Option<DisplayFeature<'a>>,
+    device_posture: Option<DevicePosture<'a>>,
+    scrollbar_type: Option<Cow<'a, str>>,
+    screen_orientation_lock_emulation: Option<bool>,
 }
 
 impl<'a> SetDeviceMetricsOverrideParamsBuilder<'a> {
     /// Scale to apply to resulting view image.
     pub fn scale(mut self, scale: f64) -> Self { self.scale = Some(scale); self }
     /// Overriding screen width value in pixels (minimum 0, maximum 10000000).
-    pub fn screenWidth(mut self, screenWidth: u64) -> Self { self.screenWidth = Some(screenWidth); self }
+    pub fn screen_width(mut self, screen_width: u64) -> Self { self.screen_width = Some(screen_width); self }
     /// Overriding screen height value in pixels (minimum 0, maximum 10000000).
-    pub fn screenHeight(mut self, screenHeight: i64) -> Self { self.screenHeight = Some(screenHeight); self }
+    pub fn screen_height(mut self, screen_height: i64) -> Self { self.screen_height = Some(screen_height); self }
     /// Overriding view X position on screen in pixels (minimum 0, maximum 10000000).
-    pub fn positionX(mut self, positionX: i64) -> Self { self.positionX = Some(positionX); self }
+    pub fn position_x(mut self, position_x: i64) -> Self { self.position_x = Some(position_x); self }
     /// Overriding view Y position on screen in pixels (minimum 0, maximum 10000000).
-    pub fn positionY(mut self, positionY: i64) -> Self { self.positionY = Some(positionY); self }
+    pub fn position_y(mut self, position_y: i64) -> Self { self.position_y = Some(position_y); self }
     /// Do not set visible view size, rely upon explicit setVisibleSize call.
-    pub fn dontSetVisibleSize(mut self, dontSetVisibleSize: bool) -> Self { self.dontSetVisibleSize = Some(dontSetVisibleSize); self }
+    pub fn dont_set_visible_size(mut self, dont_set_visible_size: bool) -> Self { self.dont_set_visible_size = Some(dont_set_visible_size); self }
     /// Screen orientation override.
-    pub fn screenOrientation(mut self, screenOrientation: ScreenOrientation<'a>) -> Self { self.screenOrientation = Some(screenOrientation); self }
+    pub fn screen_orientation(mut self, screen_orientation: ScreenOrientation<'a>) -> Self { self.screen_orientation = Some(screen_orientation); self }
     /// If set, the visible area of the page will be overridden to this viewport. This viewport
     /// change is not observed by the page, e.g. viewport-relative elements do not change positions.
     pub fn viewport(mut self, viewport: crate::page::Viewport) -> Self { self.viewport = Some(viewport); self }
     /// If set, the display feature of a multi-segment screen. If not set, multi-segment support
     /// is turned-off.
     /// Deprecated, use Emulation.setDisplayFeaturesOverride.
-    pub fn displayFeature(mut self, displayFeature: DisplayFeature<'a>) -> Self { self.displayFeature = Some(displayFeature); self }
+    pub fn display_feature(mut self, display_feature: DisplayFeature<'a>) -> Self { self.display_feature = Some(display_feature); self }
     /// If set, the posture of a foldable device. If not set the posture is set
     /// to continuous.
     /// Deprecated, use Emulation.setDevicePostureOverride.
-    pub fn devicePosture(mut self, devicePosture: DevicePosture<'a>) -> Self { self.devicePosture = Some(devicePosture); self }
+    pub fn device_posture(mut self, device_posture: DevicePosture<'a>) -> Self { self.device_posture = Some(device_posture); self }
     /// Scrollbar type. Default: 'default'.
-    pub fn scrollbarType(mut self, scrollbarType: impl Into<Cow<'a, str>>) -> Self { self.scrollbarType = Some(scrollbarType.into()); self }
+    pub fn scrollbar_type(mut self, scrollbar_type: impl Into<Cow<'a, str>>) -> Self { self.scrollbar_type = Some(scrollbar_type.into()); self }
     /// If set to true, enables screen orientation lock emulation, which
     /// intercepts screen.orientation.lock() calls from the page and reports
     /// orientation changes via screenOrientationLockChanged events. This is
     /// useful for emulating mobile device orientation lock behavior in
     /// responsive design mode.
-    pub fn screenOrientationLockEmulation(mut self, screenOrientationLockEmulation: bool) -> Self { self.screenOrientationLockEmulation = Some(screenOrientationLockEmulation); self }
+    pub fn screen_orientation_lock_emulation(mut self, screen_orientation_lock_emulation: bool) -> Self { self.screen_orientation_lock_emulation = Some(screen_orientation_lock_emulation); self }
     pub fn build(self) -> SetDeviceMetricsOverrideParams<'a> {
         SetDeviceMetricsOverrideParams {
             width: self.width,
             height: self.height,
-            deviceScaleFactor: self.deviceScaleFactor,
+            device_scale_factor: self.device_scale_factor,
             mobile: self.mobile,
             scale: self.scale,
-            screenWidth: self.screenWidth,
-            screenHeight: self.screenHeight,
-            positionX: self.positionX,
-            positionY: self.positionY,
-            dontSetVisibleSize: self.dontSetVisibleSize,
-            screenOrientation: self.screenOrientation,
+            screen_width: self.screen_width,
+            screen_height: self.screen_height,
+            position_x: self.position_x,
+            position_y: self.position_y,
+            dont_set_visible_size: self.dont_set_visible_size,
+            screen_orientation: self.screen_orientation,
             viewport: self.viewport,
-            displayFeature: self.displayFeature,
-            devicePosture: self.devicePosture,
-            scrollbarType: self.scrollbarType,
-            screenOrientationLockEmulation: self.screenOrientationLockEmulation,
+            display_feature: self.display_feature,
+            device_posture: self.device_posture,
+            scrollbar_type: self.scrollbar_type,
+            screen_orientation_lock_emulation: self.screen_orientation_lock_emulation,
         }
     }
 }
@@ -1345,6 +1500,8 @@ pub struct SetDevicePostureOverrideParams<'a> {
 }
 
 impl<'a> SetDevicePostureOverrideParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `posture`: 
     pub fn builder(posture: DevicePosture<'a>) -> SetDevicePostureOverrideParamsBuilder<'a> {
         SetDevicePostureOverrideParamsBuilder {
             posture: posture,
@@ -1393,6 +1550,8 @@ pub struct SetDisplayFeaturesOverrideParams<'a> {
 }
 
 impl<'a> SetDisplayFeaturesOverrideParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `features`: 
     pub fn builder(features: Vec<DisplayFeature<'a>>) -> SetDisplayFeaturesOverrideParamsBuilder<'a> {
         SetDisplayFeaturesOverrideParamsBuilder {
             features: features,
@@ -1440,11 +1599,14 @@ pub struct SetScrollbarsHiddenParams {
 }
 
 impl SetScrollbarsHiddenParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `hidden`: Whether scrollbars should be always hidden.
     pub fn builder(hidden: bool) -> SetScrollbarsHiddenParamsBuilder {
         SetScrollbarsHiddenParamsBuilder {
             hidden: hidden,
         }
     }
+    /// Whether scrollbars should be always hidden.
     pub fn hidden(&self) -> bool { self.hidden }
 }
 
@@ -1477,11 +1639,14 @@ pub struct SetDocumentCookieDisabledParams {
 }
 
 impl SetDocumentCookieDisabledParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `disabled`: Whether document.coookie API should be disabled.
     pub fn builder(disabled: bool) -> SetDocumentCookieDisabledParamsBuilder {
         SetDocumentCookieDisabledParamsBuilder {
             disabled: disabled,
         }
     }
+    /// Whether document.coookie API should be disabled.
     pub fn disabled(&self) -> bool { self.disabled }
 }
 
@@ -1517,13 +1682,17 @@ pub struct SetEmitTouchEventsForMouseParams<'a> {
 }
 
 impl<'a> SetEmitTouchEventsForMouseParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `enabled`: Whether touch emulation based on mouse input should be enabled.
     pub fn builder(enabled: bool) -> SetEmitTouchEventsForMouseParamsBuilder<'a> {
         SetEmitTouchEventsForMouseParamsBuilder {
             enabled: enabled,
             configuration: None,
         }
     }
+    /// Whether touch emulation based on mouse input should be enabled.
     pub fn enabled(&self) -> bool { self.enabled }
+    /// Touch/gesture events configuration. Default: current platform.
     pub fn configuration(&self) -> Option<&str> { self.configuration.as_deref() }
 }
 
@@ -1565,13 +1734,16 @@ pub struct SetEmulatedMediaParams<'a> {
 }
 
 impl<'a> SetEmulatedMediaParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> SetEmulatedMediaParamsBuilder<'a> {
         SetEmulatedMediaParamsBuilder {
             media: None,
             features: None,
         }
     }
+    /// Media type to emulate. Empty string disables the override.
     pub fn media(&self) -> Option<&str> { self.media.as_deref() }
+    /// Media features to emulate.
     pub fn features(&self) -> Option<&[MediaFeature<'a>]> { self.features.as_deref() }
 }
 
@@ -1613,11 +1785,15 @@ pub struct SetEmulatedVisionDeficiencyParams<'a> {
 }
 
 impl<'a> SetEmulatedVisionDeficiencyParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `type_`: Vision deficiency to emulate. Order: best-effort emulations come first, followed by any physiologically accurate emulations for medically recognized color vision deficiencies.
     pub fn builder(type_: impl Into<Cow<'a, str>>) -> SetEmulatedVisionDeficiencyParamsBuilder<'a> {
         SetEmulatedVisionDeficiencyParamsBuilder {
             type_: type_.into(),
         }
     }
+    /// Vision deficiency to emulate. Order: best-effort emulations come first, followed by any
+    /// physiologically accurate emulations for medically recognized color vision deficiencies.
     pub fn type_(&self) -> &str { self.type_.as_ref() }
 }
 
@@ -1651,6 +1827,7 @@ pub struct SetEmulatedOSTextScaleParams {
 }
 
 impl SetEmulatedOSTextScaleParams {
+    /// Creates a builder for this type.
     pub fn builder() -> SetEmulatedOSTextScaleParamsBuilder {
         SetEmulatedOSTextScaleParamsBuilder {
             scale: None,
@@ -1699,8 +1876,8 @@ pub struct SetGeolocationOverrideParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     altitude: Option<f64>,
     /// Mock altitudeAccuracy
-    #[serde(skip_serializing_if = "Option::is_none")]
-    altitudeAccuracy: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "altitudeAccuracy")]
+    altitude_accuracy: Option<f64>,
     /// Mock heading
     #[serde(skip_serializing_if = "Option::is_none")]
     heading: Option<f64>,
@@ -1710,23 +1887,31 @@ pub struct SetGeolocationOverrideParams {
 }
 
 impl SetGeolocationOverrideParams {
+    /// Creates a builder for this type.
     pub fn builder() -> SetGeolocationOverrideParamsBuilder {
         SetGeolocationOverrideParamsBuilder {
             latitude: None,
             longitude: None,
             accuracy: None,
             altitude: None,
-            altitudeAccuracy: None,
+            altitude_accuracy: None,
             heading: None,
             speed: None,
         }
     }
+    /// Mock latitude
     pub fn latitude(&self) -> Option<f64> { self.latitude }
+    /// Mock longitude
     pub fn longitude(&self) -> Option<f64> { self.longitude }
+    /// Mock accuracy
     pub fn accuracy(&self) -> Option<f64> { self.accuracy }
+    /// Mock altitude
     pub fn altitude(&self) -> Option<f64> { self.altitude }
-    pub fn altitudeAccuracy(&self) -> Option<f64> { self.altitudeAccuracy }
+    /// Mock altitudeAccuracy
+    pub fn altitude_accuracy(&self) -> Option<f64> { self.altitude_accuracy }
+    /// Mock heading
     pub fn heading(&self) -> Option<f64> { self.heading }
+    /// Mock speed
     pub fn speed(&self) -> Option<f64> { self.speed }
 }
 
@@ -1736,7 +1921,7 @@ pub struct SetGeolocationOverrideParamsBuilder {
     longitude: Option<f64>,
     accuracy: Option<f64>,
     altitude: Option<f64>,
-    altitudeAccuracy: Option<f64>,
+    altitude_accuracy: Option<f64>,
     heading: Option<f64>,
     speed: Option<f64>,
 }
@@ -1751,7 +1936,7 @@ impl SetGeolocationOverrideParamsBuilder {
     /// Mock altitude
     pub fn altitude(mut self, altitude: f64) -> Self { self.altitude = Some(altitude); self }
     /// Mock altitudeAccuracy
-    pub fn altitudeAccuracy(mut self, altitudeAccuracy: f64) -> Self { self.altitudeAccuracy = Some(altitudeAccuracy); self }
+    pub fn altitude_accuracy(mut self, altitude_accuracy: f64) -> Self { self.altitude_accuracy = Some(altitude_accuracy); self }
     /// Mock heading
     pub fn heading(mut self, heading: f64) -> Self { self.heading = Some(heading); self }
     /// Mock speed
@@ -1762,7 +1947,7 @@ impl SetGeolocationOverrideParamsBuilder {
             longitude: self.longitude,
             accuracy: self.accuracy,
             altitude: self.altitude,
-            altitudeAccuracy: self.altitudeAccuracy,
+            altitude_accuracy: self.altitude_accuracy,
             heading: self.heading,
             speed: self.speed,
         }
@@ -1785,6 +1970,8 @@ pub struct GetOverriddenSensorInformationParams {
 }
 
 impl GetOverriddenSensorInformationParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `type_`: 
     pub fn builder(type_: impl Into<SensorType>) -> GetOverriddenSensorInformationParamsBuilder {
         GetOverriddenSensorInformationParamsBuilder {
             type_: type_.into(),
@@ -1810,27 +1997,30 @@ impl GetOverriddenSensorInformationParamsBuilder {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetOverriddenSensorInformationReturns {
-    requestedSamplingFrequency: f64,
+    #[serde(rename = "requestedSamplingFrequency")]
+    requested_sampling_frequency: f64,
 }
 
 impl GetOverriddenSensorInformationReturns {
-    pub fn builder(requestedSamplingFrequency: f64) -> GetOverriddenSensorInformationReturnsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `requested_sampling_frequency`: 
+    pub fn builder(requested_sampling_frequency: f64) -> GetOverriddenSensorInformationReturnsBuilder {
         GetOverriddenSensorInformationReturnsBuilder {
-            requestedSamplingFrequency: requestedSamplingFrequency,
+            requested_sampling_frequency: requested_sampling_frequency,
         }
     }
-    pub fn requestedSamplingFrequency(&self) -> f64 { self.requestedSamplingFrequency }
+    pub fn requested_sampling_frequency(&self) -> f64 { self.requested_sampling_frequency }
 }
 
 
 pub struct GetOverriddenSensorInformationReturnsBuilder {
-    requestedSamplingFrequency: f64,
+    requested_sampling_frequency: f64,
 }
 
 impl GetOverriddenSensorInformationReturnsBuilder {
     pub fn build(self) -> GetOverriddenSensorInformationReturns {
         GetOverriddenSensorInformationReturns {
-            requestedSamplingFrequency: self.requestedSamplingFrequency,
+            requested_sampling_frequency: self.requested_sampling_frequency,
         }
     }
 }
@@ -1859,6 +2049,9 @@ pub struct SetSensorOverrideEnabledParams {
 }
 
 impl SetSensorOverrideEnabledParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `enabled`: 
+    /// * `type_`: 
     pub fn builder(enabled: bool, type_: impl Into<SensorType>) -> SetSensorOverrideEnabledParamsBuilder {
         SetSensorOverrideEnabledParamsBuilder {
             enabled: enabled,
@@ -1908,6 +2101,9 @@ pub struct SetSensorOverrideReadingsParams {
 }
 
 impl SetSensorOverrideReadingsParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `type_`: 
+    /// * `reading`: 
     pub fn builder(type_: impl Into<SensorType>, reading: SensorReading) -> SetSensorOverrideReadingsParamsBuilder {
         SetSensorOverrideReadingsParamsBuilder {
             type_: type_.into(),
@@ -1955,6 +2151,9 @@ pub struct SetPressureSourceOverrideEnabledParams {
 }
 
 impl SetPressureSourceOverrideEnabledParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `enabled`: 
+    /// * `source`: 
     pub fn builder(enabled: bool, source: impl Into<PressureSource>) -> SetPressureSourceOverrideEnabledParamsBuilder {
         SetPressureSourceOverrideEnabledParamsBuilder {
             enabled: enabled,
@@ -2005,6 +2204,9 @@ pub struct SetPressureStateOverrideParams {
 }
 
 impl SetPressureStateOverrideParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `source`: 
+    /// * `state`: 
     pub fn builder(source: impl Into<PressureSource>, state: impl Into<PressureState>) -> SetPressureStateOverrideParamsBuilder {
         SetPressureStateOverrideParamsBuilder {
             source: source.into(),
@@ -2046,37 +2248,40 @@ impl<'a> crate::CdpCommand<'a> for SetPressureStateOverrideParams {
 pub struct SetPressureDataOverrideParams {
     source: PressureSource,
     state: PressureState,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    ownContributionEstimate: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "ownContributionEstimate")]
+    own_contribution_estimate: Option<f64>,
 }
 
 impl SetPressureDataOverrideParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `source`: 
+    /// * `state`: 
     pub fn builder(source: impl Into<PressureSource>, state: impl Into<PressureState>) -> SetPressureDataOverrideParamsBuilder {
         SetPressureDataOverrideParamsBuilder {
             source: source.into(),
             state: state.into(),
-            ownContributionEstimate: None,
+            own_contribution_estimate: None,
         }
     }
     pub fn source(&self) -> &PressureSource { &self.source }
     pub fn state(&self) -> &PressureState { &self.state }
-    pub fn ownContributionEstimate(&self) -> Option<f64> { self.ownContributionEstimate }
+    pub fn own_contribution_estimate(&self) -> Option<f64> { self.own_contribution_estimate }
 }
 
 
 pub struct SetPressureDataOverrideParamsBuilder {
     source: PressureSource,
     state: PressureState,
-    ownContributionEstimate: Option<f64>,
+    own_contribution_estimate: Option<f64>,
 }
 
 impl SetPressureDataOverrideParamsBuilder {
-    pub fn ownContributionEstimate(mut self, ownContributionEstimate: f64) -> Self { self.ownContributionEstimate = Some(ownContributionEstimate); self }
+    pub fn own_contribution_estimate(mut self, own_contribution_estimate: f64) -> Self { self.own_contribution_estimate = Some(own_contribution_estimate); self }
     pub fn build(self) -> SetPressureDataOverrideParams {
         SetPressureDataOverrideParams {
             source: self.source,
             state: self.state,
-            ownContributionEstimate: self.ownContributionEstimate,
+            own_contribution_estimate: self.own_contribution_estimate,
         }
     }
 }
@@ -2094,33 +2299,40 @@ impl<'a> crate::CdpCommand<'a> for SetPressureDataOverrideParams {
 #[serde(rename_all = "camelCase")]
 pub struct SetIdleOverrideParams {
     /// Mock isUserActive
-    isUserActive: bool,
+    #[serde(rename = "isUserActive")]
+    is_user_active: bool,
     /// Mock isScreenUnlocked
-    isScreenUnlocked: bool,
+    #[serde(rename = "isScreenUnlocked")]
+    is_screen_unlocked: bool,
 }
 
 impl SetIdleOverrideParams {
-    pub fn builder(isUserActive: bool, isScreenUnlocked: bool) -> SetIdleOverrideParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `is_user_active`: Mock isUserActive
+    /// * `is_screen_unlocked`: Mock isScreenUnlocked
+    pub fn builder(is_user_active: bool, is_screen_unlocked: bool) -> SetIdleOverrideParamsBuilder {
         SetIdleOverrideParamsBuilder {
-            isUserActive: isUserActive,
-            isScreenUnlocked: isScreenUnlocked,
+            is_user_active: is_user_active,
+            is_screen_unlocked: is_screen_unlocked,
         }
     }
-    pub fn isUserActive(&self) -> bool { self.isUserActive }
-    pub fn isScreenUnlocked(&self) -> bool { self.isScreenUnlocked }
+    /// Mock isUserActive
+    pub fn is_user_active(&self) -> bool { self.is_user_active }
+    /// Mock isScreenUnlocked
+    pub fn is_screen_unlocked(&self) -> bool { self.is_screen_unlocked }
 }
 
 
 pub struct SetIdleOverrideParamsBuilder {
-    isUserActive: bool,
-    isScreenUnlocked: bool,
+    is_user_active: bool,
+    is_screen_unlocked: bool,
 }
 
 impl SetIdleOverrideParamsBuilder {
     pub fn build(self) -> SetIdleOverrideParams {
         SetIdleOverrideParams {
-            isUserActive: self.isUserActive,
-            isScreenUnlocked: self.isScreenUnlocked,
+            is_user_active: self.is_user_active,
+            is_screen_unlocked: self.is_screen_unlocked,
         }
     }
 }
@@ -2152,11 +2364,14 @@ pub struct SetNavigatorOverridesParams<'a> {
 }
 
 impl<'a> SetNavigatorOverridesParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `platform`: The platform navigator.platform should return.
     pub fn builder(platform: impl Into<Cow<'a, str>>) -> SetNavigatorOverridesParamsBuilder<'a> {
         SetNavigatorOverridesParamsBuilder {
             platform: platform.into(),
         }
     }
+    /// The platform navigator.platform should return.
     pub fn platform(&self) -> &str { self.platform.as_ref() }
 }
 
@@ -2186,27 +2401,31 @@ impl<'a> crate::CdpCommand<'a> for SetNavigatorOverridesParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SetPageScaleFactorParams {
     /// Page scale factor.
-    pageScaleFactor: f64,
+    #[serde(rename = "pageScaleFactor")]
+    page_scale_factor: f64,
 }
 
 impl SetPageScaleFactorParams {
-    pub fn builder(pageScaleFactor: f64) -> SetPageScaleFactorParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `page_scale_factor`: Page scale factor.
+    pub fn builder(page_scale_factor: f64) -> SetPageScaleFactorParamsBuilder {
         SetPageScaleFactorParamsBuilder {
-            pageScaleFactor: pageScaleFactor,
+            page_scale_factor: page_scale_factor,
         }
     }
-    pub fn pageScaleFactor(&self) -> f64 { self.pageScaleFactor }
+    /// Page scale factor.
+    pub fn page_scale_factor(&self) -> f64 { self.page_scale_factor }
 }
 
 
 pub struct SetPageScaleFactorParamsBuilder {
-    pageScaleFactor: f64,
+    page_scale_factor: f64,
 }
 
 impl SetPageScaleFactorParamsBuilder {
     pub fn build(self) -> SetPageScaleFactorParams {
         SetPageScaleFactorParams {
-            pageScaleFactor: self.pageScaleFactor,
+            page_scale_factor: self.page_scale_factor,
         }
     }
 }
@@ -2228,11 +2447,14 @@ pub struct SetScriptExecutionDisabledParams {
 }
 
 impl SetScriptExecutionDisabledParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `value`: Whether script execution should be disabled in the page.
     pub fn builder(value: bool) -> SetScriptExecutionDisabledParamsBuilder {
         SetScriptExecutionDisabledParamsBuilder {
             value: value,
         }
     }
+    /// Whether script execution should be disabled in the page.
     pub fn value(&self) -> bool { self.value }
 }
 
@@ -2264,34 +2486,38 @@ pub struct SetTouchEmulationEnabledParams {
     /// Whether the touch event emulation should be enabled.
     enabled: bool,
     /// Maximum touch points supported. Defaults to one.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    maxTouchPoints: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "maxTouchPoints")]
+    max_touch_points: Option<i64>,
 }
 
 impl SetTouchEmulationEnabledParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `enabled`: Whether the touch event emulation should be enabled.
     pub fn builder(enabled: bool) -> SetTouchEmulationEnabledParamsBuilder {
         SetTouchEmulationEnabledParamsBuilder {
             enabled: enabled,
-            maxTouchPoints: None,
+            max_touch_points: None,
         }
     }
+    /// Whether the touch event emulation should be enabled.
     pub fn enabled(&self) -> bool { self.enabled }
-    pub fn maxTouchPoints(&self) -> Option<i64> { self.maxTouchPoints }
+    /// Maximum touch points supported. Defaults to one.
+    pub fn max_touch_points(&self) -> Option<i64> { self.max_touch_points }
 }
 
 
 pub struct SetTouchEmulationEnabledParamsBuilder {
     enabled: bool,
-    maxTouchPoints: Option<i64>,
+    max_touch_points: Option<i64>,
 }
 
 impl SetTouchEmulationEnabledParamsBuilder {
     /// Maximum touch points supported. Defaults to one.
-    pub fn maxTouchPoints(mut self, maxTouchPoints: i64) -> Self { self.maxTouchPoints = Some(maxTouchPoints); self }
+    pub fn max_touch_points(mut self, max_touch_points: i64) -> Self { self.max_touch_points = Some(max_touch_points); self }
     pub fn build(self) -> SetTouchEmulationEnabledParams {
         SetTouchEmulationEnabledParams {
             enabled: self.enabled,
-            maxTouchPoints: self.maxTouchPoints,
+            max_touch_points: self.max_touch_points,
         }
     }
 }
@@ -2316,34 +2542,41 @@ pub struct SetVirtualTimePolicyParams {
     budget: Option<f64>,
     /// If set this specifies the maximum number of tasks that can be run before virtual is forced
     /// forwards to prevent deadlock.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    maxVirtualTimeTaskStarvationCount: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "maxVirtualTimeTaskStarvationCount")]
+    max_virtual_time_task_starvation_count: Option<u64>,
     /// If set, base::Time::Now will be overridden to initially return this value.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    initialVirtualTime: Option<crate::network::TimeSinceEpoch>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "initialVirtualTime")]
+    initial_virtual_time: Option<crate::network::TimeSinceEpoch>,
 }
 
 impl SetVirtualTimePolicyParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `policy`: 
     pub fn builder(policy: impl Into<VirtualTimePolicy>) -> SetVirtualTimePolicyParamsBuilder {
         SetVirtualTimePolicyParamsBuilder {
             policy: policy.into(),
             budget: None,
-            maxVirtualTimeTaskStarvationCount: None,
-            initialVirtualTime: None,
+            max_virtual_time_task_starvation_count: None,
+            initial_virtual_time: None,
         }
     }
     pub fn policy(&self) -> &VirtualTimePolicy { &self.policy }
+    /// If set, after this many virtual milliseconds have elapsed virtual time will be paused and a
+    /// virtualTimeBudgetExpired event is sent.
     pub fn budget(&self) -> Option<f64> { self.budget }
-    pub fn maxVirtualTimeTaskStarvationCount(&self) -> Option<u64> { self.maxVirtualTimeTaskStarvationCount }
-    pub fn initialVirtualTime(&self) -> Option<&crate::network::TimeSinceEpoch> { self.initialVirtualTime.as_ref() }
+    /// If set this specifies the maximum number of tasks that can be run before virtual is forced
+    /// forwards to prevent deadlock.
+    pub fn max_virtual_time_task_starvation_count(&self) -> Option<u64> { self.max_virtual_time_task_starvation_count }
+    /// If set, base::Time::Now will be overridden to initially return this value.
+    pub fn initial_virtual_time(&self) -> Option<&crate::network::TimeSinceEpoch> { self.initial_virtual_time.as_ref() }
 }
 
 
 pub struct SetVirtualTimePolicyParamsBuilder {
     policy: VirtualTimePolicy,
     budget: Option<f64>,
-    maxVirtualTimeTaskStarvationCount: Option<u64>,
-    initialVirtualTime: Option<crate::network::TimeSinceEpoch>,
+    max_virtual_time_task_starvation_count: Option<u64>,
+    initial_virtual_time: Option<crate::network::TimeSinceEpoch>,
 }
 
 impl SetVirtualTimePolicyParamsBuilder {
@@ -2352,15 +2585,15 @@ impl SetVirtualTimePolicyParamsBuilder {
     pub fn budget(mut self, budget: f64) -> Self { self.budget = Some(budget); self }
     /// If set this specifies the maximum number of tasks that can be run before virtual is forced
     /// forwards to prevent deadlock.
-    pub fn maxVirtualTimeTaskStarvationCount(mut self, maxVirtualTimeTaskStarvationCount: u64) -> Self { self.maxVirtualTimeTaskStarvationCount = Some(maxVirtualTimeTaskStarvationCount); self }
+    pub fn max_virtual_time_task_starvation_count(mut self, max_virtual_time_task_starvation_count: u64) -> Self { self.max_virtual_time_task_starvation_count = Some(max_virtual_time_task_starvation_count); self }
     /// If set, base::Time::Now will be overridden to initially return this value.
-    pub fn initialVirtualTime(mut self, initialVirtualTime: crate::network::TimeSinceEpoch) -> Self { self.initialVirtualTime = Some(initialVirtualTime); self }
+    pub fn initial_virtual_time(mut self, initial_virtual_time: crate::network::TimeSinceEpoch) -> Self { self.initial_virtual_time = Some(initial_virtual_time); self }
     pub fn build(self) -> SetVirtualTimePolicyParams {
         SetVirtualTimePolicyParams {
             policy: self.policy,
             budget: self.budget,
-            maxVirtualTimeTaskStarvationCount: self.maxVirtualTimeTaskStarvationCount,
-            initialVirtualTime: self.initialVirtualTime,
+            max_virtual_time_task_starvation_count: self.max_virtual_time_task_starvation_count,
+            initial_virtual_time: self.initial_virtual_time,
         }
     }
 }
@@ -2372,27 +2605,31 @@ impl SetVirtualTimePolicyParamsBuilder {
 #[serde(rename_all = "camelCase")]
 pub struct SetVirtualTimePolicyReturns {
     /// Absolute timestamp at which virtual time was first enabled (up time in milliseconds).
-    virtualTimeTicksBase: f64,
+    #[serde(rename = "virtualTimeTicksBase")]
+    virtual_time_ticks_base: f64,
 }
 
 impl SetVirtualTimePolicyReturns {
-    pub fn builder(virtualTimeTicksBase: f64) -> SetVirtualTimePolicyReturnsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `virtual_time_ticks_base`: Absolute timestamp at which virtual time was first enabled (up time in milliseconds).
+    pub fn builder(virtual_time_ticks_base: f64) -> SetVirtualTimePolicyReturnsBuilder {
         SetVirtualTimePolicyReturnsBuilder {
-            virtualTimeTicksBase: virtualTimeTicksBase,
+            virtual_time_ticks_base: virtual_time_ticks_base,
         }
     }
-    pub fn virtualTimeTicksBase(&self) -> f64 { self.virtualTimeTicksBase }
+    /// Absolute timestamp at which virtual time was first enabled (up time in milliseconds).
+    pub fn virtual_time_ticks_base(&self) -> f64 { self.virtual_time_ticks_base }
 }
 
 
 pub struct SetVirtualTimePolicyReturnsBuilder {
-    virtualTimeTicksBase: f64,
+    virtual_time_ticks_base: f64,
 }
 
 impl SetVirtualTimePolicyReturnsBuilder {
     pub fn build(self) -> SetVirtualTimePolicyReturns {
         SetVirtualTimePolicyReturns {
-            virtualTimeTicksBase: self.virtualTimeTicksBase,
+            virtual_time_ticks_base: self.virtual_time_ticks_base,
         }
     }
 }
@@ -2416,11 +2653,14 @@ pub struct SetLocaleOverrideParams<'a> {
 }
 
 impl<'a> SetLocaleOverrideParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> SetLocaleOverrideParamsBuilder<'a> {
         SetLocaleOverrideParamsBuilder {
             locale: None,
         }
     }
+    /// ICU style C locale (e.g. "en_US"). If not specified or empty, disables the override and
+    /// restores default host system locale.
     pub fn locale(&self) -> Option<&str> { self.locale.as_deref() }
 }
 
@@ -2453,29 +2693,35 @@ impl<'a> crate::CdpCommand<'a> for SetLocaleOverrideParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SetTimezoneOverrideParams<'a> {
     /// The timezone identifier. List of supported timezones:
-    /// https://source.chromium.org/chromium/chromium/deps/icu.git/+/faee8bc70570192d82d2978a71e2a615788597d1:source/data/misc/metaZones.txt
+    /// <https://source.chromium.org/chromium/chromium/deps/icu.git/+/faee8bc70570192d82d2978a71e2a615788597d1:source/data/misc/metaZones.txt>
     /// If empty, disables the override and restores default host system timezone.
-    timezoneId: Cow<'a, str>,
+    #[serde(rename = "timezoneId")]
+    timezone_id: Cow<'a, str>,
 }
 
 impl<'a> SetTimezoneOverrideParams<'a> {
-    pub fn builder(timezoneId: impl Into<Cow<'a, str>>) -> SetTimezoneOverrideParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `timezone_id`: The timezone identifier. List of supported timezones: <https://source.chromium.org/chromium/chromium/deps/icu.git/+/faee8bc70570192d82d2978a71e2a615788597d1:source/data/misc/metaZones.txt> If empty, disables the override and restores default host system timezone.
+    pub fn builder(timezone_id: impl Into<Cow<'a, str>>) -> SetTimezoneOverrideParamsBuilder<'a> {
         SetTimezoneOverrideParamsBuilder {
-            timezoneId: timezoneId.into(),
+            timezone_id: timezone_id.into(),
         }
     }
-    pub fn timezoneId(&self) -> &str { self.timezoneId.as_ref() }
+    /// The timezone identifier. List of supported timezones:
+    /// <https://source.chromium.org/chromium/chromium/deps/icu.git/+/faee8bc70570192d82d2978a71e2a615788597d1:source/data/misc/metaZones.txt>
+    /// If empty, disables the override and restores default host system timezone.
+    pub fn timezone_id(&self) -> &str { self.timezone_id.as_ref() }
 }
 
 
 pub struct SetTimezoneOverrideParamsBuilder<'a> {
-    timezoneId: Cow<'a, str>,
+    timezone_id: Cow<'a, str>,
 }
 
 impl<'a> SetTimezoneOverrideParamsBuilder<'a> {
     pub fn build(self) -> SetTimezoneOverrideParams<'a> {
         SetTimezoneOverrideParams {
-            timezoneId: self.timezoneId,
+            timezone_id: self.timezone_id,
         }
     }
 }
@@ -2501,13 +2747,18 @@ pub struct SetVisibleSizeParams {
 }
 
 impl SetVisibleSizeParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `width`: Frame width (DIP).
+    /// * `height`: Frame height (DIP).
     pub fn builder(width: u64, height: i64) -> SetVisibleSizeParamsBuilder {
         SetVisibleSizeParamsBuilder {
             width: width,
             height: height,
         }
     }
+    /// Frame width (DIP).
     pub fn width(&self) -> u64 { self.width }
+    /// Frame height (DIP).
     pub fn height(&self) -> i64 { self.height }
 }
 
@@ -2538,27 +2789,31 @@ impl<'a> crate::CdpCommand<'a> for SetVisibleSizeParams {
 #[serde(rename_all = "camelCase")]
 pub struct SetDisabledImageTypesParams {
     /// Image types to disable.
-    imageTypes: Vec<DisabledImageType>,
+    #[serde(rename = "imageTypes")]
+    image_types: Vec<DisabledImageType>,
 }
 
 impl SetDisabledImageTypesParams {
-    pub fn builder(imageTypes: Vec<DisabledImageType>) -> SetDisabledImageTypesParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `image_types`: Image types to disable.
+    pub fn builder(image_types: Vec<DisabledImageType>) -> SetDisabledImageTypesParamsBuilder {
         SetDisabledImageTypesParamsBuilder {
-            imageTypes: imageTypes,
+            image_types: image_types,
         }
     }
-    pub fn imageTypes(&self) -> &[DisabledImageType] { &self.imageTypes }
+    /// Image types to disable.
+    pub fn image_types(&self) -> &[DisabledImageType] { &self.image_types }
 }
 
 
 pub struct SetDisabledImageTypesParamsBuilder {
-    imageTypes: Vec<DisabledImageType>,
+    image_types: Vec<DisabledImageType>,
 }
 
 impl SetDisabledImageTypesParamsBuilder {
     pub fn build(self) -> SetDisabledImageTypesParams {
         SetDisabledImageTypesParams {
-            imageTypes: self.imageTypes,
+            image_types: self.image_types,
         }
     }
 }
@@ -2576,30 +2831,32 @@ impl<'a> crate::CdpCommand<'a> for SetDisabledImageTypesParams {
 #[serde(rename_all = "camelCase")]
 pub struct SetDataSaverOverrideParams {
     /// Override value. Omitting the parameter disables the override.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    dataSaverEnabled: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "dataSaverEnabled")]
+    data_saver_enabled: Option<bool>,
 }
 
 impl SetDataSaverOverrideParams {
+    /// Creates a builder for this type.
     pub fn builder() -> SetDataSaverOverrideParamsBuilder {
         SetDataSaverOverrideParamsBuilder {
-            dataSaverEnabled: None,
+            data_saver_enabled: None,
         }
     }
-    pub fn dataSaverEnabled(&self) -> Option<bool> { self.dataSaverEnabled }
+    /// Override value. Omitting the parameter disables the override.
+    pub fn data_saver_enabled(&self) -> Option<bool> { self.data_saver_enabled }
 }
 
 #[derive(Default)]
 pub struct SetDataSaverOverrideParamsBuilder {
-    dataSaverEnabled: Option<bool>,
+    data_saver_enabled: Option<bool>,
 }
 
 impl SetDataSaverOverrideParamsBuilder {
     /// Override value. Omitting the parameter disables the override.
-    pub fn dataSaverEnabled(mut self, dataSaverEnabled: bool) -> Self { self.dataSaverEnabled = Some(dataSaverEnabled); self }
+    pub fn data_saver_enabled(mut self, data_saver_enabled: bool) -> Self { self.data_saver_enabled = Some(data_saver_enabled); self }
     pub fn build(self) -> SetDataSaverOverrideParams {
         SetDataSaverOverrideParams {
-            dataSaverEnabled: self.dataSaverEnabled,
+            data_saver_enabled: self.data_saver_enabled,
         }
     }
 }
@@ -2616,27 +2873,31 @@ impl<'a> crate::CdpCommand<'a> for SetDataSaverOverrideParams {
 #[serde(rename_all = "camelCase")]
 pub struct SetHardwareConcurrencyOverrideParams {
     /// Hardware concurrency to report
-    hardwareConcurrency: i64,
+    #[serde(rename = "hardwareConcurrency")]
+    hardware_concurrency: i64,
 }
 
 impl SetHardwareConcurrencyOverrideParams {
-    pub fn builder(hardwareConcurrency: i64) -> SetHardwareConcurrencyOverrideParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `hardware_concurrency`: Hardware concurrency to report
+    pub fn builder(hardware_concurrency: i64) -> SetHardwareConcurrencyOverrideParamsBuilder {
         SetHardwareConcurrencyOverrideParamsBuilder {
-            hardwareConcurrency: hardwareConcurrency,
+            hardware_concurrency: hardware_concurrency,
         }
     }
-    pub fn hardwareConcurrency(&self) -> i64 { self.hardwareConcurrency }
+    /// Hardware concurrency to report
+    pub fn hardware_concurrency(&self) -> i64 { self.hardware_concurrency }
 }
 
 
 pub struct SetHardwareConcurrencyOverrideParamsBuilder {
-    hardwareConcurrency: i64,
+    hardware_concurrency: i64,
 }
 
 impl SetHardwareConcurrencyOverrideParamsBuilder {
     pub fn build(self) -> SetHardwareConcurrencyOverrideParams {
         SetHardwareConcurrencyOverrideParams {
-            hardwareConcurrency: self.hardwareConcurrency,
+            hardware_concurrency: self.hardware_concurrency,
         }
     }
 }
@@ -2655,54 +2916,61 @@ impl<'a> crate::CdpCommand<'a> for SetHardwareConcurrencyOverrideParams {
 #[serde(rename_all = "camelCase")]
 pub struct SetUserAgentOverrideParams<'a> {
     /// User agent to use.
-    userAgent: Cow<'a, str>,
+    #[serde(rename = "userAgent")]
+    user_agent: Cow<'a, str>,
     /// Browser language to emulate.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    acceptLanguage: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "acceptLanguage")]
+    accept_language: Option<Cow<'a, str>>,
     /// The platform navigator.platform should return.
     #[serde(skip_serializing_if = "Option::is_none")]
     platform: Option<Cow<'a, str>>,
     /// To be sent in Sec-CH-UA-* headers and returned in navigator.userAgentData
-    #[serde(skip_serializing_if = "Option::is_none")]
-    userAgentMetadata: Option<UserAgentMetadata<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "userAgentMetadata")]
+    user_agent_metadata: Option<UserAgentMetadata<'a>>,
 }
 
 impl<'a> SetUserAgentOverrideParams<'a> {
-    pub fn builder(userAgent: impl Into<Cow<'a, str>>) -> SetUserAgentOverrideParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `user_agent`: User agent to use.
+    pub fn builder(user_agent: impl Into<Cow<'a, str>>) -> SetUserAgentOverrideParamsBuilder<'a> {
         SetUserAgentOverrideParamsBuilder {
-            userAgent: userAgent.into(),
-            acceptLanguage: None,
+            user_agent: user_agent.into(),
+            accept_language: None,
             platform: None,
-            userAgentMetadata: None,
+            user_agent_metadata: None,
         }
     }
-    pub fn userAgent(&self) -> &str { self.userAgent.as_ref() }
-    pub fn acceptLanguage(&self) -> Option<&str> { self.acceptLanguage.as_deref() }
+    /// User agent to use.
+    pub fn user_agent(&self) -> &str { self.user_agent.as_ref() }
+    /// Browser language to emulate.
+    pub fn accept_language(&self) -> Option<&str> { self.accept_language.as_deref() }
+    /// The platform navigator.platform should return.
     pub fn platform(&self) -> Option<&str> { self.platform.as_deref() }
-    pub fn userAgentMetadata(&self) -> Option<&UserAgentMetadata<'a>> { self.userAgentMetadata.as_ref() }
+    /// To be sent in Sec-CH-UA-* headers and returned in navigator.userAgentData
+    pub fn user_agent_metadata(&self) -> Option<&UserAgentMetadata<'a>> { self.user_agent_metadata.as_ref() }
 }
 
 
 pub struct SetUserAgentOverrideParamsBuilder<'a> {
-    userAgent: Cow<'a, str>,
-    acceptLanguage: Option<Cow<'a, str>>,
+    user_agent: Cow<'a, str>,
+    accept_language: Option<Cow<'a, str>>,
     platform: Option<Cow<'a, str>>,
-    userAgentMetadata: Option<UserAgentMetadata<'a>>,
+    user_agent_metadata: Option<UserAgentMetadata<'a>>,
 }
 
 impl<'a> SetUserAgentOverrideParamsBuilder<'a> {
     /// Browser language to emulate.
-    pub fn acceptLanguage(mut self, acceptLanguage: impl Into<Cow<'a, str>>) -> Self { self.acceptLanguage = Some(acceptLanguage.into()); self }
+    pub fn accept_language(mut self, accept_language: impl Into<Cow<'a, str>>) -> Self { self.accept_language = Some(accept_language.into()); self }
     /// The platform navigator.platform should return.
     pub fn platform(mut self, platform: impl Into<Cow<'a, str>>) -> Self { self.platform = Some(platform.into()); self }
     /// To be sent in Sec-CH-UA-* headers and returned in navigator.userAgentData
-    pub fn userAgentMetadata(mut self, userAgentMetadata: UserAgentMetadata<'a>) -> Self { self.userAgentMetadata = Some(userAgentMetadata); self }
+    pub fn user_agent_metadata(mut self, user_agent_metadata: UserAgentMetadata<'a>) -> Self { self.user_agent_metadata = Some(user_agent_metadata); self }
     pub fn build(self) -> SetUserAgentOverrideParams<'a> {
         SetUserAgentOverrideParams {
-            userAgent: self.userAgent,
-            acceptLanguage: self.acceptLanguage,
+            user_agent: self.user_agent,
+            accept_language: self.accept_language,
             platform: self.platform,
-            userAgentMetadata: self.userAgentMetadata,
+            user_agent_metadata: self.user_agent_metadata,
         }
     }
 }
@@ -2724,11 +2992,14 @@ pub struct SetAutomationOverrideParams {
 }
 
 impl SetAutomationOverrideParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `enabled`: Whether the override should be enabled.
     pub fn builder(enabled: bool) -> SetAutomationOverrideParamsBuilder {
         SetAutomationOverrideParamsBuilder {
             enabled: enabled,
         }
     }
+    /// Whether the override should be enabled.
     pub fn enabled(&self) -> bool { self.enabled }
 }
 
@@ -2764,11 +3035,15 @@ pub struct SetSmallViewportHeightDifferenceOverrideParams {
 }
 
 impl SetSmallViewportHeightDifferenceOverrideParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `difference`: This will cause an element of size 100svh to be `difference` pixels smaller than an element of size 100lvh.
     pub fn builder(difference: i64) -> SetSmallViewportHeightDifferenceOverrideParamsBuilder {
         SetSmallViewportHeightDifferenceOverrideParamsBuilder {
             difference: difference,
         }
     }
+    /// This will cause an element of size 100svh to be 'difference' pixels smaller than an element
+    /// of size 100lvh.
     pub fn difference(&self) -> i64 { self.difference }
 }
 
@@ -2798,27 +3073,30 @@ impl<'a> crate::CdpCommand<'a> for SetSmallViewportHeightDifferenceOverrideParam
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GetScreenInfosReturns<'a> {
-    screenInfos: Vec<ScreenInfo<'a>>,
+    #[serde(rename = "screenInfos")]
+    screen_infos: Vec<ScreenInfo<'a>>,
 }
 
 impl<'a> GetScreenInfosReturns<'a> {
-    pub fn builder(screenInfos: Vec<ScreenInfo<'a>>) -> GetScreenInfosReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `screen_infos`: 
+    pub fn builder(screen_infos: Vec<ScreenInfo<'a>>) -> GetScreenInfosReturnsBuilder<'a> {
         GetScreenInfosReturnsBuilder {
-            screenInfos: screenInfos,
+            screen_infos: screen_infos,
         }
     }
-    pub fn screenInfos(&self) -> &[ScreenInfo<'a>] { &self.screenInfos }
+    pub fn screen_infos(&self) -> &[ScreenInfo<'a>] { &self.screen_infos }
 }
 
 
 pub struct GetScreenInfosReturnsBuilder<'a> {
-    screenInfos: Vec<ScreenInfo<'a>>,
+    screen_infos: Vec<ScreenInfo<'a>>,
 }
 
 impl<'a> GetScreenInfosReturnsBuilder<'a> {
     pub fn build(self) -> GetScreenInfosReturns<'a> {
         GetScreenInfosReturns {
-            screenInfos: self.screenInfos,
+            screen_infos: self.screen_infos,
         }
     }
 }
@@ -2847,50 +3125,65 @@ pub struct AddScreenParams<'a> {
     /// The height of the screen in pixels.
     height: i64,
     /// Specifies the screen's work area. Default is entire screen.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    workAreaInsets: Option<WorkAreaInsets>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "workAreaInsets")]
+    work_area_insets: Option<WorkAreaInsets>,
     /// Specifies the screen's device pixel ratio. Default is 1.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    devicePixelRatio: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "devicePixelRatio")]
+    device_pixel_ratio: Option<f64>,
     /// Specifies the screen's rotation angle. Available values are 0, 90, 180 and 270. Default is 0.
     #[serde(skip_serializing_if = "Option::is_none")]
     rotation: Option<i64>,
     /// Specifies the screen's color depth in bits. Default is 24.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    colorDepth: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "colorDepth")]
+    color_depth: Option<i64>,
     /// Specifies the descriptive label for the screen. Default is none.
     #[serde(skip_serializing_if = "Option::is_none")]
     label: Option<Cow<'a, str>>,
     /// Indicates whether the screen is internal to the device or external, attached to the device. Default is false.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    isInternal: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "isInternal")]
+    is_internal: Option<bool>,
 }
 
 impl<'a> AddScreenParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `left`: Offset of the left edge of the screen in pixels.
+    /// * `top`: Offset of the top edge of the screen in pixels.
+    /// * `width`: The width of the screen in pixels.
+    /// * `height`: The height of the screen in pixels.
     pub fn builder(left: i64, top: i64, width: u64, height: i64) -> AddScreenParamsBuilder<'a> {
         AddScreenParamsBuilder {
             left: left,
             top: top,
             width: width,
             height: height,
-            workAreaInsets: None,
-            devicePixelRatio: None,
+            work_area_insets: None,
+            device_pixel_ratio: None,
             rotation: None,
-            colorDepth: None,
+            color_depth: None,
             label: None,
-            isInternal: None,
+            is_internal: None,
         }
     }
+    /// Offset of the left edge of the screen in pixels.
     pub fn left(&self) -> i64 { self.left }
+    /// Offset of the top edge of the screen in pixels.
     pub fn top(&self) -> i64 { self.top }
+    /// The width of the screen in pixels.
     pub fn width(&self) -> u64 { self.width }
+    /// The height of the screen in pixels.
     pub fn height(&self) -> i64 { self.height }
-    pub fn workAreaInsets(&self) -> Option<&WorkAreaInsets> { self.workAreaInsets.as_ref() }
-    pub fn devicePixelRatio(&self) -> Option<f64> { self.devicePixelRatio }
+    /// Specifies the screen's work area. Default is entire screen.
+    pub fn work_area_insets(&self) -> Option<&WorkAreaInsets> { self.work_area_insets.as_ref() }
+    /// Specifies the screen's device pixel ratio. Default is 1.
+    pub fn device_pixel_ratio(&self) -> Option<f64> { self.device_pixel_ratio }
+    /// Specifies the screen's rotation angle. Available values are 0, 90, 180 and 270. Default is 0.
     pub fn rotation(&self) -> Option<i64> { self.rotation }
-    pub fn colorDepth(&self) -> Option<i64> { self.colorDepth }
+    /// Specifies the screen's color depth in bits. Default is 24.
+    pub fn color_depth(&self) -> Option<i64> { self.color_depth }
+    /// Specifies the descriptive label for the screen. Default is none.
     pub fn label(&self) -> Option<&str> { self.label.as_deref() }
-    pub fn isInternal(&self) -> Option<bool> { self.isInternal }
+    /// Indicates whether the screen is internal to the device or external, attached to the device. Default is false.
+    pub fn is_internal(&self) -> Option<bool> { self.is_internal }
 }
 
 
@@ -2899,39 +3192,39 @@ pub struct AddScreenParamsBuilder<'a> {
     top: i64,
     width: u64,
     height: i64,
-    workAreaInsets: Option<WorkAreaInsets>,
-    devicePixelRatio: Option<f64>,
+    work_area_insets: Option<WorkAreaInsets>,
+    device_pixel_ratio: Option<f64>,
     rotation: Option<i64>,
-    colorDepth: Option<i64>,
+    color_depth: Option<i64>,
     label: Option<Cow<'a, str>>,
-    isInternal: Option<bool>,
+    is_internal: Option<bool>,
 }
 
 impl<'a> AddScreenParamsBuilder<'a> {
     /// Specifies the screen's work area. Default is entire screen.
-    pub fn workAreaInsets(mut self, workAreaInsets: WorkAreaInsets) -> Self { self.workAreaInsets = Some(workAreaInsets); self }
+    pub fn work_area_insets(mut self, work_area_insets: WorkAreaInsets) -> Self { self.work_area_insets = Some(work_area_insets); self }
     /// Specifies the screen's device pixel ratio. Default is 1.
-    pub fn devicePixelRatio(mut self, devicePixelRatio: f64) -> Self { self.devicePixelRatio = Some(devicePixelRatio); self }
+    pub fn device_pixel_ratio(mut self, device_pixel_ratio: f64) -> Self { self.device_pixel_ratio = Some(device_pixel_ratio); self }
     /// Specifies the screen's rotation angle. Available values are 0, 90, 180 and 270. Default is 0.
     pub fn rotation(mut self, rotation: i64) -> Self { self.rotation = Some(rotation); self }
     /// Specifies the screen's color depth in bits. Default is 24.
-    pub fn colorDepth(mut self, colorDepth: i64) -> Self { self.colorDepth = Some(colorDepth); self }
+    pub fn color_depth(mut self, color_depth: i64) -> Self { self.color_depth = Some(color_depth); self }
     /// Specifies the descriptive label for the screen. Default is none.
     pub fn label(mut self, label: impl Into<Cow<'a, str>>) -> Self { self.label = Some(label.into()); self }
     /// Indicates whether the screen is internal to the device or external, attached to the device. Default is false.
-    pub fn isInternal(mut self, isInternal: bool) -> Self { self.isInternal = Some(isInternal); self }
+    pub fn is_internal(mut self, is_internal: bool) -> Self { self.is_internal = Some(is_internal); self }
     pub fn build(self) -> AddScreenParams<'a> {
         AddScreenParams {
             left: self.left,
             top: self.top,
             width: self.width,
             height: self.height,
-            workAreaInsets: self.workAreaInsets,
-            devicePixelRatio: self.devicePixelRatio,
+            work_area_insets: self.work_area_insets,
+            device_pixel_ratio: self.device_pixel_ratio,
             rotation: self.rotation,
-            colorDepth: self.colorDepth,
+            color_depth: self.color_depth,
             label: self.label,
-            isInternal: self.isInternal,
+            is_internal: self.is_internal,
         }
     }
 }
@@ -2941,27 +3234,30 @@ impl<'a> AddScreenParamsBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct AddScreenReturns<'a> {
-    screenInfo: ScreenInfo<'a>,
+    #[serde(rename = "screenInfo")]
+    screen_info: ScreenInfo<'a>,
 }
 
 impl<'a> AddScreenReturns<'a> {
-    pub fn builder(screenInfo: ScreenInfo<'a>) -> AddScreenReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `screen_info`: 
+    pub fn builder(screen_info: ScreenInfo<'a>) -> AddScreenReturnsBuilder<'a> {
         AddScreenReturnsBuilder {
-            screenInfo: screenInfo,
+            screen_info: screen_info,
         }
     }
-    pub fn screenInfo(&self) -> &ScreenInfo<'a> { &self.screenInfo }
+    pub fn screen_info(&self) -> &ScreenInfo<'a> { &self.screen_info }
 }
 
 
 pub struct AddScreenReturnsBuilder<'a> {
-    screenInfo: ScreenInfo<'a>,
+    screen_info: ScreenInfo<'a>,
 }
 
 impl<'a> AddScreenReturnsBuilder<'a> {
     pub fn build(self) -> AddScreenReturns<'a> {
         AddScreenReturns {
-            screenInfo: self.screenInfo,
+            screen_info: self.screen_info,
         }
     }
 }
@@ -2979,7 +3275,8 @@ impl<'a> crate::CdpCommand<'a> for AddScreenParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct UpdateScreenParams<'a> {
     /// Target screen identifier.
-    screenId: ScreenId<'a>,
+    #[serde(rename = "screenId")]
+    screen_id: ScreenId<'a>,
     /// Offset of the left edge of the screen in pixels.
     #[serde(skip_serializing_if = "Option::is_none")]
     left: Option<i64>,
@@ -2993,67 +3290,80 @@ pub struct UpdateScreenParams<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     height: Option<i64>,
     /// Specifies the screen's work area.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    workAreaInsets: Option<WorkAreaInsets>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "workAreaInsets")]
+    work_area_insets: Option<WorkAreaInsets>,
     /// Specifies the screen's device pixel ratio.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    devicePixelRatio: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "devicePixelRatio")]
+    device_pixel_ratio: Option<f64>,
     /// Specifies the screen's rotation angle. Available values are 0, 90, 180 and 270.
     #[serde(skip_serializing_if = "Option::is_none")]
     rotation: Option<i64>,
     /// Specifies the screen's color depth in bits.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    colorDepth: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "colorDepth")]
+    color_depth: Option<i64>,
     /// Specifies the descriptive label for the screen.
     #[serde(skip_serializing_if = "Option::is_none")]
     label: Option<Cow<'a, str>>,
     /// Indicates whether the screen is internal to the device or external, attached to the device. Default is false.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    isInternal: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "isInternal")]
+    is_internal: Option<bool>,
 }
 
 impl<'a> UpdateScreenParams<'a> {
-    pub fn builder(screenId: impl Into<ScreenId<'a>>) -> UpdateScreenParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `screen_id`: Target screen identifier.
+    pub fn builder(screen_id: impl Into<ScreenId<'a>>) -> UpdateScreenParamsBuilder<'a> {
         UpdateScreenParamsBuilder {
-            screenId: screenId.into(),
+            screen_id: screen_id.into(),
             left: None,
             top: None,
             width: None,
             height: None,
-            workAreaInsets: None,
-            devicePixelRatio: None,
+            work_area_insets: None,
+            device_pixel_ratio: None,
             rotation: None,
-            colorDepth: None,
+            color_depth: None,
             label: None,
-            isInternal: None,
+            is_internal: None,
         }
     }
-    pub fn screenId(&self) -> &ScreenId<'a> { &self.screenId }
+    /// Target screen identifier.
+    pub fn screen_id(&self) -> &ScreenId<'a> { &self.screen_id }
+    /// Offset of the left edge of the screen in pixels.
     pub fn left(&self) -> Option<i64> { self.left }
+    /// Offset of the top edge of the screen in pixels.
     pub fn top(&self) -> Option<i64> { self.top }
+    /// The width of the screen in pixels.
     pub fn width(&self) -> Option<u64> { self.width }
+    /// The height of the screen in pixels.
     pub fn height(&self) -> Option<i64> { self.height }
-    pub fn workAreaInsets(&self) -> Option<&WorkAreaInsets> { self.workAreaInsets.as_ref() }
-    pub fn devicePixelRatio(&self) -> Option<f64> { self.devicePixelRatio }
+    /// Specifies the screen's work area.
+    pub fn work_area_insets(&self) -> Option<&WorkAreaInsets> { self.work_area_insets.as_ref() }
+    /// Specifies the screen's device pixel ratio.
+    pub fn device_pixel_ratio(&self) -> Option<f64> { self.device_pixel_ratio }
+    /// Specifies the screen's rotation angle. Available values are 0, 90, 180 and 270.
     pub fn rotation(&self) -> Option<i64> { self.rotation }
-    pub fn colorDepth(&self) -> Option<i64> { self.colorDepth }
+    /// Specifies the screen's color depth in bits.
+    pub fn color_depth(&self) -> Option<i64> { self.color_depth }
+    /// Specifies the descriptive label for the screen.
     pub fn label(&self) -> Option<&str> { self.label.as_deref() }
-    pub fn isInternal(&self) -> Option<bool> { self.isInternal }
+    /// Indicates whether the screen is internal to the device or external, attached to the device. Default is false.
+    pub fn is_internal(&self) -> Option<bool> { self.is_internal }
 }
 
 
 pub struct UpdateScreenParamsBuilder<'a> {
-    screenId: ScreenId<'a>,
+    screen_id: ScreenId<'a>,
     left: Option<i64>,
     top: Option<i64>,
     width: Option<u64>,
     height: Option<i64>,
-    workAreaInsets: Option<WorkAreaInsets>,
-    devicePixelRatio: Option<f64>,
+    work_area_insets: Option<WorkAreaInsets>,
+    device_pixel_ratio: Option<f64>,
     rotation: Option<i64>,
-    colorDepth: Option<i64>,
+    color_depth: Option<i64>,
     label: Option<Cow<'a, str>>,
-    isInternal: Option<bool>,
+    is_internal: Option<bool>,
 }
 
 impl<'a> UpdateScreenParamsBuilder<'a> {
@@ -3066,30 +3376,30 @@ impl<'a> UpdateScreenParamsBuilder<'a> {
     /// The height of the screen in pixels.
     pub fn height(mut self, height: i64) -> Self { self.height = Some(height); self }
     /// Specifies the screen's work area.
-    pub fn workAreaInsets(mut self, workAreaInsets: WorkAreaInsets) -> Self { self.workAreaInsets = Some(workAreaInsets); self }
+    pub fn work_area_insets(mut self, work_area_insets: WorkAreaInsets) -> Self { self.work_area_insets = Some(work_area_insets); self }
     /// Specifies the screen's device pixel ratio.
-    pub fn devicePixelRatio(mut self, devicePixelRatio: f64) -> Self { self.devicePixelRatio = Some(devicePixelRatio); self }
+    pub fn device_pixel_ratio(mut self, device_pixel_ratio: f64) -> Self { self.device_pixel_ratio = Some(device_pixel_ratio); self }
     /// Specifies the screen's rotation angle. Available values are 0, 90, 180 and 270.
     pub fn rotation(mut self, rotation: i64) -> Self { self.rotation = Some(rotation); self }
     /// Specifies the screen's color depth in bits.
-    pub fn colorDepth(mut self, colorDepth: i64) -> Self { self.colorDepth = Some(colorDepth); self }
+    pub fn color_depth(mut self, color_depth: i64) -> Self { self.color_depth = Some(color_depth); self }
     /// Specifies the descriptive label for the screen.
     pub fn label(mut self, label: impl Into<Cow<'a, str>>) -> Self { self.label = Some(label.into()); self }
     /// Indicates whether the screen is internal to the device or external, attached to the device. Default is false.
-    pub fn isInternal(mut self, isInternal: bool) -> Self { self.isInternal = Some(isInternal); self }
+    pub fn is_internal(mut self, is_internal: bool) -> Self { self.is_internal = Some(is_internal); self }
     pub fn build(self) -> UpdateScreenParams<'a> {
         UpdateScreenParams {
-            screenId: self.screenId,
+            screen_id: self.screen_id,
             left: self.left,
             top: self.top,
             width: self.width,
             height: self.height,
-            workAreaInsets: self.workAreaInsets,
-            devicePixelRatio: self.devicePixelRatio,
+            work_area_insets: self.work_area_insets,
+            device_pixel_ratio: self.device_pixel_ratio,
             rotation: self.rotation,
-            colorDepth: self.colorDepth,
+            color_depth: self.color_depth,
             label: self.label,
-            isInternal: self.isInternal,
+            is_internal: self.is_internal,
         }
     }
 }
@@ -3099,27 +3409,30 @@ impl<'a> UpdateScreenParamsBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateScreenReturns<'a> {
-    screenInfo: ScreenInfo<'a>,
+    #[serde(rename = "screenInfo")]
+    screen_info: ScreenInfo<'a>,
 }
 
 impl<'a> UpdateScreenReturns<'a> {
-    pub fn builder(screenInfo: ScreenInfo<'a>) -> UpdateScreenReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `screen_info`: 
+    pub fn builder(screen_info: ScreenInfo<'a>) -> UpdateScreenReturnsBuilder<'a> {
         UpdateScreenReturnsBuilder {
-            screenInfo: screenInfo,
+            screen_info: screen_info,
         }
     }
-    pub fn screenInfo(&self) -> &ScreenInfo<'a> { &self.screenInfo }
+    pub fn screen_info(&self) -> &ScreenInfo<'a> { &self.screen_info }
 }
 
 
 pub struct UpdateScreenReturnsBuilder<'a> {
-    screenInfo: ScreenInfo<'a>,
+    screen_info: ScreenInfo<'a>,
 }
 
 impl<'a> UpdateScreenReturnsBuilder<'a> {
     pub fn build(self) -> UpdateScreenReturns<'a> {
         UpdateScreenReturns {
-            screenInfo: self.screenInfo,
+            screen_info: self.screen_info,
         }
     }
 }
@@ -3136,27 +3449,30 @@ impl<'a> crate::CdpCommand<'a> for UpdateScreenParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveScreenParams<'a> {
-    screenId: ScreenId<'a>,
+    #[serde(rename = "screenId")]
+    screen_id: ScreenId<'a>,
 }
 
 impl<'a> RemoveScreenParams<'a> {
-    pub fn builder(screenId: impl Into<ScreenId<'a>>) -> RemoveScreenParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `screen_id`: 
+    pub fn builder(screen_id: impl Into<ScreenId<'a>>) -> RemoveScreenParamsBuilder<'a> {
         RemoveScreenParamsBuilder {
-            screenId: screenId.into(),
+            screen_id: screen_id.into(),
         }
     }
-    pub fn screenId(&self) -> &ScreenId<'a> { &self.screenId }
+    pub fn screen_id(&self) -> &ScreenId<'a> { &self.screen_id }
 }
 
 
 pub struct RemoveScreenParamsBuilder<'a> {
-    screenId: ScreenId<'a>,
+    screen_id: ScreenId<'a>,
 }
 
 impl<'a> RemoveScreenParamsBuilder<'a> {
     pub fn build(self) -> RemoveScreenParams<'a> {
         RemoveScreenParams {
-            screenId: self.screenId,
+            screen_id: self.screen_id,
         }
     }
 }
@@ -3176,27 +3492,30 @@ impl<'a> crate::CdpCommand<'a> for RemoveScreenParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SetPrimaryScreenParams<'a> {
-    screenId: ScreenId<'a>,
+    #[serde(rename = "screenId")]
+    screen_id: ScreenId<'a>,
 }
 
 impl<'a> SetPrimaryScreenParams<'a> {
-    pub fn builder(screenId: impl Into<ScreenId<'a>>) -> SetPrimaryScreenParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `screen_id`: 
+    pub fn builder(screen_id: impl Into<ScreenId<'a>>) -> SetPrimaryScreenParamsBuilder<'a> {
         SetPrimaryScreenParamsBuilder {
-            screenId: screenId.into(),
+            screen_id: screen_id.into(),
         }
     }
-    pub fn screenId(&self) -> &ScreenId<'a> { &self.screenId }
+    pub fn screen_id(&self) -> &ScreenId<'a> { &self.screen_id }
 }
 
 
 pub struct SetPrimaryScreenParamsBuilder<'a> {
-    screenId: ScreenId<'a>,
+    screen_id: ScreenId<'a>,
 }
 
 impl<'a> SetPrimaryScreenParamsBuilder<'a> {
     pub fn build(self) -> SetPrimaryScreenParams<'a> {
         SetPrimaryScreenParams {
-            screenId: self.screenId,
+            screen_id: self.screen_id,
         }
     }
 }

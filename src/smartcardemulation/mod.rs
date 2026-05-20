@@ -5,8 +5,8 @@ use std::borrow::Cow;
 /// Indicates the PC/SC error code.
 /// 
 /// This maps to:
-/// PC/SC Lite: https://pcsclite.apdu.fr/api/group__ErrorCodes.html
-/// Microsoft: https://learn.microsoft.com/en-us/windows/win32/secauthn/authentication-return-values
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__ErrorCodes.html>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/secauthn/authentication-return-values>
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum ResultCode {
@@ -154,6 +154,7 @@ pub struct ReaderStateFlags {
 }
 
 impl ReaderStateFlags {
+    /// Creates a builder for this type.
     pub fn builder() -> ReaderStateFlagsBuilder {
         ReaderStateFlagsBuilder {
             unaware: None,
@@ -240,6 +241,7 @@ pub struct ProtocolSet {
 }
 
 impl ProtocolSet {
+    /// Creates a builder for this type.
     pub fn builder() -> ProtocolSetBuilder {
         ProtocolSetBuilder {
             t0: None,
@@ -290,36 +292,42 @@ pub enum Protocol {
 #[serde(rename_all = "camelCase")]
 pub struct ReaderStateIn<'a> {
     reader: Cow<'a, str>,
-    currentState: ReaderStateFlags,
-    currentInsertionCount: u64,
+    #[serde(rename = "currentState")]
+    current_state: ReaderStateFlags,
+    #[serde(rename = "currentInsertionCount")]
+    current_insertion_count: u64,
 }
 
 impl<'a> ReaderStateIn<'a> {
-    pub fn builder(reader: impl Into<Cow<'a, str>>, currentState: ReaderStateFlags, currentInsertionCount: u64) -> ReaderStateInBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `reader`: 
+    /// * `current_state`: 
+    /// * `current_insertion_count`: 
+    pub fn builder(reader: impl Into<Cow<'a, str>>, current_state: ReaderStateFlags, current_insertion_count: u64) -> ReaderStateInBuilder<'a> {
         ReaderStateInBuilder {
             reader: reader.into(),
-            currentState: currentState,
-            currentInsertionCount: currentInsertionCount,
+            current_state: current_state,
+            current_insertion_count: current_insertion_count,
         }
     }
     pub fn reader(&self) -> &str { self.reader.as_ref() }
-    pub fn currentState(&self) -> &ReaderStateFlags { &self.currentState }
-    pub fn currentInsertionCount(&self) -> u64 { self.currentInsertionCount }
+    pub fn current_state(&self) -> &ReaderStateFlags { &self.current_state }
+    pub fn current_insertion_count(&self) -> u64 { self.current_insertion_count }
 }
 
 
 pub struct ReaderStateInBuilder<'a> {
     reader: Cow<'a, str>,
-    currentState: ReaderStateFlags,
-    currentInsertionCount: u64,
+    current_state: ReaderStateFlags,
+    current_insertion_count: u64,
 }
 
 impl<'a> ReaderStateInBuilder<'a> {
     pub fn build(self) -> ReaderStateIn<'a> {
         ReaderStateIn {
             reader: self.reader,
-            currentState: self.currentState,
-            currentInsertionCount: self.currentInsertionCount,
+            current_state: self.current_state,
+            current_insertion_count: self.current_insertion_count,
         }
     }
 }
@@ -329,31 +337,38 @@ impl<'a> ReaderStateInBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ReaderStateOut<'a> {
     reader: Cow<'a, str>,
-    eventState: ReaderStateFlags,
-    eventCount: u64,
+    #[serde(rename = "eventState")]
+    event_state: ReaderStateFlags,
+    #[serde(rename = "eventCount")]
+    event_count: u64,
     atr: Cow<'a, str>,
 }
 
 impl<'a> ReaderStateOut<'a> {
-    pub fn builder(reader: impl Into<Cow<'a, str>>, eventState: ReaderStateFlags, eventCount: u64, atr: impl Into<Cow<'a, str>>) -> ReaderStateOutBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `reader`: 
+    /// * `event_state`: 
+    /// * `event_count`: 
+    /// * `atr`: 
+    pub fn builder(reader: impl Into<Cow<'a, str>>, event_state: ReaderStateFlags, event_count: u64, atr: impl Into<Cow<'a, str>>) -> ReaderStateOutBuilder<'a> {
         ReaderStateOutBuilder {
             reader: reader.into(),
-            eventState: eventState,
-            eventCount: eventCount,
+            event_state: event_state,
+            event_count: event_count,
             atr: atr.into(),
         }
     }
     pub fn reader(&self) -> &str { self.reader.as_ref() }
-    pub fn eventState(&self) -> &ReaderStateFlags { &self.eventState }
-    pub fn eventCount(&self) -> u64 { self.eventCount }
+    pub fn event_state(&self) -> &ReaderStateFlags { &self.event_state }
+    pub fn event_count(&self) -> u64 { self.event_count }
     pub fn atr(&self) -> &str { self.atr.as_ref() }
 }
 
 
 pub struct ReaderStateOutBuilder<'a> {
     reader: Cow<'a, str>,
-    eventState: ReaderStateFlags,
-    eventCount: u64,
+    event_state: ReaderStateFlags,
+    event_count: u64,
     atr: Cow<'a, str>,
 }
 
@@ -361,8 +376,8 @@ impl<'a> ReaderStateOutBuilder<'a> {
     pub fn build(self) -> ReaderStateOut<'a> {
         ReaderStateOut {
             reader: self.reader,
-            eventState: self.eventState,
-            eventCount: self.eventCount,
+            event_state: self.event_state,
+            event_count: self.event_count,
             atr: self.atr,
         }
     }
@@ -391,38 +406,43 @@ impl<'a> crate::CdpCommand<'a> for DisableParams {
 /// Reports the successful result of a |SCardEstablishContext| call.
 /// 
 /// This maps to:
-/// PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gaa1b8970169fd4883a6dc4a8f43f19b67
-/// Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardestablishcontext
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#gaa1b8970169fd4883a6dc4a8f43f19b67>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardestablishcontext>
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ReportEstablishContextResultParams<'a> {
-    requestId: Cow<'a, str>,
-    contextId: u64,
+    #[serde(rename = "requestId")]
+    request_id: Cow<'a, str>,
+    #[serde(rename = "contextId")]
+    context_id: u64,
 }
 
 impl<'a> ReportEstablishContextResultParams<'a> {
-    pub fn builder(requestId: impl Into<Cow<'a, str>>, contextId: u64) -> ReportEstablishContextResultParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_id`: 
+    /// * `context_id`: 
+    pub fn builder(request_id: impl Into<Cow<'a, str>>, context_id: u64) -> ReportEstablishContextResultParamsBuilder<'a> {
         ReportEstablishContextResultParamsBuilder {
-            requestId: requestId.into(),
-            contextId: contextId,
+            request_id: request_id.into(),
+            context_id: context_id,
         }
     }
-    pub fn requestId(&self) -> &str { self.requestId.as_ref() }
-    pub fn contextId(&self) -> u64 { self.contextId }
+    pub fn request_id(&self) -> &str { self.request_id.as_ref() }
+    pub fn context_id(&self) -> u64 { self.context_id }
 }
 
 
 pub struct ReportEstablishContextResultParamsBuilder<'a> {
-    requestId: Cow<'a, str>,
-    contextId: u64,
+    request_id: Cow<'a, str>,
+    context_id: u64,
 }
 
 impl<'a> ReportEstablishContextResultParamsBuilder<'a> {
     pub fn build(self) -> ReportEstablishContextResultParams<'a> {
         ReportEstablishContextResultParams {
-            requestId: self.requestId,
-            contextId: self.contextId,
+            request_id: self.request_id,
+            context_id: self.context_id,
         }
     }
 }
@@ -437,33 +457,36 @@ impl<'a> crate::CdpCommand<'a> for ReportEstablishContextResultParams<'a> {
 /// Reports the successful result of a |SCardReleaseContext| call.
 /// 
 /// This maps to:
-/// PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga6aabcba7744c5c9419fdd6404f73a934
-/// Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardreleasecontext
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#ga6aabcba7744c5c9419fdd6404f73a934>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardreleasecontext>
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ReportReleaseContextResultParams<'a> {
-    requestId: Cow<'a, str>,
+    #[serde(rename = "requestId")]
+    request_id: Cow<'a, str>,
 }
 
 impl<'a> ReportReleaseContextResultParams<'a> {
-    pub fn builder(requestId: impl Into<Cow<'a, str>>) -> ReportReleaseContextResultParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_id`: 
+    pub fn builder(request_id: impl Into<Cow<'a, str>>) -> ReportReleaseContextResultParamsBuilder<'a> {
         ReportReleaseContextResultParamsBuilder {
-            requestId: requestId.into(),
+            request_id: request_id.into(),
         }
     }
-    pub fn requestId(&self) -> &str { self.requestId.as_ref() }
+    pub fn request_id(&self) -> &str { self.request_id.as_ref() }
 }
 
 
 pub struct ReportReleaseContextResultParamsBuilder<'a> {
-    requestId: Cow<'a, str>,
+    request_id: Cow<'a, str>,
 }
 
 impl<'a> ReportReleaseContextResultParamsBuilder<'a> {
     pub fn build(self) -> ReportReleaseContextResultParams<'a> {
         ReportReleaseContextResultParams {
-            requestId: self.requestId,
+            request_id: self.request_id,
         }
     }
 }
@@ -478,37 +501,41 @@ impl<'a> crate::CdpCommand<'a> for ReportReleaseContextResultParams<'a> {
 /// Reports the successful result of a |SCardListReaders| call.
 /// 
 /// This maps to:
-/// PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga93b07815789b3cf2629d439ecf20f0d9
-/// Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardlistreadersa
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#ga93b07815789b3cf2629d439ecf20f0d9>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardlistreadersa>
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ReportListReadersResultParams<'a> {
-    requestId: Cow<'a, str>,
+    #[serde(rename = "requestId")]
+    request_id: Cow<'a, str>,
     readers: Vec<Cow<'a, str>>,
 }
 
 impl<'a> ReportListReadersResultParams<'a> {
-    pub fn builder(requestId: impl Into<Cow<'a, str>>, readers: Vec<Cow<'a, str>>) -> ReportListReadersResultParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_id`: 
+    /// * `readers`: 
+    pub fn builder(request_id: impl Into<Cow<'a, str>>, readers: Vec<Cow<'a, str>>) -> ReportListReadersResultParamsBuilder<'a> {
         ReportListReadersResultParamsBuilder {
-            requestId: requestId.into(),
+            request_id: request_id.into(),
             readers: readers,
         }
     }
-    pub fn requestId(&self) -> &str { self.requestId.as_ref() }
+    pub fn request_id(&self) -> &str { self.request_id.as_ref() }
     pub fn readers(&self) -> &[Cow<'a, str>] { &self.readers }
 }
 
 
 pub struct ReportListReadersResultParamsBuilder<'a> {
-    requestId: Cow<'a, str>,
+    request_id: Cow<'a, str>,
     readers: Vec<Cow<'a, str>>,
 }
 
 impl<'a> ReportListReadersResultParamsBuilder<'a> {
     pub fn build(self) -> ReportListReadersResultParams<'a> {
         ReportListReadersResultParams {
-            requestId: self.requestId,
+            request_id: self.request_id,
             readers: self.readers,
         }
     }
@@ -524,38 +551,43 @@ impl<'a> crate::CdpCommand<'a> for ReportListReadersResultParams<'a> {
 /// Reports the successful result of a |SCardGetStatusChange| call.
 /// 
 /// This maps to:
-/// PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga33247d5d1257d59e55647c3bb717db24
-/// Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardgetstatuschangea
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#ga33247d5d1257d59e55647c3bb717db24>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardgetstatuschangea>
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ReportGetStatusChangeResultParams<'a> {
-    requestId: Cow<'a, str>,
-    readerStates: Vec<ReaderStateOut<'a>>,
+    #[serde(rename = "requestId")]
+    request_id: Cow<'a, str>,
+    #[serde(rename = "readerStates")]
+    reader_states: Vec<ReaderStateOut<'a>>,
 }
 
 impl<'a> ReportGetStatusChangeResultParams<'a> {
-    pub fn builder(requestId: impl Into<Cow<'a, str>>, readerStates: Vec<ReaderStateOut<'a>>) -> ReportGetStatusChangeResultParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_id`: 
+    /// * `reader_states`: 
+    pub fn builder(request_id: impl Into<Cow<'a, str>>, reader_states: Vec<ReaderStateOut<'a>>) -> ReportGetStatusChangeResultParamsBuilder<'a> {
         ReportGetStatusChangeResultParamsBuilder {
-            requestId: requestId.into(),
-            readerStates: readerStates,
+            request_id: request_id.into(),
+            reader_states: reader_states,
         }
     }
-    pub fn requestId(&self) -> &str { self.requestId.as_ref() }
-    pub fn readerStates(&self) -> &[ReaderStateOut<'a>] { &self.readerStates }
+    pub fn request_id(&self) -> &str { self.request_id.as_ref() }
+    pub fn reader_states(&self) -> &[ReaderStateOut<'a>] { &self.reader_states }
 }
 
 
 pub struct ReportGetStatusChangeResultParamsBuilder<'a> {
-    requestId: Cow<'a, str>,
-    readerStates: Vec<ReaderStateOut<'a>>,
+    request_id: Cow<'a, str>,
+    reader_states: Vec<ReaderStateOut<'a>>,
 }
 
 impl<'a> ReportGetStatusChangeResultParamsBuilder<'a> {
     pub fn build(self) -> ReportGetStatusChangeResultParams<'a> {
         ReportGetStatusChangeResultParams {
-            requestId: self.requestId,
-            readerStates: self.readerStates,
+            request_id: self.request_id,
+            reader_states: self.reader_states,
         }
     }
 }
@@ -571,37 +603,41 @@ impl<'a> crate::CdpCommand<'a> for ReportGetStatusChangeResultParams<'a> {
 /// On success, this creates a new transaction object.
 /// 
 /// This maps to:
-/// PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gaddb835dce01a0da1d6ca02d33ee7d861
-/// Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardbegintransaction
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#gaddb835dce01a0da1d6ca02d33ee7d861>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardbegintransaction>
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ReportBeginTransactionResultParams<'a> {
-    requestId: Cow<'a, str>,
+    #[serde(rename = "requestId")]
+    request_id: Cow<'a, str>,
     handle: i64,
 }
 
 impl<'a> ReportBeginTransactionResultParams<'a> {
-    pub fn builder(requestId: impl Into<Cow<'a, str>>, handle: i64) -> ReportBeginTransactionResultParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_id`: 
+    /// * `handle`: 
+    pub fn builder(request_id: impl Into<Cow<'a, str>>, handle: i64) -> ReportBeginTransactionResultParamsBuilder<'a> {
         ReportBeginTransactionResultParamsBuilder {
-            requestId: requestId.into(),
+            request_id: request_id.into(),
             handle: handle,
         }
     }
-    pub fn requestId(&self) -> &str { self.requestId.as_ref() }
+    pub fn request_id(&self) -> &str { self.request_id.as_ref() }
     pub fn handle(&self) -> i64 { self.handle }
 }
 
 
 pub struct ReportBeginTransactionResultParamsBuilder<'a> {
-    requestId: Cow<'a, str>,
+    request_id: Cow<'a, str>,
     handle: i64,
 }
 
 impl<'a> ReportBeginTransactionResultParamsBuilder<'a> {
     pub fn build(self) -> ReportBeginTransactionResultParams<'a> {
         ReportBeginTransactionResultParams {
-            requestId: self.requestId,
+            request_id: self.request_id,
             handle: self.handle,
         }
     }
@@ -619,45 +655,48 @@ impl<'a> crate::CdpCommand<'a> for ReportBeginTransactionResultParams<'a> {
 /// 
 /// This maps to:
 /// 1. SCardCancel
-/// PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gaacbbc0c6d6c0cbbeb4f4debf6fbeeee6
-/// Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardcancel
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#gaacbbc0c6d6c0cbbeb4f4debf6fbeeee6>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardcancel>
 /// 
 /// 2. SCardDisconnect
-/// PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga4be198045c73ec0deb79e66c0ca1738a
-/// Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scarddisconnect
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#ga4be198045c73ec0deb79e66c0ca1738a>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scarddisconnect>
 /// 
 /// 3. SCardSetAttrib
-/// PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga060f0038a4ddfd5dd2b8fadf3c3a2e4f
-/// Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardsetattrib
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#ga060f0038a4ddfd5dd2b8fadf3c3a2e4f>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardsetattrib>
 /// 
 /// 4. SCardEndTransaction
-/// PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gae8742473b404363e5c587f570d7e2f3b
-/// Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardendtransaction
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#gae8742473b404363e5c587f570d7e2f3b>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardendtransaction>
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ReportPlainResultParams<'a> {
-    requestId: Cow<'a, str>,
+    #[serde(rename = "requestId")]
+    request_id: Cow<'a, str>,
 }
 
 impl<'a> ReportPlainResultParams<'a> {
-    pub fn builder(requestId: impl Into<Cow<'a, str>>) -> ReportPlainResultParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_id`: 
+    pub fn builder(request_id: impl Into<Cow<'a, str>>) -> ReportPlainResultParamsBuilder<'a> {
         ReportPlainResultParamsBuilder {
-            requestId: requestId.into(),
+            request_id: request_id.into(),
         }
     }
-    pub fn requestId(&self) -> &str { self.requestId.as_ref() }
+    pub fn request_id(&self) -> &str { self.request_id.as_ref() }
 }
 
 
 pub struct ReportPlainResultParamsBuilder<'a> {
-    requestId: Cow<'a, str>,
+    request_id: Cow<'a, str>,
 }
 
 impl<'a> ReportPlainResultParamsBuilder<'a> {
     pub fn build(self) -> ReportPlainResultParams<'a> {
         ReportPlainResultParams {
-            requestId: self.requestId,
+            request_id: self.request_id,
         }
     }
 }
@@ -672,45 +711,49 @@ impl<'a> crate::CdpCommand<'a> for ReportPlainResultParams<'a> {
 /// Reports the successful result of a |SCardConnect| call.
 /// 
 /// This maps to:
-/// PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga4e515829752e0a8dbc4d630696a8d6a5
-/// Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardconnecta
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#ga4e515829752e0a8dbc4d630696a8d6a5>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardconnecta>
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ReportConnectResultParams<'a> {
-    requestId: Cow<'a, str>,
+    #[serde(rename = "requestId")]
+    request_id: Cow<'a, str>,
     handle: i64,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    activeProtocol: Option<Protocol>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "activeProtocol")]
+    active_protocol: Option<Protocol>,
 }
 
 impl<'a> ReportConnectResultParams<'a> {
-    pub fn builder(requestId: impl Into<Cow<'a, str>>, handle: i64) -> ReportConnectResultParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_id`: 
+    /// * `handle`: 
+    pub fn builder(request_id: impl Into<Cow<'a, str>>, handle: i64) -> ReportConnectResultParamsBuilder<'a> {
         ReportConnectResultParamsBuilder {
-            requestId: requestId.into(),
+            request_id: request_id.into(),
             handle: handle,
-            activeProtocol: None,
+            active_protocol: None,
         }
     }
-    pub fn requestId(&self) -> &str { self.requestId.as_ref() }
+    pub fn request_id(&self) -> &str { self.request_id.as_ref() }
     pub fn handle(&self) -> i64 { self.handle }
-    pub fn activeProtocol(&self) -> Option<&Protocol> { self.activeProtocol.as_ref() }
+    pub fn active_protocol(&self) -> Option<&Protocol> { self.active_protocol.as_ref() }
 }
 
 
 pub struct ReportConnectResultParamsBuilder<'a> {
-    requestId: Cow<'a, str>,
+    request_id: Cow<'a, str>,
     handle: i64,
-    activeProtocol: Option<Protocol>,
+    active_protocol: Option<Protocol>,
 }
 
 impl<'a> ReportConnectResultParamsBuilder<'a> {
-    pub fn activeProtocol(mut self, activeProtocol: impl Into<Protocol>) -> Self { self.activeProtocol = Some(activeProtocol.into()); self }
+    pub fn active_protocol(mut self, active_protocol: impl Into<Protocol>) -> Self { self.active_protocol = Some(active_protocol.into()); self }
     pub fn build(self) -> ReportConnectResultParams<'a> {
         ReportConnectResultParams {
-            requestId: self.requestId,
+            request_id: self.request_id,
             handle: self.handle,
-            activeProtocol: self.activeProtocol,
+            active_protocol: self.active_protocol,
         }
     }
 }
@@ -727,45 +770,49 @@ impl<'a> crate::CdpCommand<'a> for ReportConnectResultParams<'a> {
 /// 
 /// This maps to:
 /// 1. SCardTransmit
-/// PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#ga9a2d77242a271310269065e64633ab99
-/// Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardtransmit
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#ga9a2d77242a271310269065e64633ab99>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardtransmit>
 /// 
 /// 2. SCardControl
-/// PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gac3454d4657110fd7f753b2d3d8f4e32f
-/// Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardcontrol
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#gac3454d4657110fd7f753b2d3d8f4e32f>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardcontrol>
 /// 
 /// 3. SCardGetAttrib
-/// PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gaacfec51917255b7a25b94c5104961602
-/// Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardgetattrib
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#gaacfec51917255b7a25b94c5104961602>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardgetattrib>
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ReportDataResultParams<'a> {
-    requestId: Cow<'a, str>,
+    #[serde(rename = "requestId")]
+    request_id: Cow<'a, str>,
     data: Cow<'a, str>,
 }
 
 impl<'a> ReportDataResultParams<'a> {
-    pub fn builder(requestId: impl Into<Cow<'a, str>>, data: impl Into<Cow<'a, str>>) -> ReportDataResultParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_id`: 
+    /// * `data`: 
+    pub fn builder(request_id: impl Into<Cow<'a, str>>, data: impl Into<Cow<'a, str>>) -> ReportDataResultParamsBuilder<'a> {
         ReportDataResultParamsBuilder {
-            requestId: requestId.into(),
+            request_id: request_id.into(),
             data: data.into(),
         }
     }
-    pub fn requestId(&self) -> &str { self.requestId.as_ref() }
+    pub fn request_id(&self) -> &str { self.request_id.as_ref() }
     pub fn data(&self) -> &str { self.data.as_ref() }
 }
 
 
 pub struct ReportDataResultParamsBuilder<'a> {
-    requestId: Cow<'a, str>,
+    request_id: Cow<'a, str>,
     data: Cow<'a, str>,
 }
 
 impl<'a> ReportDataResultParamsBuilder<'a> {
     pub fn build(self) -> ReportDataResultParams<'a> {
         ReportDataResultParams {
-            requestId: self.requestId,
+            request_id: self.request_id,
             data: self.data,
         }
     }
@@ -781,14 +828,16 @@ impl<'a> crate::CdpCommand<'a> for ReportDataResultParams<'a> {
 /// Reports the successful result of a |SCardStatus| call.
 /// 
 /// This maps to:
-/// PC/SC Lite: https://pcsclite.apdu.fr/api/group__API.html#gae49c3c894ad7ac12a5b896bde70d0382
-/// Microsoft: https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardstatusa
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#gae49c3c894ad7ac12a5b896bde70d0382>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardstatusa>
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ReportStatusResultParams<'a> {
-    requestId: Cow<'a, str>,
-    readerName: Cow<'a, str>,
+    #[serde(rename = "requestId")]
+    request_id: Cow<'a, str>,
+    #[serde(rename = "readerName")]
+    reader_name: Cow<'a, str>,
     state: ConnectionState,
     atr: Cow<'a, str>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -796,17 +845,22 @@ pub struct ReportStatusResultParams<'a> {
 }
 
 impl<'a> ReportStatusResultParams<'a> {
-    pub fn builder(requestId: impl Into<Cow<'a, str>>, readerName: impl Into<Cow<'a, str>>, state: impl Into<ConnectionState>, atr: impl Into<Cow<'a, str>>) -> ReportStatusResultParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_id`: 
+    /// * `reader_name`: 
+    /// * `state`: 
+    /// * `atr`: 
+    pub fn builder(request_id: impl Into<Cow<'a, str>>, reader_name: impl Into<Cow<'a, str>>, state: impl Into<ConnectionState>, atr: impl Into<Cow<'a, str>>) -> ReportStatusResultParamsBuilder<'a> {
         ReportStatusResultParamsBuilder {
-            requestId: requestId.into(),
-            readerName: readerName.into(),
+            request_id: request_id.into(),
+            reader_name: reader_name.into(),
             state: state.into(),
             atr: atr.into(),
             protocol: None,
         }
     }
-    pub fn requestId(&self) -> &str { self.requestId.as_ref() }
-    pub fn readerName(&self) -> &str { self.readerName.as_ref() }
+    pub fn request_id(&self) -> &str { self.request_id.as_ref() }
+    pub fn reader_name(&self) -> &str { self.reader_name.as_ref() }
     pub fn state(&self) -> &ConnectionState { &self.state }
     pub fn atr(&self) -> &str { self.atr.as_ref() }
     pub fn protocol(&self) -> Option<&Protocol> { self.protocol.as_ref() }
@@ -814,8 +868,8 @@ impl<'a> ReportStatusResultParams<'a> {
 
 
 pub struct ReportStatusResultParamsBuilder<'a> {
-    requestId: Cow<'a, str>,
-    readerName: Cow<'a, str>,
+    request_id: Cow<'a, str>,
+    reader_name: Cow<'a, str>,
     state: ConnectionState,
     atr: Cow<'a, str>,
     protocol: Option<Protocol>,
@@ -825,8 +879,8 @@ impl<'a> ReportStatusResultParamsBuilder<'a> {
     pub fn protocol(mut self, protocol: impl Into<Protocol>) -> Self { self.protocol = Some(protocol.into()); self }
     pub fn build(self) -> ReportStatusResultParams<'a> {
         ReportStatusResultParams {
-            requestId: self.requestId,
-            readerName: self.readerName,
+            request_id: self.request_id,
+            reader_name: self.reader_name,
             state: self.state,
             atr: self.atr,
             protocol: self.protocol,
@@ -846,32 +900,37 @@ impl<'a> crate::CdpCommand<'a> for ReportStatusResultParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ReportErrorParams<'a> {
-    requestId: Cow<'a, str>,
-    resultCode: ResultCode,
+    #[serde(rename = "requestId")]
+    request_id: Cow<'a, str>,
+    #[serde(rename = "resultCode")]
+    result_code: ResultCode,
 }
 
 impl<'a> ReportErrorParams<'a> {
-    pub fn builder(requestId: impl Into<Cow<'a, str>>, resultCode: impl Into<ResultCode>) -> ReportErrorParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_id`: 
+    /// * `result_code`: 
+    pub fn builder(request_id: impl Into<Cow<'a, str>>, result_code: impl Into<ResultCode>) -> ReportErrorParamsBuilder<'a> {
         ReportErrorParamsBuilder {
-            requestId: requestId.into(),
-            resultCode: resultCode.into(),
+            request_id: request_id.into(),
+            result_code: result_code.into(),
         }
     }
-    pub fn requestId(&self) -> &str { self.requestId.as_ref() }
-    pub fn resultCode(&self) -> &ResultCode { &self.resultCode }
+    pub fn request_id(&self) -> &str { self.request_id.as_ref() }
+    pub fn result_code(&self) -> &ResultCode { &self.result_code }
 }
 
 
 pub struct ReportErrorParamsBuilder<'a> {
-    requestId: Cow<'a, str>,
-    resultCode: ResultCode,
+    request_id: Cow<'a, str>,
+    result_code: ResultCode,
 }
 
 impl<'a> ReportErrorParamsBuilder<'a> {
     pub fn build(self) -> ReportErrorParams<'a> {
         ReportErrorParams {
-            requestId: self.requestId,
-            resultCode: self.resultCode,
+            request_id: self.request_id,
+            result_code: self.result_code,
         }
     }
 }

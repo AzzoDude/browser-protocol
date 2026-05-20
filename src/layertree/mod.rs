@@ -23,13 +23,18 @@ pub struct ScrollRect<'a> {
 }
 
 impl<'a> ScrollRect<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `rect`: Rectangle itself.
+    /// * `type_`: Reason for rectangle to force scrolling on the main thread
     pub fn builder(rect: crate::dom::Rect, type_: impl Into<Cow<'a, str>>) -> ScrollRectBuilder<'a> {
         ScrollRectBuilder {
             rect: rect,
             type_: type_.into(),
         }
     }
+    /// Rectangle itself.
     pub fn rect(&self) -> &crate::dom::Rect { &self.rect }
+    /// Reason for rectangle to force scrolling on the main thread
     pub fn type_(&self) -> &str { self.type_.as_ref() }
 }
 
@@ -54,51 +59,60 @@ impl<'a> ScrollRectBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct StickyPositionConstraint<'a> {
     /// Layout rectangle of the sticky element before being shifted
-    stickyBoxRect: crate::dom::Rect,
+    #[serde(rename = "stickyBoxRect")]
+    sticky_box_rect: crate::dom::Rect,
     /// Layout rectangle of the containing block of the sticky element
-    containingBlockRect: crate::dom::Rect,
+    #[serde(rename = "containingBlockRect")]
+    containing_block_rect: crate::dom::Rect,
     /// The nearest sticky layer that shifts the sticky box
-    #[serde(skip_serializing_if = "Option::is_none")]
-    nearestLayerShiftingStickyBox: Option<LayerId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "nearestLayerShiftingStickyBox")]
+    nearest_layer_shifting_sticky_box: Option<LayerId<'a>>,
     /// The nearest sticky layer that shifts the containing block
-    #[serde(skip_serializing_if = "Option::is_none")]
-    nearestLayerShiftingContainingBlock: Option<LayerId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "nearestLayerShiftingContainingBlock")]
+    nearest_layer_shifting_containing_block: Option<LayerId<'a>>,
 }
 
 impl<'a> StickyPositionConstraint<'a> {
-    pub fn builder(stickyBoxRect: crate::dom::Rect, containingBlockRect: crate::dom::Rect) -> StickyPositionConstraintBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `sticky_box_rect`: Layout rectangle of the sticky element before being shifted
+    /// * `containing_block_rect`: Layout rectangle of the containing block of the sticky element
+    pub fn builder(sticky_box_rect: crate::dom::Rect, containing_block_rect: crate::dom::Rect) -> StickyPositionConstraintBuilder<'a> {
         StickyPositionConstraintBuilder {
-            stickyBoxRect: stickyBoxRect,
-            containingBlockRect: containingBlockRect,
-            nearestLayerShiftingStickyBox: None,
-            nearestLayerShiftingContainingBlock: None,
+            sticky_box_rect: sticky_box_rect,
+            containing_block_rect: containing_block_rect,
+            nearest_layer_shifting_sticky_box: None,
+            nearest_layer_shifting_containing_block: None,
         }
     }
-    pub fn stickyBoxRect(&self) -> &crate::dom::Rect { &self.stickyBoxRect }
-    pub fn containingBlockRect(&self) -> &crate::dom::Rect { &self.containingBlockRect }
-    pub fn nearestLayerShiftingStickyBox(&self) -> Option<&LayerId<'a>> { self.nearestLayerShiftingStickyBox.as_ref() }
-    pub fn nearestLayerShiftingContainingBlock(&self) -> Option<&LayerId<'a>> { self.nearestLayerShiftingContainingBlock.as_ref() }
+    /// Layout rectangle of the sticky element before being shifted
+    pub fn sticky_box_rect(&self) -> &crate::dom::Rect { &self.sticky_box_rect }
+    /// Layout rectangle of the containing block of the sticky element
+    pub fn containing_block_rect(&self) -> &crate::dom::Rect { &self.containing_block_rect }
+    /// The nearest sticky layer that shifts the sticky box
+    pub fn nearest_layer_shifting_sticky_box(&self) -> Option<&LayerId<'a>> { self.nearest_layer_shifting_sticky_box.as_ref() }
+    /// The nearest sticky layer that shifts the containing block
+    pub fn nearest_layer_shifting_containing_block(&self) -> Option<&LayerId<'a>> { self.nearest_layer_shifting_containing_block.as_ref() }
 }
 
 
 pub struct StickyPositionConstraintBuilder<'a> {
-    stickyBoxRect: crate::dom::Rect,
-    containingBlockRect: crate::dom::Rect,
-    nearestLayerShiftingStickyBox: Option<LayerId<'a>>,
-    nearestLayerShiftingContainingBlock: Option<LayerId<'a>>,
+    sticky_box_rect: crate::dom::Rect,
+    containing_block_rect: crate::dom::Rect,
+    nearest_layer_shifting_sticky_box: Option<LayerId<'a>>,
+    nearest_layer_shifting_containing_block: Option<LayerId<'a>>,
 }
 
 impl<'a> StickyPositionConstraintBuilder<'a> {
     /// The nearest sticky layer that shifts the sticky box
-    pub fn nearestLayerShiftingStickyBox(mut self, nearestLayerShiftingStickyBox: impl Into<LayerId<'a>>) -> Self { self.nearestLayerShiftingStickyBox = Some(nearestLayerShiftingStickyBox.into()); self }
+    pub fn nearest_layer_shifting_sticky_box(mut self, nearest_layer_shifting_sticky_box: impl Into<LayerId<'a>>) -> Self { self.nearest_layer_shifting_sticky_box = Some(nearest_layer_shifting_sticky_box.into()); self }
     /// The nearest sticky layer that shifts the containing block
-    pub fn nearestLayerShiftingContainingBlock(mut self, nearestLayerShiftingContainingBlock: impl Into<LayerId<'a>>) -> Self { self.nearestLayerShiftingContainingBlock = Some(nearestLayerShiftingContainingBlock.into()); self }
+    pub fn nearest_layer_shifting_containing_block(mut self, nearest_layer_shifting_containing_block: impl Into<LayerId<'a>>) -> Self { self.nearest_layer_shifting_containing_block = Some(nearest_layer_shifting_containing_block.into()); self }
     pub fn build(self) -> StickyPositionConstraint<'a> {
         StickyPositionConstraint {
-            stickyBoxRect: self.stickyBoxRect,
-            containingBlockRect: self.containingBlockRect,
-            nearestLayerShiftingStickyBox: self.nearestLayerShiftingStickyBox,
-            nearestLayerShiftingContainingBlock: self.nearestLayerShiftingContainingBlock,
+            sticky_box_rect: self.sticky_box_rect,
+            containing_block_rect: self.containing_block_rect,
+            nearest_layer_shifting_sticky_box: self.nearest_layer_shifting_sticky_box,
+            nearest_layer_shifting_containing_block: self.nearest_layer_shifting_containing_block,
         }
     }
 }
@@ -117,6 +131,10 @@ pub struct PictureTile<'a> {
 }
 
 impl<'a> PictureTile<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `x`: Offset from owning layer left boundary
+    /// * `y`: Offset from owning layer top boundary
+    /// * `picture`: Base64-encoded snapshot data. (Encoded as a base64 string when passed over JSON)
     pub fn builder(x: f64, y: f64, picture: impl Into<Cow<'a, str>>) -> PictureTileBuilder<'a> {
         PictureTileBuilder {
             x: x,
@@ -124,8 +142,11 @@ impl<'a> PictureTile<'a> {
             picture: picture.into(),
         }
     }
+    /// Offset from owning layer left boundary
     pub fn x(&self) -> f64 { self.x }
+    /// Offset from owning layer top boundary
     pub fn y(&self) -> f64 { self.y }
+    /// Base64-encoded snapshot data. (Encoded as a base64 string when passed over JSON)
     pub fn picture(&self) -> &str { self.picture.as_ref() }
 }
 
@@ -152,17 +173,20 @@ impl<'a> PictureTileBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct Layer<'a> {
     /// The unique id for this layer.
-    layerId: LayerId<'a>,
+    #[serde(rename = "layerId")]
+    layer_id: LayerId<'a>,
     /// The id of parent (not present for root).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    parentLayerId: Option<LayerId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "parentLayerId")]
+    parent_layer_id: Option<LayerId<'a>>,
     /// The backend id for the node associated with this layer.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    backendNodeId: Option<crate::dom::BackendNodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "backendNodeId")]
+    backend_node_id: Option<crate::dom::BackendNodeId>,
     /// Offset from parent layer, X coordinate.
-    offsetX: f64,
+    #[serde(rename = "offsetX")]
+    offset_x: f64,
     /// Offset from parent layer, Y coordinate.
-    offsetY: f64,
+    #[serde(rename = "offsetY")]
+    offset_y: f64,
     /// Layer width.
     width: f64,
     /// Layer height.
@@ -171,126 +195,153 @@ pub struct Layer<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     transform: Option<Vec<f64>>,
     /// Transform anchor point X, absent if no transform specified
-    #[serde(skip_serializing_if = "Option::is_none")]
-    anchorX: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "anchorX")]
+    anchor_x: Option<f64>,
     /// Transform anchor point Y, absent if no transform specified
-    #[serde(skip_serializing_if = "Option::is_none")]
-    anchorY: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "anchorY")]
+    anchor_y: Option<f64>,
     /// Transform anchor point Z, absent if no transform specified
-    #[serde(skip_serializing_if = "Option::is_none")]
-    anchorZ: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "anchorZ")]
+    anchor_z: Option<f64>,
     /// Indicates how many time this layer has painted.
-    paintCount: u64,
+    #[serde(rename = "paintCount")]
+    paint_count: u64,
     /// Indicates whether this layer hosts any content, rather than being used for
     /// transform/scrolling purposes only.
-    drawsContent: bool,
+    #[serde(rename = "drawsContent")]
+    draws_content: bool,
     /// Set if layer is not visible.
     #[serde(skip_serializing_if = "Option::is_none")]
     invisible: Option<bool>,
     /// Rectangles scrolling on main thread only.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    scrollRects: Option<Vec<ScrollRect<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "scrollRects")]
+    scroll_rects: Option<Vec<ScrollRect<'a>>>,
     /// Sticky position constraint information
-    #[serde(skip_serializing_if = "Option::is_none")]
-    stickyPositionConstraint: Option<StickyPositionConstraint<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "stickyPositionConstraint")]
+    sticky_position_constraint: Option<StickyPositionConstraint<'a>>,
 }
 
 impl<'a> Layer<'a> {
-    pub fn builder(layerId: impl Into<LayerId<'a>>, offsetX: f64, offsetY: f64, width: f64, height: f64, paintCount: u64, drawsContent: bool) -> LayerBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `layer_id`: The unique id for this layer.
+    /// * `offset_x`: Offset from parent layer, X coordinate.
+    /// * `offset_y`: Offset from parent layer, Y coordinate.
+    /// * `width`: Layer width.
+    /// * `height`: Layer height.
+    /// * `paint_count`: Indicates how many time this layer has painted.
+    /// * `draws_content`: Indicates whether this layer hosts any content, rather than being used for transform/scrolling purposes only.
+    pub fn builder(layer_id: impl Into<LayerId<'a>>, offset_x: f64, offset_y: f64, width: f64, height: f64, paint_count: u64, draws_content: bool) -> LayerBuilder<'a> {
         LayerBuilder {
-            layerId: layerId.into(),
-            parentLayerId: None,
-            backendNodeId: None,
-            offsetX: offsetX,
-            offsetY: offsetY,
+            layer_id: layer_id.into(),
+            parent_layer_id: None,
+            backend_node_id: None,
+            offset_x: offset_x,
+            offset_y: offset_y,
             width: width,
             height: height,
             transform: None,
-            anchorX: None,
-            anchorY: None,
-            anchorZ: None,
-            paintCount: paintCount,
-            drawsContent: drawsContent,
+            anchor_x: None,
+            anchor_y: None,
+            anchor_z: None,
+            paint_count: paint_count,
+            draws_content: draws_content,
             invisible: None,
-            scrollRects: None,
-            stickyPositionConstraint: None,
+            scroll_rects: None,
+            sticky_position_constraint: None,
         }
     }
-    pub fn layerId(&self) -> &LayerId<'a> { &self.layerId }
-    pub fn parentLayerId(&self) -> Option<&LayerId<'a>> { self.parentLayerId.as_ref() }
-    pub fn backendNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.backendNodeId.as_ref() }
-    pub fn offsetX(&self) -> f64 { self.offsetX }
-    pub fn offsetY(&self) -> f64 { self.offsetY }
+    /// The unique id for this layer.
+    pub fn layer_id(&self) -> &LayerId<'a> { &self.layer_id }
+    /// The id of parent (not present for root).
+    pub fn parent_layer_id(&self) -> Option<&LayerId<'a>> { self.parent_layer_id.as_ref() }
+    /// The backend id for the node associated with this layer.
+    pub fn backend_node_id(&self) -> Option<&crate::dom::BackendNodeId> { self.backend_node_id.as_ref() }
+    /// Offset from parent layer, X coordinate.
+    pub fn offset_x(&self) -> f64 { self.offset_x }
+    /// Offset from parent layer, Y coordinate.
+    pub fn offset_y(&self) -> f64 { self.offset_y }
+    /// Layer width.
     pub fn width(&self) -> f64 { self.width }
+    /// Layer height.
     pub fn height(&self) -> f64 { self.height }
+    /// Transformation matrix for layer, default is identity matrix
     pub fn transform(&self) -> Option<&[f64]> { self.transform.as_deref() }
-    pub fn anchorX(&self) -> Option<f64> { self.anchorX }
-    pub fn anchorY(&self) -> Option<f64> { self.anchorY }
-    pub fn anchorZ(&self) -> Option<f64> { self.anchorZ }
-    pub fn paintCount(&self) -> u64 { self.paintCount }
-    pub fn drawsContent(&self) -> bool { self.drawsContent }
+    /// Transform anchor point X, absent if no transform specified
+    pub fn anchor_x(&self) -> Option<f64> { self.anchor_x }
+    /// Transform anchor point Y, absent if no transform specified
+    pub fn anchor_y(&self) -> Option<f64> { self.anchor_y }
+    /// Transform anchor point Z, absent if no transform specified
+    pub fn anchor_z(&self) -> Option<f64> { self.anchor_z }
+    /// Indicates how many time this layer has painted.
+    pub fn paint_count(&self) -> u64 { self.paint_count }
+    /// Indicates whether this layer hosts any content, rather than being used for
+    /// transform/scrolling purposes only.
+    pub fn draws_content(&self) -> bool { self.draws_content }
+    /// Set if layer is not visible.
     pub fn invisible(&self) -> Option<bool> { self.invisible }
-    pub fn scrollRects(&self) -> Option<&[ScrollRect<'a>]> { self.scrollRects.as_deref() }
-    pub fn stickyPositionConstraint(&self) -> Option<&StickyPositionConstraint<'a>> { self.stickyPositionConstraint.as_ref() }
+    /// Rectangles scrolling on main thread only.
+    pub fn scroll_rects(&self) -> Option<&[ScrollRect<'a>]> { self.scroll_rects.as_deref() }
+    /// Sticky position constraint information
+    pub fn sticky_position_constraint(&self) -> Option<&StickyPositionConstraint<'a>> { self.sticky_position_constraint.as_ref() }
 }
 
 
 pub struct LayerBuilder<'a> {
-    layerId: LayerId<'a>,
-    parentLayerId: Option<LayerId<'a>>,
-    backendNodeId: Option<crate::dom::BackendNodeId>,
-    offsetX: f64,
-    offsetY: f64,
+    layer_id: LayerId<'a>,
+    parent_layer_id: Option<LayerId<'a>>,
+    backend_node_id: Option<crate::dom::BackendNodeId>,
+    offset_x: f64,
+    offset_y: f64,
     width: f64,
     height: f64,
     transform: Option<Vec<f64>>,
-    anchorX: Option<f64>,
-    anchorY: Option<f64>,
-    anchorZ: Option<f64>,
-    paintCount: u64,
-    drawsContent: bool,
+    anchor_x: Option<f64>,
+    anchor_y: Option<f64>,
+    anchor_z: Option<f64>,
+    paint_count: u64,
+    draws_content: bool,
     invisible: Option<bool>,
-    scrollRects: Option<Vec<ScrollRect<'a>>>,
-    stickyPositionConstraint: Option<StickyPositionConstraint<'a>>,
+    scroll_rects: Option<Vec<ScrollRect<'a>>>,
+    sticky_position_constraint: Option<StickyPositionConstraint<'a>>,
 }
 
 impl<'a> LayerBuilder<'a> {
     /// The id of parent (not present for root).
-    pub fn parentLayerId(mut self, parentLayerId: impl Into<LayerId<'a>>) -> Self { self.parentLayerId = Some(parentLayerId.into()); self }
+    pub fn parent_layer_id(mut self, parent_layer_id: impl Into<LayerId<'a>>) -> Self { self.parent_layer_id = Some(parent_layer_id.into()); self }
     /// The backend id for the node associated with this layer.
-    pub fn backendNodeId(mut self, backendNodeId: crate::dom::BackendNodeId) -> Self { self.backendNodeId = Some(backendNodeId); self }
+    pub fn backend_node_id(mut self, backend_node_id: crate::dom::BackendNodeId) -> Self { self.backend_node_id = Some(backend_node_id); self }
     /// Transformation matrix for layer, default is identity matrix
     pub fn transform(mut self, transform: Vec<f64>) -> Self { self.transform = Some(transform); self }
     /// Transform anchor point X, absent if no transform specified
-    pub fn anchorX(mut self, anchorX: f64) -> Self { self.anchorX = Some(anchorX); self }
+    pub fn anchor_x(mut self, anchor_x: f64) -> Self { self.anchor_x = Some(anchor_x); self }
     /// Transform anchor point Y, absent if no transform specified
-    pub fn anchorY(mut self, anchorY: f64) -> Self { self.anchorY = Some(anchorY); self }
+    pub fn anchor_y(mut self, anchor_y: f64) -> Self { self.anchor_y = Some(anchor_y); self }
     /// Transform anchor point Z, absent if no transform specified
-    pub fn anchorZ(mut self, anchorZ: f64) -> Self { self.anchorZ = Some(anchorZ); self }
+    pub fn anchor_z(mut self, anchor_z: f64) -> Self { self.anchor_z = Some(anchor_z); self }
     /// Set if layer is not visible.
     pub fn invisible(mut self, invisible: bool) -> Self { self.invisible = Some(invisible); self }
     /// Rectangles scrolling on main thread only.
-    pub fn scrollRects(mut self, scrollRects: Vec<ScrollRect<'a>>) -> Self { self.scrollRects = Some(scrollRects); self }
+    pub fn scroll_rects(mut self, scroll_rects: Vec<ScrollRect<'a>>) -> Self { self.scroll_rects = Some(scroll_rects); self }
     /// Sticky position constraint information
-    pub fn stickyPositionConstraint(mut self, stickyPositionConstraint: StickyPositionConstraint<'a>) -> Self { self.stickyPositionConstraint = Some(stickyPositionConstraint); self }
+    pub fn sticky_position_constraint(mut self, sticky_position_constraint: StickyPositionConstraint<'a>) -> Self { self.sticky_position_constraint = Some(sticky_position_constraint); self }
     pub fn build(self) -> Layer<'a> {
         Layer {
-            layerId: self.layerId,
-            parentLayerId: self.parentLayerId,
-            backendNodeId: self.backendNodeId,
-            offsetX: self.offsetX,
-            offsetY: self.offsetY,
+            layer_id: self.layer_id,
+            parent_layer_id: self.parent_layer_id,
+            backend_node_id: self.backend_node_id,
+            offset_x: self.offset_x,
+            offset_y: self.offset_y,
             width: self.width,
             height: self.height,
             transform: self.transform,
-            anchorX: self.anchorX,
-            anchorY: self.anchorY,
-            anchorZ: self.anchorZ,
-            paintCount: self.paintCount,
-            drawsContent: self.drawsContent,
+            anchor_x: self.anchor_x,
+            anchor_y: self.anchor_y,
+            anchor_z: self.anchor_z,
+            paint_count: self.paint_count,
+            draws_content: self.draws_content,
             invisible: self.invisible,
-            scrollRects: self.scrollRects,
-            stickyPositionConstraint: self.stickyPositionConstraint,
+            scroll_rects: self.scroll_rects,
+            sticky_position_constraint: self.sticky_position_constraint,
         }
     }
 }
@@ -305,27 +356,31 @@ pub type PaintProfile = Vec<f64>;
 #[serde(rename_all = "camelCase")]
 pub struct CompositingReasonsParams<'a> {
     /// The id of the layer for which we want to get the reasons it was composited.
-    layerId: LayerId<'a>,
+    #[serde(rename = "layerId")]
+    layer_id: LayerId<'a>,
 }
 
 impl<'a> CompositingReasonsParams<'a> {
-    pub fn builder(layerId: impl Into<LayerId<'a>>) -> CompositingReasonsParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `layer_id`: The id of the layer for which we want to get the reasons it was composited.
+    pub fn builder(layer_id: impl Into<LayerId<'a>>) -> CompositingReasonsParamsBuilder<'a> {
         CompositingReasonsParamsBuilder {
-            layerId: layerId.into(),
+            layer_id: layer_id.into(),
         }
     }
-    pub fn layerId(&self) -> &LayerId<'a> { &self.layerId }
+    /// The id of the layer for which we want to get the reasons it was composited.
+    pub fn layer_id(&self) -> &LayerId<'a> { &self.layer_id }
 }
 
 
 pub struct CompositingReasonsParamsBuilder<'a> {
-    layerId: LayerId<'a>,
+    layer_id: LayerId<'a>,
 }
 
 impl<'a> CompositingReasonsParamsBuilder<'a> {
     pub fn build(self) -> CompositingReasonsParams<'a> {
         CompositingReasonsParams {
-            layerId: self.layerId,
+            layer_id: self.layer_id,
         }
     }
 }
@@ -336,33 +391,40 @@ impl<'a> CompositingReasonsParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct CompositingReasonsReturns<'a> {
     /// A list of strings specifying reasons for the given layer to become composited.
-    compositingReasons: Vec<Cow<'a, str>>,
+    #[serde(rename = "compositingReasons")]
+    compositing_reasons: Vec<Cow<'a, str>>,
     /// A list of strings specifying reason IDs for the given layer to become composited.
-    compositingReasonIds: Vec<Cow<'a, str>>,
+    #[serde(rename = "compositingReasonIds")]
+    compositing_reason_ids: Vec<Cow<'a, str>>,
 }
 
 impl<'a> CompositingReasonsReturns<'a> {
-    pub fn builder(compositingReasons: Vec<Cow<'a, str>>, compositingReasonIds: Vec<Cow<'a, str>>) -> CompositingReasonsReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `compositing_reasons`: A list of strings specifying reasons for the given layer to become composited.
+    /// * `compositing_reason_ids`: A list of strings specifying reason IDs for the given layer to become composited.
+    pub fn builder(compositing_reasons: Vec<Cow<'a, str>>, compositing_reason_ids: Vec<Cow<'a, str>>) -> CompositingReasonsReturnsBuilder<'a> {
         CompositingReasonsReturnsBuilder {
-            compositingReasons: compositingReasons,
-            compositingReasonIds: compositingReasonIds,
+            compositing_reasons: compositing_reasons,
+            compositing_reason_ids: compositing_reason_ids,
         }
     }
-    pub fn compositingReasons(&self) -> &[Cow<'a, str>] { &self.compositingReasons }
-    pub fn compositingReasonIds(&self) -> &[Cow<'a, str>] { &self.compositingReasonIds }
+    /// A list of strings specifying reasons for the given layer to become composited.
+    pub fn compositing_reasons(&self) -> &[Cow<'a, str>] { &self.compositing_reasons }
+    /// A list of strings specifying reason IDs for the given layer to become composited.
+    pub fn compositing_reason_ids(&self) -> &[Cow<'a, str>] { &self.compositing_reason_ids }
 }
 
 
 pub struct CompositingReasonsReturnsBuilder<'a> {
-    compositingReasons: Vec<Cow<'a, str>>,
-    compositingReasonIds: Vec<Cow<'a, str>>,
+    compositing_reasons: Vec<Cow<'a, str>>,
+    compositing_reason_ids: Vec<Cow<'a, str>>,
 }
 
 impl<'a> CompositingReasonsReturnsBuilder<'a> {
     pub fn build(self) -> CompositingReasonsReturns<'a> {
         CompositingReasonsReturns {
-            compositingReasons: self.compositingReasons,
-            compositingReasonIds: self.compositingReasonIds,
+            compositing_reasons: self.compositing_reasons,
+            compositing_reason_ids: self.compositing_reason_ids,
         }
     }
 }
@@ -404,11 +466,14 @@ pub struct LoadSnapshotParams<'a> {
 }
 
 impl<'a> LoadSnapshotParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `tiles`: An array of tiles composing the snapshot.
     pub fn builder(tiles: Vec<PictureTile<'a>>) -> LoadSnapshotParamsBuilder<'a> {
         LoadSnapshotParamsBuilder {
             tiles: tiles,
         }
     }
+    /// An array of tiles composing the snapshot.
     pub fn tiles(&self) -> &[PictureTile<'a>] { &self.tiles }
 }
 
@@ -431,27 +496,31 @@ impl<'a> LoadSnapshotParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct LoadSnapshotReturns<'a> {
     /// The id of the snapshot.
-    snapshotId: SnapshotId<'a>,
+    #[serde(rename = "snapshotId")]
+    snapshot_id: SnapshotId<'a>,
 }
 
 impl<'a> LoadSnapshotReturns<'a> {
-    pub fn builder(snapshotId: impl Into<SnapshotId<'a>>) -> LoadSnapshotReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `snapshot_id`: The id of the snapshot.
+    pub fn builder(snapshot_id: impl Into<SnapshotId<'a>>) -> LoadSnapshotReturnsBuilder<'a> {
         LoadSnapshotReturnsBuilder {
-            snapshotId: snapshotId.into(),
+            snapshot_id: snapshot_id.into(),
         }
     }
-    pub fn snapshotId(&self) -> &SnapshotId<'a> { &self.snapshotId }
+    /// The id of the snapshot.
+    pub fn snapshot_id(&self) -> &SnapshotId<'a> { &self.snapshot_id }
 }
 
 
 pub struct LoadSnapshotReturnsBuilder<'a> {
-    snapshotId: SnapshotId<'a>,
+    snapshot_id: SnapshotId<'a>,
 }
 
 impl<'a> LoadSnapshotReturnsBuilder<'a> {
     pub fn build(self) -> LoadSnapshotReturns<'a> {
         LoadSnapshotReturns {
-            snapshotId: self.snapshotId,
+            snapshot_id: self.snapshot_id,
         }
     }
 }
@@ -469,27 +538,31 @@ impl<'a> crate::CdpCommand<'a> for LoadSnapshotParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct MakeSnapshotParams<'a> {
     /// The id of the layer.
-    layerId: LayerId<'a>,
+    #[serde(rename = "layerId")]
+    layer_id: LayerId<'a>,
 }
 
 impl<'a> MakeSnapshotParams<'a> {
-    pub fn builder(layerId: impl Into<LayerId<'a>>) -> MakeSnapshotParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `layer_id`: The id of the layer.
+    pub fn builder(layer_id: impl Into<LayerId<'a>>) -> MakeSnapshotParamsBuilder<'a> {
         MakeSnapshotParamsBuilder {
-            layerId: layerId.into(),
+            layer_id: layer_id.into(),
         }
     }
-    pub fn layerId(&self) -> &LayerId<'a> { &self.layerId }
+    /// The id of the layer.
+    pub fn layer_id(&self) -> &LayerId<'a> { &self.layer_id }
 }
 
 
 pub struct MakeSnapshotParamsBuilder<'a> {
-    layerId: LayerId<'a>,
+    layer_id: LayerId<'a>,
 }
 
 impl<'a> MakeSnapshotParamsBuilder<'a> {
     pub fn build(self) -> MakeSnapshotParams<'a> {
         MakeSnapshotParams {
-            layerId: self.layerId,
+            layer_id: self.layer_id,
         }
     }
 }
@@ -500,27 +573,31 @@ impl<'a> MakeSnapshotParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct MakeSnapshotReturns<'a> {
     /// The id of the layer snapshot.
-    snapshotId: SnapshotId<'a>,
+    #[serde(rename = "snapshotId")]
+    snapshot_id: SnapshotId<'a>,
 }
 
 impl<'a> MakeSnapshotReturns<'a> {
-    pub fn builder(snapshotId: impl Into<SnapshotId<'a>>) -> MakeSnapshotReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `snapshot_id`: The id of the layer snapshot.
+    pub fn builder(snapshot_id: impl Into<SnapshotId<'a>>) -> MakeSnapshotReturnsBuilder<'a> {
         MakeSnapshotReturnsBuilder {
-            snapshotId: snapshotId.into(),
+            snapshot_id: snapshot_id.into(),
         }
     }
-    pub fn snapshotId(&self) -> &SnapshotId<'a> { &self.snapshotId }
+    /// The id of the layer snapshot.
+    pub fn snapshot_id(&self) -> &SnapshotId<'a> { &self.snapshot_id }
 }
 
 
 pub struct MakeSnapshotReturnsBuilder<'a> {
-    snapshotId: SnapshotId<'a>,
+    snapshot_id: SnapshotId<'a>,
 }
 
 impl<'a> MakeSnapshotReturnsBuilder<'a> {
     pub fn build(self) -> MakeSnapshotReturns<'a> {
         MakeSnapshotReturns {
-            snapshotId: self.snapshotId,
+            snapshot_id: self.snapshot_id,
         }
     }
 }
@@ -537,54 +614,61 @@ impl<'a> crate::CdpCommand<'a> for MakeSnapshotParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ProfileSnapshotParams<'a> {
     /// The id of the layer snapshot.
-    snapshotId: SnapshotId<'a>,
+    #[serde(rename = "snapshotId")]
+    snapshot_id: SnapshotId<'a>,
     /// The maximum number of times to replay the snapshot (1, if not specified).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    minRepeatCount: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "minRepeatCount")]
+    min_repeat_count: Option<u64>,
     /// The minimum duration (in seconds) to replay the snapshot.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    minDuration: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "minDuration")]
+    min_duration: Option<f64>,
     /// The clip rectangle to apply when replaying the snapshot.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    clipRect: Option<crate::dom::Rect>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "clipRect")]
+    clip_rect: Option<crate::dom::Rect>,
 }
 
 impl<'a> ProfileSnapshotParams<'a> {
-    pub fn builder(snapshotId: impl Into<SnapshotId<'a>>) -> ProfileSnapshotParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `snapshot_id`: The id of the layer snapshot.
+    pub fn builder(snapshot_id: impl Into<SnapshotId<'a>>) -> ProfileSnapshotParamsBuilder<'a> {
         ProfileSnapshotParamsBuilder {
-            snapshotId: snapshotId.into(),
-            minRepeatCount: None,
-            minDuration: None,
-            clipRect: None,
+            snapshot_id: snapshot_id.into(),
+            min_repeat_count: None,
+            min_duration: None,
+            clip_rect: None,
         }
     }
-    pub fn snapshotId(&self) -> &SnapshotId<'a> { &self.snapshotId }
-    pub fn minRepeatCount(&self) -> Option<u64> { self.minRepeatCount }
-    pub fn minDuration(&self) -> Option<f64> { self.minDuration }
-    pub fn clipRect(&self) -> Option<&crate::dom::Rect> { self.clipRect.as_ref() }
+    /// The id of the layer snapshot.
+    pub fn snapshot_id(&self) -> &SnapshotId<'a> { &self.snapshot_id }
+    /// The maximum number of times to replay the snapshot (1, if not specified).
+    pub fn min_repeat_count(&self) -> Option<u64> { self.min_repeat_count }
+    /// The minimum duration (in seconds) to replay the snapshot.
+    pub fn min_duration(&self) -> Option<f64> { self.min_duration }
+    /// The clip rectangle to apply when replaying the snapshot.
+    pub fn clip_rect(&self) -> Option<&crate::dom::Rect> { self.clip_rect.as_ref() }
 }
 
 
 pub struct ProfileSnapshotParamsBuilder<'a> {
-    snapshotId: SnapshotId<'a>,
-    minRepeatCount: Option<u64>,
-    minDuration: Option<f64>,
-    clipRect: Option<crate::dom::Rect>,
+    snapshot_id: SnapshotId<'a>,
+    min_repeat_count: Option<u64>,
+    min_duration: Option<f64>,
+    clip_rect: Option<crate::dom::Rect>,
 }
 
 impl<'a> ProfileSnapshotParamsBuilder<'a> {
     /// The maximum number of times to replay the snapshot (1, if not specified).
-    pub fn minRepeatCount(mut self, minRepeatCount: u64) -> Self { self.minRepeatCount = Some(minRepeatCount); self }
+    pub fn min_repeat_count(mut self, min_repeat_count: u64) -> Self { self.min_repeat_count = Some(min_repeat_count); self }
     /// The minimum duration (in seconds) to replay the snapshot.
-    pub fn minDuration(mut self, minDuration: f64) -> Self { self.minDuration = Some(minDuration); self }
+    pub fn min_duration(mut self, min_duration: f64) -> Self { self.min_duration = Some(min_duration); self }
     /// The clip rectangle to apply when replaying the snapshot.
-    pub fn clipRect(mut self, clipRect: crate::dom::Rect) -> Self { self.clipRect = Some(clipRect); self }
+    pub fn clip_rect(mut self, clip_rect: crate::dom::Rect) -> Self { self.clip_rect = Some(clip_rect); self }
     pub fn build(self) -> ProfileSnapshotParams<'a> {
         ProfileSnapshotParams {
-            snapshotId: self.snapshotId,
-            minRepeatCount: self.minRepeatCount,
-            minDuration: self.minDuration,
-            clipRect: self.clipRect,
+            snapshot_id: self.snapshot_id,
+            min_repeat_count: self.min_repeat_count,
+            min_duration: self.min_duration,
+            clip_rect: self.clip_rect,
         }
     }
 }
@@ -598,11 +682,14 @@ pub struct ProfileSnapshotReturns {
 }
 
 impl ProfileSnapshotReturns {
+    /// Creates a builder for this type with the required parameters:
+    /// * `timings`: The array of paint profiles, one per run.
     pub fn builder(timings: Vec<PaintProfile>) -> ProfileSnapshotReturnsBuilder {
         ProfileSnapshotReturnsBuilder {
             timings: timings,
         }
     }
+    /// The array of paint profiles, one per run.
     pub fn timings(&self) -> &[PaintProfile] { &self.timings }
 }
 
@@ -632,27 +719,31 @@ impl<'a> crate::CdpCommand<'a> for ProfileSnapshotParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ReleaseSnapshotParams<'a> {
     /// The id of the layer snapshot.
-    snapshotId: SnapshotId<'a>,
+    #[serde(rename = "snapshotId")]
+    snapshot_id: SnapshotId<'a>,
 }
 
 impl<'a> ReleaseSnapshotParams<'a> {
-    pub fn builder(snapshotId: impl Into<SnapshotId<'a>>) -> ReleaseSnapshotParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `snapshot_id`: The id of the layer snapshot.
+    pub fn builder(snapshot_id: impl Into<SnapshotId<'a>>) -> ReleaseSnapshotParamsBuilder<'a> {
         ReleaseSnapshotParamsBuilder {
-            snapshotId: snapshotId.into(),
+            snapshot_id: snapshot_id.into(),
         }
     }
-    pub fn snapshotId(&self) -> &SnapshotId<'a> { &self.snapshotId }
+    /// The id of the layer snapshot.
+    pub fn snapshot_id(&self) -> &SnapshotId<'a> { &self.snapshot_id }
 }
 
 
 pub struct ReleaseSnapshotParamsBuilder<'a> {
-    snapshotId: SnapshotId<'a>,
+    snapshot_id: SnapshotId<'a>,
 }
 
 impl<'a> ReleaseSnapshotParamsBuilder<'a> {
     pub fn build(self) -> ReleaseSnapshotParams<'a> {
         ReleaseSnapshotParams {
-            snapshotId: self.snapshotId,
+            snapshot_id: self.snapshot_id,
         }
     }
 }
@@ -670,53 +761,60 @@ impl<'a> crate::CdpCommand<'a> for ReleaseSnapshotParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ReplaySnapshotParams<'a> {
     /// The id of the layer snapshot.
-    snapshotId: SnapshotId<'a>,
+    #[serde(rename = "snapshotId")]
+    snapshot_id: SnapshotId<'a>,
     /// The first step to replay from (replay from the very start if not specified).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    fromStep: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "fromStep")]
+    from_step: Option<i64>,
     /// The last step to replay to (replay till the end if not specified).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    toStep: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "toStep")]
+    to_step: Option<i64>,
     /// The scale to apply while replaying (defaults to 1).
     #[serde(skip_serializing_if = "Option::is_none")]
     scale: Option<f64>,
 }
 
 impl<'a> ReplaySnapshotParams<'a> {
-    pub fn builder(snapshotId: impl Into<SnapshotId<'a>>) -> ReplaySnapshotParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `snapshot_id`: The id of the layer snapshot.
+    pub fn builder(snapshot_id: impl Into<SnapshotId<'a>>) -> ReplaySnapshotParamsBuilder<'a> {
         ReplaySnapshotParamsBuilder {
-            snapshotId: snapshotId.into(),
-            fromStep: None,
-            toStep: None,
+            snapshot_id: snapshot_id.into(),
+            from_step: None,
+            to_step: None,
             scale: None,
         }
     }
-    pub fn snapshotId(&self) -> &SnapshotId<'a> { &self.snapshotId }
-    pub fn fromStep(&self) -> Option<i64> { self.fromStep }
-    pub fn toStep(&self) -> Option<i64> { self.toStep }
+    /// The id of the layer snapshot.
+    pub fn snapshot_id(&self) -> &SnapshotId<'a> { &self.snapshot_id }
+    /// The first step to replay from (replay from the very start if not specified).
+    pub fn from_step(&self) -> Option<i64> { self.from_step }
+    /// The last step to replay to (replay till the end if not specified).
+    pub fn to_step(&self) -> Option<i64> { self.to_step }
+    /// The scale to apply while replaying (defaults to 1).
     pub fn scale(&self) -> Option<f64> { self.scale }
 }
 
 
 pub struct ReplaySnapshotParamsBuilder<'a> {
-    snapshotId: SnapshotId<'a>,
-    fromStep: Option<i64>,
-    toStep: Option<i64>,
+    snapshot_id: SnapshotId<'a>,
+    from_step: Option<i64>,
+    to_step: Option<i64>,
     scale: Option<f64>,
 }
 
 impl<'a> ReplaySnapshotParamsBuilder<'a> {
     /// The first step to replay from (replay from the very start if not specified).
-    pub fn fromStep(mut self, fromStep: i64) -> Self { self.fromStep = Some(fromStep); self }
+    pub fn from_step(mut self, from_step: i64) -> Self { self.from_step = Some(from_step); self }
     /// The last step to replay to (replay till the end if not specified).
-    pub fn toStep(mut self, toStep: i64) -> Self { self.toStep = Some(toStep); self }
+    pub fn to_step(mut self, to_step: i64) -> Self { self.to_step = Some(to_step); self }
     /// The scale to apply while replaying (defaults to 1).
     pub fn scale(mut self, scale: f64) -> Self { self.scale = Some(scale); self }
     pub fn build(self) -> ReplaySnapshotParams<'a> {
         ReplaySnapshotParams {
-            snapshotId: self.snapshotId,
-            fromStep: self.fromStep,
-            toStep: self.toStep,
+            snapshot_id: self.snapshot_id,
+            from_step: self.from_step,
+            to_step: self.to_step,
             scale: self.scale,
         }
     }
@@ -728,27 +826,31 @@ impl<'a> ReplaySnapshotParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ReplaySnapshotReturns<'a> {
     /// A data: URL for resulting image.
-    dataURL: Cow<'a, str>,
+    #[serde(rename = "dataURL")]
+    data_url: Cow<'a, str>,
 }
 
 impl<'a> ReplaySnapshotReturns<'a> {
-    pub fn builder(dataURL: impl Into<Cow<'a, str>>) -> ReplaySnapshotReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `data_url`: A data: URL for resulting image.
+    pub fn builder(data_url: impl Into<Cow<'a, str>>) -> ReplaySnapshotReturnsBuilder<'a> {
         ReplaySnapshotReturnsBuilder {
-            dataURL: dataURL.into(),
+            data_url: data_url.into(),
         }
     }
-    pub fn dataURL(&self) -> &str { self.dataURL.as_ref() }
+    /// A data: URL for resulting image.
+    pub fn data_url(&self) -> &str { self.data_url.as_ref() }
 }
 
 
 pub struct ReplaySnapshotReturnsBuilder<'a> {
-    dataURL: Cow<'a, str>,
+    data_url: Cow<'a, str>,
 }
 
 impl<'a> ReplaySnapshotReturnsBuilder<'a> {
     pub fn build(self) -> ReplaySnapshotReturns<'a> {
         ReplaySnapshotReturns {
-            dataURL: self.dataURL,
+            data_url: self.data_url,
         }
     }
 }
@@ -766,27 +868,31 @@ impl<'a> crate::CdpCommand<'a> for ReplaySnapshotParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SnapshotCommandLogParams<'a> {
     /// The id of the layer snapshot.
-    snapshotId: SnapshotId<'a>,
+    #[serde(rename = "snapshotId")]
+    snapshot_id: SnapshotId<'a>,
 }
 
 impl<'a> SnapshotCommandLogParams<'a> {
-    pub fn builder(snapshotId: impl Into<SnapshotId<'a>>) -> SnapshotCommandLogParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `snapshot_id`: The id of the layer snapshot.
+    pub fn builder(snapshot_id: impl Into<SnapshotId<'a>>) -> SnapshotCommandLogParamsBuilder<'a> {
         SnapshotCommandLogParamsBuilder {
-            snapshotId: snapshotId.into(),
+            snapshot_id: snapshot_id.into(),
         }
     }
-    pub fn snapshotId(&self) -> &SnapshotId<'a> { &self.snapshotId }
+    /// The id of the layer snapshot.
+    pub fn snapshot_id(&self) -> &SnapshotId<'a> { &self.snapshot_id }
 }
 
 
 pub struct SnapshotCommandLogParamsBuilder<'a> {
-    snapshotId: SnapshotId<'a>,
+    snapshot_id: SnapshotId<'a>,
 }
 
 impl<'a> SnapshotCommandLogParamsBuilder<'a> {
     pub fn build(self) -> SnapshotCommandLogParams<'a> {
         SnapshotCommandLogParams {
-            snapshotId: self.snapshotId,
+            snapshot_id: self.snapshot_id,
         }
     }
 }
@@ -797,27 +903,31 @@ impl<'a> SnapshotCommandLogParamsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SnapshotCommandLogReturns {
     /// The array of canvas function calls.
-    commandLog: Vec<serde_json::Map<String, JsonValue>>,
+    #[serde(rename = "commandLog")]
+    command_log: Vec<serde_json::Map<String, JsonValue>>,
 }
 
 impl SnapshotCommandLogReturns {
-    pub fn builder(commandLog: Vec<serde_json::Map<String, JsonValue>>) -> SnapshotCommandLogReturnsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `command_log`: The array of canvas function calls.
+    pub fn builder(command_log: Vec<serde_json::Map<String, JsonValue>>) -> SnapshotCommandLogReturnsBuilder {
         SnapshotCommandLogReturnsBuilder {
-            commandLog: commandLog,
+            command_log: command_log,
         }
     }
-    pub fn commandLog(&self) -> &[serde_json::Map<String, JsonValue>] { &self.commandLog }
+    /// The array of canvas function calls.
+    pub fn command_log(&self) -> &[serde_json::Map<String, JsonValue>] { &self.command_log }
 }
 
 
 pub struct SnapshotCommandLogReturnsBuilder {
-    commandLog: Vec<serde_json::Map<String, JsonValue>>,
+    command_log: Vec<serde_json::Map<String, JsonValue>>,
 }
 
 impl SnapshotCommandLogReturnsBuilder {
     pub fn build(self) -> SnapshotCommandLogReturns {
         SnapshotCommandLogReturns {
-            commandLog: self.commandLog,
+            command_log: self.command_log,
         }
     }
 }

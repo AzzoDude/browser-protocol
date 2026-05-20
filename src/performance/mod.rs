@@ -14,13 +14,18 @@ pub struct Metric<'a> {
 }
 
 impl<'a> Metric<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: Metric name.
+    /// * `value`: Metric value.
     pub fn builder(name: impl Into<Cow<'a, str>>, value: f64) -> MetricBuilder<'a> {
         MetricBuilder {
             name: name.into(),
             value: value,
         }
     }
+    /// Metric name.
     pub fn name(&self) -> &str { self.name.as_ref() }
+    /// Metric value.
     pub fn value(&self) -> f64 { self.value }
 }
 
@@ -55,30 +60,32 @@ impl<'a> crate::CdpCommand<'a> for DisableParams {
 #[serde(rename_all = "camelCase")]
 pub struct EnableParams<'a> {
     /// Time domain to use for collecting and reporting duration metrics.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    timeDomain: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "timeDomain")]
+    time_domain: Option<Cow<'a, str>>,
 }
 
 impl<'a> EnableParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> EnableParamsBuilder<'a> {
         EnableParamsBuilder {
-            timeDomain: None,
+            time_domain: None,
         }
     }
-    pub fn timeDomain(&self) -> Option<&str> { self.timeDomain.as_deref() }
+    /// Time domain to use for collecting and reporting duration metrics.
+    pub fn time_domain(&self) -> Option<&str> { self.time_domain.as_deref() }
 }
 
 #[derive(Default)]
 pub struct EnableParamsBuilder<'a> {
-    timeDomain: Option<Cow<'a, str>>,
+    time_domain: Option<Cow<'a, str>>,
 }
 
 impl<'a> EnableParamsBuilder<'a> {
     /// Time domain to use for collecting and reporting duration metrics.
-    pub fn timeDomain(mut self, timeDomain: impl Into<Cow<'a, str>>) -> Self { self.timeDomain = Some(timeDomain.into()); self }
+    pub fn time_domain(mut self, time_domain: impl Into<Cow<'a, str>>) -> Self { self.time_domain = Some(time_domain.into()); self }
     pub fn build(self) -> EnableParams<'a> {
         EnableParams {
-            timeDomain: self.timeDomain,
+            time_domain: self.time_domain,
         }
     }
 }
@@ -98,27 +105,31 @@ impl<'a> crate::CdpCommand<'a> for EnableParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SetTimeDomainParams<'a> {
     /// Time domain
-    timeDomain: Cow<'a, str>,
+    #[serde(rename = "timeDomain")]
+    time_domain: Cow<'a, str>,
 }
 
 impl<'a> SetTimeDomainParams<'a> {
-    pub fn builder(timeDomain: impl Into<Cow<'a, str>>) -> SetTimeDomainParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `time_domain`: Time domain
+    pub fn builder(time_domain: impl Into<Cow<'a, str>>) -> SetTimeDomainParamsBuilder<'a> {
         SetTimeDomainParamsBuilder {
-            timeDomain: timeDomain.into(),
+            time_domain: time_domain.into(),
         }
     }
-    pub fn timeDomain(&self) -> &str { self.timeDomain.as_ref() }
+    /// Time domain
+    pub fn time_domain(&self) -> &str { self.time_domain.as_ref() }
 }
 
 
 pub struct SetTimeDomainParamsBuilder<'a> {
-    timeDomain: Cow<'a, str>,
+    time_domain: Cow<'a, str>,
 }
 
 impl<'a> SetTimeDomainParamsBuilder<'a> {
     pub fn build(self) -> SetTimeDomainParams<'a> {
         SetTimeDomainParams {
-            timeDomain: self.timeDomain,
+            time_domain: self.time_domain,
         }
     }
 }
@@ -140,11 +151,14 @@ pub struct GetMetricsReturns<'a> {
 }
 
 impl<'a> GetMetricsReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `metrics`: Current values for run-time metrics.
     pub fn builder(metrics: Vec<Metric<'a>>) -> GetMetricsReturnsBuilder<'a> {
         GetMetricsReturnsBuilder {
             metrics: metrics,
         }
     }
+    /// Current values for run-time metrics.
     pub fn metrics(&self) -> &[Metric<'a>] { &self.metrics }
 }
 

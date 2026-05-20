@@ -12,27 +12,27 @@ pub struct TouchPoint {
     /// the top of the viewport and Y increases as it proceeds towards the bottom of the viewport.
     y: f64,
     /// X radius of the touch area (default: 1.0).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    radiusX: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "radiusX")]
+    radius_x: Option<f64>,
     /// Y radius of the touch area (default: 1.0).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    radiusY: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "radiusY")]
+    radius_y: Option<f64>,
     /// Rotation angle (default: 0.0).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    rotationAngle: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "rotationAngle")]
+    rotation_angle: Option<f64>,
     /// Force (default: 1.0).
     #[serde(skip_serializing_if = "Option::is_none")]
     force: Option<f64>,
-    /// The normalized tangential pressure, which has a range of [-1,1] (default: 0).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    tangentialPressure: Option<f64>,
-    /// The plane angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis, in degrees of the range [-90,90], a positive tiltX is to the right (default: 0)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    tiltX: Option<f64>,
-    /// The plane angle between the X-Z plane and the plane containing both the stylus axis and the X axis, in degrees of the range [-90,90], a positive tiltY is towards the user (default: 0).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    tiltY: Option<f64>,
-    /// The clockwise rotation of a pen stylus around its own major axis, in degrees in the range [0,359] (default: 0).
+    /// The normalized tangential pressure, which has a range of \[-1,1\] (default: 0).
+    #[serde(skip_serializing_if = "Option::is_none", rename = "tangentialPressure")]
+    tangential_pressure: Option<f64>,
+    /// The plane angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis, in degrees of the range \[-90,90\], a positive tiltX is to the right (default: 0)
+    #[serde(skip_serializing_if = "Option::is_none", rename = "tiltX")]
+    tilt_x: Option<f64>,
+    /// The plane angle between the X-Z plane and the plane containing both the stylus axis and the X axis, in degrees of the range \[-90,90\], a positive tiltY is towards the user (default: 0).
+    #[serde(skip_serializing_if = "Option::is_none", rename = "tiltY")]
+    tilt_y: Option<f64>,
+    /// The clockwise rotation of a pen stylus around its own major axis, in degrees in the range \[0,359\] (default: 0).
     #[serde(skip_serializing_if = "Option::is_none")]
     twist: Option<i64>,
     /// Identifier used to track touch sources between events, must be unique within an event.
@@ -41,31 +41,46 @@ pub struct TouchPoint {
 }
 
 impl TouchPoint {
+    /// Creates a builder for this type with the required parameters:
+    /// * `x`: X coordinate of the event relative to the main frame's viewport in CSS pixels.
+    /// * `y`: Y coordinate of the event relative to the main frame's viewport in CSS pixels. 0 refers to the top of the viewport and Y increases as it proceeds towards the bottom of the viewport.
     pub fn builder(x: f64, y: f64) -> TouchPointBuilder {
         TouchPointBuilder {
             x: x,
             y: y,
-            radiusX: None,
-            radiusY: None,
-            rotationAngle: None,
+            radius_x: None,
+            radius_y: None,
+            rotation_angle: None,
             force: None,
-            tangentialPressure: None,
-            tiltX: None,
-            tiltY: None,
+            tangential_pressure: None,
+            tilt_x: None,
+            tilt_y: None,
             twist: None,
             id: None,
         }
     }
+    /// X coordinate of the event relative to the main frame's viewport in CSS pixels.
     pub fn x(&self) -> f64 { self.x }
+    /// Y coordinate of the event relative to the main frame's viewport in CSS pixels. 0 refers to
+    /// the top of the viewport and Y increases as it proceeds towards the bottom of the viewport.
     pub fn y(&self) -> f64 { self.y }
-    pub fn radiusX(&self) -> Option<f64> { self.radiusX }
-    pub fn radiusY(&self) -> Option<f64> { self.radiusY }
-    pub fn rotationAngle(&self) -> Option<f64> { self.rotationAngle }
+    /// X radius of the touch area (default: 1.0).
+    pub fn radius_x(&self) -> Option<f64> { self.radius_x }
+    /// Y radius of the touch area (default: 1.0).
+    pub fn radius_y(&self) -> Option<f64> { self.radius_y }
+    /// Rotation angle (default: 0.0).
+    pub fn rotation_angle(&self) -> Option<f64> { self.rotation_angle }
+    /// Force (default: 1.0).
     pub fn force(&self) -> Option<f64> { self.force }
-    pub fn tangentialPressure(&self) -> Option<f64> { self.tangentialPressure }
-    pub fn tiltX(&self) -> Option<f64> { self.tiltX }
-    pub fn tiltY(&self) -> Option<f64> { self.tiltY }
+    /// The normalized tangential pressure, which has a range of \[-1,1\] (default: 0).
+    pub fn tangential_pressure(&self) -> Option<f64> { self.tangential_pressure }
+    /// The plane angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis, in degrees of the range \[-90,90\], a positive tiltX is to the right (default: 0)
+    pub fn tilt_x(&self) -> Option<f64> { self.tilt_x }
+    /// The plane angle between the X-Z plane and the plane containing both the stylus axis and the X axis, in degrees of the range \[-90,90\], a positive tiltY is towards the user (default: 0).
+    pub fn tilt_y(&self) -> Option<f64> { self.tilt_y }
+    /// The clockwise rotation of a pen stylus around its own major axis, in degrees in the range \[0,359\] (default: 0).
     pub fn twist(&self) -> Option<i64> { self.twist }
+    /// Identifier used to track touch sources between events, must be unique within an event.
     pub fn id(&self) -> Option<f64> { self.id }
 }
 
@@ -73,33 +88,33 @@ impl TouchPoint {
 pub struct TouchPointBuilder {
     x: f64,
     y: f64,
-    radiusX: Option<f64>,
-    radiusY: Option<f64>,
-    rotationAngle: Option<f64>,
+    radius_x: Option<f64>,
+    radius_y: Option<f64>,
+    rotation_angle: Option<f64>,
     force: Option<f64>,
-    tangentialPressure: Option<f64>,
-    tiltX: Option<f64>,
-    tiltY: Option<f64>,
+    tangential_pressure: Option<f64>,
+    tilt_x: Option<f64>,
+    tilt_y: Option<f64>,
     twist: Option<i64>,
     id: Option<f64>,
 }
 
 impl TouchPointBuilder {
     /// X radius of the touch area (default: 1.0).
-    pub fn radiusX(mut self, radiusX: f64) -> Self { self.radiusX = Some(radiusX); self }
+    pub fn radius_x(mut self, radius_x: f64) -> Self { self.radius_x = Some(radius_x); self }
     /// Y radius of the touch area (default: 1.0).
-    pub fn radiusY(mut self, radiusY: f64) -> Self { self.radiusY = Some(radiusY); self }
+    pub fn radius_y(mut self, radius_y: f64) -> Self { self.radius_y = Some(radius_y); self }
     /// Rotation angle (default: 0.0).
-    pub fn rotationAngle(mut self, rotationAngle: f64) -> Self { self.rotationAngle = Some(rotationAngle); self }
+    pub fn rotation_angle(mut self, rotation_angle: f64) -> Self { self.rotation_angle = Some(rotation_angle); self }
     /// Force (default: 1.0).
     pub fn force(mut self, force: f64) -> Self { self.force = Some(force); self }
-    /// The normalized tangential pressure, which has a range of [-1,1] (default: 0).
-    pub fn tangentialPressure(mut self, tangentialPressure: f64) -> Self { self.tangentialPressure = Some(tangentialPressure); self }
-    /// The plane angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis, in degrees of the range [-90,90], a positive tiltX is to the right (default: 0)
-    pub fn tiltX(mut self, tiltX: f64) -> Self { self.tiltX = Some(tiltX); self }
-    /// The plane angle between the X-Z plane and the plane containing both the stylus axis and the X axis, in degrees of the range [-90,90], a positive tiltY is towards the user (default: 0).
-    pub fn tiltY(mut self, tiltY: f64) -> Self { self.tiltY = Some(tiltY); self }
-    /// The clockwise rotation of a pen stylus around its own major axis, in degrees in the range [0,359] (default: 0).
+    /// The normalized tangential pressure, which has a range of \[-1,1\] (default: 0).
+    pub fn tangential_pressure(mut self, tangential_pressure: f64) -> Self { self.tangential_pressure = Some(tangential_pressure); self }
+    /// The plane angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis, in degrees of the range \[-90,90\], a positive tiltX is to the right (default: 0)
+    pub fn tilt_x(mut self, tilt_x: f64) -> Self { self.tilt_x = Some(tilt_x); self }
+    /// The plane angle between the X-Z plane and the plane containing both the stylus axis and the X axis, in degrees of the range \[-90,90\], a positive tiltY is towards the user (default: 0).
+    pub fn tilt_y(mut self, tilt_y: f64) -> Self { self.tilt_y = Some(tilt_y); self }
+    /// The clockwise rotation of a pen stylus around its own major axis, in degrees in the range \[0,359\] (default: 0).
     pub fn twist(mut self, twist: i64) -> Self { self.twist = Some(twist); self }
     /// Identifier used to track touch sources between events, must be unique within an event.
     pub fn id(mut self, id: f64) -> Self { self.id = Some(id); self }
@@ -107,13 +122,13 @@ impl TouchPointBuilder {
         TouchPoint {
             x: self.x,
             y: self.y,
-            radiusX: self.radiusX,
-            radiusY: self.radiusY,
-            rotationAngle: self.rotationAngle,
+            radius_x: self.radius_x,
+            radius_y: self.radius_y,
+            rotation_angle: self.rotation_angle,
             force: self.force,
-            tangentialPressure: self.tangentialPressure,
-            tiltX: self.tiltX,
-            tiltY: self.tiltY,
+            tangential_pressure: self.tangential_pressure,
+            tilt_x: self.tilt_x,
+            tilt_y: self.tilt_y,
             twist: self.twist,
             id: self.id,
         }
@@ -159,7 +174,8 @@ pub type TimeSinceEpoch = f64;
 #[serde(rename_all = "camelCase")]
 pub struct DragDataItem<'a> {
     /// Mime type of the dragged data.
-    mimeType: Cow<'a, str>,
+    #[serde(rename = "mimeType")]
+    mime_type: Cow<'a, str>,
     /// Depending of the value of 'mimeType', it contains the dragged link,
     /// text, HTML markup or any other data.
     data: Cow<'a, str>,
@@ -168,31 +184,40 @@ pub struct DragDataItem<'a> {
     title: Option<Cow<'a, str>>,
     /// Stores the base URL for the contained markup. Only valid when 'mimeType'
     /// == "text/html".
-    #[serde(skip_serializing_if = "Option::is_none")]
-    baseURL: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "baseURL")]
+    base_url: Option<Cow<'a, str>>,
 }
 
 impl<'a> DragDataItem<'a> {
-    pub fn builder(mimeType: impl Into<Cow<'a, str>>, data: impl Into<Cow<'a, str>>) -> DragDataItemBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `mime_type`: Mime type of the dragged data.
+    /// * `data`: Depending of the value of `mimeType`, it contains the dragged link, text, HTML markup or any other data.
+    pub fn builder(mime_type: impl Into<Cow<'a, str>>, data: impl Into<Cow<'a, str>>) -> DragDataItemBuilder<'a> {
         DragDataItemBuilder {
-            mimeType: mimeType.into(),
+            mime_type: mime_type.into(),
             data: data.into(),
             title: None,
-            baseURL: None,
+            base_url: None,
         }
     }
-    pub fn mimeType(&self) -> &str { self.mimeType.as_ref() }
+    /// Mime type of the dragged data.
+    pub fn mime_type(&self) -> &str { self.mime_type.as_ref() }
+    /// Depending of the value of 'mimeType', it contains the dragged link,
+    /// text, HTML markup or any other data.
     pub fn data(&self) -> &str { self.data.as_ref() }
+    /// Title associated with a link. Only valid when 'mimeType' == "text/uri-list".
     pub fn title(&self) -> Option<&str> { self.title.as_deref() }
-    pub fn baseURL(&self) -> Option<&str> { self.baseURL.as_deref() }
+    /// Stores the base URL for the contained markup. Only valid when 'mimeType'
+    /// == "text/html".
+    pub fn base_url(&self) -> Option<&str> { self.base_url.as_deref() }
 }
 
 
 pub struct DragDataItemBuilder<'a> {
-    mimeType: Cow<'a, str>,
+    mime_type: Cow<'a, str>,
     data: Cow<'a, str>,
     title: Option<Cow<'a, str>>,
-    baseURL: Option<Cow<'a, str>>,
+    base_url: Option<Cow<'a, str>>,
 }
 
 impl<'a> DragDataItemBuilder<'a> {
@@ -200,13 +225,13 @@ impl<'a> DragDataItemBuilder<'a> {
     pub fn title(mut self, title: impl Into<Cow<'a, str>>) -> Self { self.title = Some(title.into()); self }
     /// Stores the base URL for the contained markup. Only valid when 'mimeType'
     /// == "text/html".
-    pub fn baseURL(mut self, baseURL: impl Into<Cow<'a, str>>) -> Self { self.baseURL = Some(baseURL.into()); self }
+    pub fn base_url(mut self, base_url: impl Into<Cow<'a, str>>) -> Self { self.base_url = Some(base_url.into()); self }
     pub fn build(self) -> DragDataItem<'a> {
         DragDataItem {
-            mimeType: self.mimeType,
+            mime_type: self.mime_type,
             data: self.data,
             title: self.title,
-            baseURL: self.baseURL,
+            base_url: self.base_url,
         }
     }
 }
@@ -220,27 +245,33 @@ pub struct DragData<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     files: Option<Vec<Cow<'a, str>>>,
     /// Bit field representing allowed drag operations. Copy = 1, Link = 2, Move = 16
-    dragOperationsMask: i64,
+    #[serde(rename = "dragOperationsMask")]
+    drag_operations_mask: i64,
 }
 
 impl<'a> DragData<'a> {
-    pub fn builder(items: Vec<DragDataItem<'a>>, dragOperationsMask: i64) -> DragDataBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `items`: 
+    /// * `drag_operations_mask`: Bit field representing allowed drag operations. Copy = 1, Link = 2, Move = 16
+    pub fn builder(items: Vec<DragDataItem<'a>>, drag_operations_mask: i64) -> DragDataBuilder<'a> {
         DragDataBuilder {
             items: items,
             files: None,
-            dragOperationsMask: dragOperationsMask,
+            drag_operations_mask: drag_operations_mask,
         }
     }
     pub fn items(&self) -> &[DragDataItem<'a>] { &self.items }
+    /// List of filenames that should be included when dropping
     pub fn files(&self) -> Option<&[Cow<'a, str>]> { self.files.as_deref() }
-    pub fn dragOperationsMask(&self) -> i64 { self.dragOperationsMask }
+    /// Bit field representing allowed drag operations. Copy = 1, Link = 2, Move = 16
+    pub fn drag_operations_mask(&self) -> i64 { self.drag_operations_mask }
 }
 
 
 pub struct DragDataBuilder<'a> {
     items: Vec<DragDataItem<'a>>,
     files: Option<Vec<Cow<'a, str>>>,
-    dragOperationsMask: i64,
+    drag_operations_mask: i64,
 }
 
 impl<'a> DragDataBuilder<'a> {
@@ -250,7 +281,7 @@ impl<'a> DragDataBuilder<'a> {
         DragData {
             items: self.items,
             files: self.files,
-            dragOperationsMask: self.dragOperationsMask,
+            drag_operations_mask: self.drag_operations_mask,
         }
     }
 }
@@ -276,6 +307,11 @@ pub struct DispatchDragEventParams<'a> {
 }
 
 impl<'a> DispatchDragEventParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `type_`: Type of the drag event.
+    /// * `x`: X coordinate of the event relative to the main frame's viewport in CSS pixels.
+    /// * `y`: Y coordinate of the event relative to the main frame's viewport in CSS pixels. 0 refers to the top of the viewport and Y increases as it proceeds towards the bottom of the viewport.
+    /// * `data`: 
     pub fn builder(type_: impl Into<Cow<'a, str>>, x: f64, y: f64, data: DragData<'a>) -> DispatchDragEventParamsBuilder<'a> {
         DispatchDragEventParamsBuilder {
             type_: type_.into(),
@@ -285,10 +321,16 @@ impl<'a> DispatchDragEventParams<'a> {
             modifiers: None,
         }
     }
+    /// Type of the drag event.
     pub fn type_(&self) -> &str { self.type_.as_ref() }
+    /// X coordinate of the event relative to the main frame's viewport in CSS pixels.
     pub fn x(&self) -> f64 { self.x }
+    /// Y coordinate of the event relative to the main frame's viewport in CSS pixels. 0 refers to
+    /// the top of the viewport and Y increases as it proceeds towards the bottom of the viewport.
     pub fn y(&self) -> f64 { self.y }
     pub fn data(&self) -> &DragData<'a> { &self.data }
+    /// Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8
+    /// (default: 0).
     pub fn modifiers(&self) -> Option<i64> { self.modifiers }
 }
 
@@ -344,11 +386,11 @@ pub struct DispatchKeyEventParams<'a> {
     text: Option<Cow<'a, str>>,
     /// Text that would have been generated by the keyboard if no modifiers were pressed (except for
     /// shift). Useful for shortcut (accelerator) key handling (default: "").
-    #[serde(skip_serializing_if = "Option::is_none")]
-    unmodifiedText: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "unmodifiedText")]
+    unmodified_text: Option<Cow<'a, str>>,
     /// Unique key identifier (e.g., 'U+0041') (default: "").
-    #[serde(skip_serializing_if = "Option::is_none")]
-    keyIdentifier: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "keyIdentifier")]
+    key_identifier: Option<Cow<'a, str>>,
     /// Unique DOM defined string value for each physical key (e.g., 'KeyA') (default: "").
     #[serde(skip_serializing_if = "Option::is_none")]
     code: Option<Cow<'a, str>>,
@@ -357,65 +399,89 @@ pub struct DispatchKeyEventParams<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     key: Option<Cow<'a, str>>,
     /// Windows virtual key code (default: 0).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    windowsVirtualKeyCode: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "windowsVirtualKeyCode")]
+    windows_virtual_key_code: Option<i64>,
     /// Native virtual key code (default: 0).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    nativeVirtualKeyCode: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "nativeVirtualKeyCode")]
+    native_virtual_key_code: Option<i64>,
     /// Whether the event was generated from auto repeat (default: false).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    autoRepeat: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "autoRepeat")]
+    auto_repeat: Option<bool>,
     /// Whether the event was generated from the keypad (default: false).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    isKeypad: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "isKeypad")]
+    is_keypad: Option<bool>,
     /// Whether the event was a system key event (default: false).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    isSystemKey: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "isSystemKey")]
+    is_system_key: Option<bool>,
     /// Whether the event was from the left or right side of the keyboard. 1=Left, 2=Right (default:
     /// 0).
     #[serde(skip_serializing_if = "Option::is_none")]
     location: Option<i64>,
-    /// Editing commands to send with the key event (e.g., 'selectAll') (default: []).
+    /// Editing commands to send with the key event (e.g., 'selectAll') (default: \[\]).
     /// These are related to but not equal the command names used in 'document.execCommand' and NSStandardKeyBindingResponding.
-    /// See https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h for valid command names.
+    /// See <https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h> for valid command names.
     #[serde(skip_serializing_if = "Option::is_none")]
     commands: Option<Vec<Cow<'a, str>>>,
 }
 
 impl<'a> DispatchKeyEventParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `type_`: Type of the key event.
     pub fn builder(type_: impl Into<Cow<'a, str>>) -> DispatchKeyEventParamsBuilder<'a> {
         DispatchKeyEventParamsBuilder {
             type_: type_.into(),
             modifiers: None,
             timestamp: None,
             text: None,
-            unmodifiedText: None,
-            keyIdentifier: None,
+            unmodified_text: None,
+            key_identifier: None,
             code: None,
             key: None,
-            windowsVirtualKeyCode: None,
-            nativeVirtualKeyCode: None,
-            autoRepeat: None,
-            isKeypad: None,
-            isSystemKey: None,
+            windows_virtual_key_code: None,
+            native_virtual_key_code: None,
+            auto_repeat: None,
+            is_keypad: None,
+            is_system_key: None,
             location: None,
             commands: None,
         }
     }
+    /// Type of the key event.
     pub fn type_(&self) -> &str { self.type_.as_ref() }
+    /// Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8
+    /// (default: 0).
     pub fn modifiers(&self) -> Option<i64> { self.modifiers }
+    /// Time at which the event occurred.
     pub fn timestamp(&self) -> Option<&TimeSinceEpoch> { self.timestamp.as_ref() }
+    /// Text as generated by processing a virtual key code with a keyboard layout. Not needed for
+    /// for 'keyUp' and 'rawKeyDown' events (default: "")
     pub fn text(&self) -> Option<&str> { self.text.as_deref() }
-    pub fn unmodifiedText(&self) -> Option<&str> { self.unmodifiedText.as_deref() }
-    pub fn keyIdentifier(&self) -> Option<&str> { self.keyIdentifier.as_deref() }
+    /// Text that would have been generated by the keyboard if no modifiers were pressed (except for
+    /// shift). Useful for shortcut (accelerator) key handling (default: "").
+    pub fn unmodified_text(&self) -> Option<&str> { self.unmodified_text.as_deref() }
+    /// Unique key identifier (e.g., 'U+0041') (default: "").
+    pub fn key_identifier(&self) -> Option<&str> { self.key_identifier.as_deref() }
+    /// Unique DOM defined string value for each physical key (e.g., 'KeyA') (default: "").
     pub fn code(&self) -> Option<&str> { self.code.as_deref() }
+    /// Unique DOM defined string value describing the meaning of the key in the context of active
+    /// modifiers, keyboard layout, etc (e.g., 'AltGr') (default: "").
     pub fn key(&self) -> Option<&str> { self.key.as_deref() }
-    pub fn windowsVirtualKeyCode(&self) -> Option<i64> { self.windowsVirtualKeyCode }
-    pub fn nativeVirtualKeyCode(&self) -> Option<i64> { self.nativeVirtualKeyCode }
-    pub fn autoRepeat(&self) -> Option<bool> { self.autoRepeat }
-    pub fn isKeypad(&self) -> Option<bool> { self.isKeypad }
-    pub fn isSystemKey(&self) -> Option<bool> { self.isSystemKey }
+    /// Windows virtual key code (default: 0).
+    pub fn windows_virtual_key_code(&self) -> Option<i64> { self.windows_virtual_key_code }
+    /// Native virtual key code (default: 0).
+    pub fn native_virtual_key_code(&self) -> Option<i64> { self.native_virtual_key_code }
+    /// Whether the event was generated from auto repeat (default: false).
+    pub fn auto_repeat(&self) -> Option<bool> { self.auto_repeat }
+    /// Whether the event was generated from the keypad (default: false).
+    pub fn is_keypad(&self) -> Option<bool> { self.is_keypad }
+    /// Whether the event was a system key event (default: false).
+    pub fn is_system_key(&self) -> Option<bool> { self.is_system_key }
+    /// Whether the event was from the left or right side of the keyboard. 1=Left, 2=Right (default:
+    /// 0).
     pub fn location(&self) -> Option<i64> { self.location }
+    /// Editing commands to send with the key event (e.g., 'selectAll') (default: \[\]).
+    /// These are related to but not equal the command names used in 'document.execCommand' and NSStandardKeyBindingResponding.
+    /// See <https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h> for valid command names.
     pub fn commands(&self) -> Option<&[Cow<'a, str>]> { self.commands.as_deref() }
 }
 
@@ -425,15 +491,15 @@ pub struct DispatchKeyEventParamsBuilder<'a> {
     modifiers: Option<i64>,
     timestamp: Option<TimeSinceEpoch>,
     text: Option<Cow<'a, str>>,
-    unmodifiedText: Option<Cow<'a, str>>,
-    keyIdentifier: Option<Cow<'a, str>>,
+    unmodified_text: Option<Cow<'a, str>>,
+    key_identifier: Option<Cow<'a, str>>,
     code: Option<Cow<'a, str>>,
     key: Option<Cow<'a, str>>,
-    windowsVirtualKeyCode: Option<i64>,
-    nativeVirtualKeyCode: Option<i64>,
-    autoRepeat: Option<bool>,
-    isKeypad: Option<bool>,
-    isSystemKey: Option<bool>,
+    windows_virtual_key_code: Option<i64>,
+    native_virtual_key_code: Option<i64>,
+    auto_repeat: Option<bool>,
+    is_keypad: Option<bool>,
+    is_system_key: Option<bool>,
     location: Option<i64>,
     commands: Option<Vec<Cow<'a, str>>>,
 }
@@ -449,30 +515,30 @@ impl<'a> DispatchKeyEventParamsBuilder<'a> {
     pub fn text(mut self, text: impl Into<Cow<'a, str>>) -> Self { self.text = Some(text.into()); self }
     /// Text that would have been generated by the keyboard if no modifiers were pressed (except for
     /// shift). Useful for shortcut (accelerator) key handling (default: "").
-    pub fn unmodifiedText(mut self, unmodifiedText: impl Into<Cow<'a, str>>) -> Self { self.unmodifiedText = Some(unmodifiedText.into()); self }
+    pub fn unmodified_text(mut self, unmodified_text: impl Into<Cow<'a, str>>) -> Self { self.unmodified_text = Some(unmodified_text.into()); self }
     /// Unique key identifier (e.g., 'U+0041') (default: "").
-    pub fn keyIdentifier(mut self, keyIdentifier: impl Into<Cow<'a, str>>) -> Self { self.keyIdentifier = Some(keyIdentifier.into()); self }
+    pub fn key_identifier(mut self, key_identifier: impl Into<Cow<'a, str>>) -> Self { self.key_identifier = Some(key_identifier.into()); self }
     /// Unique DOM defined string value for each physical key (e.g., 'KeyA') (default: "").
     pub fn code(mut self, code: impl Into<Cow<'a, str>>) -> Self { self.code = Some(code.into()); self }
     /// Unique DOM defined string value describing the meaning of the key in the context of active
     /// modifiers, keyboard layout, etc (e.g., 'AltGr') (default: "").
     pub fn key(mut self, key: impl Into<Cow<'a, str>>) -> Self { self.key = Some(key.into()); self }
     /// Windows virtual key code (default: 0).
-    pub fn windowsVirtualKeyCode(mut self, windowsVirtualKeyCode: i64) -> Self { self.windowsVirtualKeyCode = Some(windowsVirtualKeyCode); self }
+    pub fn windows_virtual_key_code(mut self, windows_virtual_key_code: i64) -> Self { self.windows_virtual_key_code = Some(windows_virtual_key_code); self }
     /// Native virtual key code (default: 0).
-    pub fn nativeVirtualKeyCode(mut self, nativeVirtualKeyCode: i64) -> Self { self.nativeVirtualKeyCode = Some(nativeVirtualKeyCode); self }
+    pub fn native_virtual_key_code(mut self, native_virtual_key_code: i64) -> Self { self.native_virtual_key_code = Some(native_virtual_key_code); self }
     /// Whether the event was generated from auto repeat (default: false).
-    pub fn autoRepeat(mut self, autoRepeat: bool) -> Self { self.autoRepeat = Some(autoRepeat); self }
+    pub fn auto_repeat(mut self, auto_repeat: bool) -> Self { self.auto_repeat = Some(auto_repeat); self }
     /// Whether the event was generated from the keypad (default: false).
-    pub fn isKeypad(mut self, isKeypad: bool) -> Self { self.isKeypad = Some(isKeypad); self }
+    pub fn is_keypad(mut self, is_keypad: bool) -> Self { self.is_keypad = Some(is_keypad); self }
     /// Whether the event was a system key event (default: false).
-    pub fn isSystemKey(mut self, isSystemKey: bool) -> Self { self.isSystemKey = Some(isSystemKey); self }
+    pub fn is_system_key(mut self, is_system_key: bool) -> Self { self.is_system_key = Some(is_system_key); self }
     /// Whether the event was from the left or right side of the keyboard. 1=Left, 2=Right (default:
     /// 0).
     pub fn location(mut self, location: i64) -> Self { self.location = Some(location); self }
-    /// Editing commands to send with the key event (e.g., 'selectAll') (default: []).
+    /// Editing commands to send with the key event (e.g., 'selectAll') (default: \[\]).
     /// These are related to but not equal the command names used in 'document.execCommand' and NSStandardKeyBindingResponding.
-    /// See https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h for valid command names.
+    /// See <https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h> for valid command names.
     pub fn commands(mut self, commands: Vec<Cow<'a, str>>) -> Self { self.commands = Some(commands); self }
     pub fn build(self) -> DispatchKeyEventParams<'a> {
         DispatchKeyEventParams {
@@ -480,15 +546,15 @@ impl<'a> DispatchKeyEventParamsBuilder<'a> {
             modifiers: self.modifiers,
             timestamp: self.timestamp,
             text: self.text,
-            unmodifiedText: self.unmodifiedText,
-            keyIdentifier: self.keyIdentifier,
+            unmodified_text: self.unmodified_text,
+            key_identifier: self.key_identifier,
             code: self.code,
             key: self.key,
-            windowsVirtualKeyCode: self.windowsVirtualKeyCode,
-            nativeVirtualKeyCode: self.nativeVirtualKeyCode,
-            autoRepeat: self.autoRepeat,
-            isKeypad: self.isKeypad,
-            isSystemKey: self.isSystemKey,
+            windows_virtual_key_code: self.windows_virtual_key_code,
+            native_virtual_key_code: self.native_virtual_key_code,
+            auto_repeat: self.auto_repeat,
+            is_keypad: self.is_keypad,
+            is_system_key: self.is_system_key,
             location: self.location,
             commands: self.commands,
         }
@@ -513,11 +579,14 @@ pub struct InsertTextParams<'a> {
 }
 
 impl<'a> InsertTextParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `text`: The text to insert.
     pub fn builder(text: impl Into<Cow<'a, str>>) -> InsertTextParamsBuilder<'a> {
         InsertTextParamsBuilder {
             text: text.into(),
         }
     }
+    /// The text to insert.
     pub fn text(&self) -> &str { self.text.as_ref() }
 }
 
@@ -551,55 +620,66 @@ pub struct ImeSetCompositionParams<'a> {
     /// The text to insert
     text: Cow<'a, str>,
     /// selection start
-    selectionStart: i64,
+    #[serde(rename = "selectionStart")]
+    selection_start: i64,
     /// selection end
-    selectionEnd: i64,
+    #[serde(rename = "selectionEnd")]
+    selection_end: i64,
     /// replacement start
-    #[serde(skip_serializing_if = "Option::is_none")]
-    replacementStart: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "replacementStart")]
+    replacement_start: Option<i64>,
     /// replacement end
-    #[serde(skip_serializing_if = "Option::is_none")]
-    replacementEnd: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "replacementEnd")]
+    replacement_end: Option<i64>,
 }
 
 impl<'a> ImeSetCompositionParams<'a> {
-    pub fn builder(text: impl Into<Cow<'a, str>>, selectionStart: i64, selectionEnd: i64) -> ImeSetCompositionParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `text`: The text to insert
+    /// * `selection_start`: selection start
+    /// * `selection_end`: selection end
+    pub fn builder(text: impl Into<Cow<'a, str>>, selection_start: i64, selection_end: i64) -> ImeSetCompositionParamsBuilder<'a> {
         ImeSetCompositionParamsBuilder {
             text: text.into(),
-            selectionStart: selectionStart,
-            selectionEnd: selectionEnd,
-            replacementStart: None,
-            replacementEnd: None,
+            selection_start: selection_start,
+            selection_end: selection_end,
+            replacement_start: None,
+            replacement_end: None,
         }
     }
+    /// The text to insert
     pub fn text(&self) -> &str { self.text.as_ref() }
-    pub fn selectionStart(&self) -> i64 { self.selectionStart }
-    pub fn selectionEnd(&self) -> i64 { self.selectionEnd }
-    pub fn replacementStart(&self) -> Option<i64> { self.replacementStart }
-    pub fn replacementEnd(&self) -> Option<i64> { self.replacementEnd }
+    /// selection start
+    pub fn selection_start(&self) -> i64 { self.selection_start }
+    /// selection end
+    pub fn selection_end(&self) -> i64 { self.selection_end }
+    /// replacement start
+    pub fn replacement_start(&self) -> Option<i64> { self.replacement_start }
+    /// replacement end
+    pub fn replacement_end(&self) -> Option<i64> { self.replacement_end }
 }
 
 
 pub struct ImeSetCompositionParamsBuilder<'a> {
     text: Cow<'a, str>,
-    selectionStart: i64,
-    selectionEnd: i64,
-    replacementStart: Option<i64>,
-    replacementEnd: Option<i64>,
+    selection_start: i64,
+    selection_end: i64,
+    replacement_start: Option<i64>,
+    replacement_end: Option<i64>,
 }
 
 impl<'a> ImeSetCompositionParamsBuilder<'a> {
     /// replacement start
-    pub fn replacementStart(mut self, replacementStart: i64) -> Self { self.replacementStart = Some(replacementStart); self }
+    pub fn replacement_start(mut self, replacement_start: i64) -> Self { self.replacement_start = Some(replacement_start); self }
     /// replacement end
-    pub fn replacementEnd(mut self, replacementEnd: i64) -> Self { self.replacementEnd = Some(replacementEnd); self }
+    pub fn replacement_end(mut self, replacement_end: i64) -> Self { self.replacement_end = Some(replacement_end); self }
     pub fn build(self) -> ImeSetCompositionParams<'a> {
         ImeSetCompositionParams {
             text: self.text,
-            selectionStart: self.selectionStart,
-            selectionEnd: self.selectionEnd,
-            replacementStart: self.replacementStart,
-            replacementEnd: self.replacementEnd,
+            selection_start: self.selection_start,
+            selection_end: self.selection_end,
+            replacement_start: self.replacement_start,
+            replacement_end: self.replacement_end,
         }
     }
 }
@@ -639,35 +719,39 @@ pub struct DispatchMouseEventParams<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     buttons: Option<i64>,
     /// Number of times the mouse button was clicked (default: 0).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    clickCount: Option<u64>,
-    /// The normalized pressure, which has a range of [0,1] (default: 0).
+    #[serde(skip_serializing_if = "Option::is_none", rename = "clickCount")]
+    click_count: Option<u64>,
+    /// The normalized pressure, which has a range of \[0,1\] (default: 0).
     #[serde(skip_serializing_if = "Option::is_none")]
     force: Option<f64>,
-    /// The normalized tangential pressure, which has a range of [-1,1] (default: 0).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    tangentialPressure: Option<f64>,
-    /// The plane angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis, in degrees of the range [-90,90], a positive tiltX is to the right (default: 0).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    tiltX: Option<f64>,
-    /// The plane angle between the X-Z plane and the plane containing both the stylus axis and the X axis, in degrees of the range [-90,90], a positive tiltY is towards the user (default: 0).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    tiltY: Option<f64>,
-    /// The clockwise rotation of a pen stylus around its own major axis, in degrees in the range [0,359] (default: 0).
+    /// The normalized tangential pressure, which has a range of \[-1,1\] (default: 0).
+    #[serde(skip_serializing_if = "Option::is_none", rename = "tangentialPressure")]
+    tangential_pressure: Option<f64>,
+    /// The plane angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis, in degrees of the range \[-90,90\], a positive tiltX is to the right (default: 0).
+    #[serde(skip_serializing_if = "Option::is_none", rename = "tiltX")]
+    tilt_x: Option<f64>,
+    /// The plane angle between the X-Z plane and the plane containing both the stylus axis and the X axis, in degrees of the range \[-90,90\], a positive tiltY is towards the user (default: 0).
+    #[serde(skip_serializing_if = "Option::is_none", rename = "tiltY")]
+    tilt_y: Option<f64>,
+    /// The clockwise rotation of a pen stylus around its own major axis, in degrees in the range \[0,359\] (default: 0).
     #[serde(skip_serializing_if = "Option::is_none")]
     twist: Option<i64>,
     /// X delta in CSS pixels for mouse wheel event (default: 0).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    deltaX: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "deltaX")]
+    delta_x: Option<f64>,
     /// Y delta in CSS pixels for mouse wheel event (default: 0).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    deltaY: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "deltaY")]
+    delta_y: Option<f64>,
     /// Pointer type (default: "mouse").
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pointerType: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "pointerType")]
+    pointer_type: Option<Cow<'a, str>>,
 }
 
 impl<'a> DispatchMouseEventParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `type_`: Type of the mouse event.
+    /// * `x`: X coordinate of the event relative to the main frame's viewport in CSS pixels.
+    /// * `y`: Y coordinate of the event relative to the main frame's viewport in CSS pixels. 0 refers to the top of the viewport and Y increases as it proceeds towards the bottom of the viewport.
     pub fn builder(type_: impl Into<Cow<'a, str>>, x: f64, y: f64) -> DispatchMouseEventParamsBuilder<'a> {
         DispatchMouseEventParamsBuilder {
             type_: type_.into(),
@@ -677,33 +761,52 @@ impl<'a> DispatchMouseEventParams<'a> {
             timestamp: None,
             button: None,
             buttons: None,
-            clickCount: None,
+            click_count: None,
             force: None,
-            tangentialPressure: None,
-            tiltX: None,
-            tiltY: None,
+            tangential_pressure: None,
+            tilt_x: None,
+            tilt_y: None,
             twist: None,
-            deltaX: None,
-            deltaY: None,
-            pointerType: None,
+            delta_x: None,
+            delta_y: None,
+            pointer_type: None,
         }
     }
+    /// Type of the mouse event.
     pub fn type_(&self) -> &str { self.type_.as_ref() }
+    /// X coordinate of the event relative to the main frame's viewport in CSS pixels.
     pub fn x(&self) -> f64 { self.x }
+    /// Y coordinate of the event relative to the main frame's viewport in CSS pixels. 0 refers to
+    /// the top of the viewport and Y increases as it proceeds towards the bottom of the viewport.
     pub fn y(&self) -> f64 { self.y }
+    /// Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8
+    /// (default: 0).
     pub fn modifiers(&self) -> Option<i64> { self.modifiers }
+    /// Time at which the event occurred.
     pub fn timestamp(&self) -> Option<&TimeSinceEpoch> { self.timestamp.as_ref() }
+    /// Mouse button (default: "none").
     pub fn button(&self) -> Option<&MouseButton> { self.button.as_ref() }
+    /// A number indicating which buttons are pressed on the mouse when a mouse event is triggered.
+    /// Left=1, Right=2, Middle=4, Back=8, Forward=16, None=0.
     pub fn buttons(&self) -> Option<i64> { self.buttons }
-    pub fn clickCount(&self) -> Option<u64> { self.clickCount }
+    /// Number of times the mouse button was clicked (default: 0).
+    pub fn click_count(&self) -> Option<u64> { self.click_count }
+    /// The normalized pressure, which has a range of \[0,1\] (default: 0).
     pub fn force(&self) -> Option<f64> { self.force }
-    pub fn tangentialPressure(&self) -> Option<f64> { self.tangentialPressure }
-    pub fn tiltX(&self) -> Option<f64> { self.tiltX }
-    pub fn tiltY(&self) -> Option<f64> { self.tiltY }
+    /// The normalized tangential pressure, which has a range of \[-1,1\] (default: 0).
+    pub fn tangential_pressure(&self) -> Option<f64> { self.tangential_pressure }
+    /// The plane angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis, in degrees of the range \[-90,90\], a positive tiltX is to the right (default: 0).
+    pub fn tilt_x(&self) -> Option<f64> { self.tilt_x }
+    /// The plane angle between the X-Z plane and the plane containing both the stylus axis and the X axis, in degrees of the range \[-90,90\], a positive tiltY is towards the user (default: 0).
+    pub fn tilt_y(&self) -> Option<f64> { self.tilt_y }
+    /// The clockwise rotation of a pen stylus around its own major axis, in degrees in the range \[0,359\] (default: 0).
     pub fn twist(&self) -> Option<i64> { self.twist }
-    pub fn deltaX(&self) -> Option<f64> { self.deltaX }
-    pub fn deltaY(&self) -> Option<f64> { self.deltaY }
-    pub fn pointerType(&self) -> Option<&str> { self.pointerType.as_deref() }
+    /// X delta in CSS pixels for mouse wheel event (default: 0).
+    pub fn delta_x(&self) -> Option<f64> { self.delta_x }
+    /// Y delta in CSS pixels for mouse wheel event (default: 0).
+    pub fn delta_y(&self) -> Option<f64> { self.delta_y }
+    /// Pointer type (default: "mouse").
+    pub fn pointer_type(&self) -> Option<&str> { self.pointer_type.as_deref() }
 }
 
 
@@ -715,15 +818,15 @@ pub struct DispatchMouseEventParamsBuilder<'a> {
     timestamp: Option<TimeSinceEpoch>,
     button: Option<MouseButton>,
     buttons: Option<i64>,
-    clickCount: Option<u64>,
+    click_count: Option<u64>,
     force: Option<f64>,
-    tangentialPressure: Option<f64>,
-    tiltX: Option<f64>,
-    tiltY: Option<f64>,
+    tangential_pressure: Option<f64>,
+    tilt_x: Option<f64>,
+    tilt_y: Option<f64>,
     twist: Option<i64>,
-    deltaX: Option<f64>,
-    deltaY: Option<f64>,
-    pointerType: Option<Cow<'a, str>>,
+    delta_x: Option<f64>,
+    delta_y: Option<f64>,
+    pointer_type: Option<Cow<'a, str>>,
 }
 
 impl<'a> DispatchMouseEventParamsBuilder<'a> {
@@ -738,23 +841,23 @@ impl<'a> DispatchMouseEventParamsBuilder<'a> {
     /// Left=1, Right=2, Middle=4, Back=8, Forward=16, None=0.
     pub fn buttons(mut self, buttons: i64) -> Self { self.buttons = Some(buttons); self }
     /// Number of times the mouse button was clicked (default: 0).
-    pub fn clickCount(mut self, clickCount: u64) -> Self { self.clickCount = Some(clickCount); self }
-    /// The normalized pressure, which has a range of [0,1] (default: 0).
+    pub fn click_count(mut self, click_count: u64) -> Self { self.click_count = Some(click_count); self }
+    /// The normalized pressure, which has a range of \[0,1\] (default: 0).
     pub fn force(mut self, force: f64) -> Self { self.force = Some(force); self }
-    /// The normalized tangential pressure, which has a range of [-1,1] (default: 0).
-    pub fn tangentialPressure(mut self, tangentialPressure: f64) -> Self { self.tangentialPressure = Some(tangentialPressure); self }
-    /// The plane angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis, in degrees of the range [-90,90], a positive tiltX is to the right (default: 0).
-    pub fn tiltX(mut self, tiltX: f64) -> Self { self.tiltX = Some(tiltX); self }
-    /// The plane angle between the X-Z plane and the plane containing both the stylus axis and the X axis, in degrees of the range [-90,90], a positive tiltY is towards the user (default: 0).
-    pub fn tiltY(mut self, tiltY: f64) -> Self { self.tiltY = Some(tiltY); self }
-    /// The clockwise rotation of a pen stylus around its own major axis, in degrees in the range [0,359] (default: 0).
+    /// The normalized tangential pressure, which has a range of \[-1,1\] (default: 0).
+    pub fn tangential_pressure(mut self, tangential_pressure: f64) -> Self { self.tangential_pressure = Some(tangential_pressure); self }
+    /// The plane angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis, in degrees of the range \[-90,90\], a positive tiltX is to the right (default: 0).
+    pub fn tilt_x(mut self, tilt_x: f64) -> Self { self.tilt_x = Some(tilt_x); self }
+    /// The plane angle between the X-Z plane and the plane containing both the stylus axis and the X axis, in degrees of the range \[-90,90\], a positive tiltY is towards the user (default: 0).
+    pub fn tilt_y(mut self, tilt_y: f64) -> Self { self.tilt_y = Some(tilt_y); self }
+    /// The clockwise rotation of a pen stylus around its own major axis, in degrees in the range \[0,359\] (default: 0).
     pub fn twist(mut self, twist: i64) -> Self { self.twist = Some(twist); self }
     /// X delta in CSS pixels for mouse wheel event (default: 0).
-    pub fn deltaX(mut self, deltaX: f64) -> Self { self.deltaX = Some(deltaX); self }
+    pub fn delta_x(mut self, delta_x: f64) -> Self { self.delta_x = Some(delta_x); self }
     /// Y delta in CSS pixels for mouse wheel event (default: 0).
-    pub fn deltaY(mut self, deltaY: f64) -> Self { self.deltaY = Some(deltaY); self }
+    pub fn delta_y(mut self, delta_y: f64) -> Self { self.delta_y = Some(delta_y); self }
     /// Pointer type (default: "mouse").
-    pub fn pointerType(mut self, pointerType: impl Into<Cow<'a, str>>) -> Self { self.pointerType = Some(pointerType.into()); self }
+    pub fn pointer_type(mut self, pointer_type: impl Into<Cow<'a, str>>) -> Self { self.pointer_type = Some(pointer_type.into()); self }
     pub fn build(self) -> DispatchMouseEventParams<'a> {
         DispatchMouseEventParams {
             type_: self.type_,
@@ -764,15 +867,15 @@ impl<'a> DispatchMouseEventParamsBuilder<'a> {
             timestamp: self.timestamp,
             button: self.button,
             buttons: self.buttons,
-            clickCount: self.clickCount,
+            click_count: self.click_count,
             force: self.force,
-            tangentialPressure: self.tangentialPressure,
-            tiltX: self.tiltX,
-            tiltY: self.tiltY,
+            tangential_pressure: self.tangential_pressure,
+            tilt_x: self.tilt_x,
+            tilt_y: self.tilt_y,
             twist: self.twist,
-            deltaX: self.deltaX,
-            deltaY: self.deltaY,
-            pointerType: self.pointerType,
+            delta_x: self.delta_x,
+            delta_y: self.delta_y,
+            pointer_type: self.pointer_type,
         }
     }
 }
@@ -796,7 +899,8 @@ pub struct DispatchTouchEventParams<'a> {
     /// Active touch points on the touch device. One event per any changed point (compared to
     /// previous touch event in a sequence) is generated, emulating pressing/moving/releasing points
     /// one by one.
-    touchPoints: Vec<TouchPoint>,
+    #[serde(rename = "touchPoints")]
+    touch_points: Vec<TouchPoint>,
     /// Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8
     /// (default: 0).
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -807,24 +911,35 @@ pub struct DispatchTouchEventParams<'a> {
 }
 
 impl<'a> DispatchTouchEventParams<'a> {
-    pub fn builder(type_: impl Into<Cow<'a, str>>, touchPoints: Vec<TouchPoint>) -> DispatchTouchEventParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `type_`: Type of the touch event. TouchEnd and TouchCancel must not contain any touch points, while TouchStart and TouchMove must contains at least one.
+    /// * `touch_points`: Active touch points on the touch device. One event per any changed point (compared to previous touch event in a sequence) is generated, emulating pressing/moving/releasing points one by one.
+    pub fn builder(type_: impl Into<Cow<'a, str>>, touch_points: Vec<TouchPoint>) -> DispatchTouchEventParamsBuilder<'a> {
         DispatchTouchEventParamsBuilder {
             type_: type_.into(),
-            touchPoints: touchPoints,
+            touch_points: touch_points,
             modifiers: None,
             timestamp: None,
         }
     }
+    /// Type of the touch event. TouchEnd and TouchCancel must not contain any touch points, while
+    /// TouchStart and TouchMove must contains at least one.
     pub fn type_(&self) -> &str { self.type_.as_ref() }
-    pub fn touchPoints(&self) -> &[TouchPoint] { &self.touchPoints }
+    /// Active touch points on the touch device. One event per any changed point (compared to
+    /// previous touch event in a sequence) is generated, emulating pressing/moving/releasing points
+    /// one by one.
+    pub fn touch_points(&self) -> &[TouchPoint] { &self.touch_points }
+    /// Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8
+    /// (default: 0).
     pub fn modifiers(&self) -> Option<i64> { self.modifiers }
+    /// Time at which the event occurred.
     pub fn timestamp(&self) -> Option<&TimeSinceEpoch> { self.timestamp.as_ref() }
 }
 
 
 pub struct DispatchTouchEventParamsBuilder<'a> {
     type_: Cow<'a, str>,
-    touchPoints: Vec<TouchPoint>,
+    touch_points: Vec<TouchPoint>,
     modifiers: Option<i64>,
     timestamp: Option<TimeSinceEpoch>,
 }
@@ -838,7 +953,7 @@ impl<'a> DispatchTouchEventParamsBuilder<'a> {
     pub fn build(self) -> DispatchTouchEventParams<'a> {
         DispatchTouchEventParams {
             type_: self.type_,
-            touchPoints: self.touchPoints,
+            touch_points: self.touch_points,
             modifiers: self.modifiers,
             timestamp: self.timestamp,
         }
@@ -880,21 +995,26 @@ pub struct EmulateTouchFromMouseEventParams<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     timestamp: Option<TimeSinceEpoch>,
     /// X delta in DIP for mouse wheel event (default: 0).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    deltaX: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "deltaX")]
+    delta_x: Option<f64>,
     /// Y delta in DIP for mouse wheel event (default: 0).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    deltaY: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "deltaY")]
+    delta_y: Option<f64>,
     /// Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8
     /// (default: 0).
     #[serde(skip_serializing_if = "Option::is_none")]
     modifiers: Option<i64>,
     /// Number of times the mouse button was clicked (default: 0).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    clickCount: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "clickCount")]
+    click_count: Option<u64>,
 }
 
 impl<'a> EmulateTouchFromMouseEventParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `type_`: Type of the mouse event.
+    /// * `x`: X coordinate of the mouse pointer in DIP.
+    /// * `y`: Y coordinate of the mouse pointer in DIP.
+    /// * `button`: Mouse button. Only "none", "left", "right" are supported.
     pub fn builder(type_: impl Into<Cow<'a, str>>, x: i32, y: i32, button: impl Into<MouseButton>) -> EmulateTouchFromMouseEventParamsBuilder<'a> {
         EmulateTouchFromMouseEventParamsBuilder {
             type_: type_.into(),
@@ -902,21 +1022,31 @@ impl<'a> EmulateTouchFromMouseEventParams<'a> {
             y: y,
             button: button.into(),
             timestamp: None,
-            deltaX: None,
-            deltaY: None,
+            delta_x: None,
+            delta_y: None,
             modifiers: None,
-            clickCount: None,
+            click_count: None,
         }
     }
+    /// Type of the mouse event.
     pub fn type_(&self) -> &str { self.type_.as_ref() }
+    /// X coordinate of the mouse pointer in DIP.
     pub fn x(&self) -> i32 { self.x }
+    /// Y coordinate of the mouse pointer in DIP.
     pub fn y(&self) -> i32 { self.y }
+    /// Mouse button. Only "none", "left", "right" are supported.
     pub fn button(&self) -> &MouseButton { &self.button }
+    /// Time at which the event occurred (default: current time).
     pub fn timestamp(&self) -> Option<&TimeSinceEpoch> { self.timestamp.as_ref() }
-    pub fn deltaX(&self) -> Option<f64> { self.deltaX }
-    pub fn deltaY(&self) -> Option<f64> { self.deltaY }
+    /// X delta in DIP for mouse wheel event (default: 0).
+    pub fn delta_x(&self) -> Option<f64> { self.delta_x }
+    /// Y delta in DIP for mouse wheel event (default: 0).
+    pub fn delta_y(&self) -> Option<f64> { self.delta_y }
+    /// Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8
+    /// (default: 0).
     pub fn modifiers(&self) -> Option<i64> { self.modifiers }
-    pub fn clickCount(&self) -> Option<u64> { self.clickCount }
+    /// Number of times the mouse button was clicked (default: 0).
+    pub fn click_count(&self) -> Option<u64> { self.click_count }
 }
 
 
@@ -926,24 +1056,24 @@ pub struct EmulateTouchFromMouseEventParamsBuilder<'a> {
     y: i32,
     button: MouseButton,
     timestamp: Option<TimeSinceEpoch>,
-    deltaX: Option<f64>,
-    deltaY: Option<f64>,
+    delta_x: Option<f64>,
+    delta_y: Option<f64>,
     modifiers: Option<i64>,
-    clickCount: Option<u64>,
+    click_count: Option<u64>,
 }
 
 impl<'a> EmulateTouchFromMouseEventParamsBuilder<'a> {
     /// Time at which the event occurred (default: current time).
     pub fn timestamp(mut self, timestamp: TimeSinceEpoch) -> Self { self.timestamp = Some(timestamp); self }
     /// X delta in DIP for mouse wheel event (default: 0).
-    pub fn deltaX(mut self, deltaX: f64) -> Self { self.deltaX = Some(deltaX); self }
+    pub fn delta_x(mut self, delta_x: f64) -> Self { self.delta_x = Some(delta_x); self }
     /// Y delta in DIP for mouse wheel event (default: 0).
-    pub fn deltaY(mut self, deltaY: f64) -> Self { self.deltaY = Some(deltaY); self }
+    pub fn delta_y(mut self, delta_y: f64) -> Self { self.delta_y = Some(delta_y); self }
     /// Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8
     /// (default: 0).
     pub fn modifiers(mut self, modifiers: i64) -> Self { self.modifiers = Some(modifiers); self }
     /// Number of times the mouse button was clicked (default: 0).
-    pub fn clickCount(mut self, clickCount: u64) -> Self { self.clickCount = Some(clickCount); self }
+    pub fn click_count(mut self, click_count: u64) -> Self { self.click_count = Some(click_count); self }
     pub fn build(self) -> EmulateTouchFromMouseEventParams<'a> {
         EmulateTouchFromMouseEventParams {
             type_: self.type_,
@@ -951,10 +1081,10 @@ impl<'a> EmulateTouchFromMouseEventParamsBuilder<'a> {
             y: self.y,
             button: self.button,
             timestamp: self.timestamp,
-            deltaX: self.deltaX,
-            deltaY: self.deltaY,
+            delta_x: self.delta_x,
+            delta_y: self.delta_y,
             modifiers: self.modifiers,
-            clickCount: self.clickCount,
+            click_count: self.click_count,
         }
     }
 }
@@ -976,11 +1106,14 @@ pub struct SetIgnoreInputEventsParams {
 }
 
 impl SetIgnoreInputEventsParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `ignore`: Ignores input events processing when set to true.
     pub fn builder(ignore: bool) -> SetIgnoreInputEventsParamsBuilder {
         SetIgnoreInputEventsParamsBuilder {
             ignore: ignore,
         }
     }
+    /// Ignores input events processing when set to true.
     pub fn ignore(&self) -> bool { self.ignore }
 }
 
@@ -1014,6 +1147,8 @@ pub struct SetInterceptDragsParams {
 }
 
 impl SetInterceptDragsParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `enabled`: 
     pub fn builder(enabled: bool) -> SetInterceptDragsParamsBuilder {
         SetInterceptDragsParamsBuilder {
             enabled: enabled,
@@ -1051,56 +1186,67 @@ pub struct SynthesizePinchGestureParams {
     x: f64,
     /// Y coordinate of the start of the gesture in CSS pixels.
     y: f64,
-    /// Relative scale factor after zooming (>1.0 zooms in, <1.0 zooms out).
-    scaleFactor: f64,
+    /// Relative scale factor after zooming (\>1.0 zooms in, \<1.0 zooms out).
+    #[serde(rename = "scaleFactor")]
+    scale_factor: f64,
     /// Relative pointer speed in pixels per second (default: 800).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    relativeSpeed: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "relativeSpeed")]
+    relative_speed: Option<i64>,
     /// Which type of input events to be generated (default: 'default', which queries the platform
     /// for the preferred input type).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    gestureSourceType: Option<GestureSourceType>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "gestureSourceType")]
+    gesture_source_type: Option<GestureSourceType>,
 }
 
 impl SynthesizePinchGestureParams {
-    pub fn builder(x: f64, y: f64, scaleFactor: f64) -> SynthesizePinchGestureParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `x`: X coordinate of the start of the gesture in CSS pixels.
+    /// * `y`: Y coordinate of the start of the gesture in CSS pixels.
+    /// * `scale_factor`: Relative scale factor after zooming (\>1.0 zooms in, \<1.0 zooms out).
+    pub fn builder(x: f64, y: f64, scale_factor: f64) -> SynthesizePinchGestureParamsBuilder {
         SynthesizePinchGestureParamsBuilder {
             x: x,
             y: y,
-            scaleFactor: scaleFactor,
-            relativeSpeed: None,
-            gestureSourceType: None,
+            scale_factor: scale_factor,
+            relative_speed: None,
+            gesture_source_type: None,
         }
     }
+    /// X coordinate of the start of the gesture in CSS pixels.
     pub fn x(&self) -> f64 { self.x }
+    /// Y coordinate of the start of the gesture in CSS pixels.
     pub fn y(&self) -> f64 { self.y }
-    pub fn scaleFactor(&self) -> f64 { self.scaleFactor }
-    pub fn relativeSpeed(&self) -> Option<i64> { self.relativeSpeed }
-    pub fn gestureSourceType(&self) -> Option<&GestureSourceType> { self.gestureSourceType.as_ref() }
+    /// Relative scale factor after zooming (\>1.0 zooms in, \<1.0 zooms out).
+    pub fn scale_factor(&self) -> f64 { self.scale_factor }
+    /// Relative pointer speed in pixels per second (default: 800).
+    pub fn relative_speed(&self) -> Option<i64> { self.relative_speed }
+    /// Which type of input events to be generated (default: 'default', which queries the platform
+    /// for the preferred input type).
+    pub fn gesture_source_type(&self) -> Option<&GestureSourceType> { self.gesture_source_type.as_ref() }
 }
 
 
 pub struct SynthesizePinchGestureParamsBuilder {
     x: f64,
     y: f64,
-    scaleFactor: f64,
-    relativeSpeed: Option<i64>,
-    gestureSourceType: Option<GestureSourceType>,
+    scale_factor: f64,
+    relative_speed: Option<i64>,
+    gesture_source_type: Option<GestureSourceType>,
 }
 
 impl SynthesizePinchGestureParamsBuilder {
     /// Relative pointer speed in pixels per second (default: 800).
-    pub fn relativeSpeed(mut self, relativeSpeed: i64) -> Self { self.relativeSpeed = Some(relativeSpeed); self }
+    pub fn relative_speed(mut self, relative_speed: i64) -> Self { self.relative_speed = Some(relative_speed); self }
     /// Which type of input events to be generated (default: 'default', which queries the platform
     /// for the preferred input type).
-    pub fn gestureSourceType(mut self, gestureSourceType: impl Into<GestureSourceType>) -> Self { self.gestureSourceType = Some(gestureSourceType.into()); self }
+    pub fn gesture_source_type(mut self, gesture_source_type: impl Into<GestureSourceType>) -> Self { self.gesture_source_type = Some(gesture_source_type.into()); self }
     pub fn build(self) -> SynthesizePinchGestureParams {
         SynthesizePinchGestureParams {
             x: self.x,
             y: self.y,
-            scaleFactor: self.scaleFactor,
-            relativeSpeed: self.relativeSpeed,
-            gestureSourceType: self.gestureSourceType,
+            scale_factor: self.scale_factor,
+            relative_speed: self.relative_speed,
+            gesture_source_type: self.gesture_source_type,
         }
     }
 }
@@ -1122,125 +1268,143 @@ pub struct SynthesizeScrollGestureParams<'a> {
     /// Y coordinate of the start of the gesture in CSS pixels.
     y: f64,
     /// The distance to scroll along the X axis (positive to scroll left).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    xDistance: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "xDistance")]
+    x_distance: Option<f64>,
     /// The distance to scroll along the Y axis (positive to scroll up).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    yDistance: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "yDistance")]
+    y_distance: Option<f64>,
     /// The number of additional pixels to scroll back along the X axis, in addition to the given
     /// distance.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    xOverscroll: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "xOverscroll")]
+    x_overscroll: Option<f64>,
     /// The number of additional pixels to scroll back along the Y axis, in addition to the given
     /// distance.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    yOverscroll: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "yOverscroll")]
+    y_overscroll: Option<f64>,
     /// Prevent fling (default: true).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    preventFling: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "preventFling")]
+    prevent_fling: Option<bool>,
     /// Swipe speed in pixels per second (default: 800).
     #[serde(skip_serializing_if = "Option::is_none")]
     speed: Option<i64>,
     /// Which type of input events to be generated (default: 'default', which queries the platform
     /// for the preferred input type).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    gestureSourceType: Option<GestureSourceType>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "gestureSourceType")]
+    gesture_source_type: Option<GestureSourceType>,
     /// The number of times to repeat the gesture (default: 0).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    repeatCount: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "repeatCount")]
+    repeat_count: Option<u64>,
     /// The number of milliseconds delay between each repeat. (default: 250).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    repeatDelayMs: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "repeatDelayMs")]
+    repeat_delay_ms: Option<i64>,
     /// The name of the interaction markers to generate, if not empty (default: "").
-    #[serde(skip_serializing_if = "Option::is_none")]
-    interactionMarkerName: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "interactionMarkerName")]
+    interaction_marker_name: Option<Cow<'a, str>>,
 }
 
 impl<'a> SynthesizeScrollGestureParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `x`: X coordinate of the start of the gesture in CSS pixels.
+    /// * `y`: Y coordinate of the start of the gesture in CSS pixels.
     pub fn builder(x: f64, y: f64) -> SynthesizeScrollGestureParamsBuilder<'a> {
         SynthesizeScrollGestureParamsBuilder {
             x: x,
             y: y,
-            xDistance: None,
-            yDistance: None,
-            xOverscroll: None,
-            yOverscroll: None,
-            preventFling: None,
+            x_distance: None,
+            y_distance: None,
+            x_overscroll: None,
+            y_overscroll: None,
+            prevent_fling: None,
             speed: None,
-            gestureSourceType: None,
-            repeatCount: None,
-            repeatDelayMs: None,
-            interactionMarkerName: None,
+            gesture_source_type: None,
+            repeat_count: None,
+            repeat_delay_ms: None,
+            interaction_marker_name: None,
         }
     }
+    /// X coordinate of the start of the gesture in CSS pixels.
     pub fn x(&self) -> f64 { self.x }
+    /// Y coordinate of the start of the gesture in CSS pixels.
     pub fn y(&self) -> f64 { self.y }
-    pub fn xDistance(&self) -> Option<f64> { self.xDistance }
-    pub fn yDistance(&self) -> Option<f64> { self.yDistance }
-    pub fn xOverscroll(&self) -> Option<f64> { self.xOverscroll }
-    pub fn yOverscroll(&self) -> Option<f64> { self.yOverscroll }
-    pub fn preventFling(&self) -> Option<bool> { self.preventFling }
+    /// The distance to scroll along the X axis (positive to scroll left).
+    pub fn x_distance(&self) -> Option<f64> { self.x_distance }
+    /// The distance to scroll along the Y axis (positive to scroll up).
+    pub fn y_distance(&self) -> Option<f64> { self.y_distance }
+    /// The number of additional pixels to scroll back along the X axis, in addition to the given
+    /// distance.
+    pub fn x_overscroll(&self) -> Option<f64> { self.x_overscroll }
+    /// The number of additional pixels to scroll back along the Y axis, in addition to the given
+    /// distance.
+    pub fn y_overscroll(&self) -> Option<f64> { self.y_overscroll }
+    /// Prevent fling (default: true).
+    pub fn prevent_fling(&self) -> Option<bool> { self.prevent_fling }
+    /// Swipe speed in pixels per second (default: 800).
     pub fn speed(&self) -> Option<i64> { self.speed }
-    pub fn gestureSourceType(&self) -> Option<&GestureSourceType> { self.gestureSourceType.as_ref() }
-    pub fn repeatCount(&self) -> Option<u64> { self.repeatCount }
-    pub fn repeatDelayMs(&self) -> Option<i64> { self.repeatDelayMs }
-    pub fn interactionMarkerName(&self) -> Option<&str> { self.interactionMarkerName.as_deref() }
+    /// Which type of input events to be generated (default: 'default', which queries the platform
+    /// for the preferred input type).
+    pub fn gesture_source_type(&self) -> Option<&GestureSourceType> { self.gesture_source_type.as_ref() }
+    /// The number of times to repeat the gesture (default: 0).
+    pub fn repeat_count(&self) -> Option<u64> { self.repeat_count }
+    /// The number of milliseconds delay between each repeat. (default: 250).
+    pub fn repeat_delay_ms(&self) -> Option<i64> { self.repeat_delay_ms }
+    /// The name of the interaction markers to generate, if not empty (default: "").
+    pub fn interaction_marker_name(&self) -> Option<&str> { self.interaction_marker_name.as_deref() }
 }
 
 
 pub struct SynthesizeScrollGestureParamsBuilder<'a> {
     x: f64,
     y: f64,
-    xDistance: Option<f64>,
-    yDistance: Option<f64>,
-    xOverscroll: Option<f64>,
-    yOverscroll: Option<f64>,
-    preventFling: Option<bool>,
+    x_distance: Option<f64>,
+    y_distance: Option<f64>,
+    x_overscroll: Option<f64>,
+    y_overscroll: Option<f64>,
+    prevent_fling: Option<bool>,
     speed: Option<i64>,
-    gestureSourceType: Option<GestureSourceType>,
-    repeatCount: Option<u64>,
-    repeatDelayMs: Option<i64>,
-    interactionMarkerName: Option<Cow<'a, str>>,
+    gesture_source_type: Option<GestureSourceType>,
+    repeat_count: Option<u64>,
+    repeat_delay_ms: Option<i64>,
+    interaction_marker_name: Option<Cow<'a, str>>,
 }
 
 impl<'a> SynthesizeScrollGestureParamsBuilder<'a> {
     /// The distance to scroll along the X axis (positive to scroll left).
-    pub fn xDistance(mut self, xDistance: f64) -> Self { self.xDistance = Some(xDistance); self }
+    pub fn x_distance(mut self, x_distance: f64) -> Self { self.x_distance = Some(x_distance); self }
     /// The distance to scroll along the Y axis (positive to scroll up).
-    pub fn yDistance(mut self, yDistance: f64) -> Self { self.yDistance = Some(yDistance); self }
+    pub fn y_distance(mut self, y_distance: f64) -> Self { self.y_distance = Some(y_distance); self }
     /// The number of additional pixels to scroll back along the X axis, in addition to the given
     /// distance.
-    pub fn xOverscroll(mut self, xOverscroll: f64) -> Self { self.xOverscroll = Some(xOverscroll); self }
+    pub fn x_overscroll(mut self, x_overscroll: f64) -> Self { self.x_overscroll = Some(x_overscroll); self }
     /// The number of additional pixels to scroll back along the Y axis, in addition to the given
     /// distance.
-    pub fn yOverscroll(mut self, yOverscroll: f64) -> Self { self.yOverscroll = Some(yOverscroll); self }
+    pub fn y_overscroll(mut self, y_overscroll: f64) -> Self { self.y_overscroll = Some(y_overscroll); self }
     /// Prevent fling (default: true).
-    pub fn preventFling(mut self, preventFling: bool) -> Self { self.preventFling = Some(preventFling); self }
+    pub fn prevent_fling(mut self, prevent_fling: bool) -> Self { self.prevent_fling = Some(prevent_fling); self }
     /// Swipe speed in pixels per second (default: 800).
     pub fn speed(mut self, speed: i64) -> Self { self.speed = Some(speed); self }
     /// Which type of input events to be generated (default: 'default', which queries the platform
     /// for the preferred input type).
-    pub fn gestureSourceType(mut self, gestureSourceType: impl Into<GestureSourceType>) -> Self { self.gestureSourceType = Some(gestureSourceType.into()); self }
+    pub fn gesture_source_type(mut self, gesture_source_type: impl Into<GestureSourceType>) -> Self { self.gesture_source_type = Some(gesture_source_type.into()); self }
     /// The number of times to repeat the gesture (default: 0).
-    pub fn repeatCount(mut self, repeatCount: u64) -> Self { self.repeatCount = Some(repeatCount); self }
+    pub fn repeat_count(mut self, repeat_count: u64) -> Self { self.repeat_count = Some(repeat_count); self }
     /// The number of milliseconds delay between each repeat. (default: 250).
-    pub fn repeatDelayMs(mut self, repeatDelayMs: i64) -> Self { self.repeatDelayMs = Some(repeatDelayMs); self }
+    pub fn repeat_delay_ms(mut self, repeat_delay_ms: i64) -> Self { self.repeat_delay_ms = Some(repeat_delay_ms); self }
     /// The name of the interaction markers to generate, if not empty (default: "").
-    pub fn interactionMarkerName(mut self, interactionMarkerName: impl Into<Cow<'a, str>>) -> Self { self.interactionMarkerName = Some(interactionMarkerName.into()); self }
+    pub fn interaction_marker_name(mut self, interaction_marker_name: impl Into<Cow<'a, str>>) -> Self { self.interaction_marker_name = Some(interaction_marker_name.into()); self }
     pub fn build(self) -> SynthesizeScrollGestureParams<'a> {
         SynthesizeScrollGestureParams {
             x: self.x,
             y: self.y,
-            xDistance: self.xDistance,
-            yDistance: self.yDistance,
-            xOverscroll: self.xOverscroll,
-            yOverscroll: self.yOverscroll,
-            preventFling: self.preventFling,
+            x_distance: self.x_distance,
+            y_distance: self.y_distance,
+            x_overscroll: self.x_overscroll,
+            y_overscroll: self.y_overscroll,
+            prevent_fling: self.prevent_fling,
             speed: self.speed,
-            gestureSourceType: self.gestureSourceType,
-            repeatCount: self.repeatCount,
-            repeatDelayMs: self.repeatDelayMs,
-            interactionMarkerName: self.interactionMarkerName,
+            gesture_source_type: self.gesture_source_type,
+            repeat_count: self.repeat_count,
+            repeat_delay_ms: self.repeat_delay_ms,
+            interaction_marker_name: self.interaction_marker_name,
         }
     }
 }
@@ -1265,29 +1429,38 @@ pub struct SynthesizeTapGestureParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     duration: Option<i64>,
     /// Number of times to perform the tap (e.g. 2 for double tap, default: 1).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    tapCount: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "tapCount")]
+    tap_count: Option<u64>,
     /// Which type of input events to be generated (default: 'default', which queries the platform
     /// for the preferred input type).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    gestureSourceType: Option<GestureSourceType>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "gestureSourceType")]
+    gesture_source_type: Option<GestureSourceType>,
 }
 
 impl SynthesizeTapGestureParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `x`: X coordinate of the start of the gesture in CSS pixels.
+    /// * `y`: Y coordinate of the start of the gesture in CSS pixels.
     pub fn builder(x: f64, y: f64) -> SynthesizeTapGestureParamsBuilder {
         SynthesizeTapGestureParamsBuilder {
             x: x,
             y: y,
             duration: None,
-            tapCount: None,
-            gestureSourceType: None,
+            tap_count: None,
+            gesture_source_type: None,
         }
     }
+    /// X coordinate of the start of the gesture in CSS pixels.
     pub fn x(&self) -> f64 { self.x }
+    /// Y coordinate of the start of the gesture in CSS pixels.
     pub fn y(&self) -> f64 { self.y }
+    /// Duration between touchdown and touchup events in ms (default: 50).
     pub fn duration(&self) -> Option<i64> { self.duration }
-    pub fn tapCount(&self) -> Option<u64> { self.tapCount }
-    pub fn gestureSourceType(&self) -> Option<&GestureSourceType> { self.gestureSourceType.as_ref() }
+    /// Number of times to perform the tap (e.g. 2 for double tap, default: 1).
+    pub fn tap_count(&self) -> Option<u64> { self.tap_count }
+    /// Which type of input events to be generated (default: 'default', which queries the platform
+    /// for the preferred input type).
+    pub fn gesture_source_type(&self) -> Option<&GestureSourceType> { self.gesture_source_type.as_ref() }
 }
 
 
@@ -1295,25 +1468,25 @@ pub struct SynthesizeTapGestureParamsBuilder {
     x: f64,
     y: f64,
     duration: Option<i64>,
-    tapCount: Option<u64>,
-    gestureSourceType: Option<GestureSourceType>,
+    tap_count: Option<u64>,
+    gesture_source_type: Option<GestureSourceType>,
 }
 
 impl SynthesizeTapGestureParamsBuilder {
     /// Duration between touchdown and touchup events in ms (default: 50).
     pub fn duration(mut self, duration: i64) -> Self { self.duration = Some(duration); self }
     /// Number of times to perform the tap (e.g. 2 for double tap, default: 1).
-    pub fn tapCount(mut self, tapCount: u64) -> Self { self.tapCount = Some(tapCount); self }
+    pub fn tap_count(mut self, tap_count: u64) -> Self { self.tap_count = Some(tap_count); self }
     /// Which type of input events to be generated (default: 'default', which queries the platform
     /// for the preferred input type).
-    pub fn gestureSourceType(mut self, gestureSourceType: impl Into<GestureSourceType>) -> Self { self.gestureSourceType = Some(gestureSourceType.into()); self }
+    pub fn gesture_source_type(mut self, gesture_source_type: impl Into<GestureSourceType>) -> Self { self.gesture_source_type = Some(gesture_source_type.into()); self }
     pub fn build(self) -> SynthesizeTapGestureParams {
         SynthesizeTapGestureParams {
             x: self.x,
             y: self.y,
             duration: self.duration,
-            tapCount: self.tapCount,
-            gestureSourceType: self.gestureSourceType,
+            tap_count: self.tap_count,
+            gesture_source_type: self.gesture_source_type,
         }
     }
 }

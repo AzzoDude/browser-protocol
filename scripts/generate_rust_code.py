@@ -8,7 +8,6 @@ import json
 import re
 
 dependencies_rs: dict[str, str] = {
-    "tokio": "full",
     "serde": "derive",
     "serde_json": ""
 }
@@ -20,8 +19,124 @@ def to_camel_case(snake_str):
     components = snake_str.replace('-', '_').split('_')
     return "".join(x[:1].upper() + x[1:] for x in components if x)
 
+def to_snake_case(name):
+    # Treat acronyms like DOM, AX, ID, HTML, etc., as separate words
+    s = re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', name)
+    s = re.sub(r'([A-Z]+)([A-Z][a-z])', r'\1_\2', s)
+    s = s.lower()
+    s = s.replace('-', '_')
+    s = re.sub(r'_+', '_', s)
+    # Rust keywords list
+    keywords = {
+        "type", "override", "match", "return", "ref", "fn", "impl", "struct", "enum",
+        "move", "loop", "const", "self", "as", "where", "for", "in", "unsafe", "pub",
+        "use", "mod", "trait", "let", "mut", "static", "dyn", "async", "await", "true",
+        "false"
+    }
+    if s in keywords:
+        s = f"{s}_"
+    return s
+
+def wrap_bare_urls(text):
+    url_pattern = re.compile(r'https?://[^\s"\'<>`]+')
+    
+    last_idx = 0
+    result = []
+    
+    for match in url_pattern.finditer(text):
+        url = match.group(0)
+        start = match.start()
+        end = match.end()
+        
+        result.append(text[last_idx:start])
+        
+        trailing = ""
+        while url:
+            last_char = url[-1]
+            if last_char in ['.', ',', ':', ';', '?', '!', ')', ']']:
+                if last_char == ')' and url.count('(') >= url.count(')'):
+                    break
+                if last_char == ']' and url.count('[') >= url.count(']'):
+                    break
+                trailing = last_char + trailing
+                url = url[:-1]
+                end -= 1
+            else:
+                break
+        
+        pre_text = text[:start]
+        post_text = text[end:]
+        
+        is_markdown_link = False
+        if pre_text.endswith('('):
+            if pre_text[:-1].endswith(']'):
+                is_markdown_link = True
+                
+        is_already_wrapped = pre_text.endswith('<') and post_text.startswith('>')
+        
+        is_quoted = pre_text.endswith('`') and post_text.startswith('`')
+            
+        if not is_markdown_link and not is_already_wrapped and not is_quoted:
+            result.append(f"<{url}>{trailing}")
+        else:
+            result.append(match.group(0))
+            
+        last_idx = match.end()
+        
+    result.append(text[last_idx:])
+    return "".join(result)
+
+def escape_html_brackets(text):
+    placeholders = []
+    def protect(match):
+        placeholders.append(match.group(0))
+        return f"__LINK_PLACEHOLDER_{len(placeholders)-1}__"
+        
+    # Protect <http...> and <https...> links
+    protected_text = re.sub(r'<https?://[^\s>]+>', protect, text)
+    
+    # Protect email links
+    protected_text = re.sub(r'<[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+>', protect, protected_text)
+    
+    # Escape any remaining '<' and '>'
+    escaped_text = protected_text.replace('<', r'\<').replace('>', r'\>')
+    
+    # Restore the protected links
+    for i, placeholder in enumerate(placeholders):
+        escaped_text = escaped_text.replace(f"__LINK_PLACEHOLDER_{i}__", placeholder)
+        
+    return escaped_text
+
+def escape_markdown_brackets(text):
+    placeholders = []
+    def protect(match):
+        placeholders.append(match.group(0))
+        return f"__BRACKET_PLACEHOLDER_{len(placeholders)-1}__"
+        
+    # Protect markdown links like [text](url) and ![alt](url)
+    protected_text = re.sub(r'!?\[[^\]]*\]\([^\)]+\)', protect, text)
+    
+    # Escape remaining '[' and ']'
+    escaped_text = protected_text.replace('[', r'\[').replace(']', r'\]')
+    
+    # Restore
+    for i, placeholder in enumerate(placeholders):
+        escaped_text = escaped_text.replace(f"__BRACKET_PLACEHOLDER_{i}__", placeholder)
+        
+    return escaped_text
+
 def format_rustdoc(description, indent_level=0, is_inner=False):
     if not description: return ""
+    
+    # Wrap bare URLs in angle brackets
+    description = wrap_bare_urls(description)
+    
+    # Escape raw HTML brackets to prevent unclosed HTML tag warnings
+    description = escape_html_brackets(description)
+    
+    # Escape raw square brackets to prevent unresolved link warnings
+    description = escape_markdown_brackets(description)
+    
     indent = " " * indent_level
     symbol = "//! " if is_inner else "/// "
     clean_text = description.replace("\\n", "\n").replace("`", "'")
@@ -98,30 +213,31 @@ def get_rust_type(prop, current_domain, current_struct_name=None, lifetime_keys=
         return f"Option<{base_type}>"
     return base_type
 
-def generate_getter_method(rust_name, r_type):
+def generate_getter_method(rust_name, r_type, doc_comment):
+    comment = doc_comment if doc_comment else ""
     if r_type.startswith("Option<Box<") and r_type.endswith(">>"):
         inner = r_type[11:-2]
-        return f"    pub fn {rust_name}(&self) -> Option<&{inner}> {{ self.{rust_name}.as_deref() }}"
+        return f"{comment}    pub fn {rust_name}(&self) -> Option<&{inner}> {{ self.{rust_name}.as_deref() }}"
     elif r_type.startswith("Box<") and r_type.endswith(">"):
         inner = r_type[4:-1]
-        return f"    pub fn {rust_name}(&self) -> &{inner} {{ &self.{rust_name} }}"
+        return f"{comment}    pub fn {rust_name}(&self) -> &{inner} {{ &self.{rust_name} }}"
     elif r_type in ["Option<Cow<'a, str>>", "Option<std::borrow::Cow<'a, str>>"]:
-        return f"    pub fn {rust_name}(&self) -> Option<&str> {{ self.{rust_name}.as_deref() }}"
+        return f"{comment}    pub fn {rust_name}(&self) -> Option<&str> {{ self.{rust_name}.as_deref() }}"
     elif r_type in ["Cow<'a, str>", "std::borrow::Cow<'a, str>"]:
-        return f"    pub fn {rust_name}(&self) -> &str {{ self.{rust_name}.as_ref() }}"
+        return f"{comment}    pub fn {rust_name}(&self) -> &str {{ self.{rust_name}.as_ref() }}"
     elif r_type.startswith("Option<Vec<") and r_type.endswith(">>"):
         inner = r_type[11:-2]
-        return f"    pub fn {rust_name}(&self) -> Option<&[{inner}]> {{ self.{rust_name}.as_deref() }}"
+        return f"{comment}    pub fn {rust_name}(&self) -> Option<&[{inner}]> {{ self.{rust_name}.as_deref() }}"
     elif r_type.startswith("Vec<") and r_type.endswith(">"):
         inner = r_type[4:-1]
-        return f"    pub fn {rust_name}(&self) -> &[{inner}] {{ &self.{rust_name} }}"
+        return f"{comment}    pub fn {rust_name}(&self) -> &[{inner}] {{ &self.{rust_name} }}"
     elif r_type in ["i64", "u64", "i32", "u32", "f64", "bool", "Option<i64>", "Option<u64>", "Option<i32>", "Option<u32>", "Option<f64>", "Option<bool>"]:
-        return f"    pub fn {rust_name}(&self) -> {r_type} {{ self.{rust_name} }}"
+        return f"{comment}    pub fn {rust_name}(&self) -> {r_type} {{ self.{rust_name} }}"
     elif r_type.startswith("Option<") and r_type.endswith(">"):
         inner = r_type[7:-1]
-        return f"    pub fn {rust_name}(&self) -> Option<&{inner}> {{ self.{rust_name}.as_ref() }}"
+        return f"{comment}    pub fn {rust_name}(&self) -> Option<&{inner}> {{ self.{rust_name}.as_ref() }}"
     else:
-        return f"    pub fn {rust_name}(&self) -> &{r_type} {{ &self.{rust_name} }}"
+        return f"{comment}    pub fn {rust_name}(&self) -> &{r_type} {{ &self.{rust_name} }}"
 
 def is_string_type(t_name, current_domain, string_types):
     clean = t_name
@@ -165,7 +281,7 @@ pub struct {struct_name} {{}}
     
     for p in props:
         p_name = p["name"]
-        rust_name = f"{p_name}_" if p_name in ["type", "override", "match", "return"] else p_name
+        rust_name = to_snake_case(p_name)
         r_type = get_rust_type(p, current_domain, struct_name, lifetime_keys)
         is_opt = p.get("optional", False)
         
@@ -182,7 +298,7 @@ pub struct {struct_name} {{}}
             serde_line = f"    #[serde({', '.join(serde_attrs)})]\n"
         
         fields_def.append(f"{doc}{serde_line}    {rust_name}: {r_type},")
-        getter_methods.append(generate_getter_method(rust_name, r_type))
+        getter_methods.append(generate_getter_method(rust_name, r_type, doc))
         
         if is_opt:
             b_type = r_type
@@ -228,7 +344,19 @@ pub struct {struct_name} {{}}
     impl_body = []
     builder_args_str = ", ".join(builder_args)
     builder_inits_str = "\n".join(builder_inits)
-    impl_body.append(f"    pub fn builder({builder_args_str}) -> {struct_name}Builder{lifetime_suffix} {{")
+    
+    # Generate builder documentation listing parameters
+    builder_doc_lines = ["    /// Creates a builder for this type with the required parameters:"]
+    for p in props:
+        if not p.get("optional", False):
+            desc = p.get("description", "").replace("\n", " ")
+            desc = wrap_bare_urls(desc)
+            desc = escape_html_brackets(desc)
+            desc = escape_markdown_brackets(desc)
+            builder_doc_lines.append(f"    /// * `{to_snake_case(p['name'])}`: {desc}")
+    builder_doc_str = "\n".join(builder_doc_lines) + "\n" if len(builder_doc_lines) > 1 else "    /// Creates a builder for this type.\n"
+    
+    impl_body.append(builder_doc_str + f"    pub fn builder({builder_args_str}) -> {struct_name}Builder{lifetime_suffix} {{")
     impl_body.append(f"        {struct_name}Builder {{")
     impl_body.append(builder_inits_str)
     impl_body.append("        }")
@@ -564,7 +692,7 @@ def update_cargo_metadata(project_name):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--name", type=str, required="browser-protocol")
+    parser.add_argument("--name", type=str, required=True)
     args = parser.parse_args()
     update_cargo_metadata(args.name)
     generate_cdp_modules(args.name)

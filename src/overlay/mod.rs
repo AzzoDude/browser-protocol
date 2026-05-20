@@ -11,33 +11,40 @@ use std::borrow::Cow;
 #[serde(rename_all = "camelCase")]
 pub struct SourceOrderConfig {
     /// the color to outline the given element in.
-    parentOutlineColor: crate::dom::RGBA,
+    #[serde(rename = "parentOutlineColor")]
+    parent_outline_color: crate::dom::RGBA,
     /// the color to outline the child elements in.
-    childOutlineColor: crate::dom::RGBA,
+    #[serde(rename = "childOutlineColor")]
+    child_outline_color: crate::dom::RGBA,
 }
 
 impl SourceOrderConfig {
-    pub fn builder(parentOutlineColor: crate::dom::RGBA, childOutlineColor: crate::dom::RGBA) -> SourceOrderConfigBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `parent_outline_color`: the color to outline the given element in.
+    /// * `child_outline_color`: the color to outline the child elements in.
+    pub fn builder(parent_outline_color: crate::dom::RGBA, child_outline_color: crate::dom::RGBA) -> SourceOrderConfigBuilder {
         SourceOrderConfigBuilder {
-            parentOutlineColor: parentOutlineColor,
-            childOutlineColor: childOutlineColor,
+            parent_outline_color: parent_outline_color,
+            child_outline_color: child_outline_color,
         }
     }
-    pub fn parentOutlineColor(&self) -> &crate::dom::RGBA { &self.parentOutlineColor }
-    pub fn childOutlineColor(&self) -> &crate::dom::RGBA { &self.childOutlineColor }
+    /// the color to outline the given element in.
+    pub fn parent_outline_color(&self) -> &crate::dom::RGBA { &self.parent_outline_color }
+    /// the color to outline the child elements in.
+    pub fn child_outline_color(&self) -> &crate::dom::RGBA { &self.child_outline_color }
 }
 
 
 pub struct SourceOrderConfigBuilder {
-    parentOutlineColor: crate::dom::RGBA,
-    childOutlineColor: crate::dom::RGBA,
+    parent_outline_color: crate::dom::RGBA,
+    child_outline_color: crate::dom::RGBA,
 }
 
 impl SourceOrderConfigBuilder {
     pub fn build(self) -> SourceOrderConfig {
         SourceOrderConfig {
-            parentOutlineColor: self.parentOutlineColor,
-            childOutlineColor: self.childOutlineColor,
+            parent_outline_color: self.parent_outline_color,
+            child_outline_color: self.child_outline_color,
         }
     }
 }
@@ -48,201 +55,222 @@ impl SourceOrderConfigBuilder {
 #[serde(rename_all = "camelCase")]
 pub struct GridHighlightConfig {
     /// Whether the extension lines from grid cells to the rulers should be shown (default: false).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    showGridExtensionLines: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "showGridExtensionLines")]
+    show_grid_extension_lines: Option<bool>,
     /// Show Positive line number labels (default: false).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    showPositiveLineNumbers: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "showPositiveLineNumbers")]
+    show_positive_line_numbers: Option<bool>,
     /// Show Negative line number labels (default: false).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    showNegativeLineNumbers: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "showNegativeLineNumbers")]
+    show_negative_line_numbers: Option<bool>,
     /// Show area name labels (default: false).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    showAreaNames: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "showAreaNames")]
+    show_area_names: Option<bool>,
     /// Show line name labels (default: false).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    showLineNames: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "showLineNames")]
+    show_line_names: Option<bool>,
     /// Show track size labels (default: false).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    showTrackSizes: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "showTrackSizes")]
+    show_track_sizes: Option<bool>,
     /// The grid container border highlight color (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    gridBorderColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "gridBorderColor")]
+    grid_border_color: Option<crate::dom::RGBA>,
     /// The cell border color (default: transparent). Deprecated, please use rowLineColor and columnLineColor instead.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    cellBorderColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "cellBorderColor")]
+    cell_border_color: Option<crate::dom::RGBA>,
     /// The row line color (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    rowLineColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "rowLineColor")]
+    row_line_color: Option<crate::dom::RGBA>,
     /// The column line color (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    columnLineColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "columnLineColor")]
+    column_line_color: Option<crate::dom::RGBA>,
     /// Whether the grid border is dashed (default: false).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    gridBorderDash: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "gridBorderDash")]
+    grid_border_dash: Option<bool>,
     /// Whether the cell border is dashed (default: false). Deprecated, please us rowLineDash and columnLineDash instead.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    cellBorderDash: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "cellBorderDash")]
+    cell_border_dash: Option<bool>,
     /// Whether row lines are dashed (default: false).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    rowLineDash: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "rowLineDash")]
+    row_line_dash: Option<bool>,
     /// Whether column lines are dashed (default: false).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    columnLineDash: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "columnLineDash")]
+    column_line_dash: Option<bool>,
     /// The row gap highlight fill color (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    rowGapColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "rowGapColor")]
+    row_gap_color: Option<crate::dom::RGBA>,
     /// The row gap hatching fill color (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    rowHatchColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "rowHatchColor")]
+    row_hatch_color: Option<crate::dom::RGBA>,
     /// The column gap highlight fill color (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    columnGapColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "columnGapColor")]
+    column_gap_color: Option<crate::dom::RGBA>,
     /// The column gap hatching fill color (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    columnHatchColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "columnHatchColor")]
+    column_hatch_color: Option<crate::dom::RGBA>,
     /// The named grid areas border color (Default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    areaBorderColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "areaBorderColor")]
+    area_border_color: Option<crate::dom::RGBA>,
     /// The grid container background color (Default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    gridBackgroundColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "gridBackgroundColor")]
+    grid_background_color: Option<crate::dom::RGBA>,
 }
 
 impl GridHighlightConfig {
+    /// Creates a builder for this type.
     pub fn builder() -> GridHighlightConfigBuilder {
         GridHighlightConfigBuilder {
-            showGridExtensionLines: None,
-            showPositiveLineNumbers: None,
-            showNegativeLineNumbers: None,
-            showAreaNames: None,
-            showLineNames: None,
-            showTrackSizes: None,
-            gridBorderColor: None,
-            cellBorderColor: None,
-            rowLineColor: None,
-            columnLineColor: None,
-            gridBorderDash: None,
-            cellBorderDash: None,
-            rowLineDash: None,
-            columnLineDash: None,
-            rowGapColor: None,
-            rowHatchColor: None,
-            columnGapColor: None,
-            columnHatchColor: None,
-            areaBorderColor: None,
-            gridBackgroundColor: None,
+            show_grid_extension_lines: None,
+            show_positive_line_numbers: None,
+            show_negative_line_numbers: None,
+            show_area_names: None,
+            show_line_names: None,
+            show_track_sizes: None,
+            grid_border_color: None,
+            cell_border_color: None,
+            row_line_color: None,
+            column_line_color: None,
+            grid_border_dash: None,
+            cell_border_dash: None,
+            row_line_dash: None,
+            column_line_dash: None,
+            row_gap_color: None,
+            row_hatch_color: None,
+            column_gap_color: None,
+            column_hatch_color: None,
+            area_border_color: None,
+            grid_background_color: None,
         }
     }
-    pub fn showGridExtensionLines(&self) -> Option<bool> { self.showGridExtensionLines }
-    pub fn showPositiveLineNumbers(&self) -> Option<bool> { self.showPositiveLineNumbers }
-    pub fn showNegativeLineNumbers(&self) -> Option<bool> { self.showNegativeLineNumbers }
-    pub fn showAreaNames(&self) -> Option<bool> { self.showAreaNames }
-    pub fn showLineNames(&self) -> Option<bool> { self.showLineNames }
-    pub fn showTrackSizes(&self) -> Option<bool> { self.showTrackSizes }
-    pub fn gridBorderColor(&self) -> Option<&crate::dom::RGBA> { self.gridBorderColor.as_ref() }
-    pub fn cellBorderColor(&self) -> Option<&crate::dom::RGBA> { self.cellBorderColor.as_ref() }
-    pub fn rowLineColor(&self) -> Option<&crate::dom::RGBA> { self.rowLineColor.as_ref() }
-    pub fn columnLineColor(&self) -> Option<&crate::dom::RGBA> { self.columnLineColor.as_ref() }
-    pub fn gridBorderDash(&self) -> Option<bool> { self.gridBorderDash }
-    pub fn cellBorderDash(&self) -> Option<bool> { self.cellBorderDash }
-    pub fn rowLineDash(&self) -> Option<bool> { self.rowLineDash }
-    pub fn columnLineDash(&self) -> Option<bool> { self.columnLineDash }
-    pub fn rowGapColor(&self) -> Option<&crate::dom::RGBA> { self.rowGapColor.as_ref() }
-    pub fn rowHatchColor(&self) -> Option<&crate::dom::RGBA> { self.rowHatchColor.as_ref() }
-    pub fn columnGapColor(&self) -> Option<&crate::dom::RGBA> { self.columnGapColor.as_ref() }
-    pub fn columnHatchColor(&self) -> Option<&crate::dom::RGBA> { self.columnHatchColor.as_ref() }
-    pub fn areaBorderColor(&self) -> Option<&crate::dom::RGBA> { self.areaBorderColor.as_ref() }
-    pub fn gridBackgroundColor(&self) -> Option<&crate::dom::RGBA> { self.gridBackgroundColor.as_ref() }
+    /// Whether the extension lines from grid cells to the rulers should be shown (default: false).
+    pub fn show_grid_extension_lines(&self) -> Option<bool> { self.show_grid_extension_lines }
+    /// Show Positive line number labels (default: false).
+    pub fn show_positive_line_numbers(&self) -> Option<bool> { self.show_positive_line_numbers }
+    /// Show Negative line number labels (default: false).
+    pub fn show_negative_line_numbers(&self) -> Option<bool> { self.show_negative_line_numbers }
+    /// Show area name labels (default: false).
+    pub fn show_area_names(&self) -> Option<bool> { self.show_area_names }
+    /// Show line name labels (default: false).
+    pub fn show_line_names(&self) -> Option<bool> { self.show_line_names }
+    /// Show track size labels (default: false).
+    pub fn show_track_sizes(&self) -> Option<bool> { self.show_track_sizes }
+    /// The grid container border highlight color (default: transparent).
+    pub fn grid_border_color(&self) -> Option<&crate::dom::RGBA> { self.grid_border_color.as_ref() }
+    /// The cell border color (default: transparent). Deprecated, please use rowLineColor and columnLineColor instead.
+    pub fn cell_border_color(&self) -> Option<&crate::dom::RGBA> { self.cell_border_color.as_ref() }
+    /// The row line color (default: transparent).
+    pub fn row_line_color(&self) -> Option<&crate::dom::RGBA> { self.row_line_color.as_ref() }
+    /// The column line color (default: transparent).
+    pub fn column_line_color(&self) -> Option<&crate::dom::RGBA> { self.column_line_color.as_ref() }
+    /// Whether the grid border is dashed (default: false).
+    pub fn grid_border_dash(&self) -> Option<bool> { self.grid_border_dash }
+    /// Whether the cell border is dashed (default: false). Deprecated, please us rowLineDash and columnLineDash instead.
+    pub fn cell_border_dash(&self) -> Option<bool> { self.cell_border_dash }
+    /// Whether row lines are dashed (default: false).
+    pub fn row_line_dash(&self) -> Option<bool> { self.row_line_dash }
+    /// Whether column lines are dashed (default: false).
+    pub fn column_line_dash(&self) -> Option<bool> { self.column_line_dash }
+    /// The row gap highlight fill color (default: transparent).
+    pub fn row_gap_color(&self) -> Option<&crate::dom::RGBA> { self.row_gap_color.as_ref() }
+    /// The row gap hatching fill color (default: transparent).
+    pub fn row_hatch_color(&self) -> Option<&crate::dom::RGBA> { self.row_hatch_color.as_ref() }
+    /// The column gap highlight fill color (default: transparent).
+    pub fn column_gap_color(&self) -> Option<&crate::dom::RGBA> { self.column_gap_color.as_ref() }
+    /// The column gap hatching fill color (default: transparent).
+    pub fn column_hatch_color(&self) -> Option<&crate::dom::RGBA> { self.column_hatch_color.as_ref() }
+    /// The named grid areas border color (Default: transparent).
+    pub fn area_border_color(&self) -> Option<&crate::dom::RGBA> { self.area_border_color.as_ref() }
+    /// The grid container background color (Default: transparent).
+    pub fn grid_background_color(&self) -> Option<&crate::dom::RGBA> { self.grid_background_color.as_ref() }
 }
 
 #[derive(Default)]
 pub struct GridHighlightConfigBuilder {
-    showGridExtensionLines: Option<bool>,
-    showPositiveLineNumbers: Option<bool>,
-    showNegativeLineNumbers: Option<bool>,
-    showAreaNames: Option<bool>,
-    showLineNames: Option<bool>,
-    showTrackSizes: Option<bool>,
-    gridBorderColor: Option<crate::dom::RGBA>,
-    cellBorderColor: Option<crate::dom::RGBA>,
-    rowLineColor: Option<crate::dom::RGBA>,
-    columnLineColor: Option<crate::dom::RGBA>,
-    gridBorderDash: Option<bool>,
-    cellBorderDash: Option<bool>,
-    rowLineDash: Option<bool>,
-    columnLineDash: Option<bool>,
-    rowGapColor: Option<crate::dom::RGBA>,
-    rowHatchColor: Option<crate::dom::RGBA>,
-    columnGapColor: Option<crate::dom::RGBA>,
-    columnHatchColor: Option<crate::dom::RGBA>,
-    areaBorderColor: Option<crate::dom::RGBA>,
-    gridBackgroundColor: Option<crate::dom::RGBA>,
+    show_grid_extension_lines: Option<bool>,
+    show_positive_line_numbers: Option<bool>,
+    show_negative_line_numbers: Option<bool>,
+    show_area_names: Option<bool>,
+    show_line_names: Option<bool>,
+    show_track_sizes: Option<bool>,
+    grid_border_color: Option<crate::dom::RGBA>,
+    cell_border_color: Option<crate::dom::RGBA>,
+    row_line_color: Option<crate::dom::RGBA>,
+    column_line_color: Option<crate::dom::RGBA>,
+    grid_border_dash: Option<bool>,
+    cell_border_dash: Option<bool>,
+    row_line_dash: Option<bool>,
+    column_line_dash: Option<bool>,
+    row_gap_color: Option<crate::dom::RGBA>,
+    row_hatch_color: Option<crate::dom::RGBA>,
+    column_gap_color: Option<crate::dom::RGBA>,
+    column_hatch_color: Option<crate::dom::RGBA>,
+    area_border_color: Option<crate::dom::RGBA>,
+    grid_background_color: Option<crate::dom::RGBA>,
 }
 
 impl GridHighlightConfigBuilder {
     /// Whether the extension lines from grid cells to the rulers should be shown (default: false).
-    pub fn showGridExtensionLines(mut self, showGridExtensionLines: bool) -> Self { self.showGridExtensionLines = Some(showGridExtensionLines); self }
+    pub fn show_grid_extension_lines(mut self, show_grid_extension_lines: bool) -> Self { self.show_grid_extension_lines = Some(show_grid_extension_lines); self }
     /// Show Positive line number labels (default: false).
-    pub fn showPositiveLineNumbers(mut self, showPositiveLineNumbers: bool) -> Self { self.showPositiveLineNumbers = Some(showPositiveLineNumbers); self }
+    pub fn show_positive_line_numbers(mut self, show_positive_line_numbers: bool) -> Self { self.show_positive_line_numbers = Some(show_positive_line_numbers); self }
     /// Show Negative line number labels (default: false).
-    pub fn showNegativeLineNumbers(mut self, showNegativeLineNumbers: bool) -> Self { self.showNegativeLineNumbers = Some(showNegativeLineNumbers); self }
+    pub fn show_negative_line_numbers(mut self, show_negative_line_numbers: bool) -> Self { self.show_negative_line_numbers = Some(show_negative_line_numbers); self }
     /// Show area name labels (default: false).
-    pub fn showAreaNames(mut self, showAreaNames: bool) -> Self { self.showAreaNames = Some(showAreaNames); self }
+    pub fn show_area_names(mut self, show_area_names: bool) -> Self { self.show_area_names = Some(show_area_names); self }
     /// Show line name labels (default: false).
-    pub fn showLineNames(mut self, showLineNames: bool) -> Self { self.showLineNames = Some(showLineNames); self }
+    pub fn show_line_names(mut self, show_line_names: bool) -> Self { self.show_line_names = Some(show_line_names); self }
     /// Show track size labels (default: false).
-    pub fn showTrackSizes(mut self, showTrackSizes: bool) -> Self { self.showTrackSizes = Some(showTrackSizes); self }
+    pub fn show_track_sizes(mut self, show_track_sizes: bool) -> Self { self.show_track_sizes = Some(show_track_sizes); self }
     /// The grid container border highlight color (default: transparent).
-    pub fn gridBorderColor(mut self, gridBorderColor: crate::dom::RGBA) -> Self { self.gridBorderColor = Some(gridBorderColor); self }
+    pub fn grid_border_color(mut self, grid_border_color: crate::dom::RGBA) -> Self { self.grid_border_color = Some(grid_border_color); self }
     /// The cell border color (default: transparent). Deprecated, please use rowLineColor and columnLineColor instead.
-    pub fn cellBorderColor(mut self, cellBorderColor: crate::dom::RGBA) -> Self { self.cellBorderColor = Some(cellBorderColor); self }
+    pub fn cell_border_color(mut self, cell_border_color: crate::dom::RGBA) -> Self { self.cell_border_color = Some(cell_border_color); self }
     /// The row line color (default: transparent).
-    pub fn rowLineColor(mut self, rowLineColor: crate::dom::RGBA) -> Self { self.rowLineColor = Some(rowLineColor); self }
+    pub fn row_line_color(mut self, row_line_color: crate::dom::RGBA) -> Self { self.row_line_color = Some(row_line_color); self }
     /// The column line color (default: transparent).
-    pub fn columnLineColor(mut self, columnLineColor: crate::dom::RGBA) -> Self { self.columnLineColor = Some(columnLineColor); self }
+    pub fn column_line_color(mut self, column_line_color: crate::dom::RGBA) -> Self { self.column_line_color = Some(column_line_color); self }
     /// Whether the grid border is dashed (default: false).
-    pub fn gridBorderDash(mut self, gridBorderDash: bool) -> Self { self.gridBorderDash = Some(gridBorderDash); self }
+    pub fn grid_border_dash(mut self, grid_border_dash: bool) -> Self { self.grid_border_dash = Some(grid_border_dash); self }
     /// Whether the cell border is dashed (default: false). Deprecated, please us rowLineDash and columnLineDash instead.
-    pub fn cellBorderDash(mut self, cellBorderDash: bool) -> Self { self.cellBorderDash = Some(cellBorderDash); self }
+    pub fn cell_border_dash(mut self, cell_border_dash: bool) -> Self { self.cell_border_dash = Some(cell_border_dash); self }
     /// Whether row lines are dashed (default: false).
-    pub fn rowLineDash(mut self, rowLineDash: bool) -> Self { self.rowLineDash = Some(rowLineDash); self }
+    pub fn row_line_dash(mut self, row_line_dash: bool) -> Self { self.row_line_dash = Some(row_line_dash); self }
     /// Whether column lines are dashed (default: false).
-    pub fn columnLineDash(mut self, columnLineDash: bool) -> Self { self.columnLineDash = Some(columnLineDash); self }
+    pub fn column_line_dash(mut self, column_line_dash: bool) -> Self { self.column_line_dash = Some(column_line_dash); self }
     /// The row gap highlight fill color (default: transparent).
-    pub fn rowGapColor(mut self, rowGapColor: crate::dom::RGBA) -> Self { self.rowGapColor = Some(rowGapColor); self }
+    pub fn row_gap_color(mut self, row_gap_color: crate::dom::RGBA) -> Self { self.row_gap_color = Some(row_gap_color); self }
     /// The row gap hatching fill color (default: transparent).
-    pub fn rowHatchColor(mut self, rowHatchColor: crate::dom::RGBA) -> Self { self.rowHatchColor = Some(rowHatchColor); self }
+    pub fn row_hatch_color(mut self, row_hatch_color: crate::dom::RGBA) -> Self { self.row_hatch_color = Some(row_hatch_color); self }
     /// The column gap highlight fill color (default: transparent).
-    pub fn columnGapColor(mut self, columnGapColor: crate::dom::RGBA) -> Self { self.columnGapColor = Some(columnGapColor); self }
+    pub fn column_gap_color(mut self, column_gap_color: crate::dom::RGBA) -> Self { self.column_gap_color = Some(column_gap_color); self }
     /// The column gap hatching fill color (default: transparent).
-    pub fn columnHatchColor(mut self, columnHatchColor: crate::dom::RGBA) -> Self { self.columnHatchColor = Some(columnHatchColor); self }
+    pub fn column_hatch_color(mut self, column_hatch_color: crate::dom::RGBA) -> Self { self.column_hatch_color = Some(column_hatch_color); self }
     /// The named grid areas border color (Default: transparent).
-    pub fn areaBorderColor(mut self, areaBorderColor: crate::dom::RGBA) -> Self { self.areaBorderColor = Some(areaBorderColor); self }
+    pub fn area_border_color(mut self, area_border_color: crate::dom::RGBA) -> Self { self.area_border_color = Some(area_border_color); self }
     /// The grid container background color (Default: transparent).
-    pub fn gridBackgroundColor(mut self, gridBackgroundColor: crate::dom::RGBA) -> Self { self.gridBackgroundColor = Some(gridBackgroundColor); self }
+    pub fn grid_background_color(mut self, grid_background_color: crate::dom::RGBA) -> Self { self.grid_background_color = Some(grid_background_color); self }
     pub fn build(self) -> GridHighlightConfig {
         GridHighlightConfig {
-            showGridExtensionLines: self.showGridExtensionLines,
-            showPositiveLineNumbers: self.showPositiveLineNumbers,
-            showNegativeLineNumbers: self.showNegativeLineNumbers,
-            showAreaNames: self.showAreaNames,
-            showLineNames: self.showLineNames,
-            showTrackSizes: self.showTrackSizes,
-            gridBorderColor: self.gridBorderColor,
-            cellBorderColor: self.cellBorderColor,
-            rowLineColor: self.rowLineColor,
-            columnLineColor: self.columnLineColor,
-            gridBorderDash: self.gridBorderDash,
-            cellBorderDash: self.cellBorderDash,
-            rowLineDash: self.rowLineDash,
-            columnLineDash: self.columnLineDash,
-            rowGapColor: self.rowGapColor,
-            rowHatchColor: self.rowHatchColor,
-            columnGapColor: self.columnGapColor,
-            columnHatchColor: self.columnHatchColor,
-            areaBorderColor: self.areaBorderColor,
-            gridBackgroundColor: self.gridBackgroundColor,
+            show_grid_extension_lines: self.show_grid_extension_lines,
+            show_positive_line_numbers: self.show_positive_line_numbers,
+            show_negative_line_numbers: self.show_negative_line_numbers,
+            show_area_names: self.show_area_names,
+            show_line_names: self.show_line_names,
+            show_track_sizes: self.show_track_sizes,
+            grid_border_color: self.grid_border_color,
+            cell_border_color: self.cell_border_color,
+            row_line_color: self.row_line_color,
+            column_line_color: self.column_line_color,
+            grid_border_dash: self.grid_border_dash,
+            cell_border_dash: self.cell_border_dash,
+            row_line_dash: self.row_line_dash,
+            column_line_dash: self.column_line_dash,
+            row_gap_color: self.row_gap_color,
+            row_hatch_color: self.row_hatch_color,
+            column_gap_color: self.column_gap_color,
+            column_hatch_color: self.column_hatch_color,
+            area_border_color: self.area_border_color,
+            grid_background_color: self.grid_background_color,
         }
     }
 }
@@ -253,93 +281,102 @@ impl GridHighlightConfigBuilder {
 #[serde(rename_all = "camelCase")]
 pub struct FlexContainerHighlightConfig<'a> {
     /// The style of the container border
-    #[serde(skip_serializing_if = "Option::is_none")]
-    containerBorder: Option<LineStyle<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "containerBorder")]
+    container_border: Option<LineStyle<'a>>,
     /// The style of the separator between lines
-    #[serde(skip_serializing_if = "Option::is_none")]
-    lineSeparator: Option<LineStyle<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "lineSeparator")]
+    line_separator: Option<LineStyle<'a>>,
     /// The style of the separator between items
-    #[serde(skip_serializing_if = "Option::is_none")]
-    itemSeparator: Option<LineStyle<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "itemSeparator")]
+    item_separator: Option<LineStyle<'a>>,
     /// Style of content-distribution space on the main axis (justify-content).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    mainDistributedSpace: Option<BoxStyle>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "mainDistributedSpace")]
+    main_distributed_space: Option<BoxStyle>,
     /// Style of content-distribution space on the cross axis (align-content).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    crossDistributedSpace: Option<BoxStyle>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "crossDistributedSpace")]
+    cross_distributed_space: Option<BoxStyle>,
     /// Style of empty space caused by row gaps (gap/row-gap).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    rowGapSpace: Option<BoxStyle>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "rowGapSpace")]
+    row_gap_space: Option<BoxStyle>,
     /// Style of empty space caused by columns gaps (gap/column-gap).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    columnGapSpace: Option<BoxStyle>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "columnGapSpace")]
+    column_gap_space: Option<BoxStyle>,
     /// Style of the self-alignment line (align-items).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    crossAlignment: Option<LineStyle<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "crossAlignment")]
+    cross_alignment: Option<LineStyle<'a>>,
 }
 
 impl<'a> FlexContainerHighlightConfig<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> FlexContainerHighlightConfigBuilder<'a> {
         FlexContainerHighlightConfigBuilder {
-            containerBorder: None,
-            lineSeparator: None,
-            itemSeparator: None,
-            mainDistributedSpace: None,
-            crossDistributedSpace: None,
-            rowGapSpace: None,
-            columnGapSpace: None,
-            crossAlignment: None,
+            container_border: None,
+            line_separator: None,
+            item_separator: None,
+            main_distributed_space: None,
+            cross_distributed_space: None,
+            row_gap_space: None,
+            column_gap_space: None,
+            cross_alignment: None,
         }
     }
-    pub fn containerBorder(&self) -> Option<&LineStyle<'a>> { self.containerBorder.as_ref() }
-    pub fn lineSeparator(&self) -> Option<&LineStyle<'a>> { self.lineSeparator.as_ref() }
-    pub fn itemSeparator(&self) -> Option<&LineStyle<'a>> { self.itemSeparator.as_ref() }
-    pub fn mainDistributedSpace(&self) -> Option<&BoxStyle> { self.mainDistributedSpace.as_ref() }
-    pub fn crossDistributedSpace(&self) -> Option<&BoxStyle> { self.crossDistributedSpace.as_ref() }
-    pub fn rowGapSpace(&self) -> Option<&BoxStyle> { self.rowGapSpace.as_ref() }
-    pub fn columnGapSpace(&self) -> Option<&BoxStyle> { self.columnGapSpace.as_ref() }
-    pub fn crossAlignment(&self) -> Option<&LineStyle<'a>> { self.crossAlignment.as_ref() }
+    /// The style of the container border
+    pub fn container_border(&self) -> Option<&LineStyle<'a>> { self.container_border.as_ref() }
+    /// The style of the separator between lines
+    pub fn line_separator(&self) -> Option<&LineStyle<'a>> { self.line_separator.as_ref() }
+    /// The style of the separator between items
+    pub fn item_separator(&self) -> Option<&LineStyle<'a>> { self.item_separator.as_ref() }
+    /// Style of content-distribution space on the main axis (justify-content).
+    pub fn main_distributed_space(&self) -> Option<&BoxStyle> { self.main_distributed_space.as_ref() }
+    /// Style of content-distribution space on the cross axis (align-content).
+    pub fn cross_distributed_space(&self) -> Option<&BoxStyle> { self.cross_distributed_space.as_ref() }
+    /// Style of empty space caused by row gaps (gap/row-gap).
+    pub fn row_gap_space(&self) -> Option<&BoxStyle> { self.row_gap_space.as_ref() }
+    /// Style of empty space caused by columns gaps (gap/column-gap).
+    pub fn column_gap_space(&self) -> Option<&BoxStyle> { self.column_gap_space.as_ref() }
+    /// Style of the self-alignment line (align-items).
+    pub fn cross_alignment(&self) -> Option<&LineStyle<'a>> { self.cross_alignment.as_ref() }
 }
 
 #[derive(Default)]
 pub struct FlexContainerHighlightConfigBuilder<'a> {
-    containerBorder: Option<LineStyle<'a>>,
-    lineSeparator: Option<LineStyle<'a>>,
-    itemSeparator: Option<LineStyle<'a>>,
-    mainDistributedSpace: Option<BoxStyle>,
-    crossDistributedSpace: Option<BoxStyle>,
-    rowGapSpace: Option<BoxStyle>,
-    columnGapSpace: Option<BoxStyle>,
-    crossAlignment: Option<LineStyle<'a>>,
+    container_border: Option<LineStyle<'a>>,
+    line_separator: Option<LineStyle<'a>>,
+    item_separator: Option<LineStyle<'a>>,
+    main_distributed_space: Option<BoxStyle>,
+    cross_distributed_space: Option<BoxStyle>,
+    row_gap_space: Option<BoxStyle>,
+    column_gap_space: Option<BoxStyle>,
+    cross_alignment: Option<LineStyle<'a>>,
 }
 
 impl<'a> FlexContainerHighlightConfigBuilder<'a> {
     /// The style of the container border
-    pub fn containerBorder(mut self, containerBorder: LineStyle<'a>) -> Self { self.containerBorder = Some(containerBorder); self }
+    pub fn container_border(mut self, container_border: LineStyle<'a>) -> Self { self.container_border = Some(container_border); self }
     /// The style of the separator between lines
-    pub fn lineSeparator(mut self, lineSeparator: LineStyle<'a>) -> Self { self.lineSeparator = Some(lineSeparator); self }
+    pub fn line_separator(mut self, line_separator: LineStyle<'a>) -> Self { self.line_separator = Some(line_separator); self }
     /// The style of the separator between items
-    pub fn itemSeparator(mut self, itemSeparator: LineStyle<'a>) -> Self { self.itemSeparator = Some(itemSeparator); self }
+    pub fn item_separator(mut self, item_separator: LineStyle<'a>) -> Self { self.item_separator = Some(item_separator); self }
     /// Style of content-distribution space on the main axis (justify-content).
-    pub fn mainDistributedSpace(mut self, mainDistributedSpace: BoxStyle) -> Self { self.mainDistributedSpace = Some(mainDistributedSpace); self }
+    pub fn main_distributed_space(mut self, main_distributed_space: BoxStyle) -> Self { self.main_distributed_space = Some(main_distributed_space); self }
     /// Style of content-distribution space on the cross axis (align-content).
-    pub fn crossDistributedSpace(mut self, crossDistributedSpace: BoxStyle) -> Self { self.crossDistributedSpace = Some(crossDistributedSpace); self }
+    pub fn cross_distributed_space(mut self, cross_distributed_space: BoxStyle) -> Self { self.cross_distributed_space = Some(cross_distributed_space); self }
     /// Style of empty space caused by row gaps (gap/row-gap).
-    pub fn rowGapSpace(mut self, rowGapSpace: BoxStyle) -> Self { self.rowGapSpace = Some(rowGapSpace); self }
+    pub fn row_gap_space(mut self, row_gap_space: BoxStyle) -> Self { self.row_gap_space = Some(row_gap_space); self }
     /// Style of empty space caused by columns gaps (gap/column-gap).
-    pub fn columnGapSpace(mut self, columnGapSpace: BoxStyle) -> Self { self.columnGapSpace = Some(columnGapSpace); self }
+    pub fn column_gap_space(mut self, column_gap_space: BoxStyle) -> Self { self.column_gap_space = Some(column_gap_space); self }
     /// Style of the self-alignment line (align-items).
-    pub fn crossAlignment(mut self, crossAlignment: LineStyle<'a>) -> Self { self.crossAlignment = Some(crossAlignment); self }
+    pub fn cross_alignment(mut self, cross_alignment: LineStyle<'a>) -> Self { self.cross_alignment = Some(cross_alignment); self }
     pub fn build(self) -> FlexContainerHighlightConfig<'a> {
         FlexContainerHighlightConfig {
-            containerBorder: self.containerBorder,
-            lineSeparator: self.lineSeparator,
-            itemSeparator: self.itemSeparator,
-            mainDistributedSpace: self.mainDistributedSpace,
-            crossDistributedSpace: self.crossDistributedSpace,
-            rowGapSpace: self.rowGapSpace,
-            columnGapSpace: self.columnGapSpace,
-            crossAlignment: self.crossAlignment,
+            container_border: self.container_border,
+            line_separator: self.line_separator,
+            item_separator: self.item_separator,
+            main_distributed_space: self.main_distributed_space,
+            cross_distributed_space: self.cross_distributed_space,
+            row_gap_space: self.row_gap_space,
+            column_gap_space: self.column_gap_space,
+            cross_alignment: self.cross_alignment,
         }
     }
 }
@@ -350,48 +387,52 @@ impl<'a> FlexContainerHighlightConfigBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct FlexItemHighlightConfig<'a> {
     /// Style of the box representing the item's base size
-    #[serde(skip_serializing_if = "Option::is_none")]
-    baseSizeBox: Option<BoxStyle>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "baseSizeBox")]
+    base_size_box: Option<BoxStyle>,
     /// Style of the border around the box representing the item's base size
-    #[serde(skip_serializing_if = "Option::is_none")]
-    baseSizeBorder: Option<LineStyle<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "baseSizeBorder")]
+    base_size_border: Option<LineStyle<'a>>,
     /// Style of the arrow representing if the item grew or shrank
-    #[serde(skip_serializing_if = "Option::is_none")]
-    flexibilityArrow: Option<LineStyle<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "flexibilityArrow")]
+    flexibility_arrow: Option<LineStyle<'a>>,
 }
 
 impl<'a> FlexItemHighlightConfig<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> FlexItemHighlightConfigBuilder<'a> {
         FlexItemHighlightConfigBuilder {
-            baseSizeBox: None,
-            baseSizeBorder: None,
-            flexibilityArrow: None,
+            base_size_box: None,
+            base_size_border: None,
+            flexibility_arrow: None,
         }
     }
-    pub fn baseSizeBox(&self) -> Option<&BoxStyle> { self.baseSizeBox.as_ref() }
-    pub fn baseSizeBorder(&self) -> Option<&LineStyle<'a>> { self.baseSizeBorder.as_ref() }
-    pub fn flexibilityArrow(&self) -> Option<&LineStyle<'a>> { self.flexibilityArrow.as_ref() }
+    /// Style of the box representing the item's base size
+    pub fn base_size_box(&self) -> Option<&BoxStyle> { self.base_size_box.as_ref() }
+    /// Style of the border around the box representing the item's base size
+    pub fn base_size_border(&self) -> Option<&LineStyle<'a>> { self.base_size_border.as_ref() }
+    /// Style of the arrow representing if the item grew or shrank
+    pub fn flexibility_arrow(&self) -> Option<&LineStyle<'a>> { self.flexibility_arrow.as_ref() }
 }
 
 #[derive(Default)]
 pub struct FlexItemHighlightConfigBuilder<'a> {
-    baseSizeBox: Option<BoxStyle>,
-    baseSizeBorder: Option<LineStyle<'a>>,
-    flexibilityArrow: Option<LineStyle<'a>>,
+    base_size_box: Option<BoxStyle>,
+    base_size_border: Option<LineStyle<'a>>,
+    flexibility_arrow: Option<LineStyle<'a>>,
 }
 
 impl<'a> FlexItemHighlightConfigBuilder<'a> {
     /// Style of the box representing the item's base size
-    pub fn baseSizeBox(mut self, baseSizeBox: BoxStyle) -> Self { self.baseSizeBox = Some(baseSizeBox); self }
+    pub fn base_size_box(mut self, base_size_box: BoxStyle) -> Self { self.base_size_box = Some(base_size_box); self }
     /// Style of the border around the box representing the item's base size
-    pub fn baseSizeBorder(mut self, baseSizeBorder: LineStyle<'a>) -> Self { self.baseSizeBorder = Some(baseSizeBorder); self }
+    pub fn base_size_border(mut self, base_size_border: LineStyle<'a>) -> Self { self.base_size_border = Some(base_size_border); self }
     /// Style of the arrow representing if the item grew or shrank
-    pub fn flexibilityArrow(mut self, flexibilityArrow: LineStyle<'a>) -> Self { self.flexibilityArrow = Some(flexibilityArrow); self }
+    pub fn flexibility_arrow(mut self, flexibility_arrow: LineStyle<'a>) -> Self { self.flexibility_arrow = Some(flexibility_arrow); self }
     pub fn build(self) -> FlexItemHighlightConfig<'a> {
         FlexItemHighlightConfig {
-            baseSizeBox: self.baseSizeBox,
-            baseSizeBorder: self.baseSizeBorder,
-            flexibilityArrow: self.flexibilityArrow,
+            base_size_box: self.base_size_box,
+            base_size_border: self.base_size_border,
+            flexibility_arrow: self.flexibility_arrow,
         }
     }
 }
@@ -410,13 +451,16 @@ pub struct LineStyle<'a> {
 }
 
 impl<'a> LineStyle<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> LineStyleBuilder<'a> {
         LineStyleBuilder {
             color: None,
             pattern: None,
         }
     }
+    /// The color of the line (default: transparent)
     pub fn color(&self) -> Option<&crate::dom::RGBA> { self.color.as_ref() }
+    /// The line pattern (default: solid)
     pub fn pattern(&self) -> Option<&str> { self.pattern.as_deref() }
 }
 
@@ -445,39 +489,42 @@ impl<'a> LineStyleBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct BoxStyle {
     /// The background color for the box (default: transparent)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    fillColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "fillColor")]
+    fill_color: Option<crate::dom::RGBA>,
     /// The hatching color for the box (default: transparent)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    hatchColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "hatchColor")]
+    hatch_color: Option<crate::dom::RGBA>,
 }
 
 impl BoxStyle {
+    /// Creates a builder for this type.
     pub fn builder() -> BoxStyleBuilder {
         BoxStyleBuilder {
-            fillColor: None,
-            hatchColor: None,
+            fill_color: None,
+            hatch_color: None,
         }
     }
-    pub fn fillColor(&self) -> Option<&crate::dom::RGBA> { self.fillColor.as_ref() }
-    pub fn hatchColor(&self) -> Option<&crate::dom::RGBA> { self.hatchColor.as_ref() }
+    /// The background color for the box (default: transparent)
+    pub fn fill_color(&self) -> Option<&crate::dom::RGBA> { self.fill_color.as_ref() }
+    /// The hatching color for the box (default: transparent)
+    pub fn hatch_color(&self) -> Option<&crate::dom::RGBA> { self.hatch_color.as_ref() }
 }
 
 #[derive(Default)]
 pub struct BoxStyleBuilder {
-    fillColor: Option<crate::dom::RGBA>,
-    hatchColor: Option<crate::dom::RGBA>,
+    fill_color: Option<crate::dom::RGBA>,
+    hatch_color: Option<crate::dom::RGBA>,
 }
 
 impl BoxStyleBuilder {
     /// The background color for the box (default: transparent)
-    pub fn fillColor(mut self, fillColor: crate::dom::RGBA) -> Self { self.fillColor = Some(fillColor); self }
+    pub fn fill_color(mut self, fill_color: crate::dom::RGBA) -> Self { self.fill_color = Some(fill_color); self }
     /// The hatching color for the box (default: transparent)
-    pub fn hatchColor(mut self, hatchColor: crate::dom::RGBA) -> Self { self.hatchColor = Some(hatchColor); self }
+    pub fn hatch_color(mut self, hatch_color: crate::dom::RGBA) -> Self { self.hatch_color = Some(hatch_color); self }
     pub fn build(self) -> BoxStyle {
         BoxStyle {
-            fillColor: self.fillColor,
-            hatchColor: self.hatchColor,
+            fill_color: self.fill_color,
+            hatch_color: self.hatch_color,
         }
     }
 }
@@ -500,192 +547,212 @@ pub enum ContrastAlgorithm {
 #[serde(rename_all = "camelCase")]
 pub struct HighlightConfig<'a> {
     /// Whether the node info tooltip should be shown (default: false).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    showInfo: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "showInfo")]
+    show_info: Option<bool>,
     /// Whether the node styles in the tooltip (default: false).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    showStyles: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "showStyles")]
+    show_styles: Option<bool>,
     /// Whether the rulers should be shown (default: false).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    showRulers: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "showRulers")]
+    show_rulers: Option<bool>,
     /// Whether the a11y info should be shown (default: true).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    showAccessibilityInfo: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "showAccessibilityInfo")]
+    show_accessibility_info: Option<bool>,
     /// Whether the extension lines from node to the rulers should be shown (default: false).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    showExtensionLines: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "showExtensionLines")]
+    show_extension_lines: Option<bool>,
     /// The content box highlight fill color (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    contentColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "contentColor")]
+    content_color: Option<crate::dom::RGBA>,
     /// The padding highlight fill color (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    paddingColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "paddingColor")]
+    padding_color: Option<crate::dom::RGBA>,
     /// The border highlight fill color (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    borderColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "borderColor")]
+    border_color: Option<crate::dom::RGBA>,
     /// The margin highlight fill color (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    marginColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "marginColor")]
+    margin_color: Option<crate::dom::RGBA>,
     /// The event target element highlight fill color (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    eventTargetColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "eventTargetColor")]
+    event_target_color: Option<crate::dom::RGBA>,
     /// The shape outside fill color (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    shapeColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "shapeColor")]
+    shape_color: Option<crate::dom::RGBA>,
     /// The shape margin fill color (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    shapeMarginColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "shapeMarginColor")]
+    shape_margin_color: Option<crate::dom::RGBA>,
     /// The grid layout color (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    cssGridColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "cssGridColor")]
+    css_grid_color: Option<crate::dom::RGBA>,
     /// The color format used to format color styles (default: hex).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    colorFormat: Option<ColorFormat>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "colorFormat")]
+    color_format: Option<ColorFormat>,
     /// The grid layout highlight configuration (default: all transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    gridHighlightConfig: Option<GridHighlightConfig>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "gridHighlightConfig")]
+    grid_highlight_config: Option<GridHighlightConfig>,
     /// The flex container highlight configuration (default: all transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    flexContainerHighlightConfig: Option<FlexContainerHighlightConfig<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "flexContainerHighlightConfig")]
+    flex_container_highlight_config: Option<FlexContainerHighlightConfig<'a>>,
     /// The flex item highlight configuration (default: all transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    flexItemHighlightConfig: Option<FlexItemHighlightConfig<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "flexItemHighlightConfig")]
+    flex_item_highlight_config: Option<FlexItemHighlightConfig<'a>>,
     /// The contrast algorithm to use for the contrast ratio (default: aa).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    contrastAlgorithm: Option<ContrastAlgorithm>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "contrastAlgorithm")]
+    contrast_algorithm: Option<ContrastAlgorithm>,
     /// The container query container highlight configuration (default: all transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    containerQueryContainerHighlightConfig: Option<ContainerQueryContainerHighlightConfig<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "containerQueryContainerHighlightConfig")]
+    container_query_container_highlight_config: Option<ContainerQueryContainerHighlightConfig<'a>>,
 }
 
 impl<'a> HighlightConfig<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> HighlightConfigBuilder<'a> {
         HighlightConfigBuilder {
-            showInfo: None,
-            showStyles: None,
-            showRulers: None,
-            showAccessibilityInfo: None,
-            showExtensionLines: None,
-            contentColor: None,
-            paddingColor: None,
-            borderColor: None,
-            marginColor: None,
-            eventTargetColor: None,
-            shapeColor: None,
-            shapeMarginColor: None,
-            cssGridColor: None,
-            colorFormat: None,
-            gridHighlightConfig: None,
-            flexContainerHighlightConfig: None,
-            flexItemHighlightConfig: None,
-            contrastAlgorithm: None,
-            containerQueryContainerHighlightConfig: None,
+            show_info: None,
+            show_styles: None,
+            show_rulers: None,
+            show_accessibility_info: None,
+            show_extension_lines: None,
+            content_color: None,
+            padding_color: None,
+            border_color: None,
+            margin_color: None,
+            event_target_color: None,
+            shape_color: None,
+            shape_margin_color: None,
+            css_grid_color: None,
+            color_format: None,
+            grid_highlight_config: None,
+            flex_container_highlight_config: None,
+            flex_item_highlight_config: None,
+            contrast_algorithm: None,
+            container_query_container_highlight_config: None,
         }
     }
-    pub fn showInfo(&self) -> Option<bool> { self.showInfo }
-    pub fn showStyles(&self) -> Option<bool> { self.showStyles }
-    pub fn showRulers(&self) -> Option<bool> { self.showRulers }
-    pub fn showAccessibilityInfo(&self) -> Option<bool> { self.showAccessibilityInfo }
-    pub fn showExtensionLines(&self) -> Option<bool> { self.showExtensionLines }
-    pub fn contentColor(&self) -> Option<&crate::dom::RGBA> { self.contentColor.as_ref() }
-    pub fn paddingColor(&self) -> Option<&crate::dom::RGBA> { self.paddingColor.as_ref() }
-    pub fn borderColor(&self) -> Option<&crate::dom::RGBA> { self.borderColor.as_ref() }
-    pub fn marginColor(&self) -> Option<&crate::dom::RGBA> { self.marginColor.as_ref() }
-    pub fn eventTargetColor(&self) -> Option<&crate::dom::RGBA> { self.eventTargetColor.as_ref() }
-    pub fn shapeColor(&self) -> Option<&crate::dom::RGBA> { self.shapeColor.as_ref() }
-    pub fn shapeMarginColor(&self) -> Option<&crate::dom::RGBA> { self.shapeMarginColor.as_ref() }
-    pub fn cssGridColor(&self) -> Option<&crate::dom::RGBA> { self.cssGridColor.as_ref() }
-    pub fn colorFormat(&self) -> Option<&ColorFormat> { self.colorFormat.as_ref() }
-    pub fn gridHighlightConfig(&self) -> Option<&GridHighlightConfig> { self.gridHighlightConfig.as_ref() }
-    pub fn flexContainerHighlightConfig(&self) -> Option<&FlexContainerHighlightConfig<'a>> { self.flexContainerHighlightConfig.as_ref() }
-    pub fn flexItemHighlightConfig(&self) -> Option<&FlexItemHighlightConfig<'a>> { self.flexItemHighlightConfig.as_ref() }
-    pub fn contrastAlgorithm(&self) -> Option<&ContrastAlgorithm> { self.contrastAlgorithm.as_ref() }
-    pub fn containerQueryContainerHighlightConfig(&self) -> Option<&ContainerQueryContainerHighlightConfig<'a>> { self.containerQueryContainerHighlightConfig.as_ref() }
+    /// Whether the node info tooltip should be shown (default: false).
+    pub fn show_info(&self) -> Option<bool> { self.show_info }
+    /// Whether the node styles in the tooltip (default: false).
+    pub fn show_styles(&self) -> Option<bool> { self.show_styles }
+    /// Whether the rulers should be shown (default: false).
+    pub fn show_rulers(&self) -> Option<bool> { self.show_rulers }
+    /// Whether the a11y info should be shown (default: true).
+    pub fn show_accessibility_info(&self) -> Option<bool> { self.show_accessibility_info }
+    /// Whether the extension lines from node to the rulers should be shown (default: false).
+    pub fn show_extension_lines(&self) -> Option<bool> { self.show_extension_lines }
+    /// The content box highlight fill color (default: transparent).
+    pub fn content_color(&self) -> Option<&crate::dom::RGBA> { self.content_color.as_ref() }
+    /// The padding highlight fill color (default: transparent).
+    pub fn padding_color(&self) -> Option<&crate::dom::RGBA> { self.padding_color.as_ref() }
+    /// The border highlight fill color (default: transparent).
+    pub fn border_color(&self) -> Option<&crate::dom::RGBA> { self.border_color.as_ref() }
+    /// The margin highlight fill color (default: transparent).
+    pub fn margin_color(&self) -> Option<&crate::dom::RGBA> { self.margin_color.as_ref() }
+    /// The event target element highlight fill color (default: transparent).
+    pub fn event_target_color(&self) -> Option<&crate::dom::RGBA> { self.event_target_color.as_ref() }
+    /// The shape outside fill color (default: transparent).
+    pub fn shape_color(&self) -> Option<&crate::dom::RGBA> { self.shape_color.as_ref() }
+    /// The shape margin fill color (default: transparent).
+    pub fn shape_margin_color(&self) -> Option<&crate::dom::RGBA> { self.shape_margin_color.as_ref() }
+    /// The grid layout color (default: transparent).
+    pub fn css_grid_color(&self) -> Option<&crate::dom::RGBA> { self.css_grid_color.as_ref() }
+    /// The color format used to format color styles (default: hex).
+    pub fn color_format(&self) -> Option<&ColorFormat> { self.color_format.as_ref() }
+    /// The grid layout highlight configuration (default: all transparent).
+    pub fn grid_highlight_config(&self) -> Option<&GridHighlightConfig> { self.grid_highlight_config.as_ref() }
+    /// The flex container highlight configuration (default: all transparent).
+    pub fn flex_container_highlight_config(&self) -> Option<&FlexContainerHighlightConfig<'a>> { self.flex_container_highlight_config.as_ref() }
+    /// The flex item highlight configuration (default: all transparent).
+    pub fn flex_item_highlight_config(&self) -> Option<&FlexItemHighlightConfig<'a>> { self.flex_item_highlight_config.as_ref() }
+    /// The contrast algorithm to use for the contrast ratio (default: aa).
+    pub fn contrast_algorithm(&self) -> Option<&ContrastAlgorithm> { self.contrast_algorithm.as_ref() }
+    /// The container query container highlight configuration (default: all transparent).
+    pub fn container_query_container_highlight_config(&self) -> Option<&ContainerQueryContainerHighlightConfig<'a>> { self.container_query_container_highlight_config.as_ref() }
 }
 
 #[derive(Default)]
 pub struct HighlightConfigBuilder<'a> {
-    showInfo: Option<bool>,
-    showStyles: Option<bool>,
-    showRulers: Option<bool>,
-    showAccessibilityInfo: Option<bool>,
-    showExtensionLines: Option<bool>,
-    contentColor: Option<crate::dom::RGBA>,
-    paddingColor: Option<crate::dom::RGBA>,
-    borderColor: Option<crate::dom::RGBA>,
-    marginColor: Option<crate::dom::RGBA>,
-    eventTargetColor: Option<crate::dom::RGBA>,
-    shapeColor: Option<crate::dom::RGBA>,
-    shapeMarginColor: Option<crate::dom::RGBA>,
-    cssGridColor: Option<crate::dom::RGBA>,
-    colorFormat: Option<ColorFormat>,
-    gridHighlightConfig: Option<GridHighlightConfig>,
-    flexContainerHighlightConfig: Option<FlexContainerHighlightConfig<'a>>,
-    flexItemHighlightConfig: Option<FlexItemHighlightConfig<'a>>,
-    contrastAlgorithm: Option<ContrastAlgorithm>,
-    containerQueryContainerHighlightConfig: Option<ContainerQueryContainerHighlightConfig<'a>>,
+    show_info: Option<bool>,
+    show_styles: Option<bool>,
+    show_rulers: Option<bool>,
+    show_accessibility_info: Option<bool>,
+    show_extension_lines: Option<bool>,
+    content_color: Option<crate::dom::RGBA>,
+    padding_color: Option<crate::dom::RGBA>,
+    border_color: Option<crate::dom::RGBA>,
+    margin_color: Option<crate::dom::RGBA>,
+    event_target_color: Option<crate::dom::RGBA>,
+    shape_color: Option<crate::dom::RGBA>,
+    shape_margin_color: Option<crate::dom::RGBA>,
+    css_grid_color: Option<crate::dom::RGBA>,
+    color_format: Option<ColorFormat>,
+    grid_highlight_config: Option<GridHighlightConfig>,
+    flex_container_highlight_config: Option<FlexContainerHighlightConfig<'a>>,
+    flex_item_highlight_config: Option<FlexItemHighlightConfig<'a>>,
+    contrast_algorithm: Option<ContrastAlgorithm>,
+    container_query_container_highlight_config: Option<ContainerQueryContainerHighlightConfig<'a>>,
 }
 
 impl<'a> HighlightConfigBuilder<'a> {
     /// Whether the node info tooltip should be shown (default: false).
-    pub fn showInfo(mut self, showInfo: bool) -> Self { self.showInfo = Some(showInfo); self }
+    pub fn show_info(mut self, show_info: bool) -> Self { self.show_info = Some(show_info); self }
     /// Whether the node styles in the tooltip (default: false).
-    pub fn showStyles(mut self, showStyles: bool) -> Self { self.showStyles = Some(showStyles); self }
+    pub fn show_styles(mut self, show_styles: bool) -> Self { self.show_styles = Some(show_styles); self }
     /// Whether the rulers should be shown (default: false).
-    pub fn showRulers(mut self, showRulers: bool) -> Self { self.showRulers = Some(showRulers); self }
+    pub fn show_rulers(mut self, show_rulers: bool) -> Self { self.show_rulers = Some(show_rulers); self }
     /// Whether the a11y info should be shown (default: true).
-    pub fn showAccessibilityInfo(mut self, showAccessibilityInfo: bool) -> Self { self.showAccessibilityInfo = Some(showAccessibilityInfo); self }
+    pub fn show_accessibility_info(mut self, show_accessibility_info: bool) -> Self { self.show_accessibility_info = Some(show_accessibility_info); self }
     /// Whether the extension lines from node to the rulers should be shown (default: false).
-    pub fn showExtensionLines(mut self, showExtensionLines: bool) -> Self { self.showExtensionLines = Some(showExtensionLines); self }
+    pub fn show_extension_lines(mut self, show_extension_lines: bool) -> Self { self.show_extension_lines = Some(show_extension_lines); self }
     /// The content box highlight fill color (default: transparent).
-    pub fn contentColor(mut self, contentColor: crate::dom::RGBA) -> Self { self.contentColor = Some(contentColor); self }
+    pub fn content_color(mut self, content_color: crate::dom::RGBA) -> Self { self.content_color = Some(content_color); self }
     /// The padding highlight fill color (default: transparent).
-    pub fn paddingColor(mut self, paddingColor: crate::dom::RGBA) -> Self { self.paddingColor = Some(paddingColor); self }
+    pub fn padding_color(mut self, padding_color: crate::dom::RGBA) -> Self { self.padding_color = Some(padding_color); self }
     /// The border highlight fill color (default: transparent).
-    pub fn borderColor(mut self, borderColor: crate::dom::RGBA) -> Self { self.borderColor = Some(borderColor); self }
+    pub fn border_color(mut self, border_color: crate::dom::RGBA) -> Self { self.border_color = Some(border_color); self }
     /// The margin highlight fill color (default: transparent).
-    pub fn marginColor(mut self, marginColor: crate::dom::RGBA) -> Self { self.marginColor = Some(marginColor); self }
+    pub fn margin_color(mut self, margin_color: crate::dom::RGBA) -> Self { self.margin_color = Some(margin_color); self }
     /// The event target element highlight fill color (default: transparent).
-    pub fn eventTargetColor(mut self, eventTargetColor: crate::dom::RGBA) -> Self { self.eventTargetColor = Some(eventTargetColor); self }
+    pub fn event_target_color(mut self, event_target_color: crate::dom::RGBA) -> Self { self.event_target_color = Some(event_target_color); self }
     /// The shape outside fill color (default: transparent).
-    pub fn shapeColor(mut self, shapeColor: crate::dom::RGBA) -> Self { self.shapeColor = Some(shapeColor); self }
+    pub fn shape_color(mut self, shape_color: crate::dom::RGBA) -> Self { self.shape_color = Some(shape_color); self }
     /// The shape margin fill color (default: transparent).
-    pub fn shapeMarginColor(mut self, shapeMarginColor: crate::dom::RGBA) -> Self { self.shapeMarginColor = Some(shapeMarginColor); self }
+    pub fn shape_margin_color(mut self, shape_margin_color: crate::dom::RGBA) -> Self { self.shape_margin_color = Some(shape_margin_color); self }
     /// The grid layout color (default: transparent).
-    pub fn cssGridColor(mut self, cssGridColor: crate::dom::RGBA) -> Self { self.cssGridColor = Some(cssGridColor); self }
+    pub fn css_grid_color(mut self, css_grid_color: crate::dom::RGBA) -> Self { self.css_grid_color = Some(css_grid_color); self }
     /// The color format used to format color styles (default: hex).
-    pub fn colorFormat(mut self, colorFormat: impl Into<ColorFormat>) -> Self { self.colorFormat = Some(colorFormat.into()); self }
+    pub fn color_format(mut self, color_format: impl Into<ColorFormat>) -> Self { self.color_format = Some(color_format.into()); self }
     /// The grid layout highlight configuration (default: all transparent).
-    pub fn gridHighlightConfig(mut self, gridHighlightConfig: GridHighlightConfig) -> Self { self.gridHighlightConfig = Some(gridHighlightConfig); self }
+    pub fn grid_highlight_config(mut self, grid_highlight_config: GridHighlightConfig) -> Self { self.grid_highlight_config = Some(grid_highlight_config); self }
     /// The flex container highlight configuration (default: all transparent).
-    pub fn flexContainerHighlightConfig(mut self, flexContainerHighlightConfig: FlexContainerHighlightConfig<'a>) -> Self { self.flexContainerHighlightConfig = Some(flexContainerHighlightConfig); self }
+    pub fn flex_container_highlight_config(mut self, flex_container_highlight_config: FlexContainerHighlightConfig<'a>) -> Self { self.flex_container_highlight_config = Some(flex_container_highlight_config); self }
     /// The flex item highlight configuration (default: all transparent).
-    pub fn flexItemHighlightConfig(mut self, flexItemHighlightConfig: FlexItemHighlightConfig<'a>) -> Self { self.flexItemHighlightConfig = Some(flexItemHighlightConfig); self }
+    pub fn flex_item_highlight_config(mut self, flex_item_highlight_config: FlexItemHighlightConfig<'a>) -> Self { self.flex_item_highlight_config = Some(flex_item_highlight_config); self }
     /// The contrast algorithm to use for the contrast ratio (default: aa).
-    pub fn contrastAlgorithm(mut self, contrastAlgorithm: impl Into<ContrastAlgorithm>) -> Self { self.contrastAlgorithm = Some(contrastAlgorithm.into()); self }
+    pub fn contrast_algorithm(mut self, contrast_algorithm: impl Into<ContrastAlgorithm>) -> Self { self.contrast_algorithm = Some(contrast_algorithm.into()); self }
     /// The container query container highlight configuration (default: all transparent).
-    pub fn containerQueryContainerHighlightConfig(mut self, containerQueryContainerHighlightConfig: ContainerQueryContainerHighlightConfig<'a>) -> Self { self.containerQueryContainerHighlightConfig = Some(containerQueryContainerHighlightConfig); self }
+    pub fn container_query_container_highlight_config(mut self, container_query_container_highlight_config: ContainerQueryContainerHighlightConfig<'a>) -> Self { self.container_query_container_highlight_config = Some(container_query_container_highlight_config); self }
     pub fn build(self) -> HighlightConfig<'a> {
         HighlightConfig {
-            showInfo: self.showInfo,
-            showStyles: self.showStyles,
-            showRulers: self.showRulers,
-            showAccessibilityInfo: self.showAccessibilityInfo,
-            showExtensionLines: self.showExtensionLines,
-            contentColor: self.contentColor,
-            paddingColor: self.paddingColor,
-            borderColor: self.borderColor,
-            marginColor: self.marginColor,
-            eventTargetColor: self.eventTargetColor,
-            shapeColor: self.shapeColor,
-            shapeMarginColor: self.shapeMarginColor,
-            cssGridColor: self.cssGridColor,
-            colorFormat: self.colorFormat,
-            gridHighlightConfig: self.gridHighlightConfig,
-            flexContainerHighlightConfig: self.flexContainerHighlightConfig,
-            flexItemHighlightConfig: self.flexItemHighlightConfig,
-            contrastAlgorithm: self.contrastAlgorithm,
-            containerQueryContainerHighlightConfig: self.containerQueryContainerHighlightConfig,
+            show_info: self.show_info,
+            show_styles: self.show_styles,
+            show_rulers: self.show_rulers,
+            show_accessibility_info: self.show_accessibility_info,
+            show_extension_lines: self.show_extension_lines,
+            content_color: self.content_color,
+            padding_color: self.padding_color,
+            border_color: self.border_color,
+            margin_color: self.margin_color,
+            event_target_color: self.event_target_color,
+            shape_color: self.shape_color,
+            shape_margin_color: self.shape_margin_color,
+            css_grid_color: self.css_grid_color,
+            color_format: self.color_format,
+            grid_highlight_config: self.grid_highlight_config,
+            flex_container_highlight_config: self.flex_container_highlight_config,
+            flex_item_highlight_config: self.flex_item_highlight_config,
+            contrast_algorithm: self.contrast_algorithm,
+            container_query_container_highlight_config: self.container_query_container_highlight_config,
         }
     }
 }
@@ -710,33 +777,40 @@ pub enum ColorFormat {
 #[serde(rename_all = "camelCase")]
 pub struct GridNodeHighlightConfig {
     /// A descriptor for the highlight appearance.
-    gridHighlightConfig: GridHighlightConfig,
+    #[serde(rename = "gridHighlightConfig")]
+    grid_highlight_config: GridHighlightConfig,
     /// Identifier of the node to highlight.
-    nodeId: crate::dom::NodeId,
+    #[serde(rename = "nodeId")]
+    node_id: crate::dom::NodeId,
 }
 
 impl GridNodeHighlightConfig {
-    pub fn builder(gridHighlightConfig: GridHighlightConfig, nodeId: crate::dom::NodeId) -> GridNodeHighlightConfigBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `grid_highlight_config`: A descriptor for the highlight appearance.
+    /// * `node_id`: Identifier of the node to highlight.
+    pub fn builder(grid_highlight_config: GridHighlightConfig, node_id: crate::dom::NodeId) -> GridNodeHighlightConfigBuilder {
         GridNodeHighlightConfigBuilder {
-            gridHighlightConfig: gridHighlightConfig,
-            nodeId: nodeId,
+            grid_highlight_config: grid_highlight_config,
+            node_id: node_id,
         }
     }
-    pub fn gridHighlightConfig(&self) -> &GridHighlightConfig { &self.gridHighlightConfig }
-    pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
+    /// A descriptor for the highlight appearance.
+    pub fn grid_highlight_config(&self) -> &GridHighlightConfig { &self.grid_highlight_config }
+    /// Identifier of the node to highlight.
+    pub fn node_id(&self) -> &crate::dom::NodeId { &self.node_id }
 }
 
 
 pub struct GridNodeHighlightConfigBuilder {
-    gridHighlightConfig: GridHighlightConfig,
-    nodeId: crate::dom::NodeId,
+    grid_highlight_config: GridHighlightConfig,
+    node_id: crate::dom::NodeId,
 }
 
 impl GridNodeHighlightConfigBuilder {
     pub fn build(self) -> GridNodeHighlightConfig {
         GridNodeHighlightConfig {
-            gridHighlightConfig: self.gridHighlightConfig,
-            nodeId: self.nodeId,
+            grid_highlight_config: self.grid_highlight_config,
+            node_id: self.node_id,
         }
     }
 }
@@ -746,33 +820,40 @@ impl GridNodeHighlightConfigBuilder {
 #[serde(rename_all = "camelCase")]
 pub struct FlexNodeHighlightConfig<'a> {
     /// A descriptor for the highlight appearance of flex containers.
-    flexContainerHighlightConfig: FlexContainerHighlightConfig<'a>,
+    #[serde(rename = "flexContainerHighlightConfig")]
+    flex_container_highlight_config: FlexContainerHighlightConfig<'a>,
     /// Identifier of the node to highlight.
-    nodeId: crate::dom::NodeId,
+    #[serde(rename = "nodeId")]
+    node_id: crate::dom::NodeId,
 }
 
 impl<'a> FlexNodeHighlightConfig<'a> {
-    pub fn builder(flexContainerHighlightConfig: FlexContainerHighlightConfig<'a>, nodeId: crate::dom::NodeId) -> FlexNodeHighlightConfigBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `flex_container_highlight_config`: A descriptor for the highlight appearance of flex containers.
+    /// * `node_id`: Identifier of the node to highlight.
+    pub fn builder(flex_container_highlight_config: FlexContainerHighlightConfig<'a>, node_id: crate::dom::NodeId) -> FlexNodeHighlightConfigBuilder<'a> {
         FlexNodeHighlightConfigBuilder {
-            flexContainerHighlightConfig: flexContainerHighlightConfig,
-            nodeId: nodeId,
+            flex_container_highlight_config: flex_container_highlight_config,
+            node_id: node_id,
         }
     }
-    pub fn flexContainerHighlightConfig(&self) -> &FlexContainerHighlightConfig<'a> { &self.flexContainerHighlightConfig }
-    pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
+    /// A descriptor for the highlight appearance of flex containers.
+    pub fn flex_container_highlight_config(&self) -> &FlexContainerHighlightConfig<'a> { &self.flex_container_highlight_config }
+    /// Identifier of the node to highlight.
+    pub fn node_id(&self) -> &crate::dom::NodeId { &self.node_id }
 }
 
 
 pub struct FlexNodeHighlightConfigBuilder<'a> {
-    flexContainerHighlightConfig: FlexContainerHighlightConfig<'a>,
-    nodeId: crate::dom::NodeId,
+    flex_container_highlight_config: FlexContainerHighlightConfig<'a>,
+    node_id: crate::dom::NodeId,
 }
 
 impl<'a> FlexNodeHighlightConfigBuilder<'a> {
     pub fn build(self) -> FlexNodeHighlightConfig<'a> {
         FlexNodeHighlightConfig {
-            flexContainerHighlightConfig: self.flexContainerHighlightConfig,
-            nodeId: self.nodeId,
+            flex_container_highlight_config: self.flex_container_highlight_config,
+            node_id: self.node_id,
         }
     }
 }
@@ -782,57 +863,62 @@ impl<'a> FlexNodeHighlightConfigBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ScrollSnapContainerHighlightConfig<'a> {
     /// The style of the snapport border (default: transparent)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    snapportBorder: Option<LineStyle<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "snapportBorder")]
+    snapport_border: Option<LineStyle<'a>>,
     /// The style of the snap area border (default: transparent)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    snapAreaBorder: Option<LineStyle<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "snapAreaBorder")]
+    snap_area_border: Option<LineStyle<'a>>,
     /// The margin highlight fill color (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    scrollMarginColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "scrollMarginColor")]
+    scroll_margin_color: Option<crate::dom::RGBA>,
     /// The padding highlight fill color (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    scrollPaddingColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "scrollPaddingColor")]
+    scroll_padding_color: Option<crate::dom::RGBA>,
 }
 
 impl<'a> ScrollSnapContainerHighlightConfig<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> ScrollSnapContainerHighlightConfigBuilder<'a> {
         ScrollSnapContainerHighlightConfigBuilder {
-            snapportBorder: None,
-            snapAreaBorder: None,
-            scrollMarginColor: None,
-            scrollPaddingColor: None,
+            snapport_border: None,
+            snap_area_border: None,
+            scroll_margin_color: None,
+            scroll_padding_color: None,
         }
     }
-    pub fn snapportBorder(&self) -> Option<&LineStyle<'a>> { self.snapportBorder.as_ref() }
-    pub fn snapAreaBorder(&self) -> Option<&LineStyle<'a>> { self.snapAreaBorder.as_ref() }
-    pub fn scrollMarginColor(&self) -> Option<&crate::dom::RGBA> { self.scrollMarginColor.as_ref() }
-    pub fn scrollPaddingColor(&self) -> Option<&crate::dom::RGBA> { self.scrollPaddingColor.as_ref() }
+    /// The style of the snapport border (default: transparent)
+    pub fn snapport_border(&self) -> Option<&LineStyle<'a>> { self.snapport_border.as_ref() }
+    /// The style of the snap area border (default: transparent)
+    pub fn snap_area_border(&self) -> Option<&LineStyle<'a>> { self.snap_area_border.as_ref() }
+    /// The margin highlight fill color (default: transparent).
+    pub fn scroll_margin_color(&self) -> Option<&crate::dom::RGBA> { self.scroll_margin_color.as_ref() }
+    /// The padding highlight fill color (default: transparent).
+    pub fn scroll_padding_color(&self) -> Option<&crate::dom::RGBA> { self.scroll_padding_color.as_ref() }
 }
 
 #[derive(Default)]
 pub struct ScrollSnapContainerHighlightConfigBuilder<'a> {
-    snapportBorder: Option<LineStyle<'a>>,
-    snapAreaBorder: Option<LineStyle<'a>>,
-    scrollMarginColor: Option<crate::dom::RGBA>,
-    scrollPaddingColor: Option<crate::dom::RGBA>,
+    snapport_border: Option<LineStyle<'a>>,
+    snap_area_border: Option<LineStyle<'a>>,
+    scroll_margin_color: Option<crate::dom::RGBA>,
+    scroll_padding_color: Option<crate::dom::RGBA>,
 }
 
 impl<'a> ScrollSnapContainerHighlightConfigBuilder<'a> {
     /// The style of the snapport border (default: transparent)
-    pub fn snapportBorder(mut self, snapportBorder: LineStyle<'a>) -> Self { self.snapportBorder = Some(snapportBorder); self }
+    pub fn snapport_border(mut self, snapport_border: LineStyle<'a>) -> Self { self.snapport_border = Some(snapport_border); self }
     /// The style of the snap area border (default: transparent)
-    pub fn snapAreaBorder(mut self, snapAreaBorder: LineStyle<'a>) -> Self { self.snapAreaBorder = Some(snapAreaBorder); self }
+    pub fn snap_area_border(mut self, snap_area_border: LineStyle<'a>) -> Self { self.snap_area_border = Some(snap_area_border); self }
     /// The margin highlight fill color (default: transparent).
-    pub fn scrollMarginColor(mut self, scrollMarginColor: crate::dom::RGBA) -> Self { self.scrollMarginColor = Some(scrollMarginColor); self }
+    pub fn scroll_margin_color(mut self, scroll_margin_color: crate::dom::RGBA) -> Self { self.scroll_margin_color = Some(scroll_margin_color); self }
     /// The padding highlight fill color (default: transparent).
-    pub fn scrollPaddingColor(mut self, scrollPaddingColor: crate::dom::RGBA) -> Self { self.scrollPaddingColor = Some(scrollPaddingColor); self }
+    pub fn scroll_padding_color(mut self, scroll_padding_color: crate::dom::RGBA) -> Self { self.scroll_padding_color = Some(scroll_padding_color); self }
     pub fn build(self) -> ScrollSnapContainerHighlightConfig<'a> {
         ScrollSnapContainerHighlightConfig {
-            snapportBorder: self.snapportBorder,
-            snapAreaBorder: self.snapAreaBorder,
-            scrollMarginColor: self.scrollMarginColor,
-            scrollPaddingColor: self.scrollPaddingColor,
+            snapport_border: self.snapport_border,
+            snap_area_border: self.snap_area_border,
+            scroll_margin_color: self.scroll_margin_color,
+            scroll_padding_color: self.scroll_padding_color,
         }
     }
 }
@@ -842,33 +928,40 @@ impl<'a> ScrollSnapContainerHighlightConfigBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ScrollSnapHighlightConfig<'a> {
     /// A descriptor for the highlight appearance of scroll snap containers.
-    scrollSnapContainerHighlightConfig: ScrollSnapContainerHighlightConfig<'a>,
+    #[serde(rename = "scrollSnapContainerHighlightConfig")]
+    scroll_snap_container_highlight_config: ScrollSnapContainerHighlightConfig<'a>,
     /// Identifier of the node to highlight.
-    nodeId: crate::dom::NodeId,
+    #[serde(rename = "nodeId")]
+    node_id: crate::dom::NodeId,
 }
 
 impl<'a> ScrollSnapHighlightConfig<'a> {
-    pub fn builder(scrollSnapContainerHighlightConfig: ScrollSnapContainerHighlightConfig<'a>, nodeId: crate::dom::NodeId) -> ScrollSnapHighlightConfigBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `scroll_snap_container_highlight_config`: A descriptor for the highlight appearance of scroll snap containers.
+    /// * `node_id`: Identifier of the node to highlight.
+    pub fn builder(scroll_snap_container_highlight_config: ScrollSnapContainerHighlightConfig<'a>, node_id: crate::dom::NodeId) -> ScrollSnapHighlightConfigBuilder<'a> {
         ScrollSnapHighlightConfigBuilder {
-            scrollSnapContainerHighlightConfig: scrollSnapContainerHighlightConfig,
-            nodeId: nodeId,
+            scroll_snap_container_highlight_config: scroll_snap_container_highlight_config,
+            node_id: node_id,
         }
     }
-    pub fn scrollSnapContainerHighlightConfig(&self) -> &ScrollSnapContainerHighlightConfig<'a> { &self.scrollSnapContainerHighlightConfig }
-    pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
+    /// A descriptor for the highlight appearance of scroll snap containers.
+    pub fn scroll_snap_container_highlight_config(&self) -> &ScrollSnapContainerHighlightConfig<'a> { &self.scroll_snap_container_highlight_config }
+    /// Identifier of the node to highlight.
+    pub fn node_id(&self) -> &crate::dom::NodeId { &self.node_id }
 }
 
 
 pub struct ScrollSnapHighlightConfigBuilder<'a> {
-    scrollSnapContainerHighlightConfig: ScrollSnapContainerHighlightConfig<'a>,
-    nodeId: crate::dom::NodeId,
+    scroll_snap_container_highlight_config: ScrollSnapContainerHighlightConfig<'a>,
+    node_id: crate::dom::NodeId,
 }
 
 impl<'a> ScrollSnapHighlightConfigBuilder<'a> {
     pub fn build(self) -> ScrollSnapHighlightConfig<'a> {
         ScrollSnapHighlightConfig {
-            scrollSnapContainerHighlightConfig: self.scrollSnapContainerHighlightConfig,
-            nodeId: self.nodeId,
+            scroll_snap_container_highlight_config: self.scroll_snap_container_highlight_config,
+            node_id: self.node_id,
         }
     }
 }
@@ -881,43 +974,48 @@ pub struct HingeConfig {
     /// A rectangle represent hinge
     rect: crate::dom::Rect,
     /// The content box highlight fill color (default: a dark color).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    contentColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "contentColor")]
+    content_color: Option<crate::dom::RGBA>,
     /// The content box highlight outline color (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    outlineColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "outlineColor")]
+    outline_color: Option<crate::dom::RGBA>,
 }
 
 impl HingeConfig {
+    /// Creates a builder for this type with the required parameters:
+    /// * `rect`: A rectangle represent hinge
     pub fn builder(rect: crate::dom::Rect) -> HingeConfigBuilder {
         HingeConfigBuilder {
             rect: rect,
-            contentColor: None,
-            outlineColor: None,
+            content_color: None,
+            outline_color: None,
         }
     }
+    /// A rectangle represent hinge
     pub fn rect(&self) -> &crate::dom::Rect { &self.rect }
-    pub fn contentColor(&self) -> Option<&crate::dom::RGBA> { self.contentColor.as_ref() }
-    pub fn outlineColor(&self) -> Option<&crate::dom::RGBA> { self.outlineColor.as_ref() }
+    /// The content box highlight fill color (default: a dark color).
+    pub fn content_color(&self) -> Option<&crate::dom::RGBA> { self.content_color.as_ref() }
+    /// The content box highlight outline color (default: transparent).
+    pub fn outline_color(&self) -> Option<&crate::dom::RGBA> { self.outline_color.as_ref() }
 }
 
 
 pub struct HingeConfigBuilder {
     rect: crate::dom::Rect,
-    contentColor: Option<crate::dom::RGBA>,
-    outlineColor: Option<crate::dom::RGBA>,
+    content_color: Option<crate::dom::RGBA>,
+    outline_color: Option<crate::dom::RGBA>,
 }
 
 impl HingeConfigBuilder {
     /// The content box highlight fill color (default: a dark color).
-    pub fn contentColor(mut self, contentColor: crate::dom::RGBA) -> Self { self.contentColor = Some(contentColor); self }
+    pub fn content_color(mut self, content_color: crate::dom::RGBA) -> Self { self.content_color = Some(content_color); self }
     /// The content box highlight outline color (default: transparent).
-    pub fn outlineColor(mut self, outlineColor: crate::dom::RGBA) -> Self { self.outlineColor = Some(outlineColor); self }
+    pub fn outline_color(mut self, outline_color: crate::dom::RGBA) -> Self { self.outline_color = Some(outline_color); self }
     pub fn build(self) -> HingeConfig {
         HingeConfig {
             rect: self.rect,
-            contentColor: self.contentColor,
-            outlineColor: self.outlineColor,
+            content_color: self.content_color,
+            outline_color: self.outline_color,
         }
     }
 }
@@ -928,39 +1026,49 @@ impl HingeConfigBuilder {
 #[serde(rename_all = "camelCase")]
 pub struct WindowControlsOverlayConfig<'a> {
     /// Whether the title bar CSS should be shown when emulating the Window Controls Overlay.
-    showCSS: bool,
+    #[serde(rename = "showCSS")]
+    show_css: bool,
     /// Selected platforms to show the overlay.
-    selectedPlatform: Cow<'a, str>,
+    #[serde(rename = "selectedPlatform")]
+    selected_platform: Cow<'a, str>,
     /// The theme color defined in app manifest.
-    themeColor: Cow<'a, str>,
+    #[serde(rename = "themeColor")]
+    theme_color: Cow<'a, str>,
 }
 
 impl<'a> WindowControlsOverlayConfig<'a> {
-    pub fn builder(showCSS: bool, selectedPlatform: impl Into<Cow<'a, str>>, themeColor: impl Into<Cow<'a, str>>) -> WindowControlsOverlayConfigBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `show_css`: Whether the title bar CSS should be shown when emulating the Window Controls Overlay.
+    /// * `selected_platform`: Selected platforms to show the overlay.
+    /// * `theme_color`: The theme color defined in app manifest.
+    pub fn builder(show_css: bool, selected_platform: impl Into<Cow<'a, str>>, theme_color: impl Into<Cow<'a, str>>) -> WindowControlsOverlayConfigBuilder<'a> {
         WindowControlsOverlayConfigBuilder {
-            showCSS: showCSS,
-            selectedPlatform: selectedPlatform.into(),
-            themeColor: themeColor.into(),
+            show_css: show_css,
+            selected_platform: selected_platform.into(),
+            theme_color: theme_color.into(),
         }
     }
-    pub fn showCSS(&self) -> bool { self.showCSS }
-    pub fn selectedPlatform(&self) -> &str { self.selectedPlatform.as_ref() }
-    pub fn themeColor(&self) -> &str { self.themeColor.as_ref() }
+    /// Whether the title bar CSS should be shown when emulating the Window Controls Overlay.
+    pub fn show_css(&self) -> bool { self.show_css }
+    /// Selected platforms to show the overlay.
+    pub fn selected_platform(&self) -> &str { self.selected_platform.as_ref() }
+    /// The theme color defined in app manifest.
+    pub fn theme_color(&self) -> &str { self.theme_color.as_ref() }
 }
 
 
 pub struct WindowControlsOverlayConfigBuilder<'a> {
-    showCSS: bool,
-    selectedPlatform: Cow<'a, str>,
-    themeColor: Cow<'a, str>,
+    show_css: bool,
+    selected_platform: Cow<'a, str>,
+    theme_color: Cow<'a, str>,
 }
 
 impl<'a> WindowControlsOverlayConfigBuilder<'a> {
     pub fn build(self) -> WindowControlsOverlayConfig<'a> {
         WindowControlsOverlayConfig {
-            showCSS: self.showCSS,
-            selectedPlatform: self.selectedPlatform,
-            themeColor: self.themeColor,
+            show_css: self.show_css,
+            selected_platform: self.selected_platform,
+            theme_color: self.theme_color,
         }
     }
 }
@@ -970,33 +1078,40 @@ impl<'a> WindowControlsOverlayConfigBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ContainerQueryHighlightConfig<'a> {
     /// A descriptor for the highlight appearance of container query containers.
-    containerQueryContainerHighlightConfig: ContainerQueryContainerHighlightConfig<'a>,
+    #[serde(rename = "containerQueryContainerHighlightConfig")]
+    container_query_container_highlight_config: ContainerQueryContainerHighlightConfig<'a>,
     /// Identifier of the container node to highlight.
-    nodeId: crate::dom::NodeId,
+    #[serde(rename = "nodeId")]
+    node_id: crate::dom::NodeId,
 }
 
 impl<'a> ContainerQueryHighlightConfig<'a> {
-    pub fn builder(containerQueryContainerHighlightConfig: ContainerQueryContainerHighlightConfig<'a>, nodeId: crate::dom::NodeId) -> ContainerQueryHighlightConfigBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `container_query_container_highlight_config`: A descriptor for the highlight appearance of container query containers.
+    /// * `node_id`: Identifier of the container node to highlight.
+    pub fn builder(container_query_container_highlight_config: ContainerQueryContainerHighlightConfig<'a>, node_id: crate::dom::NodeId) -> ContainerQueryHighlightConfigBuilder<'a> {
         ContainerQueryHighlightConfigBuilder {
-            containerQueryContainerHighlightConfig: containerQueryContainerHighlightConfig,
-            nodeId: nodeId,
+            container_query_container_highlight_config: container_query_container_highlight_config,
+            node_id: node_id,
         }
     }
-    pub fn containerQueryContainerHighlightConfig(&self) -> &ContainerQueryContainerHighlightConfig<'a> { &self.containerQueryContainerHighlightConfig }
-    pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
+    /// A descriptor for the highlight appearance of container query containers.
+    pub fn container_query_container_highlight_config(&self) -> &ContainerQueryContainerHighlightConfig<'a> { &self.container_query_container_highlight_config }
+    /// Identifier of the container node to highlight.
+    pub fn node_id(&self) -> &crate::dom::NodeId { &self.node_id }
 }
 
 
 pub struct ContainerQueryHighlightConfigBuilder<'a> {
-    containerQueryContainerHighlightConfig: ContainerQueryContainerHighlightConfig<'a>,
-    nodeId: crate::dom::NodeId,
+    container_query_container_highlight_config: ContainerQueryContainerHighlightConfig<'a>,
+    node_id: crate::dom::NodeId,
 }
 
 impl<'a> ContainerQueryHighlightConfigBuilder<'a> {
     pub fn build(self) -> ContainerQueryHighlightConfig<'a> {
         ContainerQueryHighlightConfig {
-            containerQueryContainerHighlightConfig: self.containerQueryContainerHighlightConfig,
-            nodeId: self.nodeId,
+            container_query_container_highlight_config: self.container_query_container_highlight_config,
+            node_id: self.node_id,
         }
     }
 }
@@ -1006,39 +1121,42 @@ impl<'a> ContainerQueryHighlightConfigBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ContainerQueryContainerHighlightConfig<'a> {
     /// The style of the container border.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    containerBorder: Option<LineStyle<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "containerBorder")]
+    container_border: Option<LineStyle<'a>>,
     /// The style of the descendants' borders.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    descendantBorder: Option<LineStyle<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "descendantBorder")]
+    descendant_border: Option<LineStyle<'a>>,
 }
 
 impl<'a> ContainerQueryContainerHighlightConfig<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> ContainerQueryContainerHighlightConfigBuilder<'a> {
         ContainerQueryContainerHighlightConfigBuilder {
-            containerBorder: None,
-            descendantBorder: None,
+            container_border: None,
+            descendant_border: None,
         }
     }
-    pub fn containerBorder(&self) -> Option<&LineStyle<'a>> { self.containerBorder.as_ref() }
-    pub fn descendantBorder(&self) -> Option<&LineStyle<'a>> { self.descendantBorder.as_ref() }
+    /// The style of the container border.
+    pub fn container_border(&self) -> Option<&LineStyle<'a>> { self.container_border.as_ref() }
+    /// The style of the descendants' borders.
+    pub fn descendant_border(&self) -> Option<&LineStyle<'a>> { self.descendant_border.as_ref() }
 }
 
 #[derive(Default)]
 pub struct ContainerQueryContainerHighlightConfigBuilder<'a> {
-    containerBorder: Option<LineStyle<'a>>,
-    descendantBorder: Option<LineStyle<'a>>,
+    container_border: Option<LineStyle<'a>>,
+    descendant_border: Option<LineStyle<'a>>,
 }
 
 impl<'a> ContainerQueryContainerHighlightConfigBuilder<'a> {
     /// The style of the container border.
-    pub fn containerBorder(mut self, containerBorder: LineStyle<'a>) -> Self { self.containerBorder = Some(containerBorder); self }
+    pub fn container_border(mut self, container_border: LineStyle<'a>) -> Self { self.container_border = Some(container_border); self }
     /// The style of the descendants' borders.
-    pub fn descendantBorder(mut self, descendantBorder: LineStyle<'a>) -> Self { self.descendantBorder = Some(descendantBorder); self }
+    pub fn descendant_border(mut self, descendant_border: LineStyle<'a>) -> Self { self.descendant_border = Some(descendant_border); self }
     pub fn build(self) -> ContainerQueryContainerHighlightConfig<'a> {
         ContainerQueryContainerHighlightConfig {
-            containerBorder: self.containerBorder,
-            descendantBorder: self.descendantBorder,
+            container_border: self.container_border,
+            descendant_border: self.descendant_border,
         }
     }
 }
@@ -1048,33 +1166,40 @@ impl<'a> ContainerQueryContainerHighlightConfigBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct IsolatedElementHighlightConfig {
     /// A descriptor for the highlight appearance of an element in isolation mode.
-    isolationModeHighlightConfig: IsolationModeHighlightConfig,
+    #[serde(rename = "isolationModeHighlightConfig")]
+    isolation_mode_highlight_config: IsolationModeHighlightConfig,
     /// Identifier of the isolated element to highlight.
-    nodeId: crate::dom::NodeId,
+    #[serde(rename = "nodeId")]
+    node_id: crate::dom::NodeId,
 }
 
 impl IsolatedElementHighlightConfig {
-    pub fn builder(isolationModeHighlightConfig: IsolationModeHighlightConfig, nodeId: crate::dom::NodeId) -> IsolatedElementHighlightConfigBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `isolation_mode_highlight_config`: A descriptor for the highlight appearance of an element in isolation mode.
+    /// * `node_id`: Identifier of the isolated element to highlight.
+    pub fn builder(isolation_mode_highlight_config: IsolationModeHighlightConfig, node_id: crate::dom::NodeId) -> IsolatedElementHighlightConfigBuilder {
         IsolatedElementHighlightConfigBuilder {
-            isolationModeHighlightConfig: isolationModeHighlightConfig,
-            nodeId: nodeId,
+            isolation_mode_highlight_config: isolation_mode_highlight_config,
+            node_id: node_id,
         }
     }
-    pub fn isolationModeHighlightConfig(&self) -> &IsolationModeHighlightConfig { &self.isolationModeHighlightConfig }
-    pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
+    /// A descriptor for the highlight appearance of an element in isolation mode.
+    pub fn isolation_mode_highlight_config(&self) -> &IsolationModeHighlightConfig { &self.isolation_mode_highlight_config }
+    /// Identifier of the isolated element to highlight.
+    pub fn node_id(&self) -> &crate::dom::NodeId { &self.node_id }
 }
 
 
 pub struct IsolatedElementHighlightConfigBuilder {
-    isolationModeHighlightConfig: IsolationModeHighlightConfig,
-    nodeId: crate::dom::NodeId,
+    isolation_mode_highlight_config: IsolationModeHighlightConfig,
+    node_id: crate::dom::NodeId,
 }
 
 impl IsolatedElementHighlightConfigBuilder {
     pub fn build(self) -> IsolatedElementHighlightConfig {
         IsolatedElementHighlightConfig {
-            isolationModeHighlightConfig: self.isolationModeHighlightConfig,
-            nodeId: self.nodeId,
+            isolation_mode_highlight_config: self.isolation_mode_highlight_config,
+            node_id: self.node_id,
         }
     }
 }
@@ -1084,48 +1209,52 @@ impl IsolatedElementHighlightConfigBuilder {
 #[serde(rename_all = "camelCase")]
 pub struct IsolationModeHighlightConfig {
     /// The fill color of the resizers (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    resizerColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "resizerColor")]
+    resizer_color: Option<crate::dom::RGBA>,
     /// The fill color for resizer handles (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    resizerHandleColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "resizerHandleColor")]
+    resizer_handle_color: Option<crate::dom::RGBA>,
     /// The fill color for the mask covering non-isolated elements (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    maskColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "maskColor")]
+    mask_color: Option<crate::dom::RGBA>,
 }
 
 impl IsolationModeHighlightConfig {
+    /// Creates a builder for this type.
     pub fn builder() -> IsolationModeHighlightConfigBuilder {
         IsolationModeHighlightConfigBuilder {
-            resizerColor: None,
-            resizerHandleColor: None,
-            maskColor: None,
+            resizer_color: None,
+            resizer_handle_color: None,
+            mask_color: None,
         }
     }
-    pub fn resizerColor(&self) -> Option<&crate::dom::RGBA> { self.resizerColor.as_ref() }
-    pub fn resizerHandleColor(&self) -> Option<&crate::dom::RGBA> { self.resizerHandleColor.as_ref() }
-    pub fn maskColor(&self) -> Option<&crate::dom::RGBA> { self.maskColor.as_ref() }
+    /// The fill color of the resizers (default: transparent).
+    pub fn resizer_color(&self) -> Option<&crate::dom::RGBA> { self.resizer_color.as_ref() }
+    /// The fill color for resizer handles (default: transparent).
+    pub fn resizer_handle_color(&self) -> Option<&crate::dom::RGBA> { self.resizer_handle_color.as_ref() }
+    /// The fill color for the mask covering non-isolated elements (default: transparent).
+    pub fn mask_color(&self) -> Option<&crate::dom::RGBA> { self.mask_color.as_ref() }
 }
 
 #[derive(Default)]
 pub struct IsolationModeHighlightConfigBuilder {
-    resizerColor: Option<crate::dom::RGBA>,
-    resizerHandleColor: Option<crate::dom::RGBA>,
-    maskColor: Option<crate::dom::RGBA>,
+    resizer_color: Option<crate::dom::RGBA>,
+    resizer_handle_color: Option<crate::dom::RGBA>,
+    mask_color: Option<crate::dom::RGBA>,
 }
 
 impl IsolationModeHighlightConfigBuilder {
     /// The fill color of the resizers (default: transparent).
-    pub fn resizerColor(mut self, resizerColor: crate::dom::RGBA) -> Self { self.resizerColor = Some(resizerColor); self }
+    pub fn resizer_color(mut self, resizer_color: crate::dom::RGBA) -> Self { self.resizer_color = Some(resizer_color); self }
     /// The fill color for resizer handles (default: transparent).
-    pub fn resizerHandleColor(mut self, resizerHandleColor: crate::dom::RGBA) -> Self { self.resizerHandleColor = Some(resizerHandleColor); self }
+    pub fn resizer_handle_color(mut self, resizer_handle_color: crate::dom::RGBA) -> Self { self.resizer_handle_color = Some(resizer_handle_color); self }
     /// The fill color for the mask covering non-isolated elements (default: transparent).
-    pub fn maskColor(mut self, maskColor: crate::dom::RGBA) -> Self { self.maskColor = Some(maskColor); self }
+    pub fn mask_color(mut self, mask_color: crate::dom::RGBA) -> Self { self.mask_color = Some(mask_color); self }
     pub fn build(self) -> IsolationModeHighlightConfig {
         IsolationModeHighlightConfig {
-            resizerColor: self.resizerColor,
-            resizerHandleColor: self.resizerHandleColor,
-            maskColor: self.maskColor,
+            resizer_color: self.resizer_color,
+            resizer_handle_color: self.resizer_handle_color,
+            mask_color: self.mask_color,
         }
     }
 }
@@ -1149,39 +1278,42 @@ pub enum InspectMode {
 #[serde(rename_all = "camelCase")]
 pub struct InspectedElementAnchorConfig {
     /// Identifier of the node to highlight.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    nodeId: Option<crate::dom::NodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "nodeId")]
+    node_id: Option<crate::dom::NodeId>,
     /// Identifier of the backend node to highlight.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    backendNodeId: Option<crate::dom::BackendNodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "backendNodeId")]
+    backend_node_id: Option<crate::dom::BackendNodeId>,
 }
 
 impl InspectedElementAnchorConfig {
+    /// Creates a builder for this type.
     pub fn builder() -> InspectedElementAnchorConfigBuilder {
         InspectedElementAnchorConfigBuilder {
-            nodeId: None,
-            backendNodeId: None,
+            node_id: None,
+            backend_node_id: None,
         }
     }
-    pub fn nodeId(&self) -> Option<&crate::dom::NodeId> { self.nodeId.as_ref() }
-    pub fn backendNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.backendNodeId.as_ref() }
+    /// Identifier of the node to highlight.
+    pub fn node_id(&self) -> Option<&crate::dom::NodeId> { self.node_id.as_ref() }
+    /// Identifier of the backend node to highlight.
+    pub fn backend_node_id(&self) -> Option<&crate::dom::BackendNodeId> { self.backend_node_id.as_ref() }
 }
 
 #[derive(Default)]
 pub struct InspectedElementAnchorConfigBuilder {
-    nodeId: Option<crate::dom::NodeId>,
-    backendNodeId: Option<crate::dom::BackendNodeId>,
+    node_id: Option<crate::dom::NodeId>,
+    backend_node_id: Option<crate::dom::BackendNodeId>,
 }
 
 impl InspectedElementAnchorConfigBuilder {
     /// Identifier of the node to highlight.
-    pub fn nodeId(mut self, nodeId: crate::dom::NodeId) -> Self { self.nodeId = Some(nodeId); self }
+    pub fn node_id(mut self, node_id: crate::dom::NodeId) -> Self { self.node_id = Some(node_id); self }
     /// Identifier of the backend node to highlight.
-    pub fn backendNodeId(mut self, backendNodeId: crate::dom::BackendNodeId) -> Self { self.backendNodeId = Some(backendNodeId); self }
+    pub fn backend_node_id(mut self, backend_node_id: crate::dom::BackendNodeId) -> Self { self.backend_node_id = Some(backend_node_id); self }
     pub fn build(self) -> InspectedElementAnchorConfig {
         InspectedElementAnchorConfig {
-            nodeId: self.nodeId,
-            backendNodeId: self.backendNodeId,
+            node_id: self.node_id,
+            backend_node_id: self.backend_node_id,
         }
     }
 }
@@ -1212,63 +1344,71 @@ impl<'a> crate::CdpCommand<'a> for EnableParams {
 #[serde(rename_all = "camelCase")]
 pub struct GetHighlightObjectForTestParams {
     /// Id of the node to get highlight object for.
-    nodeId: crate::dom::NodeId,
+    #[serde(rename = "nodeId")]
+    node_id: crate::dom::NodeId,
     /// Whether to include distance info.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    includeDistance: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "includeDistance")]
+    include_distance: Option<bool>,
     /// Whether to include style info.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    includeStyle: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "includeStyle")]
+    include_style: Option<bool>,
     /// The color format to get config with (default: hex).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    colorFormat: Option<ColorFormat>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "colorFormat")]
+    color_format: Option<ColorFormat>,
     /// Whether to show accessibility info (default: true).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    showAccessibilityInfo: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "showAccessibilityInfo")]
+    show_accessibility_info: Option<bool>,
 }
 
 impl GetHighlightObjectForTestParams {
-    pub fn builder(nodeId: crate::dom::NodeId) -> GetHighlightObjectForTestParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `node_id`: Id of the node to get highlight object for.
+    pub fn builder(node_id: crate::dom::NodeId) -> GetHighlightObjectForTestParamsBuilder {
         GetHighlightObjectForTestParamsBuilder {
-            nodeId: nodeId,
-            includeDistance: None,
-            includeStyle: None,
-            colorFormat: None,
-            showAccessibilityInfo: None,
+            node_id: node_id,
+            include_distance: None,
+            include_style: None,
+            color_format: None,
+            show_accessibility_info: None,
         }
     }
-    pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
-    pub fn includeDistance(&self) -> Option<bool> { self.includeDistance }
-    pub fn includeStyle(&self) -> Option<bool> { self.includeStyle }
-    pub fn colorFormat(&self) -> Option<&ColorFormat> { self.colorFormat.as_ref() }
-    pub fn showAccessibilityInfo(&self) -> Option<bool> { self.showAccessibilityInfo }
+    /// Id of the node to get highlight object for.
+    pub fn node_id(&self) -> &crate::dom::NodeId { &self.node_id }
+    /// Whether to include distance info.
+    pub fn include_distance(&self) -> Option<bool> { self.include_distance }
+    /// Whether to include style info.
+    pub fn include_style(&self) -> Option<bool> { self.include_style }
+    /// The color format to get config with (default: hex).
+    pub fn color_format(&self) -> Option<&ColorFormat> { self.color_format.as_ref() }
+    /// Whether to show accessibility info (default: true).
+    pub fn show_accessibility_info(&self) -> Option<bool> { self.show_accessibility_info }
 }
 
 
 pub struct GetHighlightObjectForTestParamsBuilder {
-    nodeId: crate::dom::NodeId,
-    includeDistance: Option<bool>,
-    includeStyle: Option<bool>,
-    colorFormat: Option<ColorFormat>,
-    showAccessibilityInfo: Option<bool>,
+    node_id: crate::dom::NodeId,
+    include_distance: Option<bool>,
+    include_style: Option<bool>,
+    color_format: Option<ColorFormat>,
+    show_accessibility_info: Option<bool>,
 }
 
 impl GetHighlightObjectForTestParamsBuilder {
     /// Whether to include distance info.
-    pub fn includeDistance(mut self, includeDistance: bool) -> Self { self.includeDistance = Some(includeDistance); self }
+    pub fn include_distance(mut self, include_distance: bool) -> Self { self.include_distance = Some(include_distance); self }
     /// Whether to include style info.
-    pub fn includeStyle(mut self, includeStyle: bool) -> Self { self.includeStyle = Some(includeStyle); self }
+    pub fn include_style(mut self, include_style: bool) -> Self { self.include_style = Some(include_style); self }
     /// The color format to get config with (default: hex).
-    pub fn colorFormat(mut self, colorFormat: impl Into<ColorFormat>) -> Self { self.colorFormat = Some(colorFormat.into()); self }
+    pub fn color_format(mut self, color_format: impl Into<ColorFormat>) -> Self { self.color_format = Some(color_format.into()); self }
     /// Whether to show accessibility info (default: true).
-    pub fn showAccessibilityInfo(mut self, showAccessibilityInfo: bool) -> Self { self.showAccessibilityInfo = Some(showAccessibilityInfo); self }
+    pub fn show_accessibility_info(mut self, show_accessibility_info: bool) -> Self { self.show_accessibility_info = Some(show_accessibility_info); self }
     pub fn build(self) -> GetHighlightObjectForTestParams {
         GetHighlightObjectForTestParams {
-            nodeId: self.nodeId,
-            includeDistance: self.includeDistance,
-            includeStyle: self.includeStyle,
-            colorFormat: self.colorFormat,
-            showAccessibilityInfo: self.showAccessibilityInfo,
+            node_id: self.node_id,
+            include_distance: self.include_distance,
+            include_style: self.include_style,
+            color_format: self.color_format,
+            show_accessibility_info: self.show_accessibility_info,
         }
     }
 }
@@ -1283,11 +1423,14 @@ pub struct GetHighlightObjectForTestReturns {
 }
 
 impl GetHighlightObjectForTestReturns {
+    /// Creates a builder for this type with the required parameters:
+    /// * `highlight`: Highlight data for the node.
     pub fn builder(highlight: serde_json::Map<String, JsonValue>) -> GetHighlightObjectForTestReturnsBuilder {
         GetHighlightObjectForTestReturnsBuilder {
             highlight: highlight,
         }
     }
+    /// Highlight data for the node.
     pub fn highlight(&self) -> &serde_json::Map<String, JsonValue> { &self.highlight }
 }
 
@@ -1317,27 +1460,31 @@ impl<'a> crate::CdpCommand<'a> for GetHighlightObjectForTestParams {
 #[serde(rename_all = "camelCase")]
 pub struct GetGridHighlightObjectsForTestParams {
     /// Ids of the node to get highlight object for.
-    nodeIds: Vec<crate::dom::NodeId>,
+    #[serde(rename = "nodeIds")]
+    node_ids: Vec<crate::dom::NodeId>,
 }
 
 impl GetGridHighlightObjectsForTestParams {
-    pub fn builder(nodeIds: Vec<crate::dom::NodeId>) -> GetGridHighlightObjectsForTestParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `node_ids`: Ids of the node to get highlight object for.
+    pub fn builder(node_ids: Vec<crate::dom::NodeId>) -> GetGridHighlightObjectsForTestParamsBuilder {
         GetGridHighlightObjectsForTestParamsBuilder {
-            nodeIds: nodeIds,
+            node_ids: node_ids,
         }
     }
-    pub fn nodeIds(&self) -> &[crate::dom::NodeId] { &self.nodeIds }
+    /// Ids of the node to get highlight object for.
+    pub fn node_ids(&self) -> &[crate::dom::NodeId] { &self.node_ids }
 }
 
 
 pub struct GetGridHighlightObjectsForTestParamsBuilder {
-    nodeIds: Vec<crate::dom::NodeId>,
+    node_ids: Vec<crate::dom::NodeId>,
 }
 
 impl GetGridHighlightObjectsForTestParamsBuilder {
     pub fn build(self) -> GetGridHighlightObjectsForTestParams {
         GetGridHighlightObjectsForTestParams {
-            nodeIds: self.nodeIds,
+            node_ids: self.node_ids,
         }
     }
 }
@@ -1352,11 +1499,14 @@ pub struct GetGridHighlightObjectsForTestReturns {
 }
 
 impl GetGridHighlightObjectsForTestReturns {
+    /// Creates a builder for this type with the required parameters:
+    /// * `highlights`: Grid Highlight data for the node ids provided.
     pub fn builder(highlights: serde_json::Map<String, JsonValue>) -> GetGridHighlightObjectsForTestReturnsBuilder {
         GetGridHighlightObjectsForTestReturnsBuilder {
             highlights: highlights,
         }
     }
+    /// Grid Highlight data for the node ids provided.
     pub fn highlights(&self) -> &serde_json::Map<String, JsonValue> { &self.highlights }
 }
 
@@ -1386,27 +1536,31 @@ impl<'a> crate::CdpCommand<'a> for GetGridHighlightObjectsForTestParams {
 #[serde(rename_all = "camelCase")]
 pub struct GetSourceOrderHighlightObjectForTestParams {
     /// Id of the node to highlight.
-    nodeId: crate::dom::NodeId,
+    #[serde(rename = "nodeId")]
+    node_id: crate::dom::NodeId,
 }
 
 impl GetSourceOrderHighlightObjectForTestParams {
-    pub fn builder(nodeId: crate::dom::NodeId) -> GetSourceOrderHighlightObjectForTestParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `node_id`: Id of the node to highlight.
+    pub fn builder(node_id: crate::dom::NodeId) -> GetSourceOrderHighlightObjectForTestParamsBuilder {
         GetSourceOrderHighlightObjectForTestParamsBuilder {
-            nodeId: nodeId,
+            node_id: node_id,
         }
     }
-    pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
+    /// Id of the node to highlight.
+    pub fn node_id(&self) -> &crate::dom::NodeId { &self.node_id }
 }
 
 
 pub struct GetSourceOrderHighlightObjectForTestParamsBuilder {
-    nodeId: crate::dom::NodeId,
+    node_id: crate::dom::NodeId,
 }
 
 impl GetSourceOrderHighlightObjectForTestParamsBuilder {
     pub fn build(self) -> GetSourceOrderHighlightObjectForTestParams {
         GetSourceOrderHighlightObjectForTestParams {
-            nodeId: self.nodeId,
+            node_id: self.node_id,
         }
     }
 }
@@ -1421,11 +1575,14 @@ pub struct GetSourceOrderHighlightObjectForTestReturns {
 }
 
 impl GetSourceOrderHighlightObjectForTestReturns {
+    /// Creates a builder for this type with the required parameters:
+    /// * `highlight`: Source order highlight data for the node id provided.
     pub fn builder(highlight: serde_json::Map<String, JsonValue>) -> GetSourceOrderHighlightObjectForTestReturnsBuilder {
         GetSourceOrderHighlightObjectForTestReturnsBuilder {
             highlight: highlight,
         }
     }
+    /// Source order highlight data for the node id provided.
     pub fn highlight(&self) -> &serde_json::Map<String, JsonValue> { &self.highlight }
 }
 
@@ -1468,45 +1625,51 @@ impl<'a> crate::CdpCommand<'a> for HideHighlightParams {
 #[serde(rename_all = "camelCase")]
 pub struct HighlightFrameParams<'a> {
     /// Identifier of the frame to highlight.
-    frameId: crate::page::FrameId<'a>,
+    #[serde(rename = "frameId")]
+    frame_id: crate::page::FrameId<'a>,
     /// The content box highlight fill color (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    contentColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "contentColor")]
+    content_color: Option<crate::dom::RGBA>,
     /// The content box highlight outline color (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    contentOutlineColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "contentOutlineColor")]
+    content_outline_color: Option<crate::dom::RGBA>,
 }
 
 impl<'a> HighlightFrameParams<'a> {
-    pub fn builder(frameId: crate::page::FrameId<'a>) -> HighlightFrameParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `frame_id`: Identifier of the frame to highlight.
+    pub fn builder(frame_id: crate::page::FrameId<'a>) -> HighlightFrameParamsBuilder<'a> {
         HighlightFrameParamsBuilder {
-            frameId: frameId,
-            contentColor: None,
-            contentOutlineColor: None,
+            frame_id: frame_id,
+            content_color: None,
+            content_outline_color: None,
         }
     }
-    pub fn frameId(&self) -> &crate::page::FrameId<'a> { &self.frameId }
-    pub fn contentColor(&self) -> Option<&crate::dom::RGBA> { self.contentColor.as_ref() }
-    pub fn contentOutlineColor(&self) -> Option<&crate::dom::RGBA> { self.contentOutlineColor.as_ref() }
+    /// Identifier of the frame to highlight.
+    pub fn frame_id(&self) -> &crate::page::FrameId<'a> { &self.frame_id }
+    /// The content box highlight fill color (default: transparent).
+    pub fn content_color(&self) -> Option<&crate::dom::RGBA> { self.content_color.as_ref() }
+    /// The content box highlight outline color (default: transparent).
+    pub fn content_outline_color(&self) -> Option<&crate::dom::RGBA> { self.content_outline_color.as_ref() }
 }
 
 
 pub struct HighlightFrameParamsBuilder<'a> {
-    frameId: crate::page::FrameId<'a>,
-    contentColor: Option<crate::dom::RGBA>,
-    contentOutlineColor: Option<crate::dom::RGBA>,
+    frame_id: crate::page::FrameId<'a>,
+    content_color: Option<crate::dom::RGBA>,
+    content_outline_color: Option<crate::dom::RGBA>,
 }
 
 impl<'a> HighlightFrameParamsBuilder<'a> {
     /// The content box highlight fill color (default: transparent).
-    pub fn contentColor(mut self, contentColor: crate::dom::RGBA) -> Self { self.contentColor = Some(contentColor); self }
+    pub fn content_color(mut self, content_color: crate::dom::RGBA) -> Self { self.content_color = Some(content_color); self }
     /// The content box highlight outline color (default: transparent).
-    pub fn contentOutlineColor(mut self, contentOutlineColor: crate::dom::RGBA) -> Self { self.contentOutlineColor = Some(contentOutlineColor); self }
+    pub fn content_outline_color(mut self, content_outline_color: crate::dom::RGBA) -> Self { self.content_outline_color = Some(content_outline_color); self }
     pub fn build(self) -> HighlightFrameParams<'a> {
         HighlightFrameParams {
-            frameId: self.frameId,
-            contentColor: self.contentColor,
-            contentOutlineColor: self.contentOutlineColor,
+            frame_id: self.frame_id,
+            content_color: self.content_color,
+            content_outline_color: self.content_outline_color,
         }
     }
 }
@@ -1525,62 +1688,70 @@ impl<'a> crate::CdpCommand<'a> for HighlightFrameParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct HighlightNodeParams<'a> {
     /// A descriptor for the highlight appearance.
-    highlightConfig: HighlightConfig<'a>,
+    #[serde(rename = "highlightConfig")]
+    highlight_config: HighlightConfig<'a>,
     /// Identifier of the node to highlight.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    nodeId: Option<crate::dom::NodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "nodeId")]
+    node_id: Option<crate::dom::NodeId>,
     /// Identifier of the backend node to highlight.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    backendNodeId: Option<crate::dom::BackendNodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "backendNodeId")]
+    backend_node_id: Option<crate::dom::BackendNodeId>,
     /// JavaScript object id of the node to be highlighted.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    objectId: Option<crate::runtime::RemoteObjectId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "objectId")]
+    object_id: Option<crate::runtime::RemoteObjectId<'a>>,
     /// Selectors to highlight relevant nodes.
     #[serde(skip_serializing_if = "Option::is_none")]
     selector: Option<Cow<'a, str>>,
 }
 
 impl<'a> HighlightNodeParams<'a> {
-    pub fn builder(highlightConfig: HighlightConfig<'a>) -> HighlightNodeParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `highlight_config`: A descriptor for the highlight appearance.
+    pub fn builder(highlight_config: HighlightConfig<'a>) -> HighlightNodeParamsBuilder<'a> {
         HighlightNodeParamsBuilder {
-            highlightConfig: highlightConfig,
-            nodeId: None,
-            backendNodeId: None,
-            objectId: None,
+            highlight_config: highlight_config,
+            node_id: None,
+            backend_node_id: None,
+            object_id: None,
             selector: None,
         }
     }
-    pub fn highlightConfig(&self) -> &HighlightConfig<'a> { &self.highlightConfig }
-    pub fn nodeId(&self) -> Option<&crate::dom::NodeId> { self.nodeId.as_ref() }
-    pub fn backendNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.backendNodeId.as_ref() }
-    pub fn objectId(&self) -> Option<&crate::runtime::RemoteObjectId<'a>> { self.objectId.as_ref() }
+    /// A descriptor for the highlight appearance.
+    pub fn highlight_config(&self) -> &HighlightConfig<'a> { &self.highlight_config }
+    /// Identifier of the node to highlight.
+    pub fn node_id(&self) -> Option<&crate::dom::NodeId> { self.node_id.as_ref() }
+    /// Identifier of the backend node to highlight.
+    pub fn backend_node_id(&self) -> Option<&crate::dom::BackendNodeId> { self.backend_node_id.as_ref() }
+    /// JavaScript object id of the node to be highlighted.
+    pub fn object_id(&self) -> Option<&crate::runtime::RemoteObjectId<'a>> { self.object_id.as_ref() }
+    /// Selectors to highlight relevant nodes.
     pub fn selector(&self) -> Option<&str> { self.selector.as_deref() }
 }
 
 
 pub struct HighlightNodeParamsBuilder<'a> {
-    highlightConfig: HighlightConfig<'a>,
-    nodeId: Option<crate::dom::NodeId>,
-    backendNodeId: Option<crate::dom::BackendNodeId>,
-    objectId: Option<crate::runtime::RemoteObjectId<'a>>,
+    highlight_config: HighlightConfig<'a>,
+    node_id: Option<crate::dom::NodeId>,
+    backend_node_id: Option<crate::dom::BackendNodeId>,
+    object_id: Option<crate::runtime::RemoteObjectId<'a>>,
     selector: Option<Cow<'a, str>>,
 }
 
 impl<'a> HighlightNodeParamsBuilder<'a> {
     /// Identifier of the node to highlight.
-    pub fn nodeId(mut self, nodeId: crate::dom::NodeId) -> Self { self.nodeId = Some(nodeId); self }
+    pub fn node_id(mut self, node_id: crate::dom::NodeId) -> Self { self.node_id = Some(node_id); self }
     /// Identifier of the backend node to highlight.
-    pub fn backendNodeId(mut self, backendNodeId: crate::dom::BackendNodeId) -> Self { self.backendNodeId = Some(backendNodeId); self }
+    pub fn backend_node_id(mut self, backend_node_id: crate::dom::BackendNodeId) -> Self { self.backend_node_id = Some(backend_node_id); self }
     /// JavaScript object id of the node to be highlighted.
-    pub fn objectId(mut self, objectId: crate::runtime::RemoteObjectId<'a>) -> Self { self.objectId = Some(objectId); self }
+    pub fn object_id(mut self, object_id: crate::runtime::RemoteObjectId<'a>) -> Self { self.object_id = Some(object_id); self }
     /// Selectors to highlight relevant nodes.
     pub fn selector(mut self, selector: impl Into<Cow<'a, str>>) -> Self { self.selector = Some(selector.into()); self }
     pub fn build(self) -> HighlightNodeParams<'a> {
         HighlightNodeParams {
-            highlightConfig: self.highlightConfig,
-            nodeId: self.nodeId,
-            backendNodeId: self.backendNodeId,
-            objectId: self.objectId,
+            highlight_config: self.highlight_config,
+            node_id: self.node_id,
+            backend_node_id: self.backend_node_id,
+            object_id: self.object_id,
             selector: self.selector,
         }
     }
@@ -1604,40 +1775,45 @@ pub struct HighlightQuadParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     color: Option<crate::dom::RGBA>,
     /// The highlight outline color (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    outlineColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "outlineColor")]
+    outline_color: Option<crate::dom::RGBA>,
 }
 
 impl HighlightQuadParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `quad`: Quad to highlight
     pub fn builder(quad: crate::dom::Quad) -> HighlightQuadParamsBuilder {
         HighlightQuadParamsBuilder {
             quad: quad,
             color: None,
-            outlineColor: None,
+            outline_color: None,
         }
     }
+    /// Quad to highlight
     pub fn quad(&self) -> &crate::dom::Quad { &self.quad }
+    /// The highlight fill color (default: transparent).
     pub fn color(&self) -> Option<&crate::dom::RGBA> { self.color.as_ref() }
-    pub fn outlineColor(&self) -> Option<&crate::dom::RGBA> { self.outlineColor.as_ref() }
+    /// The highlight outline color (default: transparent).
+    pub fn outline_color(&self) -> Option<&crate::dom::RGBA> { self.outline_color.as_ref() }
 }
 
 
 pub struct HighlightQuadParamsBuilder {
     quad: crate::dom::Quad,
     color: Option<crate::dom::RGBA>,
-    outlineColor: Option<crate::dom::RGBA>,
+    outline_color: Option<crate::dom::RGBA>,
 }
 
 impl HighlightQuadParamsBuilder {
     /// The highlight fill color (default: transparent).
     pub fn color(mut self, color: crate::dom::RGBA) -> Self { self.color = Some(color); self }
     /// The highlight outline color (default: transparent).
-    pub fn outlineColor(mut self, outlineColor: crate::dom::RGBA) -> Self { self.outlineColor = Some(outlineColor); self }
+    pub fn outline_color(mut self, outline_color: crate::dom::RGBA) -> Self { self.outline_color = Some(outline_color); self }
     pub fn build(self) -> HighlightQuadParams {
         HighlightQuadParams {
             quad: self.quad,
             color: self.color,
-            outlineColor: self.outlineColor,
+            outline_color: self.outline_color,
         }
     }
 }
@@ -1669,11 +1845,16 @@ pub struct HighlightRectParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     color: Option<crate::dom::RGBA>,
     /// The highlight outline color (default: transparent).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    outlineColor: Option<crate::dom::RGBA>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "outlineColor")]
+    outline_color: Option<crate::dom::RGBA>,
 }
 
 impl HighlightRectParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `x`: X coordinate
+    /// * `y`: Y coordinate
+    /// * `width`: Rectangle width
+    /// * `height`: Rectangle height
     pub fn builder(x: i32, y: i32, width: u64, height: i64) -> HighlightRectParamsBuilder {
         HighlightRectParamsBuilder {
             x: x,
@@ -1681,15 +1862,21 @@ impl HighlightRectParams {
             width: width,
             height: height,
             color: None,
-            outlineColor: None,
+            outline_color: None,
         }
     }
+    /// X coordinate
     pub fn x(&self) -> i32 { self.x }
+    /// Y coordinate
     pub fn y(&self) -> i32 { self.y }
+    /// Rectangle width
     pub fn width(&self) -> u64 { self.width }
+    /// Rectangle height
     pub fn height(&self) -> i64 { self.height }
+    /// The highlight fill color (default: transparent).
     pub fn color(&self) -> Option<&crate::dom::RGBA> { self.color.as_ref() }
-    pub fn outlineColor(&self) -> Option<&crate::dom::RGBA> { self.outlineColor.as_ref() }
+    /// The highlight outline color (default: transparent).
+    pub fn outline_color(&self) -> Option<&crate::dom::RGBA> { self.outline_color.as_ref() }
 }
 
 
@@ -1699,14 +1886,14 @@ pub struct HighlightRectParamsBuilder {
     width: u64,
     height: i64,
     color: Option<crate::dom::RGBA>,
-    outlineColor: Option<crate::dom::RGBA>,
+    outline_color: Option<crate::dom::RGBA>,
 }
 
 impl HighlightRectParamsBuilder {
     /// The highlight fill color (default: transparent).
     pub fn color(mut self, color: crate::dom::RGBA) -> Self { self.color = Some(color); self }
     /// The highlight outline color (default: transparent).
-    pub fn outlineColor(mut self, outlineColor: crate::dom::RGBA) -> Self { self.outlineColor = Some(outlineColor); self }
+    pub fn outline_color(mut self, outline_color: crate::dom::RGBA) -> Self { self.outline_color = Some(outline_color); self }
     pub fn build(self) -> HighlightRectParams {
         HighlightRectParams {
             x: self.x,
@@ -1714,7 +1901,7 @@ impl HighlightRectParamsBuilder {
             width: self.width,
             height: self.height,
             color: self.color,
-            outlineColor: self.outlineColor,
+            outline_color: self.outline_color,
         }
     }
 }
@@ -1733,54 +1920,61 @@ impl<'a> crate::CdpCommand<'a> for HighlightRectParams {
 #[serde(rename_all = "camelCase")]
 pub struct HighlightSourceOrderParams<'a> {
     /// A descriptor for the appearance of the overlay drawing.
-    sourceOrderConfig: SourceOrderConfig,
+    #[serde(rename = "sourceOrderConfig")]
+    source_order_config: SourceOrderConfig,
     /// Identifier of the node to highlight.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    nodeId: Option<crate::dom::NodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "nodeId")]
+    node_id: Option<crate::dom::NodeId>,
     /// Identifier of the backend node to highlight.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    backendNodeId: Option<crate::dom::BackendNodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "backendNodeId")]
+    backend_node_id: Option<crate::dom::BackendNodeId>,
     /// JavaScript object id of the node to be highlighted.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    objectId: Option<crate::runtime::RemoteObjectId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "objectId")]
+    object_id: Option<crate::runtime::RemoteObjectId<'a>>,
 }
 
 impl<'a> HighlightSourceOrderParams<'a> {
-    pub fn builder(sourceOrderConfig: SourceOrderConfig) -> HighlightSourceOrderParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `source_order_config`: A descriptor for the appearance of the overlay drawing.
+    pub fn builder(source_order_config: SourceOrderConfig) -> HighlightSourceOrderParamsBuilder<'a> {
         HighlightSourceOrderParamsBuilder {
-            sourceOrderConfig: sourceOrderConfig,
-            nodeId: None,
-            backendNodeId: None,
-            objectId: None,
+            source_order_config: source_order_config,
+            node_id: None,
+            backend_node_id: None,
+            object_id: None,
         }
     }
-    pub fn sourceOrderConfig(&self) -> &SourceOrderConfig { &self.sourceOrderConfig }
-    pub fn nodeId(&self) -> Option<&crate::dom::NodeId> { self.nodeId.as_ref() }
-    pub fn backendNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.backendNodeId.as_ref() }
-    pub fn objectId(&self) -> Option<&crate::runtime::RemoteObjectId<'a>> { self.objectId.as_ref() }
+    /// A descriptor for the appearance of the overlay drawing.
+    pub fn source_order_config(&self) -> &SourceOrderConfig { &self.source_order_config }
+    /// Identifier of the node to highlight.
+    pub fn node_id(&self) -> Option<&crate::dom::NodeId> { self.node_id.as_ref() }
+    /// Identifier of the backend node to highlight.
+    pub fn backend_node_id(&self) -> Option<&crate::dom::BackendNodeId> { self.backend_node_id.as_ref() }
+    /// JavaScript object id of the node to be highlighted.
+    pub fn object_id(&self) -> Option<&crate::runtime::RemoteObjectId<'a>> { self.object_id.as_ref() }
 }
 
 
 pub struct HighlightSourceOrderParamsBuilder<'a> {
-    sourceOrderConfig: SourceOrderConfig,
-    nodeId: Option<crate::dom::NodeId>,
-    backendNodeId: Option<crate::dom::BackendNodeId>,
-    objectId: Option<crate::runtime::RemoteObjectId<'a>>,
+    source_order_config: SourceOrderConfig,
+    node_id: Option<crate::dom::NodeId>,
+    backend_node_id: Option<crate::dom::BackendNodeId>,
+    object_id: Option<crate::runtime::RemoteObjectId<'a>>,
 }
 
 impl<'a> HighlightSourceOrderParamsBuilder<'a> {
     /// Identifier of the node to highlight.
-    pub fn nodeId(mut self, nodeId: crate::dom::NodeId) -> Self { self.nodeId = Some(nodeId); self }
+    pub fn node_id(mut self, node_id: crate::dom::NodeId) -> Self { self.node_id = Some(node_id); self }
     /// Identifier of the backend node to highlight.
-    pub fn backendNodeId(mut self, backendNodeId: crate::dom::BackendNodeId) -> Self { self.backendNodeId = Some(backendNodeId); self }
+    pub fn backend_node_id(mut self, backend_node_id: crate::dom::BackendNodeId) -> Self { self.backend_node_id = Some(backend_node_id); self }
     /// JavaScript object id of the node to be highlighted.
-    pub fn objectId(mut self, objectId: crate::runtime::RemoteObjectId<'a>) -> Self { self.objectId = Some(objectId); self }
+    pub fn object_id(mut self, object_id: crate::runtime::RemoteObjectId<'a>) -> Self { self.object_id = Some(object_id); self }
     pub fn build(self) -> HighlightSourceOrderParams<'a> {
         HighlightSourceOrderParams {
-            sourceOrderConfig: self.sourceOrderConfig,
-            nodeId: self.nodeId,
-            backendNodeId: self.backendNodeId,
-            objectId: self.objectId,
+            source_order_config: self.source_order_config,
+            node_id: self.node_id,
+            backend_node_id: self.backend_node_id,
+            object_id: self.object_id,
         }
     }
 }
@@ -1802,35 +1996,40 @@ pub struct SetInspectModeParams<'a> {
     mode: InspectMode,
     /// A descriptor for the highlight appearance of hovered-over nodes. May be omitted if 'enabled
     /// == false'.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    highlightConfig: Option<HighlightConfig<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "highlightConfig")]
+    highlight_config: Option<HighlightConfig<'a>>,
 }
 
 impl<'a> SetInspectModeParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `mode`: Set an inspection mode.
     pub fn builder(mode: impl Into<InspectMode>) -> SetInspectModeParamsBuilder<'a> {
         SetInspectModeParamsBuilder {
             mode: mode.into(),
-            highlightConfig: None,
+            highlight_config: None,
         }
     }
+    /// Set an inspection mode.
     pub fn mode(&self) -> &InspectMode { &self.mode }
-    pub fn highlightConfig(&self) -> Option<&HighlightConfig<'a>> { self.highlightConfig.as_ref() }
+    /// A descriptor for the highlight appearance of hovered-over nodes. May be omitted if 'enabled
+    /// == false'.
+    pub fn highlight_config(&self) -> Option<&HighlightConfig<'a>> { self.highlight_config.as_ref() }
 }
 
 
 pub struct SetInspectModeParamsBuilder<'a> {
     mode: InspectMode,
-    highlightConfig: Option<HighlightConfig<'a>>,
+    highlight_config: Option<HighlightConfig<'a>>,
 }
 
 impl<'a> SetInspectModeParamsBuilder<'a> {
     /// A descriptor for the highlight appearance of hovered-over nodes. May be omitted if 'enabled
     /// == false'.
-    pub fn highlightConfig(mut self, highlightConfig: HighlightConfig<'a>) -> Self { self.highlightConfig = Some(highlightConfig); self }
+    pub fn highlight_config(mut self, highlight_config: HighlightConfig<'a>) -> Self { self.highlight_config = Some(highlight_config); self }
     pub fn build(self) -> SetInspectModeParams<'a> {
         SetInspectModeParams {
             mode: self.mode,
-            highlightConfig: self.highlightConfig,
+            highlight_config: self.highlight_config,
         }
     }
 }
@@ -1852,11 +2051,14 @@ pub struct SetShowAdHighlightsParams {
 }
 
 impl SetShowAdHighlightsParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `show`: True for showing ad highlights
     pub fn builder(show: bool) -> SetShowAdHighlightsParamsBuilder {
         SetShowAdHighlightsParamsBuilder {
             show: show,
         }
     }
+    /// True for showing ad highlights
     pub fn show(&self) -> bool { self.show }
 }
 
@@ -1890,11 +2092,13 @@ pub struct SetPausedInDebuggerMessageParams<'a> {
 }
 
 impl<'a> SetPausedInDebuggerMessageParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> SetPausedInDebuggerMessageParamsBuilder<'a> {
         SetPausedInDebuggerMessageParamsBuilder {
             message: None,
         }
     }
+    /// The message to display, also triggers resume and step over controls.
     pub fn message(&self) -> Option<&str> { self.message.as_deref() }
 }
 
@@ -1930,11 +2134,14 @@ pub struct SetShowDebugBordersParams {
 }
 
 impl SetShowDebugBordersParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `show`: True for showing debug borders
     pub fn builder(show: bool) -> SetShowDebugBordersParamsBuilder {
         SetShowDebugBordersParamsBuilder {
             show: show,
         }
     }
+    /// True for showing debug borders
     pub fn show(&self) -> bool { self.show }
 }
 
@@ -1968,11 +2175,14 @@ pub struct SetShowFPSCounterParams {
 }
 
 impl SetShowFPSCounterParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `show`: True for showing the FPS counter
     pub fn builder(show: bool) -> SetShowFPSCounterParamsBuilder {
         SetShowFPSCounterParamsBuilder {
             show: show,
         }
     }
+    /// True for showing the FPS counter
     pub fn show(&self) -> bool { self.show }
 }
 
@@ -2002,27 +2212,31 @@ impl<'a> crate::CdpCommand<'a> for SetShowFPSCounterParams {
 #[serde(rename_all = "camelCase")]
 pub struct SetShowGridOverlaysParams {
     /// An array of node identifiers and descriptors for the highlight appearance.
-    gridNodeHighlightConfigs: Vec<GridNodeHighlightConfig>,
+    #[serde(rename = "gridNodeHighlightConfigs")]
+    grid_node_highlight_configs: Vec<GridNodeHighlightConfig>,
 }
 
 impl SetShowGridOverlaysParams {
-    pub fn builder(gridNodeHighlightConfigs: Vec<GridNodeHighlightConfig>) -> SetShowGridOverlaysParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `grid_node_highlight_configs`: An array of node identifiers and descriptors for the highlight appearance.
+    pub fn builder(grid_node_highlight_configs: Vec<GridNodeHighlightConfig>) -> SetShowGridOverlaysParamsBuilder {
         SetShowGridOverlaysParamsBuilder {
-            gridNodeHighlightConfigs: gridNodeHighlightConfigs,
+            grid_node_highlight_configs: grid_node_highlight_configs,
         }
     }
-    pub fn gridNodeHighlightConfigs(&self) -> &[GridNodeHighlightConfig] { &self.gridNodeHighlightConfigs }
+    /// An array of node identifiers and descriptors for the highlight appearance.
+    pub fn grid_node_highlight_configs(&self) -> &[GridNodeHighlightConfig] { &self.grid_node_highlight_configs }
 }
 
 
 pub struct SetShowGridOverlaysParamsBuilder {
-    gridNodeHighlightConfigs: Vec<GridNodeHighlightConfig>,
+    grid_node_highlight_configs: Vec<GridNodeHighlightConfig>,
 }
 
 impl SetShowGridOverlaysParamsBuilder {
     pub fn build(self) -> SetShowGridOverlaysParams {
         SetShowGridOverlaysParams {
-            gridNodeHighlightConfigs: self.gridNodeHighlightConfigs,
+            grid_node_highlight_configs: self.grid_node_highlight_configs,
         }
     }
 }
@@ -2039,27 +2253,31 @@ impl<'a> crate::CdpCommand<'a> for SetShowGridOverlaysParams {
 #[serde(rename_all = "camelCase")]
 pub struct SetShowFlexOverlaysParams<'a> {
     /// An array of node identifiers and descriptors for the highlight appearance.
-    flexNodeHighlightConfigs: Vec<FlexNodeHighlightConfig<'a>>,
+    #[serde(rename = "flexNodeHighlightConfigs")]
+    flex_node_highlight_configs: Vec<FlexNodeHighlightConfig<'a>>,
 }
 
 impl<'a> SetShowFlexOverlaysParams<'a> {
-    pub fn builder(flexNodeHighlightConfigs: Vec<FlexNodeHighlightConfig<'a>>) -> SetShowFlexOverlaysParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `flex_node_highlight_configs`: An array of node identifiers and descriptors for the highlight appearance.
+    pub fn builder(flex_node_highlight_configs: Vec<FlexNodeHighlightConfig<'a>>) -> SetShowFlexOverlaysParamsBuilder<'a> {
         SetShowFlexOverlaysParamsBuilder {
-            flexNodeHighlightConfigs: flexNodeHighlightConfigs,
+            flex_node_highlight_configs: flex_node_highlight_configs,
         }
     }
-    pub fn flexNodeHighlightConfigs(&self) -> &[FlexNodeHighlightConfig<'a>] { &self.flexNodeHighlightConfigs }
+    /// An array of node identifiers and descriptors for the highlight appearance.
+    pub fn flex_node_highlight_configs(&self) -> &[FlexNodeHighlightConfig<'a>] { &self.flex_node_highlight_configs }
 }
 
 
 pub struct SetShowFlexOverlaysParamsBuilder<'a> {
-    flexNodeHighlightConfigs: Vec<FlexNodeHighlightConfig<'a>>,
+    flex_node_highlight_configs: Vec<FlexNodeHighlightConfig<'a>>,
 }
 
 impl<'a> SetShowFlexOverlaysParamsBuilder<'a> {
     pub fn build(self) -> SetShowFlexOverlaysParams<'a> {
         SetShowFlexOverlaysParams {
-            flexNodeHighlightConfigs: self.flexNodeHighlightConfigs,
+            flex_node_highlight_configs: self.flex_node_highlight_configs,
         }
     }
 }
@@ -2076,27 +2294,31 @@ impl<'a> crate::CdpCommand<'a> for SetShowFlexOverlaysParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SetShowScrollSnapOverlaysParams<'a> {
     /// An array of node identifiers and descriptors for the highlight appearance.
-    scrollSnapHighlightConfigs: Vec<ScrollSnapHighlightConfig<'a>>,
+    #[serde(rename = "scrollSnapHighlightConfigs")]
+    scroll_snap_highlight_configs: Vec<ScrollSnapHighlightConfig<'a>>,
 }
 
 impl<'a> SetShowScrollSnapOverlaysParams<'a> {
-    pub fn builder(scrollSnapHighlightConfigs: Vec<ScrollSnapHighlightConfig<'a>>) -> SetShowScrollSnapOverlaysParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `scroll_snap_highlight_configs`: An array of node identifiers and descriptors for the highlight appearance.
+    pub fn builder(scroll_snap_highlight_configs: Vec<ScrollSnapHighlightConfig<'a>>) -> SetShowScrollSnapOverlaysParamsBuilder<'a> {
         SetShowScrollSnapOverlaysParamsBuilder {
-            scrollSnapHighlightConfigs: scrollSnapHighlightConfigs,
+            scroll_snap_highlight_configs: scroll_snap_highlight_configs,
         }
     }
-    pub fn scrollSnapHighlightConfigs(&self) -> &[ScrollSnapHighlightConfig<'a>] { &self.scrollSnapHighlightConfigs }
+    /// An array of node identifiers and descriptors for the highlight appearance.
+    pub fn scroll_snap_highlight_configs(&self) -> &[ScrollSnapHighlightConfig<'a>] { &self.scroll_snap_highlight_configs }
 }
 
 
 pub struct SetShowScrollSnapOverlaysParamsBuilder<'a> {
-    scrollSnapHighlightConfigs: Vec<ScrollSnapHighlightConfig<'a>>,
+    scroll_snap_highlight_configs: Vec<ScrollSnapHighlightConfig<'a>>,
 }
 
 impl<'a> SetShowScrollSnapOverlaysParamsBuilder<'a> {
     pub fn build(self) -> SetShowScrollSnapOverlaysParams<'a> {
         SetShowScrollSnapOverlaysParams {
-            scrollSnapHighlightConfigs: self.scrollSnapHighlightConfigs,
+            scroll_snap_highlight_configs: self.scroll_snap_highlight_configs,
         }
     }
 }
@@ -2113,27 +2335,31 @@ impl<'a> crate::CdpCommand<'a> for SetShowScrollSnapOverlaysParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SetShowContainerQueryOverlaysParams<'a> {
     /// An array of node identifiers and descriptors for the highlight appearance.
-    containerQueryHighlightConfigs: Vec<ContainerQueryHighlightConfig<'a>>,
+    #[serde(rename = "containerQueryHighlightConfigs")]
+    container_query_highlight_configs: Vec<ContainerQueryHighlightConfig<'a>>,
 }
 
 impl<'a> SetShowContainerQueryOverlaysParams<'a> {
-    pub fn builder(containerQueryHighlightConfigs: Vec<ContainerQueryHighlightConfig<'a>>) -> SetShowContainerQueryOverlaysParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `container_query_highlight_configs`: An array of node identifiers and descriptors for the highlight appearance.
+    pub fn builder(container_query_highlight_configs: Vec<ContainerQueryHighlightConfig<'a>>) -> SetShowContainerQueryOverlaysParamsBuilder<'a> {
         SetShowContainerQueryOverlaysParamsBuilder {
-            containerQueryHighlightConfigs: containerQueryHighlightConfigs,
+            container_query_highlight_configs: container_query_highlight_configs,
         }
     }
-    pub fn containerQueryHighlightConfigs(&self) -> &[ContainerQueryHighlightConfig<'a>] { &self.containerQueryHighlightConfigs }
+    /// An array of node identifiers and descriptors for the highlight appearance.
+    pub fn container_query_highlight_configs(&self) -> &[ContainerQueryHighlightConfig<'a>] { &self.container_query_highlight_configs }
 }
 
 
 pub struct SetShowContainerQueryOverlaysParamsBuilder<'a> {
-    containerQueryHighlightConfigs: Vec<ContainerQueryHighlightConfig<'a>>,
+    container_query_highlight_configs: Vec<ContainerQueryHighlightConfig<'a>>,
 }
 
 impl<'a> SetShowContainerQueryOverlaysParamsBuilder<'a> {
     pub fn build(self) -> SetShowContainerQueryOverlaysParams<'a> {
         SetShowContainerQueryOverlaysParams {
-            containerQueryHighlightConfigs: self.containerQueryHighlightConfigs,
+            container_query_highlight_configs: self.container_query_highlight_configs,
         }
     }
 }
@@ -2150,27 +2376,31 @@ impl<'a> crate::CdpCommand<'a> for SetShowContainerQueryOverlaysParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SetShowInspectedElementAnchorParams {
     /// Node identifier for which to show an anchor for.
-    inspectedElementAnchorConfig: InspectedElementAnchorConfig,
+    #[serde(rename = "inspectedElementAnchorConfig")]
+    inspected_element_anchor_config: InspectedElementAnchorConfig,
 }
 
 impl SetShowInspectedElementAnchorParams {
-    pub fn builder(inspectedElementAnchorConfig: InspectedElementAnchorConfig) -> SetShowInspectedElementAnchorParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `inspected_element_anchor_config`: Node identifier for which to show an anchor for.
+    pub fn builder(inspected_element_anchor_config: InspectedElementAnchorConfig) -> SetShowInspectedElementAnchorParamsBuilder {
         SetShowInspectedElementAnchorParamsBuilder {
-            inspectedElementAnchorConfig: inspectedElementAnchorConfig,
+            inspected_element_anchor_config: inspected_element_anchor_config,
         }
     }
-    pub fn inspectedElementAnchorConfig(&self) -> &InspectedElementAnchorConfig { &self.inspectedElementAnchorConfig }
+    /// Node identifier for which to show an anchor for.
+    pub fn inspected_element_anchor_config(&self) -> &InspectedElementAnchorConfig { &self.inspected_element_anchor_config }
 }
 
 
 pub struct SetShowInspectedElementAnchorParamsBuilder {
-    inspectedElementAnchorConfig: InspectedElementAnchorConfig,
+    inspected_element_anchor_config: InspectedElementAnchorConfig,
 }
 
 impl SetShowInspectedElementAnchorParamsBuilder {
     pub fn build(self) -> SetShowInspectedElementAnchorParams {
         SetShowInspectedElementAnchorParams {
-            inspectedElementAnchorConfig: self.inspectedElementAnchorConfig,
+            inspected_element_anchor_config: self.inspected_element_anchor_config,
         }
     }
 }
@@ -2192,11 +2422,14 @@ pub struct SetShowPaintRectsParams {
 }
 
 impl SetShowPaintRectsParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `result`: True for showing paint rectangles
     pub fn builder(result: bool) -> SetShowPaintRectsParamsBuilder {
         SetShowPaintRectsParamsBuilder {
             result: result,
         }
     }
+    /// True for showing paint rectangles
     pub fn result(&self) -> bool { self.result }
 }
 
@@ -2230,11 +2463,14 @@ pub struct SetShowLayoutShiftRegionsParams {
 }
 
 impl SetShowLayoutShiftRegionsParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `result`: True for showing layout shift regions
     pub fn builder(result: bool) -> SetShowLayoutShiftRegionsParamsBuilder {
         SetShowLayoutShiftRegionsParamsBuilder {
             result: result,
         }
     }
+    /// True for showing layout shift regions
     pub fn result(&self) -> bool { self.result }
 }
 
@@ -2268,11 +2504,14 @@ pub struct SetShowScrollBottleneckRectsParams {
 }
 
 impl SetShowScrollBottleneckRectsParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `show`: True for showing scroll bottleneck rects
     pub fn builder(show: bool) -> SetShowScrollBottleneckRectsParamsBuilder {
         SetShowScrollBottleneckRectsParamsBuilder {
             show: show,
         }
     }
+    /// True for showing scroll bottleneck rects
     pub fn show(&self) -> bool { self.show }
 }
 
@@ -2306,11 +2545,14 @@ pub struct SetShowHitTestBordersParams {
 }
 
 impl SetShowHitTestBordersParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `show`: True for showing hit-test borders
     pub fn builder(show: bool) -> SetShowHitTestBordersParamsBuilder {
         SetShowHitTestBordersParamsBuilder {
             show: show,
         }
     }
+    /// True for showing hit-test borders
     pub fn show(&self) -> bool { self.show }
 }
 
@@ -2343,6 +2585,8 @@ pub struct SetShowWebVitalsParams {
 }
 
 impl SetShowWebVitalsParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `show`: 
     pub fn builder(show: bool) -> SetShowWebVitalsParamsBuilder {
         SetShowWebVitalsParamsBuilder {
             show: show,
@@ -2381,11 +2625,14 @@ pub struct SetShowViewportSizeOnResizeParams {
 }
 
 impl SetShowViewportSizeOnResizeParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `show`: Whether to paint size or not.
     pub fn builder(show: bool) -> SetShowViewportSizeOnResizeParamsBuilder {
         SetShowViewportSizeOnResizeParamsBuilder {
             show: show,
         }
     }
+    /// Whether to paint size or not.
     pub fn show(&self) -> bool { self.show }
 }
 
@@ -2415,30 +2662,32 @@ impl<'a> crate::CdpCommand<'a> for SetShowViewportSizeOnResizeParams {
 #[serde(rename_all = "camelCase")]
 pub struct SetShowHingeParams {
     /// hinge data, null means hideHinge
-    #[serde(skip_serializing_if = "Option::is_none")]
-    hingeConfig: Option<HingeConfig>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "hingeConfig")]
+    hinge_config: Option<HingeConfig>,
 }
 
 impl SetShowHingeParams {
+    /// Creates a builder for this type.
     pub fn builder() -> SetShowHingeParamsBuilder {
         SetShowHingeParamsBuilder {
-            hingeConfig: None,
+            hinge_config: None,
         }
     }
-    pub fn hingeConfig(&self) -> Option<&HingeConfig> { self.hingeConfig.as_ref() }
+    /// hinge data, null means hideHinge
+    pub fn hinge_config(&self) -> Option<&HingeConfig> { self.hinge_config.as_ref() }
 }
 
 #[derive(Default)]
 pub struct SetShowHingeParamsBuilder {
-    hingeConfig: Option<HingeConfig>,
+    hinge_config: Option<HingeConfig>,
 }
 
 impl SetShowHingeParamsBuilder {
     /// hinge data, null means hideHinge
-    pub fn hingeConfig(mut self, hingeConfig: HingeConfig) -> Self { self.hingeConfig = Some(hingeConfig); self }
+    pub fn hinge_config(mut self, hinge_config: HingeConfig) -> Self { self.hinge_config = Some(hinge_config); self }
     pub fn build(self) -> SetShowHingeParams {
         SetShowHingeParams {
-            hingeConfig: self.hingeConfig,
+            hinge_config: self.hinge_config,
         }
     }
 }
@@ -2456,27 +2705,31 @@ impl<'a> crate::CdpCommand<'a> for SetShowHingeParams {
 #[serde(rename_all = "camelCase")]
 pub struct SetShowIsolatedElementsParams {
     /// An array of node identifiers and descriptors for the highlight appearance.
-    isolatedElementHighlightConfigs: Vec<IsolatedElementHighlightConfig>,
+    #[serde(rename = "isolatedElementHighlightConfigs")]
+    isolated_element_highlight_configs: Vec<IsolatedElementHighlightConfig>,
 }
 
 impl SetShowIsolatedElementsParams {
-    pub fn builder(isolatedElementHighlightConfigs: Vec<IsolatedElementHighlightConfig>) -> SetShowIsolatedElementsParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `isolated_element_highlight_configs`: An array of node identifiers and descriptors for the highlight appearance.
+    pub fn builder(isolated_element_highlight_configs: Vec<IsolatedElementHighlightConfig>) -> SetShowIsolatedElementsParamsBuilder {
         SetShowIsolatedElementsParamsBuilder {
-            isolatedElementHighlightConfigs: isolatedElementHighlightConfigs,
+            isolated_element_highlight_configs: isolated_element_highlight_configs,
         }
     }
-    pub fn isolatedElementHighlightConfigs(&self) -> &[IsolatedElementHighlightConfig] { &self.isolatedElementHighlightConfigs }
+    /// An array of node identifiers and descriptors for the highlight appearance.
+    pub fn isolated_element_highlight_configs(&self) -> &[IsolatedElementHighlightConfig] { &self.isolated_element_highlight_configs }
 }
 
 
 pub struct SetShowIsolatedElementsParamsBuilder {
-    isolatedElementHighlightConfigs: Vec<IsolatedElementHighlightConfig>,
+    isolated_element_highlight_configs: Vec<IsolatedElementHighlightConfig>,
 }
 
 impl SetShowIsolatedElementsParamsBuilder {
     pub fn build(self) -> SetShowIsolatedElementsParams {
         SetShowIsolatedElementsParams {
-            isolatedElementHighlightConfigs: self.isolatedElementHighlightConfigs,
+            isolated_element_highlight_configs: self.isolated_element_highlight_configs,
         }
     }
 }
@@ -2494,30 +2747,32 @@ impl<'a> crate::CdpCommand<'a> for SetShowIsolatedElementsParams {
 #[serde(rename_all = "camelCase")]
 pub struct SetShowWindowControlsOverlayParams<'a> {
     /// Window Controls Overlay data, null means hide Window Controls Overlay
-    #[serde(skip_serializing_if = "Option::is_none")]
-    windowControlsOverlayConfig: Option<WindowControlsOverlayConfig<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "windowControlsOverlayConfig")]
+    window_controls_overlay_config: Option<WindowControlsOverlayConfig<'a>>,
 }
 
 impl<'a> SetShowWindowControlsOverlayParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> SetShowWindowControlsOverlayParamsBuilder<'a> {
         SetShowWindowControlsOverlayParamsBuilder {
-            windowControlsOverlayConfig: None,
+            window_controls_overlay_config: None,
         }
     }
-    pub fn windowControlsOverlayConfig(&self) -> Option<&WindowControlsOverlayConfig<'a>> { self.windowControlsOverlayConfig.as_ref() }
+    /// Window Controls Overlay data, null means hide Window Controls Overlay
+    pub fn window_controls_overlay_config(&self) -> Option<&WindowControlsOverlayConfig<'a>> { self.window_controls_overlay_config.as_ref() }
 }
 
 #[derive(Default)]
 pub struct SetShowWindowControlsOverlayParamsBuilder<'a> {
-    windowControlsOverlayConfig: Option<WindowControlsOverlayConfig<'a>>,
+    window_controls_overlay_config: Option<WindowControlsOverlayConfig<'a>>,
 }
 
 impl<'a> SetShowWindowControlsOverlayParamsBuilder<'a> {
     /// Window Controls Overlay data, null means hide Window Controls Overlay
-    pub fn windowControlsOverlayConfig(mut self, windowControlsOverlayConfig: WindowControlsOverlayConfig<'a>) -> Self { self.windowControlsOverlayConfig = Some(windowControlsOverlayConfig); self }
+    pub fn window_controls_overlay_config(mut self, window_controls_overlay_config: WindowControlsOverlayConfig<'a>) -> Self { self.window_controls_overlay_config = Some(window_controls_overlay_config); self }
     pub fn build(self) -> SetShowWindowControlsOverlayParams<'a> {
         SetShowWindowControlsOverlayParams {
-            windowControlsOverlayConfig: self.windowControlsOverlayConfig,
+            window_controls_overlay_config: self.window_controls_overlay_config,
         }
     }
 }

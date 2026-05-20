@@ -17,6 +17,10 @@ pub struct AffectedCookie<'a> {
 }
 
 impl<'a> AffectedCookie<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: The following three properties uniquely identify a cookie
+    /// * `path`: 
+    /// * `domain`: 
     pub fn builder(name: impl Into<Cow<'a, str>>, path: impl Into<Cow<'a, str>>, domain: impl Into<Cow<'a, str>>) -> AffectedCookieBuilder<'a> {
         AffectedCookieBuilder {
             name: name.into(),
@@ -24,6 +28,7 @@ impl<'a> AffectedCookie<'a> {
             domain: domain.into(),
         }
     }
+    /// The following three properties uniquely identify a cookie
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn path(&self) -> &str { self.path.as_ref() }
     pub fn domain(&self) -> &str { self.domain.as_ref() }
@@ -52,34 +57,37 @@ impl<'a> AffectedCookieBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct AffectedRequest<'a> {
     /// The unique request id.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    requestId: Option<crate::network::RequestId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "requestId")]
+    request_id: Option<crate::network::RequestId<'a>>,
     url: Cow<'a, str>,
 }
 
 impl<'a> AffectedRequest<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url`: 
     pub fn builder(url: impl Into<Cow<'a, str>>) -> AffectedRequestBuilder<'a> {
         AffectedRequestBuilder {
-            requestId: None,
+            request_id: None,
             url: url.into(),
         }
     }
-    pub fn requestId(&self) -> Option<&crate::network::RequestId<'a>> { self.requestId.as_ref() }
+    /// The unique request id.
+    pub fn request_id(&self) -> Option<&crate::network::RequestId<'a>> { self.request_id.as_ref() }
     pub fn url(&self) -> &str { self.url.as_ref() }
 }
 
 
 pub struct AffectedRequestBuilder<'a> {
-    requestId: Option<crate::network::RequestId<'a>>,
+    request_id: Option<crate::network::RequestId<'a>>,
     url: Cow<'a, str>,
 }
 
 impl<'a> AffectedRequestBuilder<'a> {
     /// The unique request id.
-    pub fn requestId(mut self, requestId: crate::network::RequestId<'a>) -> Self { self.requestId = Some(requestId); self }
+    pub fn request_id(mut self, request_id: crate::network::RequestId<'a>) -> Self { self.request_id = Some(request_id); self }
     pub fn build(self) -> AffectedRequest<'a> {
         AffectedRequest {
-            requestId: self.requestId,
+            request_id: self.request_id,
             url: self.url,
         }
     }
@@ -90,27 +98,30 @@ impl<'a> AffectedRequestBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct AffectedFrame<'a> {
-    frameId: crate::page::FrameId<'a>,
+    #[serde(rename = "frameId")]
+    frame_id: crate::page::FrameId<'a>,
 }
 
 impl<'a> AffectedFrame<'a> {
-    pub fn builder(frameId: crate::page::FrameId<'a>) -> AffectedFrameBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `frame_id`: 
+    pub fn builder(frame_id: crate::page::FrameId<'a>) -> AffectedFrameBuilder<'a> {
         AffectedFrameBuilder {
-            frameId: frameId,
+            frame_id: frame_id,
         }
     }
-    pub fn frameId(&self) -> &crate::page::FrameId<'a> { &self.frameId }
+    pub fn frame_id(&self) -> &crate::page::FrameId<'a> { &self.frame_id }
 }
 
 
 pub struct AffectedFrameBuilder<'a> {
-    frameId: crate::page::FrameId<'a>,
+    frame_id: crate::page::FrameId<'a>,
 }
 
 impl<'a> AffectedFrameBuilder<'a> {
     pub fn build(self) -> AffectedFrame<'a> {
         AffectedFrame {
-            frameId: self.frameId,
+            frame_id: self.frame_id,
         }
     }
 }
@@ -204,34 +215,37 @@ pub struct CookieIssueInsight<'a> {
     #[serde(rename = "type")]
     type_: InsightType,
     /// Link to table entry in third-party cookie migration readiness list.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    tableEntryUrl: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "tableEntryUrl")]
+    table_entry_url: Option<Cow<'a, str>>,
 }
 
 impl<'a> CookieIssueInsight<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `type_`: 
     pub fn builder(type_: impl Into<InsightType>) -> CookieIssueInsightBuilder<'a> {
         CookieIssueInsightBuilder {
             type_: type_.into(),
-            tableEntryUrl: None,
+            table_entry_url: None,
         }
     }
     pub fn type_(&self) -> &InsightType { &self.type_ }
-    pub fn tableEntryUrl(&self) -> Option<&str> { self.tableEntryUrl.as_deref() }
+    /// Link to table entry in third-party cookie migration readiness list.
+    pub fn table_entry_url(&self) -> Option<&str> { self.table_entry_url.as_deref() }
 }
 
 
 pub struct CookieIssueInsightBuilder<'a> {
     type_: InsightType,
-    tableEntryUrl: Option<Cow<'a, str>>,
+    table_entry_url: Option<Cow<'a, str>>,
 }
 
 impl<'a> CookieIssueInsightBuilder<'a> {
     /// Link to table entry in third-party cookie migration readiness list.
-    pub fn tableEntryUrl(mut self, tableEntryUrl: impl Into<Cow<'a, str>>) -> Self { self.tableEntryUrl = Some(tableEntryUrl.into()); self }
+    pub fn table_entry_url(mut self, table_entry_url: impl Into<Cow<'a, str>>) -> Self { self.table_entry_url = Some(table_entry_url.into()); self }
     pub fn build(self) -> CookieIssueInsight<'a> {
         CookieIssueInsight {
             type_: self.type_,
-            tableEntryUrl: self.tableEntryUrl,
+            table_entry_url: self.table_entry_url,
         }
     }
 }
@@ -249,17 +263,19 @@ pub struct CookieIssueDetails<'a> {
     /// that no valid cookie could be created.
     #[serde(skip_serializing_if = "Option::is_none")]
     cookie: Option<AffectedCookie<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    rawCookieLine: Option<Cow<'a, str>>,
-    cookieWarningReasons: Vec<CookieWarningReason>,
-    cookieExclusionReasons: Vec<CookieExclusionReason>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "rawCookieLine")]
+    raw_cookie_line: Option<Cow<'a, str>>,
+    #[serde(rename = "cookieWarningReasons")]
+    cookie_warning_reasons: Vec<CookieWarningReason>,
+    #[serde(rename = "cookieExclusionReasons")]
+    cookie_exclusion_reasons: Vec<CookieExclusionReason>,
     /// Optionally identifies the site-for-cookies and the cookie url, which
     /// may be used by the front-end as additional context.
     operation: CookieOperation,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    siteForCookies: Option<Cow<'a, str>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    cookieUrl: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "siteForCookies")]
+    site_for_cookies: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "cookieUrl")]
+    cookie_url: Option<Cow<'a, str>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     request: Option<AffectedRequest<'a>>,
     /// The recommended solution to the issue.
@@ -268,39 +284,50 @@ pub struct CookieIssueDetails<'a> {
 }
 
 impl<'a> CookieIssueDetails<'a> {
-    pub fn builder(cookieWarningReasons: Vec<CookieWarningReason>, cookieExclusionReasons: Vec<CookieExclusionReason>, operation: impl Into<CookieOperation>) -> CookieIssueDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `cookie_warning_reasons`: 
+    /// * `cookie_exclusion_reasons`: 
+    /// * `operation`: Optionally identifies the site-for-cookies and the cookie url, which may be used by the front-end as additional context.
+    pub fn builder(cookie_warning_reasons: Vec<CookieWarningReason>, cookie_exclusion_reasons: Vec<CookieExclusionReason>, operation: impl Into<CookieOperation>) -> CookieIssueDetailsBuilder<'a> {
         CookieIssueDetailsBuilder {
             cookie: None,
-            rawCookieLine: None,
-            cookieWarningReasons: cookieWarningReasons,
-            cookieExclusionReasons: cookieExclusionReasons,
+            raw_cookie_line: None,
+            cookie_warning_reasons: cookie_warning_reasons,
+            cookie_exclusion_reasons: cookie_exclusion_reasons,
             operation: operation.into(),
-            siteForCookies: None,
-            cookieUrl: None,
+            site_for_cookies: None,
+            cookie_url: None,
             request: None,
             insight: None,
         }
     }
+    /// If AffectedCookie is not set then rawCookieLine contains the raw
+    /// Set-Cookie header string. This hints at a problem where the
+    /// cookie line is syntactically or semantically malformed in a way
+    /// that no valid cookie could be created.
     pub fn cookie(&self) -> Option<&AffectedCookie<'a>> { self.cookie.as_ref() }
-    pub fn rawCookieLine(&self) -> Option<&str> { self.rawCookieLine.as_deref() }
-    pub fn cookieWarningReasons(&self) -> &[CookieWarningReason] { &self.cookieWarningReasons }
-    pub fn cookieExclusionReasons(&self) -> &[CookieExclusionReason] { &self.cookieExclusionReasons }
+    pub fn raw_cookie_line(&self) -> Option<&str> { self.raw_cookie_line.as_deref() }
+    pub fn cookie_warning_reasons(&self) -> &[CookieWarningReason] { &self.cookie_warning_reasons }
+    pub fn cookie_exclusion_reasons(&self) -> &[CookieExclusionReason] { &self.cookie_exclusion_reasons }
+    /// Optionally identifies the site-for-cookies and the cookie url, which
+    /// may be used by the front-end as additional context.
     pub fn operation(&self) -> &CookieOperation { &self.operation }
-    pub fn siteForCookies(&self) -> Option<&str> { self.siteForCookies.as_deref() }
-    pub fn cookieUrl(&self) -> Option<&str> { self.cookieUrl.as_deref() }
+    pub fn site_for_cookies(&self) -> Option<&str> { self.site_for_cookies.as_deref() }
+    pub fn cookie_url(&self) -> Option<&str> { self.cookie_url.as_deref() }
     pub fn request(&self) -> Option<&AffectedRequest<'a>> { self.request.as_ref() }
+    /// The recommended solution to the issue.
     pub fn insight(&self) -> Option<&CookieIssueInsight<'a>> { self.insight.as_ref() }
 }
 
 
 pub struct CookieIssueDetailsBuilder<'a> {
     cookie: Option<AffectedCookie<'a>>,
-    rawCookieLine: Option<Cow<'a, str>>,
-    cookieWarningReasons: Vec<CookieWarningReason>,
-    cookieExclusionReasons: Vec<CookieExclusionReason>,
+    raw_cookie_line: Option<Cow<'a, str>>,
+    cookie_warning_reasons: Vec<CookieWarningReason>,
+    cookie_exclusion_reasons: Vec<CookieExclusionReason>,
     operation: CookieOperation,
-    siteForCookies: Option<Cow<'a, str>>,
-    cookieUrl: Option<Cow<'a, str>>,
+    site_for_cookies: Option<Cow<'a, str>>,
+    cookie_url: Option<Cow<'a, str>>,
     request: Option<AffectedRequest<'a>>,
     insight: Option<CookieIssueInsight<'a>>,
 }
@@ -311,21 +338,21 @@ impl<'a> CookieIssueDetailsBuilder<'a> {
     /// cookie line is syntactically or semantically malformed in a way
     /// that no valid cookie could be created.
     pub fn cookie(mut self, cookie: AffectedCookie<'a>) -> Self { self.cookie = Some(cookie); self }
-    pub fn rawCookieLine(mut self, rawCookieLine: impl Into<Cow<'a, str>>) -> Self { self.rawCookieLine = Some(rawCookieLine.into()); self }
-    pub fn siteForCookies(mut self, siteForCookies: impl Into<Cow<'a, str>>) -> Self { self.siteForCookies = Some(siteForCookies.into()); self }
-    pub fn cookieUrl(mut self, cookieUrl: impl Into<Cow<'a, str>>) -> Self { self.cookieUrl = Some(cookieUrl.into()); self }
+    pub fn raw_cookie_line(mut self, raw_cookie_line: impl Into<Cow<'a, str>>) -> Self { self.raw_cookie_line = Some(raw_cookie_line.into()); self }
+    pub fn site_for_cookies(mut self, site_for_cookies: impl Into<Cow<'a, str>>) -> Self { self.site_for_cookies = Some(site_for_cookies.into()); self }
+    pub fn cookie_url(mut self, cookie_url: impl Into<Cow<'a, str>>) -> Self { self.cookie_url = Some(cookie_url.into()); self }
     pub fn request(mut self, request: AffectedRequest<'a>) -> Self { self.request = Some(request); self }
     /// The recommended solution to the issue.
     pub fn insight(mut self, insight: CookieIssueInsight<'a>) -> Self { self.insight = Some(insight); self }
     pub fn build(self) -> CookieIssueDetails<'a> {
         CookieIssueDetails {
             cookie: self.cookie,
-            rawCookieLine: self.rawCookieLine,
-            cookieWarningReasons: self.cookieWarningReasons,
-            cookieExclusionReasons: self.cookieExclusionReasons,
+            raw_cookie_line: self.raw_cookie_line,
+            cookie_warning_reasons: self.cookie_warning_reasons,
+            cookie_exclusion_reasons: self.cookie_exclusion_reasons,
             operation: self.operation,
-            siteForCookies: self.siteForCookies,
-            cookieUrl: self.cookieUrl,
+            site_for_cookies: self.site_for_cookies,
+            cookie_url: self.cookie_url,
             request: self.request,
             insight: self.insight,
         }
@@ -345,34 +372,37 @@ pub enum PerformanceIssueType {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct PerformanceIssueDetails<'a> {
-    performanceIssueType: PerformanceIssueType,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    sourceCodeLocation: Option<SourceCodeLocation<'a>>,
+    #[serde(rename = "performanceIssueType")]
+    performance_issue_type: PerformanceIssueType,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sourceCodeLocation")]
+    source_code_location: Option<SourceCodeLocation<'a>>,
 }
 
 impl<'a> PerformanceIssueDetails<'a> {
-    pub fn builder(performanceIssueType: impl Into<PerformanceIssueType>) -> PerformanceIssueDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `performance_issue_type`: 
+    pub fn builder(performance_issue_type: impl Into<PerformanceIssueType>) -> PerformanceIssueDetailsBuilder<'a> {
         PerformanceIssueDetailsBuilder {
-            performanceIssueType: performanceIssueType.into(),
-            sourceCodeLocation: None,
+            performance_issue_type: performance_issue_type.into(),
+            source_code_location: None,
         }
     }
-    pub fn performanceIssueType(&self) -> &PerformanceIssueType { &self.performanceIssueType }
-    pub fn sourceCodeLocation(&self) -> Option<&SourceCodeLocation<'a>> { self.sourceCodeLocation.as_ref() }
+    pub fn performance_issue_type(&self) -> &PerformanceIssueType { &self.performance_issue_type }
+    pub fn source_code_location(&self) -> Option<&SourceCodeLocation<'a>> { self.source_code_location.as_ref() }
 }
 
 
 pub struct PerformanceIssueDetailsBuilder<'a> {
-    performanceIssueType: PerformanceIssueType,
-    sourceCodeLocation: Option<SourceCodeLocation<'a>>,
+    performance_issue_type: PerformanceIssueType,
+    source_code_location: Option<SourceCodeLocation<'a>>,
 }
 
 impl<'a> PerformanceIssueDetailsBuilder<'a> {
-    pub fn sourceCodeLocation(mut self, sourceCodeLocation: SourceCodeLocation<'a>) -> Self { self.sourceCodeLocation = Some(sourceCodeLocation); self }
+    pub fn source_code_location(mut self, source_code_location: SourceCodeLocation<'a>) -> Self { self.source_code_location = Some(source_code_location); self }
     pub fn build(self) -> PerformanceIssueDetails<'a> {
         PerformanceIssueDetails {
-            performanceIssueType: self.performanceIssueType,
-            sourceCodeLocation: self.sourceCodeLocation,
+            performance_issue_type: self.performance_issue_type,
+            source_code_location: self.source_code_location,
         }
     }
 }
@@ -461,14 +491,17 @@ pub struct MixedContentIssueDetails<'a> {
     /// form,...). Marked as optional because it is mapped to from
     /// blink::mojom::RequestContextType, which will be replaced
     /// by network::mojom::RequestDestination
-    #[serde(skip_serializing_if = "Option::is_none")]
-    resourceType: Option<MixedContentResourceType>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "resourceType")]
+    resource_type: Option<MixedContentResourceType>,
     /// The way the mixed content issue is being resolved.
-    resolutionStatus: MixedContentResolutionStatus,
+    #[serde(rename = "resolutionStatus")]
+    resolution_status: MixedContentResolutionStatus,
     /// The unsafe http url causing the mixed content issue.
-    insecureURL: Cow<'a, str>,
+    #[serde(rename = "insecureURL")]
+    insecure_url: Cow<'a, str>,
     /// The url responsible for the call to an unsafe url.
-    mainResourceURL: Cow<'a, str>,
+    #[serde(rename = "mainResourceURL")]
+    main_resource_url: Cow<'a, str>,
     /// The mixed content request.
     /// Does not always exist (e.g. for unsafe form submission urls).
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -479,30 +512,44 @@ pub struct MixedContentIssueDetails<'a> {
 }
 
 impl<'a> MixedContentIssueDetails<'a> {
-    pub fn builder(resolutionStatus: impl Into<MixedContentResolutionStatus>, insecureURL: impl Into<Cow<'a, str>>, mainResourceURL: impl Into<Cow<'a, str>>) -> MixedContentIssueDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `resolution_status`: The way the mixed content issue is being resolved.
+    /// * `insecure_url`: The unsafe http url causing the mixed content issue.
+    /// * `main_resource_url`: The url responsible for the call to an unsafe url.
+    pub fn builder(resolution_status: impl Into<MixedContentResolutionStatus>, insecure_url: impl Into<Cow<'a, str>>, main_resource_url: impl Into<Cow<'a, str>>) -> MixedContentIssueDetailsBuilder<'a> {
         MixedContentIssueDetailsBuilder {
-            resourceType: None,
-            resolutionStatus: resolutionStatus.into(),
-            insecureURL: insecureURL.into(),
-            mainResourceURL: mainResourceURL.into(),
+            resource_type: None,
+            resolution_status: resolution_status.into(),
+            insecure_url: insecure_url.into(),
+            main_resource_url: main_resource_url.into(),
             request: None,
             frame: None,
         }
     }
-    pub fn resourceType(&self) -> Option<&MixedContentResourceType> { self.resourceType.as_ref() }
-    pub fn resolutionStatus(&self) -> &MixedContentResolutionStatus { &self.resolutionStatus }
-    pub fn insecureURL(&self) -> &str { self.insecureURL.as_ref() }
-    pub fn mainResourceURL(&self) -> &str { self.mainResourceURL.as_ref() }
+    /// The type of resource causing the mixed content issue (css, js, iframe,
+    /// form,...). Marked as optional because it is mapped to from
+    /// blink::mojom::RequestContextType, which will be replaced
+    /// by network::mojom::RequestDestination
+    pub fn resource_type(&self) -> Option<&MixedContentResourceType> { self.resource_type.as_ref() }
+    /// The way the mixed content issue is being resolved.
+    pub fn resolution_status(&self) -> &MixedContentResolutionStatus { &self.resolution_status }
+    /// The unsafe http url causing the mixed content issue.
+    pub fn insecure_url(&self) -> &str { self.insecure_url.as_ref() }
+    /// The url responsible for the call to an unsafe url.
+    pub fn main_resource_url(&self) -> &str { self.main_resource_url.as_ref() }
+    /// The mixed content request.
+    /// Does not always exist (e.g. for unsafe form submission urls).
     pub fn request(&self) -> Option<&AffectedRequest<'a>> { self.request.as_ref() }
+    /// Optional because not every mixed content issue is necessarily linked to a frame.
     pub fn frame(&self) -> Option<&AffectedFrame<'a>> { self.frame.as_ref() }
 }
 
 
 pub struct MixedContentIssueDetailsBuilder<'a> {
-    resourceType: Option<MixedContentResourceType>,
-    resolutionStatus: MixedContentResolutionStatus,
-    insecureURL: Cow<'a, str>,
-    mainResourceURL: Cow<'a, str>,
+    resource_type: Option<MixedContentResourceType>,
+    resolution_status: MixedContentResolutionStatus,
+    insecure_url: Cow<'a, str>,
+    main_resource_url: Cow<'a, str>,
     request: Option<AffectedRequest<'a>>,
     frame: Option<AffectedFrame<'a>>,
 }
@@ -512,7 +559,7 @@ impl<'a> MixedContentIssueDetailsBuilder<'a> {
     /// form,...). Marked as optional because it is mapped to from
     /// blink::mojom::RequestContextType, which will be replaced
     /// by network::mojom::RequestDestination
-    pub fn resourceType(mut self, resourceType: impl Into<MixedContentResourceType>) -> Self { self.resourceType = Some(resourceType.into()); self }
+    pub fn resource_type(mut self, resource_type: impl Into<MixedContentResourceType>) -> Self { self.resource_type = Some(resource_type.into()); self }
     /// The mixed content request.
     /// Does not always exist (e.g. for unsafe form submission urls).
     pub fn request(mut self, request: AffectedRequest<'a>) -> Self { self.request = Some(request); self }
@@ -520,10 +567,10 @@ impl<'a> MixedContentIssueDetailsBuilder<'a> {
     pub fn frame(mut self, frame: AffectedFrame<'a>) -> Self { self.frame = Some(frame); self }
     pub fn build(self) -> MixedContentIssueDetails<'a> {
         MixedContentIssueDetails {
-            resourceType: self.resourceType,
-            resolutionStatus: self.resolutionStatus,
-            insecureURL: self.insecureURL,
-            mainResourceURL: self.mainResourceURL,
+            resource_type: self.resource_type,
+            resolution_status: self.resolution_status,
+            insecure_url: self.insecure_url,
+            main_resource_url: self.main_resource_url,
             request: self.request,
             frame: self.frame,
         }
@@ -562,44 +609,47 @@ pub enum BlockedByResponseReason {
 #[serde(rename_all = "camelCase")]
 pub struct BlockedByResponseIssueDetails<'a> {
     request: AffectedRequest<'a>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    parentFrame: Option<AffectedFrame<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    blockedFrame: Option<AffectedFrame<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "parentFrame")]
+    parent_frame: Option<AffectedFrame<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "blockedFrame")]
+    blocked_frame: Option<AffectedFrame<'a>>,
     reason: BlockedByResponseReason,
 }
 
 impl<'a> BlockedByResponseIssueDetails<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request`: 
+    /// * `reason`: 
     pub fn builder(request: AffectedRequest<'a>, reason: impl Into<BlockedByResponseReason>) -> BlockedByResponseIssueDetailsBuilder<'a> {
         BlockedByResponseIssueDetailsBuilder {
             request: request,
-            parentFrame: None,
-            blockedFrame: None,
+            parent_frame: None,
+            blocked_frame: None,
             reason: reason.into(),
         }
     }
     pub fn request(&self) -> &AffectedRequest<'a> { &self.request }
-    pub fn parentFrame(&self) -> Option<&AffectedFrame<'a>> { self.parentFrame.as_ref() }
-    pub fn blockedFrame(&self) -> Option<&AffectedFrame<'a>> { self.blockedFrame.as_ref() }
+    pub fn parent_frame(&self) -> Option<&AffectedFrame<'a>> { self.parent_frame.as_ref() }
+    pub fn blocked_frame(&self) -> Option<&AffectedFrame<'a>> { self.blocked_frame.as_ref() }
     pub fn reason(&self) -> &BlockedByResponseReason { &self.reason }
 }
 
 
 pub struct BlockedByResponseIssueDetailsBuilder<'a> {
     request: AffectedRequest<'a>,
-    parentFrame: Option<AffectedFrame<'a>>,
-    blockedFrame: Option<AffectedFrame<'a>>,
+    parent_frame: Option<AffectedFrame<'a>>,
+    blocked_frame: Option<AffectedFrame<'a>>,
     reason: BlockedByResponseReason,
 }
 
 impl<'a> BlockedByResponseIssueDetailsBuilder<'a> {
-    pub fn parentFrame(mut self, parentFrame: AffectedFrame<'a>) -> Self { self.parentFrame = Some(parentFrame); self }
-    pub fn blockedFrame(mut self, blockedFrame: AffectedFrame<'a>) -> Self { self.blockedFrame = Some(blockedFrame); self }
+    pub fn parent_frame(mut self, parent_frame: AffectedFrame<'a>) -> Self { self.parent_frame = Some(parent_frame); self }
+    pub fn blocked_frame(mut self, blocked_frame: AffectedFrame<'a>) -> Self { self.blocked_frame = Some(blocked_frame); self }
     pub fn build(self) -> BlockedByResponseIssueDetails<'a> {
         BlockedByResponseIssueDetails {
             request: self.request,
-            parentFrame: self.parentFrame,
-            blockedFrame: self.blockedFrame,
+            parent_frame: self.parent_frame,
+            blocked_frame: self.blocked_frame,
             reason: self.reason,
         }
     }
@@ -640,6 +690,10 @@ pub struct HeavyAdIssueDetails<'a> {
 }
 
 impl<'a> HeavyAdIssueDetails<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `resolution`: The resolution status, either blocking the content or warning.
+    /// * `reason`: The reason the ad was blocked, total network or cpu or peak cpu.
+    /// * `frame`: The frame that was blocked.
     pub fn builder(resolution: impl Into<HeavyAdResolutionStatus>, reason: impl Into<HeavyAdReason>, frame: AffectedFrame<'a>) -> HeavyAdIssueDetailsBuilder<'a> {
         HeavyAdIssueDetailsBuilder {
             resolution: resolution.into(),
@@ -647,8 +701,11 @@ impl<'a> HeavyAdIssueDetails<'a> {
             frame: frame,
         }
     }
+    /// The resolution status, either blocking the content or warning.
     pub fn resolution(&self) -> &HeavyAdResolutionStatus { &self.resolution }
+    /// The reason the ad was blocked, total network or cpu or peak cpu.
     pub fn reason(&self) -> &HeavyAdReason { &self.reason }
+    /// The frame that was blocked.
     pub fn frame(&self) -> &AffectedFrame<'a> { &self.frame }
 }
 
@@ -693,44 +750,50 @@ pub enum ContentSecurityPolicyViolationType {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SourceCodeLocation<'a> {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    scriptId: Option<crate::runtime::ScriptId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "scriptId")]
+    script_id: Option<crate::runtime::ScriptId<'a>>,
     url: Cow<'a, str>,
-    lineNumber: i64,
-    columnNumber: i64,
+    #[serde(rename = "lineNumber")]
+    line_number: i64,
+    #[serde(rename = "columnNumber")]
+    column_number: i64,
 }
 
 impl<'a> SourceCodeLocation<'a> {
-    pub fn builder(url: impl Into<Cow<'a, str>>, lineNumber: i64, columnNumber: i64) -> SourceCodeLocationBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url`: 
+    /// * `line_number`: 
+    /// * `column_number`: 
+    pub fn builder(url: impl Into<Cow<'a, str>>, line_number: i64, column_number: i64) -> SourceCodeLocationBuilder<'a> {
         SourceCodeLocationBuilder {
-            scriptId: None,
+            script_id: None,
             url: url.into(),
-            lineNumber: lineNumber,
-            columnNumber: columnNumber,
+            line_number: line_number,
+            column_number: column_number,
         }
     }
-    pub fn scriptId(&self) -> Option<&crate::runtime::ScriptId<'a>> { self.scriptId.as_ref() }
+    pub fn script_id(&self) -> Option<&crate::runtime::ScriptId<'a>> { self.script_id.as_ref() }
     pub fn url(&self) -> &str { self.url.as_ref() }
-    pub fn lineNumber(&self) -> i64 { self.lineNumber }
-    pub fn columnNumber(&self) -> i64 { self.columnNumber }
+    pub fn line_number(&self) -> i64 { self.line_number }
+    pub fn column_number(&self) -> i64 { self.column_number }
 }
 
 
 pub struct SourceCodeLocationBuilder<'a> {
-    scriptId: Option<crate::runtime::ScriptId<'a>>,
+    script_id: Option<crate::runtime::ScriptId<'a>>,
     url: Cow<'a, str>,
-    lineNumber: i64,
-    columnNumber: i64,
+    line_number: i64,
+    column_number: i64,
 }
 
 impl<'a> SourceCodeLocationBuilder<'a> {
-    pub fn scriptId(mut self, scriptId: crate::runtime::ScriptId<'a>) -> Self { self.scriptId = Some(scriptId); self }
+    pub fn script_id(mut self, script_id: crate::runtime::ScriptId<'a>) -> Self { self.script_id = Some(script_id); self }
     pub fn build(self) -> SourceCodeLocation<'a> {
         SourceCodeLocation {
-            scriptId: self.scriptId,
+            script_id: self.script_id,
             url: self.url,
-            lineNumber: self.lineNumber,
-            columnNumber: self.columnNumber,
+            line_number: self.line_number,
+            column_number: self.column_number,
         }
     }
 }
@@ -740,67 +803,76 @@ impl<'a> SourceCodeLocationBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ContentSecurityPolicyIssueDetails<'a> {
     /// The url not included in allowed sources.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    blockedURL: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "blockedURL")]
+    blocked_url: Option<Cow<'a, str>>,
     /// Specific directive that is violated, causing the CSP issue.
-    violatedDirective: Cow<'a, str>,
-    isReportOnly: bool,
-    contentSecurityPolicyViolationType: ContentSecurityPolicyViolationType,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    frameAncestor: Option<AffectedFrame<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    sourceCodeLocation: Option<SourceCodeLocation<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    violatingNodeId: Option<crate::dom::BackendNodeId>,
+    #[serde(rename = "violatedDirective")]
+    violated_directive: Cow<'a, str>,
+    #[serde(rename = "isReportOnly")]
+    is_report_only: bool,
+    #[serde(rename = "contentSecurityPolicyViolationType")]
+    content_security_policy_violation_type: ContentSecurityPolicyViolationType,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "frameAncestor")]
+    frame_ancestor: Option<AffectedFrame<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sourceCodeLocation")]
+    source_code_location: Option<SourceCodeLocation<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "violatingNodeId")]
+    violating_node_id: Option<crate::dom::BackendNodeId>,
 }
 
 impl<'a> ContentSecurityPolicyIssueDetails<'a> {
-    pub fn builder(violatedDirective: impl Into<Cow<'a, str>>, isReportOnly: bool, contentSecurityPolicyViolationType: impl Into<ContentSecurityPolicyViolationType>) -> ContentSecurityPolicyIssueDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `violated_directive`: Specific directive that is violated, causing the CSP issue.
+    /// * `is_report_only`: 
+    /// * `content_security_policy_violation_type`: 
+    pub fn builder(violated_directive: impl Into<Cow<'a, str>>, is_report_only: bool, content_security_policy_violation_type: impl Into<ContentSecurityPolicyViolationType>) -> ContentSecurityPolicyIssueDetailsBuilder<'a> {
         ContentSecurityPolicyIssueDetailsBuilder {
-            blockedURL: None,
-            violatedDirective: violatedDirective.into(),
-            isReportOnly: isReportOnly,
-            contentSecurityPolicyViolationType: contentSecurityPolicyViolationType.into(),
-            frameAncestor: None,
-            sourceCodeLocation: None,
-            violatingNodeId: None,
+            blocked_url: None,
+            violated_directive: violated_directive.into(),
+            is_report_only: is_report_only,
+            content_security_policy_violation_type: content_security_policy_violation_type.into(),
+            frame_ancestor: None,
+            source_code_location: None,
+            violating_node_id: None,
         }
     }
-    pub fn blockedURL(&self) -> Option<&str> { self.blockedURL.as_deref() }
-    pub fn violatedDirective(&self) -> &str { self.violatedDirective.as_ref() }
-    pub fn isReportOnly(&self) -> bool { self.isReportOnly }
-    pub fn contentSecurityPolicyViolationType(&self) -> &ContentSecurityPolicyViolationType { &self.contentSecurityPolicyViolationType }
-    pub fn frameAncestor(&self) -> Option<&AffectedFrame<'a>> { self.frameAncestor.as_ref() }
-    pub fn sourceCodeLocation(&self) -> Option<&SourceCodeLocation<'a>> { self.sourceCodeLocation.as_ref() }
-    pub fn violatingNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.violatingNodeId.as_ref() }
+    /// The url not included in allowed sources.
+    pub fn blocked_url(&self) -> Option<&str> { self.blocked_url.as_deref() }
+    /// Specific directive that is violated, causing the CSP issue.
+    pub fn violated_directive(&self) -> &str { self.violated_directive.as_ref() }
+    pub fn is_report_only(&self) -> bool { self.is_report_only }
+    pub fn content_security_policy_violation_type(&self) -> &ContentSecurityPolicyViolationType { &self.content_security_policy_violation_type }
+    pub fn frame_ancestor(&self) -> Option<&AffectedFrame<'a>> { self.frame_ancestor.as_ref() }
+    pub fn source_code_location(&self) -> Option<&SourceCodeLocation<'a>> { self.source_code_location.as_ref() }
+    pub fn violating_node_id(&self) -> Option<&crate::dom::BackendNodeId> { self.violating_node_id.as_ref() }
 }
 
 
 pub struct ContentSecurityPolicyIssueDetailsBuilder<'a> {
-    blockedURL: Option<Cow<'a, str>>,
-    violatedDirective: Cow<'a, str>,
-    isReportOnly: bool,
-    contentSecurityPolicyViolationType: ContentSecurityPolicyViolationType,
-    frameAncestor: Option<AffectedFrame<'a>>,
-    sourceCodeLocation: Option<SourceCodeLocation<'a>>,
-    violatingNodeId: Option<crate::dom::BackendNodeId>,
+    blocked_url: Option<Cow<'a, str>>,
+    violated_directive: Cow<'a, str>,
+    is_report_only: bool,
+    content_security_policy_violation_type: ContentSecurityPolicyViolationType,
+    frame_ancestor: Option<AffectedFrame<'a>>,
+    source_code_location: Option<SourceCodeLocation<'a>>,
+    violating_node_id: Option<crate::dom::BackendNodeId>,
 }
 
 impl<'a> ContentSecurityPolicyIssueDetailsBuilder<'a> {
     /// The url not included in allowed sources.
-    pub fn blockedURL(mut self, blockedURL: impl Into<Cow<'a, str>>) -> Self { self.blockedURL = Some(blockedURL.into()); self }
-    pub fn frameAncestor(mut self, frameAncestor: AffectedFrame<'a>) -> Self { self.frameAncestor = Some(frameAncestor); self }
-    pub fn sourceCodeLocation(mut self, sourceCodeLocation: SourceCodeLocation<'a>) -> Self { self.sourceCodeLocation = Some(sourceCodeLocation); self }
-    pub fn violatingNodeId(mut self, violatingNodeId: crate::dom::BackendNodeId) -> Self { self.violatingNodeId = Some(violatingNodeId); self }
+    pub fn blocked_url(mut self, blocked_url: impl Into<Cow<'a, str>>) -> Self { self.blocked_url = Some(blocked_url.into()); self }
+    pub fn frame_ancestor(mut self, frame_ancestor: AffectedFrame<'a>) -> Self { self.frame_ancestor = Some(frame_ancestor); self }
+    pub fn source_code_location(mut self, source_code_location: SourceCodeLocation<'a>) -> Self { self.source_code_location = Some(source_code_location); self }
+    pub fn violating_node_id(mut self, violating_node_id: crate::dom::BackendNodeId) -> Self { self.violating_node_id = Some(violating_node_id); self }
     pub fn build(self) -> ContentSecurityPolicyIssueDetails<'a> {
         ContentSecurityPolicyIssueDetails {
-            blockedURL: self.blockedURL,
-            violatedDirective: self.violatedDirective,
-            isReportOnly: self.isReportOnly,
-            contentSecurityPolicyViolationType: self.contentSecurityPolicyViolationType,
-            frameAncestor: self.frameAncestor,
-            sourceCodeLocation: self.sourceCodeLocation,
-            violatingNodeId: self.violatingNodeId,
+            blocked_url: self.blocked_url,
+            violated_directive: self.violated_directive,
+            is_report_only: self.is_report_only,
+            content_security_policy_violation_type: self.content_security_policy_violation_type,
+            frame_ancestor: self.frame_ancestor,
+            source_code_location: self.source_code_location,
+            violating_node_id: self.violating_node_id,
         }
     }
 }
@@ -821,37 +893,43 @@ pub enum SharedArrayBufferIssueType {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SharedArrayBufferIssueDetails<'a> {
-    sourceCodeLocation: SourceCodeLocation<'a>,
-    isWarning: bool,
+    #[serde(rename = "sourceCodeLocation")]
+    source_code_location: SourceCodeLocation<'a>,
+    #[serde(rename = "isWarning")]
+    is_warning: bool,
     #[serde(rename = "type")]
     type_: SharedArrayBufferIssueType,
 }
 
 impl<'a> SharedArrayBufferIssueDetails<'a> {
-    pub fn builder(sourceCodeLocation: SourceCodeLocation<'a>, isWarning: bool, type_: impl Into<SharedArrayBufferIssueType>) -> SharedArrayBufferIssueDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `source_code_location`: 
+    /// * `is_warning`: 
+    /// * `type_`: 
+    pub fn builder(source_code_location: SourceCodeLocation<'a>, is_warning: bool, type_: impl Into<SharedArrayBufferIssueType>) -> SharedArrayBufferIssueDetailsBuilder<'a> {
         SharedArrayBufferIssueDetailsBuilder {
-            sourceCodeLocation: sourceCodeLocation,
-            isWarning: isWarning,
+            source_code_location: source_code_location,
+            is_warning: is_warning,
             type_: type_.into(),
         }
     }
-    pub fn sourceCodeLocation(&self) -> &SourceCodeLocation<'a> { &self.sourceCodeLocation }
-    pub fn isWarning(&self) -> bool { self.isWarning }
+    pub fn source_code_location(&self) -> &SourceCodeLocation<'a> { &self.source_code_location }
+    pub fn is_warning(&self) -> bool { self.is_warning }
     pub fn type_(&self) -> &SharedArrayBufferIssueType { &self.type_ }
 }
 
 
 pub struct SharedArrayBufferIssueDetailsBuilder<'a> {
-    sourceCodeLocation: SourceCodeLocation<'a>,
-    isWarning: bool,
+    source_code_location: SourceCodeLocation<'a>,
+    is_warning: bool,
     type_: SharedArrayBufferIssueType,
 }
 
 impl<'a> SharedArrayBufferIssueDetailsBuilder<'a> {
     pub fn build(self) -> SharedArrayBufferIssueDetails<'a> {
         SharedArrayBufferIssueDetails {
-            sourceCodeLocation: self.sourceCodeLocation,
-            isWarning: self.isWarning,
+            source_code_location: self.source_code_location,
+            is_warning: self.is_warning,
             type_: self.type_,
         }
     }
@@ -863,65 +941,71 @@ impl<'a> SharedArrayBufferIssueDetailsBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct CorsIssueDetails<'a> {
-    corsErrorStatus: crate::network::CorsErrorStatus<'a>,
-    isWarning: bool,
+    #[serde(rename = "corsErrorStatus")]
+    cors_error_status: crate::network::CorsErrorStatus<'a>,
+    #[serde(rename = "isWarning")]
+    is_warning: bool,
     request: AffectedRequest<'a>,
     #[serde(skip_serializing_if = "Option::is_none")]
     location: Option<SourceCodeLocation<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    initiatorOrigin: Option<Cow<'a, str>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    resourceIPAddressSpace: Option<crate::network::IPAddressSpace>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    clientSecurityState: Option<crate::network::ClientSecurityState>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "initiatorOrigin")]
+    initiator_origin: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "resourceIPAddressSpace")]
+    resource_ip_address_space: Option<crate::network::IPAddressSpace>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "clientSecurityState")]
+    client_security_state: Option<crate::network::ClientSecurityState>,
 }
 
 impl<'a> CorsIssueDetails<'a> {
-    pub fn builder(corsErrorStatus: crate::network::CorsErrorStatus<'a>, isWarning: bool, request: AffectedRequest<'a>) -> CorsIssueDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `cors_error_status`: 
+    /// * `is_warning`: 
+    /// * `request`: 
+    pub fn builder(cors_error_status: crate::network::CorsErrorStatus<'a>, is_warning: bool, request: AffectedRequest<'a>) -> CorsIssueDetailsBuilder<'a> {
         CorsIssueDetailsBuilder {
-            corsErrorStatus: corsErrorStatus,
-            isWarning: isWarning,
+            cors_error_status: cors_error_status,
+            is_warning: is_warning,
             request: request,
             location: None,
-            initiatorOrigin: None,
-            resourceIPAddressSpace: None,
-            clientSecurityState: None,
+            initiator_origin: None,
+            resource_ip_address_space: None,
+            client_security_state: None,
         }
     }
-    pub fn corsErrorStatus(&self) -> &crate::network::CorsErrorStatus<'a> { &self.corsErrorStatus }
-    pub fn isWarning(&self) -> bool { self.isWarning }
+    pub fn cors_error_status(&self) -> &crate::network::CorsErrorStatus<'a> { &self.cors_error_status }
+    pub fn is_warning(&self) -> bool { self.is_warning }
     pub fn request(&self) -> &AffectedRequest<'a> { &self.request }
     pub fn location(&self) -> Option<&SourceCodeLocation<'a>> { self.location.as_ref() }
-    pub fn initiatorOrigin(&self) -> Option<&str> { self.initiatorOrigin.as_deref() }
-    pub fn resourceIPAddressSpace(&self) -> Option<&crate::network::IPAddressSpace> { self.resourceIPAddressSpace.as_ref() }
-    pub fn clientSecurityState(&self) -> Option<&crate::network::ClientSecurityState> { self.clientSecurityState.as_ref() }
+    pub fn initiator_origin(&self) -> Option<&str> { self.initiator_origin.as_deref() }
+    pub fn resource_ip_address_space(&self) -> Option<&crate::network::IPAddressSpace> { self.resource_ip_address_space.as_ref() }
+    pub fn client_security_state(&self) -> Option<&crate::network::ClientSecurityState> { self.client_security_state.as_ref() }
 }
 
 
 pub struct CorsIssueDetailsBuilder<'a> {
-    corsErrorStatus: crate::network::CorsErrorStatus<'a>,
-    isWarning: bool,
+    cors_error_status: crate::network::CorsErrorStatus<'a>,
+    is_warning: bool,
     request: AffectedRequest<'a>,
     location: Option<SourceCodeLocation<'a>>,
-    initiatorOrigin: Option<Cow<'a, str>>,
-    resourceIPAddressSpace: Option<crate::network::IPAddressSpace>,
-    clientSecurityState: Option<crate::network::ClientSecurityState>,
+    initiator_origin: Option<Cow<'a, str>>,
+    resource_ip_address_space: Option<crate::network::IPAddressSpace>,
+    client_security_state: Option<crate::network::ClientSecurityState>,
 }
 
 impl<'a> CorsIssueDetailsBuilder<'a> {
     pub fn location(mut self, location: SourceCodeLocation<'a>) -> Self { self.location = Some(location); self }
-    pub fn initiatorOrigin(mut self, initiatorOrigin: impl Into<Cow<'a, str>>) -> Self { self.initiatorOrigin = Some(initiatorOrigin.into()); self }
-    pub fn resourceIPAddressSpace(mut self, resourceIPAddressSpace: crate::network::IPAddressSpace) -> Self { self.resourceIPAddressSpace = Some(resourceIPAddressSpace); self }
-    pub fn clientSecurityState(mut self, clientSecurityState: crate::network::ClientSecurityState) -> Self { self.clientSecurityState = Some(clientSecurityState); self }
+    pub fn initiator_origin(mut self, initiator_origin: impl Into<Cow<'a, str>>) -> Self { self.initiator_origin = Some(initiator_origin.into()); self }
+    pub fn resource_ip_address_space(mut self, resource_ip_address_space: crate::network::IPAddressSpace) -> Self { self.resource_ip_address_space = Some(resource_ip_address_space); self }
+    pub fn client_security_state(mut self, client_security_state: crate::network::ClientSecurityState) -> Self { self.client_security_state = Some(client_security_state); self }
     pub fn build(self) -> CorsIssueDetails<'a> {
         CorsIssueDetails {
-            corsErrorStatus: self.corsErrorStatus,
-            isWarning: self.isWarning,
+            cors_error_status: self.cors_error_status,
+            is_warning: self.is_warning,
             request: self.request,
             location: self.location,
-            initiatorOrigin: self.initiatorOrigin,
-            resourceIPAddressSpace: self.resourceIPAddressSpace,
-            clientSecurityState: self.clientSecurityState,
+            initiator_origin: self.initiator_origin,
+            resource_ip_address_space: self.resource_ip_address_space,
+            client_security_state: self.client_security_state,
         }
     }
 }
@@ -1119,53 +1203,56 @@ pub enum ConnectionAllowlistError {
 }
 
 /// Details for issues around "Attribution Reporting API" usage.
-/// Explainer: https://github.com/WICG/attribution-reporting-api
+/// Explainer: <https://github.com/WICG/attribution-reporting-api>
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct AttributionReportingIssueDetails<'a> {
-    violationType: AttributionReportingIssueType,
+    #[serde(rename = "violationType")]
+    violation_type: AttributionReportingIssueType,
     #[serde(skip_serializing_if = "Option::is_none")]
     request: Option<AffectedRequest<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    violatingNodeId: Option<crate::dom::BackendNodeId>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    invalidParameter: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "violatingNodeId")]
+    violating_node_id: Option<crate::dom::BackendNodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "invalidParameter")]
+    invalid_parameter: Option<Cow<'a, str>>,
 }
 
 impl<'a> AttributionReportingIssueDetails<'a> {
-    pub fn builder(violationType: impl Into<AttributionReportingIssueType>) -> AttributionReportingIssueDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `violation_type`: 
+    pub fn builder(violation_type: impl Into<AttributionReportingIssueType>) -> AttributionReportingIssueDetailsBuilder<'a> {
         AttributionReportingIssueDetailsBuilder {
-            violationType: violationType.into(),
+            violation_type: violation_type.into(),
             request: None,
-            violatingNodeId: None,
-            invalidParameter: None,
+            violating_node_id: None,
+            invalid_parameter: None,
         }
     }
-    pub fn violationType(&self) -> &AttributionReportingIssueType { &self.violationType }
+    pub fn violation_type(&self) -> &AttributionReportingIssueType { &self.violation_type }
     pub fn request(&self) -> Option<&AffectedRequest<'a>> { self.request.as_ref() }
-    pub fn violatingNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.violatingNodeId.as_ref() }
-    pub fn invalidParameter(&self) -> Option<&str> { self.invalidParameter.as_deref() }
+    pub fn violating_node_id(&self) -> Option<&crate::dom::BackendNodeId> { self.violating_node_id.as_ref() }
+    pub fn invalid_parameter(&self) -> Option<&str> { self.invalid_parameter.as_deref() }
 }
 
 
 pub struct AttributionReportingIssueDetailsBuilder<'a> {
-    violationType: AttributionReportingIssueType,
+    violation_type: AttributionReportingIssueType,
     request: Option<AffectedRequest<'a>>,
-    violatingNodeId: Option<crate::dom::BackendNodeId>,
-    invalidParameter: Option<Cow<'a, str>>,
+    violating_node_id: Option<crate::dom::BackendNodeId>,
+    invalid_parameter: Option<Cow<'a, str>>,
 }
 
 impl<'a> AttributionReportingIssueDetailsBuilder<'a> {
     pub fn request(mut self, request: AffectedRequest<'a>) -> Self { self.request = Some(request); self }
-    pub fn violatingNodeId(mut self, violatingNodeId: crate::dom::BackendNodeId) -> Self { self.violatingNodeId = Some(violatingNodeId); self }
-    pub fn invalidParameter(mut self, invalidParameter: impl Into<Cow<'a, str>>) -> Self { self.invalidParameter = Some(invalidParameter.into()); self }
+    pub fn violating_node_id(mut self, violating_node_id: crate::dom::BackendNodeId) -> Self { self.violating_node_id = Some(violating_node_id); self }
+    pub fn invalid_parameter(mut self, invalid_parameter: impl Into<Cow<'a, str>>) -> Self { self.invalid_parameter = Some(invalid_parameter.into()); self }
     pub fn build(self) -> AttributionReportingIssueDetails<'a> {
         AttributionReportingIssueDetails {
-            violationType: self.violationType,
+            violation_type: self.violation_type,
             request: self.request,
-            violatingNodeId: self.violatingNodeId,
-            invalidParameter: self.invalidParameter,
+            violating_node_id: self.violating_node_id,
+            invalid_parameter: self.invalid_parameter,
         }
     }
 }
@@ -1178,47 +1265,59 @@ impl<'a> AttributionReportingIssueDetailsBuilder<'a> {
 pub struct QuirksModeIssueDetails<'a> {
     /// If false, it means the document's mode is "quirks"
     /// instead of "limited-quirks".
-    isLimitedQuirksMode: bool,
-    documentNodeId: crate::dom::BackendNodeId,
+    #[serde(rename = "isLimitedQuirksMode")]
+    is_limited_quirks_mode: bool,
+    #[serde(rename = "documentNodeId")]
+    document_node_id: crate::dom::BackendNodeId,
     url: Cow<'a, str>,
-    frameId: crate::page::FrameId<'a>,
-    loaderId: crate::network::LoaderId<'a>,
+    #[serde(rename = "frameId")]
+    frame_id: crate::page::FrameId<'a>,
+    #[serde(rename = "loaderId")]
+    loader_id: crate::network::LoaderId<'a>,
 }
 
 impl<'a> QuirksModeIssueDetails<'a> {
-    pub fn builder(isLimitedQuirksMode: bool, documentNodeId: crate::dom::BackendNodeId, url: impl Into<Cow<'a, str>>, frameId: crate::page::FrameId<'a>, loaderId: crate::network::LoaderId<'a>) -> QuirksModeIssueDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `is_limited_quirks_mode`: If false, it means the document's mode is "quirks" instead of "limited-quirks".
+    /// * `document_node_id`: 
+    /// * `url`: 
+    /// * `frame_id`: 
+    /// * `loader_id`: 
+    pub fn builder(is_limited_quirks_mode: bool, document_node_id: crate::dom::BackendNodeId, url: impl Into<Cow<'a, str>>, frame_id: crate::page::FrameId<'a>, loader_id: crate::network::LoaderId<'a>) -> QuirksModeIssueDetailsBuilder<'a> {
         QuirksModeIssueDetailsBuilder {
-            isLimitedQuirksMode: isLimitedQuirksMode,
-            documentNodeId: documentNodeId,
+            is_limited_quirks_mode: is_limited_quirks_mode,
+            document_node_id: document_node_id,
             url: url.into(),
-            frameId: frameId,
-            loaderId: loaderId,
+            frame_id: frame_id,
+            loader_id: loader_id,
         }
     }
-    pub fn isLimitedQuirksMode(&self) -> bool { self.isLimitedQuirksMode }
-    pub fn documentNodeId(&self) -> &crate::dom::BackendNodeId { &self.documentNodeId }
+    /// If false, it means the document's mode is "quirks"
+    /// instead of "limited-quirks".
+    pub fn is_limited_quirks_mode(&self) -> bool { self.is_limited_quirks_mode }
+    pub fn document_node_id(&self) -> &crate::dom::BackendNodeId { &self.document_node_id }
     pub fn url(&self) -> &str { self.url.as_ref() }
-    pub fn frameId(&self) -> &crate::page::FrameId<'a> { &self.frameId }
-    pub fn loaderId(&self) -> &crate::network::LoaderId<'a> { &self.loaderId }
+    pub fn frame_id(&self) -> &crate::page::FrameId<'a> { &self.frame_id }
+    pub fn loader_id(&self) -> &crate::network::LoaderId<'a> { &self.loader_id }
 }
 
 
 pub struct QuirksModeIssueDetailsBuilder<'a> {
-    isLimitedQuirksMode: bool,
-    documentNodeId: crate::dom::BackendNodeId,
+    is_limited_quirks_mode: bool,
+    document_node_id: crate::dom::BackendNodeId,
     url: Cow<'a, str>,
-    frameId: crate::page::FrameId<'a>,
-    loaderId: crate::network::LoaderId<'a>,
+    frame_id: crate::page::FrameId<'a>,
+    loader_id: crate::network::LoaderId<'a>,
 }
 
 impl<'a> QuirksModeIssueDetailsBuilder<'a> {
     pub fn build(self) -> QuirksModeIssueDetails<'a> {
         QuirksModeIssueDetails {
-            isLimitedQuirksMode: self.isLimitedQuirksMode,
-            documentNodeId: self.documentNodeId,
+            is_limited_quirks_mode: self.is_limited_quirks_mode,
+            document_node_id: self.document_node_id,
             url: self.url,
-            frameId: self.frameId,
-            loaderId: self.loaderId,
+            frame_id: self.frame_id,
+            loader_id: self.loader_id,
         }
     }
 }
@@ -1233,6 +1332,8 @@ pub struct NavigatorUserAgentIssueDetails<'a> {
 }
 
 impl<'a> NavigatorUserAgentIssueDetails<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url`: 
     pub fn builder(url: impl Into<Cow<'a, str>>) -> NavigatorUserAgentIssueDetailsBuilder<'a> {
         NavigatorUserAgentIssueDetailsBuilder {
             url: url.into(),
@@ -1263,31 +1364,35 @@ impl<'a> NavigatorUserAgentIssueDetailsBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SharedDictionaryIssueDetails<'a> {
-    sharedDictionaryError: SharedDictionaryError,
+    #[serde(rename = "sharedDictionaryError")]
+    shared_dictionary_error: SharedDictionaryError,
     request: AffectedRequest<'a>,
 }
 
 impl<'a> SharedDictionaryIssueDetails<'a> {
-    pub fn builder(sharedDictionaryError: impl Into<SharedDictionaryError>, request: AffectedRequest<'a>) -> SharedDictionaryIssueDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `shared_dictionary_error`: 
+    /// * `request`: 
+    pub fn builder(shared_dictionary_error: impl Into<SharedDictionaryError>, request: AffectedRequest<'a>) -> SharedDictionaryIssueDetailsBuilder<'a> {
         SharedDictionaryIssueDetailsBuilder {
-            sharedDictionaryError: sharedDictionaryError.into(),
+            shared_dictionary_error: shared_dictionary_error.into(),
             request: request,
         }
     }
-    pub fn sharedDictionaryError(&self) -> &SharedDictionaryError { &self.sharedDictionaryError }
+    pub fn shared_dictionary_error(&self) -> &SharedDictionaryError { &self.shared_dictionary_error }
     pub fn request(&self) -> &AffectedRequest<'a> { &self.request }
 }
 
 
 pub struct SharedDictionaryIssueDetailsBuilder<'a> {
-    sharedDictionaryError: SharedDictionaryError,
+    shared_dictionary_error: SharedDictionaryError,
     request: AffectedRequest<'a>,
 }
 
 impl<'a> SharedDictionaryIssueDetailsBuilder<'a> {
     pub fn build(self) -> SharedDictionaryIssueDetails<'a> {
         SharedDictionaryIssueDetails {
-            sharedDictionaryError: self.sharedDictionaryError,
+            shared_dictionary_error: self.shared_dictionary_error,
             request: self.request,
         }
     }
@@ -1298,31 +1403,38 @@ impl<'a> SharedDictionaryIssueDetailsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SRIMessageSignatureIssueDetails<'a> {
     error: SRIMessageSignatureError,
-    signatureBase: Cow<'a, str>,
-    integrityAssertions: Vec<Cow<'a, str>>,
+    #[serde(rename = "signatureBase")]
+    signature_base: Cow<'a, str>,
+    #[serde(rename = "integrityAssertions")]
+    integrity_assertions: Vec<Cow<'a, str>>,
     request: AffectedRequest<'a>,
 }
 
 impl<'a> SRIMessageSignatureIssueDetails<'a> {
-    pub fn builder(error: impl Into<SRIMessageSignatureError>, signatureBase: impl Into<Cow<'a, str>>, integrityAssertions: Vec<Cow<'a, str>>, request: AffectedRequest<'a>) -> SRIMessageSignatureIssueDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `error`: 
+    /// * `signature_base`: 
+    /// * `integrity_assertions`: 
+    /// * `request`: 
+    pub fn builder(error: impl Into<SRIMessageSignatureError>, signature_base: impl Into<Cow<'a, str>>, integrity_assertions: Vec<Cow<'a, str>>, request: AffectedRequest<'a>) -> SRIMessageSignatureIssueDetailsBuilder<'a> {
         SRIMessageSignatureIssueDetailsBuilder {
             error: error.into(),
-            signatureBase: signatureBase.into(),
-            integrityAssertions: integrityAssertions,
+            signature_base: signature_base.into(),
+            integrity_assertions: integrity_assertions,
             request: request,
         }
     }
     pub fn error(&self) -> &SRIMessageSignatureError { &self.error }
-    pub fn signatureBase(&self) -> &str { self.signatureBase.as_ref() }
-    pub fn integrityAssertions(&self) -> &[Cow<'a, str>] { &self.integrityAssertions }
+    pub fn signature_base(&self) -> &str { self.signature_base.as_ref() }
+    pub fn integrity_assertions(&self) -> &[Cow<'a, str>] { &self.integrity_assertions }
     pub fn request(&self) -> &AffectedRequest<'a> { &self.request }
 }
 
 
 pub struct SRIMessageSignatureIssueDetailsBuilder<'a> {
     error: SRIMessageSignatureError,
-    signatureBase: Cow<'a, str>,
-    integrityAssertions: Vec<Cow<'a, str>>,
+    signature_base: Cow<'a, str>,
+    integrity_assertions: Vec<Cow<'a, str>>,
     request: AffectedRequest<'a>,
 }
 
@@ -1330,8 +1442,8 @@ impl<'a> SRIMessageSignatureIssueDetailsBuilder<'a> {
     pub fn build(self) -> SRIMessageSignatureIssueDetails<'a> {
         SRIMessageSignatureIssueDetails {
             error: self.error,
-            signatureBase: self.signatureBase,
-            integrityAssertions: self.integrityAssertions,
+            signature_base: self.signature_base,
+            integrity_assertions: self.integrity_assertions,
             request: self.request,
         }
     }
@@ -1346,6 +1458,9 @@ pub struct UnencodedDigestIssueDetails<'a> {
 }
 
 impl<'a> UnencodedDigestIssueDetails<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `error`: 
+    /// * `request`: 
     pub fn builder(error: impl Into<UnencodedDigestError>, request: AffectedRequest<'a>) -> UnencodedDigestIssueDetailsBuilder<'a> {
         UnencodedDigestIssueDetailsBuilder {
             error: error.into(),
@@ -1380,6 +1495,9 @@ pub struct ConnectionAllowlistIssueDetails<'a> {
 }
 
 impl<'a> ConnectionAllowlistIssueDetails<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `error`: 
+    /// * `request`: 
     pub fn builder(error: impl Into<ConnectionAllowlistError>, request: AffectedRequest<'a>) -> ConnectionAllowlistIssueDetailsBuilder<'a> {
         ConnectionAllowlistIssueDetailsBuilder {
             error: error.into(),
@@ -1459,99 +1577,108 @@ pub enum GenericIssueErrorType {
 #[serde(rename_all = "camelCase")]
 pub struct GenericIssueDetails<'a> {
     /// Issues with the same errorType are aggregated in the frontend.
-    errorType: GenericIssueErrorType,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    frameId: Option<crate::page::FrameId<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    violatingNodeId: Option<crate::dom::BackendNodeId>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    violatingNodeAttribute: Option<Cow<'a, str>>,
+    #[serde(rename = "errorType")]
+    error_type: GenericIssueErrorType,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "frameId")]
+    frame_id: Option<crate::page::FrameId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "violatingNodeId")]
+    violating_node_id: Option<crate::dom::BackendNodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "violatingNodeAttribute")]
+    violating_node_attribute: Option<Cow<'a, str>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     request: Option<AffectedRequest<'a>>,
 }
 
 impl<'a> GenericIssueDetails<'a> {
-    pub fn builder(errorType: impl Into<GenericIssueErrorType>) -> GenericIssueDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `error_type`: Issues with the same errorType are aggregated in the frontend.
+    pub fn builder(error_type: impl Into<GenericIssueErrorType>) -> GenericIssueDetailsBuilder<'a> {
         GenericIssueDetailsBuilder {
-            errorType: errorType.into(),
-            frameId: None,
-            violatingNodeId: None,
-            violatingNodeAttribute: None,
+            error_type: error_type.into(),
+            frame_id: None,
+            violating_node_id: None,
+            violating_node_attribute: None,
             request: None,
         }
     }
-    pub fn errorType(&self) -> &GenericIssueErrorType { &self.errorType }
-    pub fn frameId(&self) -> Option<&crate::page::FrameId<'a>> { self.frameId.as_ref() }
-    pub fn violatingNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.violatingNodeId.as_ref() }
-    pub fn violatingNodeAttribute(&self) -> Option<&str> { self.violatingNodeAttribute.as_deref() }
+    /// Issues with the same errorType are aggregated in the frontend.
+    pub fn error_type(&self) -> &GenericIssueErrorType { &self.error_type }
+    pub fn frame_id(&self) -> Option<&crate::page::FrameId<'a>> { self.frame_id.as_ref() }
+    pub fn violating_node_id(&self) -> Option<&crate::dom::BackendNodeId> { self.violating_node_id.as_ref() }
+    pub fn violating_node_attribute(&self) -> Option<&str> { self.violating_node_attribute.as_deref() }
     pub fn request(&self) -> Option<&AffectedRequest<'a>> { self.request.as_ref() }
 }
 
 
 pub struct GenericIssueDetailsBuilder<'a> {
-    errorType: GenericIssueErrorType,
-    frameId: Option<crate::page::FrameId<'a>>,
-    violatingNodeId: Option<crate::dom::BackendNodeId>,
-    violatingNodeAttribute: Option<Cow<'a, str>>,
+    error_type: GenericIssueErrorType,
+    frame_id: Option<crate::page::FrameId<'a>>,
+    violating_node_id: Option<crate::dom::BackendNodeId>,
+    violating_node_attribute: Option<Cow<'a, str>>,
     request: Option<AffectedRequest<'a>>,
 }
 
 impl<'a> GenericIssueDetailsBuilder<'a> {
-    pub fn frameId(mut self, frameId: crate::page::FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
-    pub fn violatingNodeId(mut self, violatingNodeId: crate::dom::BackendNodeId) -> Self { self.violatingNodeId = Some(violatingNodeId); self }
-    pub fn violatingNodeAttribute(mut self, violatingNodeAttribute: impl Into<Cow<'a, str>>) -> Self { self.violatingNodeAttribute = Some(violatingNodeAttribute.into()); self }
+    pub fn frame_id(mut self, frame_id: crate::page::FrameId<'a>) -> Self { self.frame_id = Some(frame_id); self }
+    pub fn violating_node_id(mut self, violating_node_id: crate::dom::BackendNodeId) -> Self { self.violating_node_id = Some(violating_node_id); self }
+    pub fn violating_node_attribute(mut self, violating_node_attribute: impl Into<Cow<'a, str>>) -> Self { self.violating_node_attribute = Some(violating_node_attribute.into()); self }
     pub fn request(mut self, request: AffectedRequest<'a>) -> Self { self.request = Some(request); self }
     pub fn build(self) -> GenericIssueDetails<'a> {
         GenericIssueDetails {
-            errorType: self.errorType,
-            frameId: self.frameId,
-            violatingNodeId: self.violatingNodeId,
-            violatingNodeAttribute: self.violatingNodeAttribute,
+            error_type: self.error_type,
+            frame_id: self.frame_id,
+            violating_node_id: self.violating_node_id,
+            violating_node_attribute: self.violating_node_attribute,
             request: self.request,
         }
     }
 }
 
 /// This issue tracks information needed to print a deprecation message.
-/// https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/frame/third_party/blink/renderer/core/frame/deprecation/README.md
+/// <https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/frame/third_party/blink/renderer/core/frame/deprecation/README.md>
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct DeprecationIssueDetails<'a> {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    affectedFrame: Option<AffectedFrame<'a>>,
-    sourceCodeLocation: SourceCodeLocation<'a>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "affectedFrame")]
+    affected_frame: Option<AffectedFrame<'a>>,
+    #[serde(rename = "sourceCodeLocation")]
+    source_code_location: SourceCodeLocation<'a>,
     /// One of the deprecation names from third_party/blink/renderer/core/frame/deprecation/deprecation.json5
     #[serde(rename = "type")]
     type_: Cow<'a, str>,
 }
 
 impl<'a> DeprecationIssueDetails<'a> {
-    pub fn builder(sourceCodeLocation: SourceCodeLocation<'a>, type_: impl Into<Cow<'a, str>>) -> DeprecationIssueDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `source_code_location`: 
+    /// * `type_`: One of the deprecation names from third_party/blink/renderer/core/frame/deprecation/deprecation.json5
+    pub fn builder(source_code_location: SourceCodeLocation<'a>, type_: impl Into<Cow<'a, str>>) -> DeprecationIssueDetailsBuilder<'a> {
         DeprecationIssueDetailsBuilder {
-            affectedFrame: None,
-            sourceCodeLocation: sourceCodeLocation,
+            affected_frame: None,
+            source_code_location: source_code_location,
             type_: type_.into(),
         }
     }
-    pub fn affectedFrame(&self) -> Option<&AffectedFrame<'a>> { self.affectedFrame.as_ref() }
-    pub fn sourceCodeLocation(&self) -> &SourceCodeLocation<'a> { &self.sourceCodeLocation }
+    pub fn affected_frame(&self) -> Option<&AffectedFrame<'a>> { self.affected_frame.as_ref() }
+    pub fn source_code_location(&self) -> &SourceCodeLocation<'a> { &self.source_code_location }
+    /// One of the deprecation names from third_party/blink/renderer/core/frame/deprecation/deprecation.json5
     pub fn type_(&self) -> &str { self.type_.as_ref() }
 }
 
 
 pub struct DeprecationIssueDetailsBuilder<'a> {
-    affectedFrame: Option<AffectedFrame<'a>>,
-    sourceCodeLocation: SourceCodeLocation<'a>,
+    affected_frame: Option<AffectedFrame<'a>>,
+    source_code_location: SourceCodeLocation<'a>,
     type_: Cow<'a, str>,
 }
 
 impl<'a> DeprecationIssueDetailsBuilder<'a> {
-    pub fn affectedFrame(mut self, affectedFrame: AffectedFrame<'a>) -> Self { self.affectedFrame = Some(affectedFrame); self }
+    pub fn affected_frame(mut self, affected_frame: AffectedFrame<'a>) -> Self { self.affected_frame = Some(affected_frame); self }
     pub fn build(self) -> DeprecationIssueDetails<'a> {
         DeprecationIssueDetails {
-            affectedFrame: self.affectedFrame,
-            sourceCodeLocation: self.sourceCodeLocation,
+            affected_frame: self.affected_frame,
+            source_code_location: self.source_code_location,
             type_: self.type_,
         }
     }
@@ -1566,27 +1693,30 @@ impl<'a> DeprecationIssueDetailsBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct BounceTrackingIssueDetails<'a> {
-    trackingSites: Vec<Cow<'a, str>>,
+    #[serde(rename = "trackingSites")]
+    tracking_sites: Vec<Cow<'a, str>>,
 }
 
 impl<'a> BounceTrackingIssueDetails<'a> {
-    pub fn builder(trackingSites: Vec<Cow<'a, str>>) -> BounceTrackingIssueDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `tracking_sites`: 
+    pub fn builder(tracking_sites: Vec<Cow<'a, str>>) -> BounceTrackingIssueDetailsBuilder<'a> {
         BounceTrackingIssueDetailsBuilder {
-            trackingSites: trackingSites,
+            tracking_sites: tracking_sites,
         }
     }
-    pub fn trackingSites(&self) -> &[Cow<'a, str>] { &self.trackingSites }
+    pub fn tracking_sites(&self) -> &[Cow<'a, str>] { &self.tracking_sites }
 }
 
 
 pub struct BounceTrackingIssueDetailsBuilder<'a> {
-    trackingSites: Vec<Cow<'a, str>>,
+    tracking_sites: Vec<Cow<'a, str>>,
 }
 
 impl<'a> BounceTrackingIssueDetailsBuilder<'a> {
     pub fn build(self) -> BounceTrackingIssueDetails<'a> {
         BounceTrackingIssueDetails {
-            trackingSites: self.trackingSites,
+            tracking_sites: self.tracking_sites,
         }
     }
 }
@@ -1600,41 +1730,49 @@ impl<'a> BounceTrackingIssueDetailsBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct CookieDeprecationMetadataIssueDetails<'a> {
-    allowedSites: Vec<Cow<'a, str>>,
-    optOutPercentage: f64,
-    isOptOutTopLevel: bool,
+    #[serde(rename = "allowedSites")]
+    allowed_sites: Vec<Cow<'a, str>>,
+    #[serde(rename = "optOutPercentage")]
+    opt_out_percentage: f64,
+    #[serde(rename = "isOptOutTopLevel")]
+    is_opt_out_top_level: bool,
     operation: CookieOperation,
 }
 
 impl<'a> CookieDeprecationMetadataIssueDetails<'a> {
-    pub fn builder(allowedSites: Vec<Cow<'a, str>>, optOutPercentage: f64, isOptOutTopLevel: bool, operation: impl Into<CookieOperation>) -> CookieDeprecationMetadataIssueDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `allowed_sites`: 
+    /// * `opt_out_percentage`: 
+    /// * `is_opt_out_top_level`: 
+    /// * `operation`: 
+    pub fn builder(allowed_sites: Vec<Cow<'a, str>>, opt_out_percentage: f64, is_opt_out_top_level: bool, operation: impl Into<CookieOperation>) -> CookieDeprecationMetadataIssueDetailsBuilder<'a> {
         CookieDeprecationMetadataIssueDetailsBuilder {
-            allowedSites: allowedSites,
-            optOutPercentage: optOutPercentage,
-            isOptOutTopLevel: isOptOutTopLevel,
+            allowed_sites: allowed_sites,
+            opt_out_percentage: opt_out_percentage,
+            is_opt_out_top_level: is_opt_out_top_level,
             operation: operation.into(),
         }
     }
-    pub fn allowedSites(&self) -> &[Cow<'a, str>] { &self.allowedSites }
-    pub fn optOutPercentage(&self) -> f64 { self.optOutPercentage }
-    pub fn isOptOutTopLevel(&self) -> bool { self.isOptOutTopLevel }
+    pub fn allowed_sites(&self) -> &[Cow<'a, str>] { &self.allowed_sites }
+    pub fn opt_out_percentage(&self) -> f64 { self.opt_out_percentage }
+    pub fn is_opt_out_top_level(&self) -> bool { self.is_opt_out_top_level }
     pub fn operation(&self) -> &CookieOperation { &self.operation }
 }
 
 
 pub struct CookieDeprecationMetadataIssueDetailsBuilder<'a> {
-    allowedSites: Vec<Cow<'a, str>>,
-    optOutPercentage: f64,
-    isOptOutTopLevel: bool,
+    allowed_sites: Vec<Cow<'a, str>>,
+    opt_out_percentage: f64,
+    is_opt_out_top_level: bool,
     operation: CookieOperation,
 }
 
 impl<'a> CookieDeprecationMetadataIssueDetailsBuilder<'a> {
     pub fn build(self) -> CookieDeprecationMetadataIssueDetails<'a> {
         CookieDeprecationMetadataIssueDetails {
-            allowedSites: self.allowedSites,
-            optOutPercentage: self.optOutPercentage,
-            isOptOutTopLevel: self.isOptOutTopLevel,
+            allowed_sites: self.allowed_sites,
+            opt_out_percentage: self.opt_out_percentage,
+            is_opt_out_top_level: self.is_opt_out_top_level,
             operation: self.operation,
         }
     }
@@ -1654,27 +1792,30 @@ pub enum ClientHintIssueReason {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct FederatedAuthRequestIssueDetails {
-    federatedAuthRequestIssueReason: FederatedAuthRequestIssueReason,
+    #[serde(rename = "federatedAuthRequestIssueReason")]
+    federated_auth_request_issue_reason: FederatedAuthRequestIssueReason,
 }
 
 impl FederatedAuthRequestIssueDetails {
-    pub fn builder(federatedAuthRequestIssueReason: impl Into<FederatedAuthRequestIssueReason>) -> FederatedAuthRequestIssueDetailsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `federated_auth_request_issue_reason`: 
+    pub fn builder(federated_auth_request_issue_reason: impl Into<FederatedAuthRequestIssueReason>) -> FederatedAuthRequestIssueDetailsBuilder {
         FederatedAuthRequestIssueDetailsBuilder {
-            federatedAuthRequestIssueReason: federatedAuthRequestIssueReason.into(),
+            federated_auth_request_issue_reason: federated_auth_request_issue_reason.into(),
         }
     }
-    pub fn federatedAuthRequestIssueReason(&self) -> &FederatedAuthRequestIssueReason { &self.federatedAuthRequestIssueReason }
+    pub fn federated_auth_request_issue_reason(&self) -> &FederatedAuthRequestIssueReason { &self.federated_auth_request_issue_reason }
 }
 
 
 pub struct FederatedAuthRequestIssueDetailsBuilder {
-    federatedAuthRequestIssueReason: FederatedAuthRequestIssueReason,
+    federated_auth_request_issue_reason: FederatedAuthRequestIssueReason,
 }
 
 impl FederatedAuthRequestIssueDetailsBuilder {
     pub fn build(self) -> FederatedAuthRequestIssueDetails {
         FederatedAuthRequestIssueDetails {
-            federatedAuthRequestIssueReason: self.federatedAuthRequestIssueReason,
+            federated_auth_request_issue_reason: self.federated_auth_request_issue_reason,
         }
     }
 }
@@ -1777,27 +1918,30 @@ pub enum FederatedAuthRequestIssueReason {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct FederatedAuthUserInfoRequestIssueDetails {
-    federatedAuthUserInfoRequestIssueReason: FederatedAuthUserInfoRequestIssueReason,
+    #[serde(rename = "federatedAuthUserInfoRequestIssueReason")]
+    federated_auth_user_info_request_issue_reason: FederatedAuthUserInfoRequestIssueReason,
 }
 
 impl FederatedAuthUserInfoRequestIssueDetails {
-    pub fn builder(federatedAuthUserInfoRequestIssueReason: impl Into<FederatedAuthUserInfoRequestIssueReason>) -> FederatedAuthUserInfoRequestIssueDetailsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `federated_auth_user_info_request_issue_reason`: 
+    pub fn builder(federated_auth_user_info_request_issue_reason: impl Into<FederatedAuthUserInfoRequestIssueReason>) -> FederatedAuthUserInfoRequestIssueDetailsBuilder {
         FederatedAuthUserInfoRequestIssueDetailsBuilder {
-            federatedAuthUserInfoRequestIssueReason: federatedAuthUserInfoRequestIssueReason.into(),
+            federated_auth_user_info_request_issue_reason: federated_auth_user_info_request_issue_reason.into(),
         }
     }
-    pub fn federatedAuthUserInfoRequestIssueReason(&self) -> &FederatedAuthUserInfoRequestIssueReason { &self.federatedAuthUserInfoRequestIssueReason }
+    pub fn federated_auth_user_info_request_issue_reason(&self) -> &FederatedAuthUserInfoRequestIssueReason { &self.federated_auth_user_info_request_issue_reason }
 }
 
 
 pub struct FederatedAuthUserInfoRequestIssueDetailsBuilder {
-    federatedAuthUserInfoRequestIssueReason: FederatedAuthUserInfoRequestIssueReason,
+    federated_auth_user_info_request_issue_reason: FederatedAuthUserInfoRequestIssueReason,
 }
 
 impl FederatedAuthUserInfoRequestIssueDetailsBuilder {
     pub fn build(self) -> FederatedAuthUserInfoRequestIssueDetails {
         FederatedAuthUserInfoRequestIssueDetails {
-            federatedAuthUserInfoRequestIssueReason: self.federatedAuthUserInfoRequestIssueReason,
+            federated_auth_user_info_request_issue_reason: self.federated_auth_user_info_request_issue_reason,
         }
     }
 }
@@ -1835,32 +1979,37 @@ pub enum FederatedAuthUserInfoRequestIssueReason {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ClientHintIssueDetails<'a> {
-    sourceCodeLocation: SourceCodeLocation<'a>,
-    clientHintIssueReason: ClientHintIssueReason,
+    #[serde(rename = "sourceCodeLocation")]
+    source_code_location: SourceCodeLocation<'a>,
+    #[serde(rename = "clientHintIssueReason")]
+    client_hint_issue_reason: ClientHintIssueReason,
 }
 
 impl<'a> ClientHintIssueDetails<'a> {
-    pub fn builder(sourceCodeLocation: SourceCodeLocation<'a>, clientHintIssueReason: impl Into<ClientHintIssueReason>) -> ClientHintIssueDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `source_code_location`: 
+    /// * `client_hint_issue_reason`: 
+    pub fn builder(source_code_location: SourceCodeLocation<'a>, client_hint_issue_reason: impl Into<ClientHintIssueReason>) -> ClientHintIssueDetailsBuilder<'a> {
         ClientHintIssueDetailsBuilder {
-            sourceCodeLocation: sourceCodeLocation,
-            clientHintIssueReason: clientHintIssueReason.into(),
+            source_code_location: source_code_location,
+            client_hint_issue_reason: client_hint_issue_reason.into(),
         }
     }
-    pub fn sourceCodeLocation(&self) -> &SourceCodeLocation<'a> { &self.sourceCodeLocation }
-    pub fn clientHintIssueReason(&self) -> &ClientHintIssueReason { &self.clientHintIssueReason }
+    pub fn source_code_location(&self) -> &SourceCodeLocation<'a> { &self.source_code_location }
+    pub fn client_hint_issue_reason(&self) -> &ClientHintIssueReason { &self.client_hint_issue_reason }
 }
 
 
 pub struct ClientHintIssueDetailsBuilder<'a> {
-    sourceCodeLocation: SourceCodeLocation<'a>,
-    clientHintIssueReason: ClientHintIssueReason,
+    source_code_location: SourceCodeLocation<'a>,
+    client_hint_issue_reason: ClientHintIssueReason,
 }
 
 impl<'a> ClientHintIssueDetailsBuilder<'a> {
     pub fn build(self) -> ClientHintIssueDetails<'a> {
         ClientHintIssueDetails {
-            sourceCodeLocation: self.sourceCodeLocation,
-            clientHintIssueReason: self.clientHintIssueReason,
+            source_code_location: self.source_code_location,
+            client_hint_issue_reason: self.client_hint_issue_reason,
         }
     }
 }
@@ -1872,38 +2021,44 @@ pub struct FailedRequestInfo<'a> {
     /// The URL that failed to load.
     url: Cow<'a, str>,
     /// The failure message for the failed request.
-    failureMessage: Cow<'a, str>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    requestId: Option<crate::network::RequestId<'a>>,
+    #[serde(rename = "failureMessage")]
+    failure_message: Cow<'a, str>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "requestId")]
+    request_id: Option<crate::network::RequestId<'a>>,
 }
 
 impl<'a> FailedRequestInfo<'a> {
-    pub fn builder(url: impl Into<Cow<'a, str>>, failureMessage: impl Into<Cow<'a, str>>) -> FailedRequestInfoBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url`: The URL that failed to load.
+    /// * `failure_message`: The failure message for the failed request.
+    pub fn builder(url: impl Into<Cow<'a, str>>, failure_message: impl Into<Cow<'a, str>>) -> FailedRequestInfoBuilder<'a> {
         FailedRequestInfoBuilder {
             url: url.into(),
-            failureMessage: failureMessage.into(),
-            requestId: None,
+            failure_message: failure_message.into(),
+            request_id: None,
         }
     }
+    /// The URL that failed to load.
     pub fn url(&self) -> &str { self.url.as_ref() }
-    pub fn failureMessage(&self) -> &str { self.failureMessage.as_ref() }
-    pub fn requestId(&self) -> Option<&crate::network::RequestId<'a>> { self.requestId.as_ref() }
+    /// The failure message for the failed request.
+    pub fn failure_message(&self) -> &str { self.failure_message.as_ref() }
+    pub fn request_id(&self) -> Option<&crate::network::RequestId<'a>> { self.request_id.as_ref() }
 }
 
 
 pub struct FailedRequestInfoBuilder<'a> {
     url: Cow<'a, str>,
-    failureMessage: Cow<'a, str>,
-    requestId: Option<crate::network::RequestId<'a>>,
+    failure_message: Cow<'a, str>,
+    request_id: Option<crate::network::RequestId<'a>>,
 }
 
 impl<'a> FailedRequestInfoBuilder<'a> {
-    pub fn requestId(mut self, requestId: crate::network::RequestId<'a>) -> Self { self.requestId = Some(requestId); self }
+    pub fn request_id(mut self, request_id: crate::network::RequestId<'a>) -> Self { self.request_id = Some(request_id); self }
     pub fn build(self) -> FailedRequestInfo<'a> {
         FailedRequestInfo {
             url: self.url,
-            failureMessage: self.failureMessage,
-            requestId: self.requestId,
+            failure_message: self.failure_message,
+            request_id: self.request_id,
         }
     }
 }
@@ -1925,31 +2080,37 @@ pub struct PartitioningBlobURLIssueDetails<'a> {
     /// The BlobURL that failed to load.
     url: Cow<'a, str>,
     /// Additional information about the Partitioning Blob URL issue.
-    partitioningBlobURLInfo: PartitioningBlobURLInfo,
+    #[serde(rename = "partitioningBlobURLInfo")]
+    partitioning_blob_url_info: PartitioningBlobURLInfo,
 }
 
 impl<'a> PartitioningBlobURLIssueDetails<'a> {
-    pub fn builder(url: impl Into<Cow<'a, str>>, partitioningBlobURLInfo: impl Into<PartitioningBlobURLInfo>) -> PartitioningBlobURLIssueDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url`: The BlobURL that failed to load.
+    /// * `partitioning_blob_url_info`: Additional information about the Partitioning Blob URL issue.
+    pub fn builder(url: impl Into<Cow<'a, str>>, partitioning_blob_url_info: impl Into<PartitioningBlobURLInfo>) -> PartitioningBlobURLIssueDetailsBuilder<'a> {
         PartitioningBlobURLIssueDetailsBuilder {
             url: url.into(),
-            partitioningBlobURLInfo: partitioningBlobURLInfo.into(),
+            partitioning_blob_url_info: partitioning_blob_url_info.into(),
         }
     }
+    /// The BlobURL that failed to load.
     pub fn url(&self) -> &str { self.url.as_ref() }
-    pub fn partitioningBlobURLInfo(&self) -> &PartitioningBlobURLInfo { &self.partitioningBlobURLInfo }
+    /// Additional information about the Partitioning Blob URL issue.
+    pub fn partitioning_blob_url_info(&self) -> &PartitioningBlobURLInfo { &self.partitioning_blob_url_info }
 }
 
 
 pub struct PartitioningBlobURLIssueDetailsBuilder<'a> {
     url: Cow<'a, str>,
-    partitioningBlobURLInfo: PartitioningBlobURLInfo,
+    partitioning_blob_url_info: PartitioningBlobURLInfo,
 }
 
 impl<'a> PartitioningBlobURLIssueDetailsBuilder<'a> {
     pub fn build(self) -> PartitioningBlobURLIssueDetails<'a> {
         PartitioningBlobURLIssueDetails {
             url: self.url,
-            partitioningBlobURLInfo: self.partitioningBlobURLInfo,
+            partitioning_blob_url_info: self.partitioning_blob_url_info,
         }
     }
 }
@@ -1977,37 +2138,44 @@ pub enum ElementAccessibilityIssueReason {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ElementAccessibilityIssueDetails {
-    nodeId: crate::dom::BackendNodeId,
-    elementAccessibilityIssueReason: ElementAccessibilityIssueReason,
-    hasDisallowedAttributes: bool,
+    #[serde(rename = "nodeId")]
+    node_id: crate::dom::BackendNodeId,
+    #[serde(rename = "elementAccessibilityIssueReason")]
+    element_accessibility_issue_reason: ElementAccessibilityIssueReason,
+    #[serde(rename = "hasDisallowedAttributes")]
+    has_disallowed_attributes: bool,
 }
 
 impl ElementAccessibilityIssueDetails {
-    pub fn builder(nodeId: crate::dom::BackendNodeId, elementAccessibilityIssueReason: impl Into<ElementAccessibilityIssueReason>, hasDisallowedAttributes: bool) -> ElementAccessibilityIssueDetailsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `node_id`: 
+    /// * `element_accessibility_issue_reason`: 
+    /// * `has_disallowed_attributes`: 
+    pub fn builder(node_id: crate::dom::BackendNodeId, element_accessibility_issue_reason: impl Into<ElementAccessibilityIssueReason>, has_disallowed_attributes: bool) -> ElementAccessibilityIssueDetailsBuilder {
         ElementAccessibilityIssueDetailsBuilder {
-            nodeId: nodeId,
-            elementAccessibilityIssueReason: elementAccessibilityIssueReason.into(),
-            hasDisallowedAttributes: hasDisallowedAttributes,
+            node_id: node_id,
+            element_accessibility_issue_reason: element_accessibility_issue_reason.into(),
+            has_disallowed_attributes: has_disallowed_attributes,
         }
     }
-    pub fn nodeId(&self) -> &crate::dom::BackendNodeId { &self.nodeId }
-    pub fn elementAccessibilityIssueReason(&self) -> &ElementAccessibilityIssueReason { &self.elementAccessibilityIssueReason }
-    pub fn hasDisallowedAttributes(&self) -> bool { self.hasDisallowedAttributes }
+    pub fn node_id(&self) -> &crate::dom::BackendNodeId { &self.node_id }
+    pub fn element_accessibility_issue_reason(&self) -> &ElementAccessibilityIssueReason { &self.element_accessibility_issue_reason }
+    pub fn has_disallowed_attributes(&self) -> bool { self.has_disallowed_attributes }
 }
 
 
 pub struct ElementAccessibilityIssueDetailsBuilder {
-    nodeId: crate::dom::BackendNodeId,
-    elementAccessibilityIssueReason: ElementAccessibilityIssueReason,
-    hasDisallowedAttributes: bool,
+    node_id: crate::dom::BackendNodeId,
+    element_accessibility_issue_reason: ElementAccessibilityIssueReason,
+    has_disallowed_attributes: bool,
 }
 
 impl ElementAccessibilityIssueDetailsBuilder {
     pub fn build(self) -> ElementAccessibilityIssueDetails {
         ElementAccessibilityIssueDetails {
-            nodeId: self.nodeId,
-            elementAccessibilityIssueReason: self.elementAccessibilityIssueReason,
-            hasDisallowedAttributes: self.hasDisallowedAttributes,
+            node_id: self.node_id,
+            element_accessibility_issue_reason: self.element_accessibility_issue_reason,
+            has_disallowed_attributes: self.has_disallowed_attributes,
         }
     }
 }
@@ -2028,42 +2196,50 @@ pub enum StyleSheetLoadingIssueReason {
 #[serde(rename_all = "camelCase")]
 pub struct StylesheetLoadingIssueDetails<'a> {
     /// Source code position that referenced the failing stylesheet.
-    sourceCodeLocation: SourceCodeLocation<'a>,
+    #[serde(rename = "sourceCodeLocation")]
+    source_code_location: SourceCodeLocation<'a>,
     /// Reason why the stylesheet couldn't be loaded.
-    styleSheetLoadingIssueReason: StyleSheetLoadingIssueReason,
+    #[serde(rename = "styleSheetLoadingIssueReason")]
+    style_sheet_loading_issue_reason: StyleSheetLoadingIssueReason,
     /// Contains additional info when the failure was due to a request.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    failedRequestInfo: Option<FailedRequestInfo<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "failedRequestInfo")]
+    failed_request_info: Option<FailedRequestInfo<'a>>,
 }
 
 impl<'a> StylesheetLoadingIssueDetails<'a> {
-    pub fn builder(sourceCodeLocation: SourceCodeLocation<'a>, styleSheetLoadingIssueReason: impl Into<StyleSheetLoadingIssueReason>) -> StylesheetLoadingIssueDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `source_code_location`: Source code position that referenced the failing stylesheet.
+    /// * `style_sheet_loading_issue_reason`: Reason why the stylesheet couldn't be loaded.
+    pub fn builder(source_code_location: SourceCodeLocation<'a>, style_sheet_loading_issue_reason: impl Into<StyleSheetLoadingIssueReason>) -> StylesheetLoadingIssueDetailsBuilder<'a> {
         StylesheetLoadingIssueDetailsBuilder {
-            sourceCodeLocation: sourceCodeLocation,
-            styleSheetLoadingIssueReason: styleSheetLoadingIssueReason.into(),
-            failedRequestInfo: None,
+            source_code_location: source_code_location,
+            style_sheet_loading_issue_reason: style_sheet_loading_issue_reason.into(),
+            failed_request_info: None,
         }
     }
-    pub fn sourceCodeLocation(&self) -> &SourceCodeLocation<'a> { &self.sourceCodeLocation }
-    pub fn styleSheetLoadingIssueReason(&self) -> &StyleSheetLoadingIssueReason { &self.styleSheetLoadingIssueReason }
-    pub fn failedRequestInfo(&self) -> Option<&FailedRequestInfo<'a>> { self.failedRequestInfo.as_ref() }
+    /// Source code position that referenced the failing stylesheet.
+    pub fn source_code_location(&self) -> &SourceCodeLocation<'a> { &self.source_code_location }
+    /// Reason why the stylesheet couldn't be loaded.
+    pub fn style_sheet_loading_issue_reason(&self) -> &StyleSheetLoadingIssueReason { &self.style_sheet_loading_issue_reason }
+    /// Contains additional info when the failure was due to a request.
+    pub fn failed_request_info(&self) -> Option<&FailedRequestInfo<'a>> { self.failed_request_info.as_ref() }
 }
 
 
 pub struct StylesheetLoadingIssueDetailsBuilder<'a> {
-    sourceCodeLocation: SourceCodeLocation<'a>,
-    styleSheetLoadingIssueReason: StyleSheetLoadingIssueReason,
-    failedRequestInfo: Option<FailedRequestInfo<'a>>,
+    source_code_location: SourceCodeLocation<'a>,
+    style_sheet_loading_issue_reason: StyleSheetLoadingIssueReason,
+    failed_request_info: Option<FailedRequestInfo<'a>>,
 }
 
 impl<'a> StylesheetLoadingIssueDetailsBuilder<'a> {
     /// Contains additional info when the failure was due to a request.
-    pub fn failedRequestInfo(mut self, failedRequestInfo: FailedRequestInfo<'a>) -> Self { self.failedRequestInfo = Some(failedRequestInfo); self }
+    pub fn failed_request_info(mut self, failed_request_info: FailedRequestInfo<'a>) -> Self { self.failed_request_info = Some(failed_request_info); self }
     pub fn build(self) -> StylesheetLoadingIssueDetails<'a> {
         StylesheetLoadingIssueDetails {
-            sourceCodeLocation: self.sourceCodeLocation,
-            styleSheetLoadingIssueReason: self.styleSheetLoadingIssueReason,
-            failedRequestInfo: self.failedRequestInfo,
+            source_code_location: self.source_code_location,
+            style_sheet_loading_issue_reason: self.style_sheet_loading_issue_reason,
+            failed_request_info: self.failed_request_info,
         }
     }
 }
@@ -2089,42 +2265,50 @@ pub enum PropertyRuleIssueReason {
 #[serde(rename_all = "camelCase")]
 pub struct PropertyRuleIssueDetails<'a> {
     /// Source code position of the property rule.
-    sourceCodeLocation: SourceCodeLocation<'a>,
+    #[serde(rename = "sourceCodeLocation")]
+    source_code_location: SourceCodeLocation<'a>,
     /// Reason why the property rule was discarded.
-    propertyRuleIssueReason: PropertyRuleIssueReason,
+    #[serde(rename = "propertyRuleIssueReason")]
+    property_rule_issue_reason: PropertyRuleIssueReason,
     /// The value of the property rule property that failed to parse
-    #[serde(skip_serializing_if = "Option::is_none")]
-    propertyValue: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "propertyValue")]
+    property_value: Option<Cow<'a, str>>,
 }
 
 impl<'a> PropertyRuleIssueDetails<'a> {
-    pub fn builder(sourceCodeLocation: SourceCodeLocation<'a>, propertyRuleIssueReason: impl Into<PropertyRuleIssueReason>) -> PropertyRuleIssueDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `source_code_location`: Source code position of the property rule.
+    /// * `property_rule_issue_reason`: Reason why the property rule was discarded.
+    pub fn builder(source_code_location: SourceCodeLocation<'a>, property_rule_issue_reason: impl Into<PropertyRuleIssueReason>) -> PropertyRuleIssueDetailsBuilder<'a> {
         PropertyRuleIssueDetailsBuilder {
-            sourceCodeLocation: sourceCodeLocation,
-            propertyRuleIssueReason: propertyRuleIssueReason.into(),
-            propertyValue: None,
+            source_code_location: source_code_location,
+            property_rule_issue_reason: property_rule_issue_reason.into(),
+            property_value: None,
         }
     }
-    pub fn sourceCodeLocation(&self) -> &SourceCodeLocation<'a> { &self.sourceCodeLocation }
-    pub fn propertyRuleIssueReason(&self) -> &PropertyRuleIssueReason { &self.propertyRuleIssueReason }
-    pub fn propertyValue(&self) -> Option<&str> { self.propertyValue.as_deref() }
+    /// Source code position of the property rule.
+    pub fn source_code_location(&self) -> &SourceCodeLocation<'a> { &self.source_code_location }
+    /// Reason why the property rule was discarded.
+    pub fn property_rule_issue_reason(&self) -> &PropertyRuleIssueReason { &self.property_rule_issue_reason }
+    /// The value of the property rule property that failed to parse
+    pub fn property_value(&self) -> Option<&str> { self.property_value.as_deref() }
 }
 
 
 pub struct PropertyRuleIssueDetailsBuilder<'a> {
-    sourceCodeLocation: SourceCodeLocation<'a>,
-    propertyRuleIssueReason: PropertyRuleIssueReason,
-    propertyValue: Option<Cow<'a, str>>,
+    source_code_location: SourceCodeLocation<'a>,
+    property_rule_issue_reason: PropertyRuleIssueReason,
+    property_value: Option<Cow<'a, str>>,
 }
 
 impl<'a> PropertyRuleIssueDetailsBuilder<'a> {
     /// The value of the property rule property that failed to parse
-    pub fn propertyValue(mut self, propertyValue: impl Into<Cow<'a, str>>) -> Self { self.propertyValue = Some(propertyValue.into()); self }
+    pub fn property_value(mut self, property_value: impl Into<Cow<'a, str>>) -> Self { self.property_value = Some(property_value.into()); self }
     pub fn build(self) -> PropertyRuleIssueDetails<'a> {
         PropertyRuleIssueDetails {
-            sourceCodeLocation: self.sourceCodeLocation,
-            propertyRuleIssueReason: self.propertyRuleIssueReason,
-            propertyValue: self.propertyValue,
+            source_code_location: self.source_code_location,
+            property_rule_issue_reason: self.property_rule_issue_reason,
+            property_value: self.property_value,
         }
     }
 }
@@ -2153,40 +2337,44 @@ pub struct UserReidentificationIssueDetails<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     request: Option<AffectedRequest<'a>>,
     /// Applies to NoisedCanvasReadback issue type.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    sourceCodeLocation: Option<SourceCodeLocation<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sourceCodeLocation")]
+    source_code_location: Option<SourceCodeLocation<'a>>,
 }
 
 impl<'a> UserReidentificationIssueDetails<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `type_`: 
     pub fn builder(type_: impl Into<UserReidentificationIssueType>) -> UserReidentificationIssueDetailsBuilder<'a> {
         UserReidentificationIssueDetailsBuilder {
             type_: type_.into(),
             request: None,
-            sourceCodeLocation: None,
+            source_code_location: None,
         }
     }
     pub fn type_(&self) -> &UserReidentificationIssueType { &self.type_ }
+    /// Applies to BlockedFrameNavigation and BlockedSubresource issue types.
     pub fn request(&self) -> Option<&AffectedRequest<'a>> { self.request.as_ref() }
-    pub fn sourceCodeLocation(&self) -> Option<&SourceCodeLocation<'a>> { self.sourceCodeLocation.as_ref() }
+    /// Applies to NoisedCanvasReadback issue type.
+    pub fn source_code_location(&self) -> Option<&SourceCodeLocation<'a>> { self.source_code_location.as_ref() }
 }
 
 
 pub struct UserReidentificationIssueDetailsBuilder<'a> {
     type_: UserReidentificationIssueType,
     request: Option<AffectedRequest<'a>>,
-    sourceCodeLocation: Option<SourceCodeLocation<'a>>,
+    source_code_location: Option<SourceCodeLocation<'a>>,
 }
 
 impl<'a> UserReidentificationIssueDetailsBuilder<'a> {
     /// Applies to BlockedFrameNavigation and BlockedSubresource issue types.
     pub fn request(mut self, request: AffectedRequest<'a>) -> Self { self.request = Some(request); self }
     /// Applies to NoisedCanvasReadback issue type.
-    pub fn sourceCodeLocation(mut self, sourceCodeLocation: SourceCodeLocation<'a>) -> Self { self.sourceCodeLocation = Some(sourceCodeLocation); self }
+    pub fn source_code_location(mut self, source_code_location: SourceCodeLocation<'a>) -> Self { self.source_code_location = Some(source_code_location); self }
     pub fn build(self) -> UserReidentificationIssueDetails<'a> {
         UserReidentificationIssueDetails {
             type_: self.type_,
             request: self.request,
-            sourceCodeLocation: self.sourceCodeLocation,
+            source_code_location: self.source_code_location,
         }
     }
 }
@@ -2239,97 +2427,108 @@ pub enum PermissionElementIssueType {
     InvalidSizeValue,
 }
 
-/// This issue warns about improper usage of the <permission> element.
+/// This issue warns about improper usage of the \<permission\> element.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct PermissionElementIssueDetails<'a> {
-    issueType: PermissionElementIssueType,
+    #[serde(rename = "issueType")]
+    issue_type: PermissionElementIssueType,
     /// The value of the type attribute.
     #[serde(skip_serializing_if = "Option::is_none", rename = "type")]
     type_: Option<Cow<'a, str>>,
-    /// The node ID of the <permission> element.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    nodeId: Option<crate::dom::BackendNodeId>,
+    /// The node ID of the \<permission\> element.
+    #[serde(skip_serializing_if = "Option::is_none", rename = "nodeId")]
+    node_id: Option<crate::dom::BackendNodeId>,
     /// True if the issue is a warning, false if it is an error.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    isWarning: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "isWarning")]
+    is_warning: Option<bool>,
     /// Fields for message construction:
     /// Used for messages that reference a specific permission name
-    #[serde(skip_serializing_if = "Option::is_none")]
-    permissionName: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "permissionName")]
+    permission_name: Option<Cow<'a, str>>,
     /// Used for messages about occlusion
-    #[serde(skip_serializing_if = "Option::is_none")]
-    occluderNodeInfo: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "occluderNodeInfo")]
+    occluder_node_info: Option<Cow<'a, str>>,
     /// Used for messages about occluder's parent
-    #[serde(skip_serializing_if = "Option::is_none")]
-    occluderParentNodeInfo: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "occluderParentNodeInfo")]
+    occluder_parent_node_info: Option<Cow<'a, str>>,
     /// Used for messages about activation disabled reason
-    #[serde(skip_serializing_if = "Option::is_none")]
-    disableReason: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "disableReason")]
+    disable_reason: Option<Cow<'a, str>>,
 }
 
 impl<'a> PermissionElementIssueDetails<'a> {
-    pub fn builder(issueType: impl Into<PermissionElementIssueType>) -> PermissionElementIssueDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `issue_type`: 
+    pub fn builder(issue_type: impl Into<PermissionElementIssueType>) -> PermissionElementIssueDetailsBuilder<'a> {
         PermissionElementIssueDetailsBuilder {
-            issueType: issueType.into(),
+            issue_type: issue_type.into(),
             type_: None,
-            nodeId: None,
-            isWarning: None,
-            permissionName: None,
-            occluderNodeInfo: None,
-            occluderParentNodeInfo: None,
-            disableReason: None,
+            node_id: None,
+            is_warning: None,
+            permission_name: None,
+            occluder_node_info: None,
+            occluder_parent_node_info: None,
+            disable_reason: None,
         }
     }
-    pub fn issueType(&self) -> &PermissionElementIssueType { &self.issueType }
+    pub fn issue_type(&self) -> &PermissionElementIssueType { &self.issue_type }
+    /// The value of the type attribute.
     pub fn type_(&self) -> Option<&str> { self.type_.as_deref() }
-    pub fn nodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.nodeId.as_ref() }
-    pub fn isWarning(&self) -> Option<bool> { self.isWarning }
-    pub fn permissionName(&self) -> Option<&str> { self.permissionName.as_deref() }
-    pub fn occluderNodeInfo(&self) -> Option<&str> { self.occluderNodeInfo.as_deref() }
-    pub fn occluderParentNodeInfo(&self) -> Option<&str> { self.occluderParentNodeInfo.as_deref() }
-    pub fn disableReason(&self) -> Option<&str> { self.disableReason.as_deref() }
+    /// The node ID of the \<permission\> element.
+    pub fn node_id(&self) -> Option<&crate::dom::BackendNodeId> { self.node_id.as_ref() }
+    /// True if the issue is a warning, false if it is an error.
+    pub fn is_warning(&self) -> Option<bool> { self.is_warning }
+    /// Fields for message construction:
+    /// Used for messages that reference a specific permission name
+    pub fn permission_name(&self) -> Option<&str> { self.permission_name.as_deref() }
+    /// Used for messages about occlusion
+    pub fn occluder_node_info(&self) -> Option<&str> { self.occluder_node_info.as_deref() }
+    /// Used for messages about occluder's parent
+    pub fn occluder_parent_node_info(&self) -> Option<&str> { self.occluder_parent_node_info.as_deref() }
+    /// Used for messages about activation disabled reason
+    pub fn disable_reason(&self) -> Option<&str> { self.disable_reason.as_deref() }
 }
 
 
 pub struct PermissionElementIssueDetailsBuilder<'a> {
-    issueType: PermissionElementIssueType,
+    issue_type: PermissionElementIssueType,
     type_: Option<Cow<'a, str>>,
-    nodeId: Option<crate::dom::BackendNodeId>,
-    isWarning: Option<bool>,
-    permissionName: Option<Cow<'a, str>>,
-    occluderNodeInfo: Option<Cow<'a, str>>,
-    occluderParentNodeInfo: Option<Cow<'a, str>>,
-    disableReason: Option<Cow<'a, str>>,
+    node_id: Option<crate::dom::BackendNodeId>,
+    is_warning: Option<bool>,
+    permission_name: Option<Cow<'a, str>>,
+    occluder_node_info: Option<Cow<'a, str>>,
+    occluder_parent_node_info: Option<Cow<'a, str>>,
+    disable_reason: Option<Cow<'a, str>>,
 }
 
 impl<'a> PermissionElementIssueDetailsBuilder<'a> {
     /// The value of the type attribute.
     pub fn type_(mut self, type_: impl Into<Cow<'a, str>>) -> Self { self.type_ = Some(type_.into()); self }
-    /// The node ID of the <permission> element.
-    pub fn nodeId(mut self, nodeId: crate::dom::BackendNodeId) -> Self { self.nodeId = Some(nodeId); self }
+    /// The node ID of the \<permission\> element.
+    pub fn node_id(mut self, node_id: crate::dom::BackendNodeId) -> Self { self.node_id = Some(node_id); self }
     /// True if the issue is a warning, false if it is an error.
-    pub fn isWarning(mut self, isWarning: bool) -> Self { self.isWarning = Some(isWarning); self }
+    pub fn is_warning(mut self, is_warning: bool) -> Self { self.is_warning = Some(is_warning); self }
     /// Fields for message construction:
     /// Used for messages that reference a specific permission name
-    pub fn permissionName(mut self, permissionName: impl Into<Cow<'a, str>>) -> Self { self.permissionName = Some(permissionName.into()); self }
+    pub fn permission_name(mut self, permission_name: impl Into<Cow<'a, str>>) -> Self { self.permission_name = Some(permission_name.into()); self }
     /// Used for messages about occlusion
-    pub fn occluderNodeInfo(mut self, occluderNodeInfo: impl Into<Cow<'a, str>>) -> Self { self.occluderNodeInfo = Some(occluderNodeInfo.into()); self }
+    pub fn occluder_node_info(mut self, occluder_node_info: impl Into<Cow<'a, str>>) -> Self { self.occluder_node_info = Some(occluder_node_info.into()); self }
     /// Used for messages about occluder's parent
-    pub fn occluderParentNodeInfo(mut self, occluderParentNodeInfo: impl Into<Cow<'a, str>>) -> Self { self.occluderParentNodeInfo = Some(occluderParentNodeInfo.into()); self }
+    pub fn occluder_parent_node_info(mut self, occluder_parent_node_info: impl Into<Cow<'a, str>>) -> Self { self.occluder_parent_node_info = Some(occluder_parent_node_info.into()); self }
     /// Used for messages about activation disabled reason
-    pub fn disableReason(mut self, disableReason: impl Into<Cow<'a, str>>) -> Self { self.disableReason = Some(disableReason.into()); self }
+    pub fn disable_reason(mut self, disable_reason: impl Into<Cow<'a, str>>) -> Self { self.disable_reason = Some(disable_reason.into()); self }
     pub fn build(self) -> PermissionElementIssueDetails<'a> {
         PermissionElementIssueDetails {
-            issueType: self.issueType,
+            issue_type: self.issue_type,
             type_: self.type_,
-            nodeId: self.nodeId,
-            isWarning: self.isWarning,
-            permissionName: self.permissionName,
-            occluderNodeInfo: self.occluderNodeInfo,
-            occluderParentNodeInfo: self.occluderParentNodeInfo,
-            disableReason: self.disableReason,
+            node_id: self.node_id,
+            is_warning: self.is_warning,
+            permission_name: self.permission_name,
+            occluder_node_info: self.occluder_node_info,
+            occluder_parent_node_info: self.occluder_parent_node_info,
+            disable_reason: self.disable_reason,
         }
     }
 }
@@ -2341,42 +2540,50 @@ impl<'a> PermissionElementIssueDetailsBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SelectivePermissionsInterventionIssueDetails<'a> {
     /// Which API was intervened on.
-    apiName: Cow<'a, str>,
+    #[serde(rename = "apiName")]
+    api_name: Cow<'a, str>,
     /// Why the ad script using the API is considered an ad.
-    adAncestry: crate::network::AdAncestry<'a>,
+    #[serde(rename = "adAncestry")]
+    ad_ancestry: crate::network::AdAncestry<'a>,
     /// The stack trace at the time of the intervention.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    stackTrace: Option<crate::runtime::StackTrace>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "stackTrace")]
+    stack_trace: Option<crate::runtime::StackTrace>,
 }
 
 impl<'a> SelectivePermissionsInterventionIssueDetails<'a> {
-    pub fn builder(apiName: impl Into<Cow<'a, str>>, adAncestry: crate::network::AdAncestry<'a>) -> SelectivePermissionsInterventionIssueDetailsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `api_name`: Which API was intervened on.
+    /// * `ad_ancestry`: Why the ad script using the API is considered an ad.
+    pub fn builder(api_name: impl Into<Cow<'a, str>>, ad_ancestry: crate::network::AdAncestry<'a>) -> SelectivePermissionsInterventionIssueDetailsBuilder<'a> {
         SelectivePermissionsInterventionIssueDetailsBuilder {
-            apiName: apiName.into(),
-            adAncestry: adAncestry,
-            stackTrace: None,
+            api_name: api_name.into(),
+            ad_ancestry: ad_ancestry,
+            stack_trace: None,
         }
     }
-    pub fn apiName(&self) -> &str { self.apiName.as_ref() }
-    pub fn adAncestry(&self) -> &crate::network::AdAncestry<'a> { &self.adAncestry }
-    pub fn stackTrace(&self) -> Option<&crate::runtime::StackTrace> { self.stackTrace.as_ref() }
+    /// Which API was intervened on.
+    pub fn api_name(&self) -> &str { self.api_name.as_ref() }
+    /// Why the ad script using the API is considered an ad.
+    pub fn ad_ancestry(&self) -> &crate::network::AdAncestry<'a> { &self.ad_ancestry }
+    /// The stack trace at the time of the intervention.
+    pub fn stack_trace(&self) -> Option<&crate::runtime::StackTrace> { self.stack_trace.as_ref() }
 }
 
 
 pub struct SelectivePermissionsInterventionIssueDetailsBuilder<'a> {
-    apiName: Cow<'a, str>,
-    adAncestry: crate::network::AdAncestry<'a>,
-    stackTrace: Option<crate::runtime::StackTrace>,
+    api_name: Cow<'a, str>,
+    ad_ancestry: crate::network::AdAncestry<'a>,
+    stack_trace: Option<crate::runtime::StackTrace>,
 }
 
 impl<'a> SelectivePermissionsInterventionIssueDetailsBuilder<'a> {
     /// The stack trace at the time of the intervention.
-    pub fn stackTrace(mut self, stackTrace: crate::runtime::StackTrace) -> Self { self.stackTrace = Some(stackTrace); self }
+    pub fn stack_trace(mut self, stack_trace: crate::runtime::StackTrace) -> Self { self.stack_trace = Some(stack_trace); self }
     pub fn build(self) -> SelectivePermissionsInterventionIssueDetails<'a> {
         SelectivePermissionsInterventionIssueDetails {
-            apiName: self.apiName,
-            adAncestry: self.adAncestry,
-            stackTrace: self.stackTrace,
+            api_name: self.api_name,
+            ad_ancestry: self.ad_ancestry,
+            stack_trace: self.stack_trace,
         }
     }
 }
@@ -2455,225 +2662,226 @@ pub enum InspectorIssueCode {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct InspectorIssueDetails<'a> {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    cookieIssueDetails: Option<CookieIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    mixedContentIssueDetails: Option<MixedContentIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    blockedByResponseIssueDetails: Option<BlockedByResponseIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    heavyAdIssueDetails: Option<HeavyAdIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    contentSecurityPolicyIssueDetails: Option<ContentSecurityPolicyIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    sharedArrayBufferIssueDetails: Option<SharedArrayBufferIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    corsIssueDetails: Option<CorsIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    attributionReportingIssueDetails: Option<AttributionReportingIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    quirksModeIssueDetails: Option<QuirksModeIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    partitioningBlobURLIssueDetails: Option<PartitioningBlobURLIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    navigatorUserAgentIssueDetails: Option<NavigatorUserAgentIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    genericIssueDetails: Option<GenericIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    deprecationIssueDetails: Option<DeprecationIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    clientHintIssueDetails: Option<ClientHintIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    federatedAuthRequestIssueDetails: Option<FederatedAuthRequestIssueDetails>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    bounceTrackingIssueDetails: Option<BounceTrackingIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    cookieDeprecationMetadataIssueDetails: Option<CookieDeprecationMetadataIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    stylesheetLoadingIssueDetails: Option<StylesheetLoadingIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    propertyRuleIssueDetails: Option<PropertyRuleIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    federatedAuthUserInfoRequestIssueDetails: Option<FederatedAuthUserInfoRequestIssueDetails>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    sharedDictionaryIssueDetails: Option<SharedDictionaryIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    elementAccessibilityIssueDetails: Option<ElementAccessibilityIssueDetails>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    sriMessageSignatureIssueDetails: Option<SRIMessageSignatureIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    unencodedDigestIssueDetails: Option<UnencodedDigestIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    connectionAllowlistIssueDetails: Option<ConnectionAllowlistIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    userReidentificationIssueDetails: Option<UserReidentificationIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    permissionElementIssueDetails: Option<PermissionElementIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    performanceIssueDetails: Option<PerformanceIssueDetails<'a>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    selectivePermissionsInterventionIssueDetails: Option<SelectivePermissionsInterventionIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "cookieIssueDetails")]
+    cookie_issue_details: Option<CookieIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "mixedContentIssueDetails")]
+    mixed_content_issue_details: Option<MixedContentIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "blockedByResponseIssueDetails")]
+    blocked_by_response_issue_details: Option<BlockedByResponseIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "heavyAdIssueDetails")]
+    heavy_ad_issue_details: Option<HeavyAdIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "contentSecurityPolicyIssueDetails")]
+    content_security_policy_issue_details: Option<ContentSecurityPolicyIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sharedArrayBufferIssueDetails")]
+    shared_array_buffer_issue_details: Option<SharedArrayBufferIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "corsIssueDetails")]
+    cors_issue_details: Option<CorsIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "attributionReportingIssueDetails")]
+    attribution_reporting_issue_details: Option<AttributionReportingIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "quirksModeIssueDetails")]
+    quirks_mode_issue_details: Option<QuirksModeIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "partitioningBlobURLIssueDetails")]
+    partitioning_blob_url_issue_details: Option<PartitioningBlobURLIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "navigatorUserAgentIssueDetails")]
+    navigator_user_agent_issue_details: Option<NavigatorUserAgentIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "genericIssueDetails")]
+    generic_issue_details: Option<GenericIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "deprecationIssueDetails")]
+    deprecation_issue_details: Option<DeprecationIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "clientHintIssueDetails")]
+    client_hint_issue_details: Option<ClientHintIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "federatedAuthRequestIssueDetails")]
+    federated_auth_request_issue_details: Option<FederatedAuthRequestIssueDetails>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "bounceTrackingIssueDetails")]
+    bounce_tracking_issue_details: Option<BounceTrackingIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "cookieDeprecationMetadataIssueDetails")]
+    cookie_deprecation_metadata_issue_details: Option<CookieDeprecationMetadataIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "stylesheetLoadingIssueDetails")]
+    stylesheet_loading_issue_details: Option<StylesheetLoadingIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "propertyRuleIssueDetails")]
+    property_rule_issue_details: Option<PropertyRuleIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "federatedAuthUserInfoRequestIssueDetails")]
+    federated_auth_user_info_request_issue_details: Option<FederatedAuthUserInfoRequestIssueDetails>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sharedDictionaryIssueDetails")]
+    shared_dictionary_issue_details: Option<SharedDictionaryIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "elementAccessibilityIssueDetails")]
+    element_accessibility_issue_details: Option<ElementAccessibilityIssueDetails>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sriMessageSignatureIssueDetails")]
+    sri_message_signature_issue_details: Option<SRIMessageSignatureIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "unencodedDigestIssueDetails")]
+    unencoded_digest_issue_details: Option<UnencodedDigestIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "connectionAllowlistIssueDetails")]
+    connection_allowlist_issue_details: Option<ConnectionAllowlistIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "userReidentificationIssueDetails")]
+    user_reidentification_issue_details: Option<UserReidentificationIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "permissionElementIssueDetails")]
+    permission_element_issue_details: Option<PermissionElementIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "performanceIssueDetails")]
+    performance_issue_details: Option<PerformanceIssueDetails<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "selectivePermissionsInterventionIssueDetails")]
+    selective_permissions_intervention_issue_details: Option<SelectivePermissionsInterventionIssueDetails<'a>>,
 }
 
 impl<'a> InspectorIssueDetails<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> InspectorIssueDetailsBuilder<'a> {
         InspectorIssueDetailsBuilder {
-            cookieIssueDetails: None,
-            mixedContentIssueDetails: None,
-            blockedByResponseIssueDetails: None,
-            heavyAdIssueDetails: None,
-            contentSecurityPolicyIssueDetails: None,
-            sharedArrayBufferIssueDetails: None,
-            corsIssueDetails: None,
-            attributionReportingIssueDetails: None,
-            quirksModeIssueDetails: None,
-            partitioningBlobURLIssueDetails: None,
-            navigatorUserAgentIssueDetails: None,
-            genericIssueDetails: None,
-            deprecationIssueDetails: None,
-            clientHintIssueDetails: None,
-            federatedAuthRequestIssueDetails: None,
-            bounceTrackingIssueDetails: None,
-            cookieDeprecationMetadataIssueDetails: None,
-            stylesheetLoadingIssueDetails: None,
-            propertyRuleIssueDetails: None,
-            federatedAuthUserInfoRequestIssueDetails: None,
-            sharedDictionaryIssueDetails: None,
-            elementAccessibilityIssueDetails: None,
-            sriMessageSignatureIssueDetails: None,
-            unencodedDigestIssueDetails: None,
-            connectionAllowlistIssueDetails: None,
-            userReidentificationIssueDetails: None,
-            permissionElementIssueDetails: None,
-            performanceIssueDetails: None,
-            selectivePermissionsInterventionIssueDetails: None,
+            cookie_issue_details: None,
+            mixed_content_issue_details: None,
+            blocked_by_response_issue_details: None,
+            heavy_ad_issue_details: None,
+            content_security_policy_issue_details: None,
+            shared_array_buffer_issue_details: None,
+            cors_issue_details: None,
+            attribution_reporting_issue_details: None,
+            quirks_mode_issue_details: None,
+            partitioning_blob_url_issue_details: None,
+            navigator_user_agent_issue_details: None,
+            generic_issue_details: None,
+            deprecation_issue_details: None,
+            client_hint_issue_details: None,
+            federated_auth_request_issue_details: None,
+            bounce_tracking_issue_details: None,
+            cookie_deprecation_metadata_issue_details: None,
+            stylesheet_loading_issue_details: None,
+            property_rule_issue_details: None,
+            federated_auth_user_info_request_issue_details: None,
+            shared_dictionary_issue_details: None,
+            element_accessibility_issue_details: None,
+            sri_message_signature_issue_details: None,
+            unencoded_digest_issue_details: None,
+            connection_allowlist_issue_details: None,
+            user_reidentification_issue_details: None,
+            permission_element_issue_details: None,
+            performance_issue_details: None,
+            selective_permissions_intervention_issue_details: None,
         }
     }
-    pub fn cookieIssueDetails(&self) -> Option<&CookieIssueDetails<'a>> { self.cookieIssueDetails.as_ref() }
-    pub fn mixedContentIssueDetails(&self) -> Option<&MixedContentIssueDetails<'a>> { self.mixedContentIssueDetails.as_ref() }
-    pub fn blockedByResponseIssueDetails(&self) -> Option<&BlockedByResponseIssueDetails<'a>> { self.blockedByResponseIssueDetails.as_ref() }
-    pub fn heavyAdIssueDetails(&self) -> Option<&HeavyAdIssueDetails<'a>> { self.heavyAdIssueDetails.as_ref() }
-    pub fn contentSecurityPolicyIssueDetails(&self) -> Option<&ContentSecurityPolicyIssueDetails<'a>> { self.contentSecurityPolicyIssueDetails.as_ref() }
-    pub fn sharedArrayBufferIssueDetails(&self) -> Option<&SharedArrayBufferIssueDetails<'a>> { self.sharedArrayBufferIssueDetails.as_ref() }
-    pub fn corsIssueDetails(&self) -> Option<&CorsIssueDetails<'a>> { self.corsIssueDetails.as_ref() }
-    pub fn attributionReportingIssueDetails(&self) -> Option<&AttributionReportingIssueDetails<'a>> { self.attributionReportingIssueDetails.as_ref() }
-    pub fn quirksModeIssueDetails(&self) -> Option<&QuirksModeIssueDetails<'a>> { self.quirksModeIssueDetails.as_ref() }
-    pub fn partitioningBlobURLIssueDetails(&self) -> Option<&PartitioningBlobURLIssueDetails<'a>> { self.partitioningBlobURLIssueDetails.as_ref() }
-    pub fn navigatorUserAgentIssueDetails(&self) -> Option<&NavigatorUserAgentIssueDetails<'a>> { self.navigatorUserAgentIssueDetails.as_ref() }
-    pub fn genericIssueDetails(&self) -> Option<&GenericIssueDetails<'a>> { self.genericIssueDetails.as_ref() }
-    pub fn deprecationIssueDetails(&self) -> Option<&DeprecationIssueDetails<'a>> { self.deprecationIssueDetails.as_ref() }
-    pub fn clientHintIssueDetails(&self) -> Option<&ClientHintIssueDetails<'a>> { self.clientHintIssueDetails.as_ref() }
-    pub fn federatedAuthRequestIssueDetails(&self) -> Option<&FederatedAuthRequestIssueDetails> { self.federatedAuthRequestIssueDetails.as_ref() }
-    pub fn bounceTrackingIssueDetails(&self) -> Option<&BounceTrackingIssueDetails<'a>> { self.bounceTrackingIssueDetails.as_ref() }
-    pub fn cookieDeprecationMetadataIssueDetails(&self) -> Option<&CookieDeprecationMetadataIssueDetails<'a>> { self.cookieDeprecationMetadataIssueDetails.as_ref() }
-    pub fn stylesheetLoadingIssueDetails(&self) -> Option<&StylesheetLoadingIssueDetails<'a>> { self.stylesheetLoadingIssueDetails.as_ref() }
-    pub fn propertyRuleIssueDetails(&self) -> Option<&PropertyRuleIssueDetails<'a>> { self.propertyRuleIssueDetails.as_ref() }
-    pub fn federatedAuthUserInfoRequestIssueDetails(&self) -> Option<&FederatedAuthUserInfoRequestIssueDetails> { self.federatedAuthUserInfoRequestIssueDetails.as_ref() }
-    pub fn sharedDictionaryIssueDetails(&self) -> Option<&SharedDictionaryIssueDetails<'a>> { self.sharedDictionaryIssueDetails.as_ref() }
-    pub fn elementAccessibilityIssueDetails(&self) -> Option<&ElementAccessibilityIssueDetails> { self.elementAccessibilityIssueDetails.as_ref() }
-    pub fn sriMessageSignatureIssueDetails(&self) -> Option<&SRIMessageSignatureIssueDetails<'a>> { self.sriMessageSignatureIssueDetails.as_ref() }
-    pub fn unencodedDigestIssueDetails(&self) -> Option<&UnencodedDigestIssueDetails<'a>> { self.unencodedDigestIssueDetails.as_ref() }
-    pub fn connectionAllowlistIssueDetails(&self) -> Option<&ConnectionAllowlistIssueDetails<'a>> { self.connectionAllowlistIssueDetails.as_ref() }
-    pub fn userReidentificationIssueDetails(&self) -> Option<&UserReidentificationIssueDetails<'a>> { self.userReidentificationIssueDetails.as_ref() }
-    pub fn permissionElementIssueDetails(&self) -> Option<&PermissionElementIssueDetails<'a>> { self.permissionElementIssueDetails.as_ref() }
-    pub fn performanceIssueDetails(&self) -> Option<&PerformanceIssueDetails<'a>> { self.performanceIssueDetails.as_ref() }
-    pub fn selectivePermissionsInterventionIssueDetails(&self) -> Option<&SelectivePermissionsInterventionIssueDetails<'a>> { self.selectivePermissionsInterventionIssueDetails.as_ref() }
+    pub fn cookie_issue_details(&self) -> Option<&CookieIssueDetails<'a>> { self.cookie_issue_details.as_ref() }
+    pub fn mixed_content_issue_details(&self) -> Option<&MixedContentIssueDetails<'a>> { self.mixed_content_issue_details.as_ref() }
+    pub fn blocked_by_response_issue_details(&self) -> Option<&BlockedByResponseIssueDetails<'a>> { self.blocked_by_response_issue_details.as_ref() }
+    pub fn heavy_ad_issue_details(&self) -> Option<&HeavyAdIssueDetails<'a>> { self.heavy_ad_issue_details.as_ref() }
+    pub fn content_security_policy_issue_details(&self) -> Option<&ContentSecurityPolicyIssueDetails<'a>> { self.content_security_policy_issue_details.as_ref() }
+    pub fn shared_array_buffer_issue_details(&self) -> Option<&SharedArrayBufferIssueDetails<'a>> { self.shared_array_buffer_issue_details.as_ref() }
+    pub fn cors_issue_details(&self) -> Option<&CorsIssueDetails<'a>> { self.cors_issue_details.as_ref() }
+    pub fn attribution_reporting_issue_details(&self) -> Option<&AttributionReportingIssueDetails<'a>> { self.attribution_reporting_issue_details.as_ref() }
+    pub fn quirks_mode_issue_details(&self) -> Option<&QuirksModeIssueDetails<'a>> { self.quirks_mode_issue_details.as_ref() }
+    pub fn partitioning_blob_url_issue_details(&self) -> Option<&PartitioningBlobURLIssueDetails<'a>> { self.partitioning_blob_url_issue_details.as_ref() }
+    pub fn navigator_user_agent_issue_details(&self) -> Option<&NavigatorUserAgentIssueDetails<'a>> { self.navigator_user_agent_issue_details.as_ref() }
+    pub fn generic_issue_details(&self) -> Option<&GenericIssueDetails<'a>> { self.generic_issue_details.as_ref() }
+    pub fn deprecation_issue_details(&self) -> Option<&DeprecationIssueDetails<'a>> { self.deprecation_issue_details.as_ref() }
+    pub fn client_hint_issue_details(&self) -> Option<&ClientHintIssueDetails<'a>> { self.client_hint_issue_details.as_ref() }
+    pub fn federated_auth_request_issue_details(&self) -> Option<&FederatedAuthRequestIssueDetails> { self.federated_auth_request_issue_details.as_ref() }
+    pub fn bounce_tracking_issue_details(&self) -> Option<&BounceTrackingIssueDetails<'a>> { self.bounce_tracking_issue_details.as_ref() }
+    pub fn cookie_deprecation_metadata_issue_details(&self) -> Option<&CookieDeprecationMetadataIssueDetails<'a>> { self.cookie_deprecation_metadata_issue_details.as_ref() }
+    pub fn stylesheet_loading_issue_details(&self) -> Option<&StylesheetLoadingIssueDetails<'a>> { self.stylesheet_loading_issue_details.as_ref() }
+    pub fn property_rule_issue_details(&self) -> Option<&PropertyRuleIssueDetails<'a>> { self.property_rule_issue_details.as_ref() }
+    pub fn federated_auth_user_info_request_issue_details(&self) -> Option<&FederatedAuthUserInfoRequestIssueDetails> { self.federated_auth_user_info_request_issue_details.as_ref() }
+    pub fn shared_dictionary_issue_details(&self) -> Option<&SharedDictionaryIssueDetails<'a>> { self.shared_dictionary_issue_details.as_ref() }
+    pub fn element_accessibility_issue_details(&self) -> Option<&ElementAccessibilityIssueDetails> { self.element_accessibility_issue_details.as_ref() }
+    pub fn sri_message_signature_issue_details(&self) -> Option<&SRIMessageSignatureIssueDetails<'a>> { self.sri_message_signature_issue_details.as_ref() }
+    pub fn unencoded_digest_issue_details(&self) -> Option<&UnencodedDigestIssueDetails<'a>> { self.unencoded_digest_issue_details.as_ref() }
+    pub fn connection_allowlist_issue_details(&self) -> Option<&ConnectionAllowlistIssueDetails<'a>> { self.connection_allowlist_issue_details.as_ref() }
+    pub fn user_reidentification_issue_details(&self) -> Option<&UserReidentificationIssueDetails<'a>> { self.user_reidentification_issue_details.as_ref() }
+    pub fn permission_element_issue_details(&self) -> Option<&PermissionElementIssueDetails<'a>> { self.permission_element_issue_details.as_ref() }
+    pub fn performance_issue_details(&self) -> Option<&PerformanceIssueDetails<'a>> { self.performance_issue_details.as_ref() }
+    pub fn selective_permissions_intervention_issue_details(&self) -> Option<&SelectivePermissionsInterventionIssueDetails<'a>> { self.selective_permissions_intervention_issue_details.as_ref() }
 }
 
 #[derive(Default)]
 pub struct InspectorIssueDetailsBuilder<'a> {
-    cookieIssueDetails: Option<CookieIssueDetails<'a>>,
-    mixedContentIssueDetails: Option<MixedContentIssueDetails<'a>>,
-    blockedByResponseIssueDetails: Option<BlockedByResponseIssueDetails<'a>>,
-    heavyAdIssueDetails: Option<HeavyAdIssueDetails<'a>>,
-    contentSecurityPolicyIssueDetails: Option<ContentSecurityPolicyIssueDetails<'a>>,
-    sharedArrayBufferIssueDetails: Option<SharedArrayBufferIssueDetails<'a>>,
-    corsIssueDetails: Option<CorsIssueDetails<'a>>,
-    attributionReportingIssueDetails: Option<AttributionReportingIssueDetails<'a>>,
-    quirksModeIssueDetails: Option<QuirksModeIssueDetails<'a>>,
-    partitioningBlobURLIssueDetails: Option<PartitioningBlobURLIssueDetails<'a>>,
-    navigatorUserAgentIssueDetails: Option<NavigatorUserAgentIssueDetails<'a>>,
-    genericIssueDetails: Option<GenericIssueDetails<'a>>,
-    deprecationIssueDetails: Option<DeprecationIssueDetails<'a>>,
-    clientHintIssueDetails: Option<ClientHintIssueDetails<'a>>,
-    federatedAuthRequestIssueDetails: Option<FederatedAuthRequestIssueDetails>,
-    bounceTrackingIssueDetails: Option<BounceTrackingIssueDetails<'a>>,
-    cookieDeprecationMetadataIssueDetails: Option<CookieDeprecationMetadataIssueDetails<'a>>,
-    stylesheetLoadingIssueDetails: Option<StylesheetLoadingIssueDetails<'a>>,
-    propertyRuleIssueDetails: Option<PropertyRuleIssueDetails<'a>>,
-    federatedAuthUserInfoRequestIssueDetails: Option<FederatedAuthUserInfoRequestIssueDetails>,
-    sharedDictionaryIssueDetails: Option<SharedDictionaryIssueDetails<'a>>,
-    elementAccessibilityIssueDetails: Option<ElementAccessibilityIssueDetails>,
-    sriMessageSignatureIssueDetails: Option<SRIMessageSignatureIssueDetails<'a>>,
-    unencodedDigestIssueDetails: Option<UnencodedDigestIssueDetails<'a>>,
-    connectionAllowlistIssueDetails: Option<ConnectionAllowlistIssueDetails<'a>>,
-    userReidentificationIssueDetails: Option<UserReidentificationIssueDetails<'a>>,
-    permissionElementIssueDetails: Option<PermissionElementIssueDetails<'a>>,
-    performanceIssueDetails: Option<PerformanceIssueDetails<'a>>,
-    selectivePermissionsInterventionIssueDetails: Option<SelectivePermissionsInterventionIssueDetails<'a>>,
+    cookie_issue_details: Option<CookieIssueDetails<'a>>,
+    mixed_content_issue_details: Option<MixedContentIssueDetails<'a>>,
+    blocked_by_response_issue_details: Option<BlockedByResponseIssueDetails<'a>>,
+    heavy_ad_issue_details: Option<HeavyAdIssueDetails<'a>>,
+    content_security_policy_issue_details: Option<ContentSecurityPolicyIssueDetails<'a>>,
+    shared_array_buffer_issue_details: Option<SharedArrayBufferIssueDetails<'a>>,
+    cors_issue_details: Option<CorsIssueDetails<'a>>,
+    attribution_reporting_issue_details: Option<AttributionReportingIssueDetails<'a>>,
+    quirks_mode_issue_details: Option<QuirksModeIssueDetails<'a>>,
+    partitioning_blob_url_issue_details: Option<PartitioningBlobURLIssueDetails<'a>>,
+    navigator_user_agent_issue_details: Option<NavigatorUserAgentIssueDetails<'a>>,
+    generic_issue_details: Option<GenericIssueDetails<'a>>,
+    deprecation_issue_details: Option<DeprecationIssueDetails<'a>>,
+    client_hint_issue_details: Option<ClientHintIssueDetails<'a>>,
+    federated_auth_request_issue_details: Option<FederatedAuthRequestIssueDetails>,
+    bounce_tracking_issue_details: Option<BounceTrackingIssueDetails<'a>>,
+    cookie_deprecation_metadata_issue_details: Option<CookieDeprecationMetadataIssueDetails<'a>>,
+    stylesheet_loading_issue_details: Option<StylesheetLoadingIssueDetails<'a>>,
+    property_rule_issue_details: Option<PropertyRuleIssueDetails<'a>>,
+    federated_auth_user_info_request_issue_details: Option<FederatedAuthUserInfoRequestIssueDetails>,
+    shared_dictionary_issue_details: Option<SharedDictionaryIssueDetails<'a>>,
+    element_accessibility_issue_details: Option<ElementAccessibilityIssueDetails>,
+    sri_message_signature_issue_details: Option<SRIMessageSignatureIssueDetails<'a>>,
+    unencoded_digest_issue_details: Option<UnencodedDigestIssueDetails<'a>>,
+    connection_allowlist_issue_details: Option<ConnectionAllowlistIssueDetails<'a>>,
+    user_reidentification_issue_details: Option<UserReidentificationIssueDetails<'a>>,
+    permission_element_issue_details: Option<PermissionElementIssueDetails<'a>>,
+    performance_issue_details: Option<PerformanceIssueDetails<'a>>,
+    selective_permissions_intervention_issue_details: Option<SelectivePermissionsInterventionIssueDetails<'a>>,
 }
 
 impl<'a> InspectorIssueDetailsBuilder<'a> {
-    pub fn cookieIssueDetails(mut self, cookieIssueDetails: CookieIssueDetails<'a>) -> Self { self.cookieIssueDetails = Some(cookieIssueDetails); self }
-    pub fn mixedContentIssueDetails(mut self, mixedContentIssueDetails: MixedContentIssueDetails<'a>) -> Self { self.mixedContentIssueDetails = Some(mixedContentIssueDetails); self }
-    pub fn blockedByResponseIssueDetails(mut self, blockedByResponseIssueDetails: BlockedByResponseIssueDetails<'a>) -> Self { self.blockedByResponseIssueDetails = Some(blockedByResponseIssueDetails); self }
-    pub fn heavyAdIssueDetails(mut self, heavyAdIssueDetails: HeavyAdIssueDetails<'a>) -> Self { self.heavyAdIssueDetails = Some(heavyAdIssueDetails); self }
-    pub fn contentSecurityPolicyIssueDetails(mut self, contentSecurityPolicyIssueDetails: ContentSecurityPolicyIssueDetails<'a>) -> Self { self.contentSecurityPolicyIssueDetails = Some(contentSecurityPolicyIssueDetails); self }
-    pub fn sharedArrayBufferIssueDetails(mut self, sharedArrayBufferIssueDetails: SharedArrayBufferIssueDetails<'a>) -> Self { self.sharedArrayBufferIssueDetails = Some(sharedArrayBufferIssueDetails); self }
-    pub fn corsIssueDetails(mut self, corsIssueDetails: CorsIssueDetails<'a>) -> Self { self.corsIssueDetails = Some(corsIssueDetails); self }
-    pub fn attributionReportingIssueDetails(mut self, attributionReportingIssueDetails: AttributionReportingIssueDetails<'a>) -> Self { self.attributionReportingIssueDetails = Some(attributionReportingIssueDetails); self }
-    pub fn quirksModeIssueDetails(mut self, quirksModeIssueDetails: QuirksModeIssueDetails<'a>) -> Self { self.quirksModeIssueDetails = Some(quirksModeIssueDetails); self }
-    pub fn partitioningBlobURLIssueDetails(mut self, partitioningBlobURLIssueDetails: PartitioningBlobURLIssueDetails<'a>) -> Self { self.partitioningBlobURLIssueDetails = Some(partitioningBlobURLIssueDetails); self }
-    pub fn navigatorUserAgentIssueDetails(mut self, navigatorUserAgentIssueDetails: NavigatorUserAgentIssueDetails<'a>) -> Self { self.navigatorUserAgentIssueDetails = Some(navigatorUserAgentIssueDetails); self }
-    pub fn genericIssueDetails(mut self, genericIssueDetails: GenericIssueDetails<'a>) -> Self { self.genericIssueDetails = Some(genericIssueDetails); self }
-    pub fn deprecationIssueDetails(mut self, deprecationIssueDetails: DeprecationIssueDetails<'a>) -> Self { self.deprecationIssueDetails = Some(deprecationIssueDetails); self }
-    pub fn clientHintIssueDetails(mut self, clientHintIssueDetails: ClientHintIssueDetails<'a>) -> Self { self.clientHintIssueDetails = Some(clientHintIssueDetails); self }
-    pub fn federatedAuthRequestIssueDetails(mut self, federatedAuthRequestIssueDetails: FederatedAuthRequestIssueDetails) -> Self { self.federatedAuthRequestIssueDetails = Some(federatedAuthRequestIssueDetails); self }
-    pub fn bounceTrackingIssueDetails(mut self, bounceTrackingIssueDetails: BounceTrackingIssueDetails<'a>) -> Self { self.bounceTrackingIssueDetails = Some(bounceTrackingIssueDetails); self }
-    pub fn cookieDeprecationMetadataIssueDetails(mut self, cookieDeprecationMetadataIssueDetails: CookieDeprecationMetadataIssueDetails<'a>) -> Self { self.cookieDeprecationMetadataIssueDetails = Some(cookieDeprecationMetadataIssueDetails); self }
-    pub fn stylesheetLoadingIssueDetails(mut self, stylesheetLoadingIssueDetails: StylesheetLoadingIssueDetails<'a>) -> Self { self.stylesheetLoadingIssueDetails = Some(stylesheetLoadingIssueDetails); self }
-    pub fn propertyRuleIssueDetails(mut self, propertyRuleIssueDetails: PropertyRuleIssueDetails<'a>) -> Self { self.propertyRuleIssueDetails = Some(propertyRuleIssueDetails); self }
-    pub fn federatedAuthUserInfoRequestIssueDetails(mut self, federatedAuthUserInfoRequestIssueDetails: FederatedAuthUserInfoRequestIssueDetails) -> Self { self.federatedAuthUserInfoRequestIssueDetails = Some(federatedAuthUserInfoRequestIssueDetails); self }
-    pub fn sharedDictionaryIssueDetails(mut self, sharedDictionaryIssueDetails: SharedDictionaryIssueDetails<'a>) -> Self { self.sharedDictionaryIssueDetails = Some(sharedDictionaryIssueDetails); self }
-    pub fn elementAccessibilityIssueDetails(mut self, elementAccessibilityIssueDetails: ElementAccessibilityIssueDetails) -> Self { self.elementAccessibilityIssueDetails = Some(elementAccessibilityIssueDetails); self }
-    pub fn sriMessageSignatureIssueDetails(mut self, sriMessageSignatureIssueDetails: SRIMessageSignatureIssueDetails<'a>) -> Self { self.sriMessageSignatureIssueDetails = Some(sriMessageSignatureIssueDetails); self }
-    pub fn unencodedDigestIssueDetails(mut self, unencodedDigestIssueDetails: UnencodedDigestIssueDetails<'a>) -> Self { self.unencodedDigestIssueDetails = Some(unencodedDigestIssueDetails); self }
-    pub fn connectionAllowlistIssueDetails(mut self, connectionAllowlistIssueDetails: ConnectionAllowlistIssueDetails<'a>) -> Self { self.connectionAllowlistIssueDetails = Some(connectionAllowlistIssueDetails); self }
-    pub fn userReidentificationIssueDetails(mut self, userReidentificationIssueDetails: UserReidentificationIssueDetails<'a>) -> Self { self.userReidentificationIssueDetails = Some(userReidentificationIssueDetails); self }
-    pub fn permissionElementIssueDetails(mut self, permissionElementIssueDetails: PermissionElementIssueDetails<'a>) -> Self { self.permissionElementIssueDetails = Some(permissionElementIssueDetails); self }
-    pub fn performanceIssueDetails(mut self, performanceIssueDetails: PerformanceIssueDetails<'a>) -> Self { self.performanceIssueDetails = Some(performanceIssueDetails); self }
-    pub fn selectivePermissionsInterventionIssueDetails(mut self, selectivePermissionsInterventionIssueDetails: SelectivePermissionsInterventionIssueDetails<'a>) -> Self { self.selectivePermissionsInterventionIssueDetails = Some(selectivePermissionsInterventionIssueDetails); self }
+    pub fn cookie_issue_details(mut self, cookie_issue_details: CookieIssueDetails<'a>) -> Self { self.cookie_issue_details = Some(cookie_issue_details); self }
+    pub fn mixed_content_issue_details(mut self, mixed_content_issue_details: MixedContentIssueDetails<'a>) -> Self { self.mixed_content_issue_details = Some(mixed_content_issue_details); self }
+    pub fn blocked_by_response_issue_details(mut self, blocked_by_response_issue_details: BlockedByResponseIssueDetails<'a>) -> Self { self.blocked_by_response_issue_details = Some(blocked_by_response_issue_details); self }
+    pub fn heavy_ad_issue_details(mut self, heavy_ad_issue_details: HeavyAdIssueDetails<'a>) -> Self { self.heavy_ad_issue_details = Some(heavy_ad_issue_details); self }
+    pub fn content_security_policy_issue_details(mut self, content_security_policy_issue_details: ContentSecurityPolicyIssueDetails<'a>) -> Self { self.content_security_policy_issue_details = Some(content_security_policy_issue_details); self }
+    pub fn shared_array_buffer_issue_details(mut self, shared_array_buffer_issue_details: SharedArrayBufferIssueDetails<'a>) -> Self { self.shared_array_buffer_issue_details = Some(shared_array_buffer_issue_details); self }
+    pub fn cors_issue_details(mut self, cors_issue_details: CorsIssueDetails<'a>) -> Self { self.cors_issue_details = Some(cors_issue_details); self }
+    pub fn attribution_reporting_issue_details(mut self, attribution_reporting_issue_details: AttributionReportingIssueDetails<'a>) -> Self { self.attribution_reporting_issue_details = Some(attribution_reporting_issue_details); self }
+    pub fn quirks_mode_issue_details(mut self, quirks_mode_issue_details: QuirksModeIssueDetails<'a>) -> Self { self.quirks_mode_issue_details = Some(quirks_mode_issue_details); self }
+    pub fn partitioning_blob_url_issue_details(mut self, partitioning_blob_url_issue_details: PartitioningBlobURLIssueDetails<'a>) -> Self { self.partitioning_blob_url_issue_details = Some(partitioning_blob_url_issue_details); self }
+    pub fn navigator_user_agent_issue_details(mut self, navigator_user_agent_issue_details: NavigatorUserAgentIssueDetails<'a>) -> Self { self.navigator_user_agent_issue_details = Some(navigator_user_agent_issue_details); self }
+    pub fn generic_issue_details(mut self, generic_issue_details: GenericIssueDetails<'a>) -> Self { self.generic_issue_details = Some(generic_issue_details); self }
+    pub fn deprecation_issue_details(mut self, deprecation_issue_details: DeprecationIssueDetails<'a>) -> Self { self.deprecation_issue_details = Some(deprecation_issue_details); self }
+    pub fn client_hint_issue_details(mut self, client_hint_issue_details: ClientHintIssueDetails<'a>) -> Self { self.client_hint_issue_details = Some(client_hint_issue_details); self }
+    pub fn federated_auth_request_issue_details(mut self, federated_auth_request_issue_details: FederatedAuthRequestIssueDetails) -> Self { self.federated_auth_request_issue_details = Some(federated_auth_request_issue_details); self }
+    pub fn bounce_tracking_issue_details(mut self, bounce_tracking_issue_details: BounceTrackingIssueDetails<'a>) -> Self { self.bounce_tracking_issue_details = Some(bounce_tracking_issue_details); self }
+    pub fn cookie_deprecation_metadata_issue_details(mut self, cookie_deprecation_metadata_issue_details: CookieDeprecationMetadataIssueDetails<'a>) -> Self { self.cookie_deprecation_metadata_issue_details = Some(cookie_deprecation_metadata_issue_details); self }
+    pub fn stylesheet_loading_issue_details(mut self, stylesheet_loading_issue_details: StylesheetLoadingIssueDetails<'a>) -> Self { self.stylesheet_loading_issue_details = Some(stylesheet_loading_issue_details); self }
+    pub fn property_rule_issue_details(mut self, property_rule_issue_details: PropertyRuleIssueDetails<'a>) -> Self { self.property_rule_issue_details = Some(property_rule_issue_details); self }
+    pub fn federated_auth_user_info_request_issue_details(mut self, federated_auth_user_info_request_issue_details: FederatedAuthUserInfoRequestIssueDetails) -> Self { self.federated_auth_user_info_request_issue_details = Some(federated_auth_user_info_request_issue_details); self }
+    pub fn shared_dictionary_issue_details(mut self, shared_dictionary_issue_details: SharedDictionaryIssueDetails<'a>) -> Self { self.shared_dictionary_issue_details = Some(shared_dictionary_issue_details); self }
+    pub fn element_accessibility_issue_details(mut self, element_accessibility_issue_details: ElementAccessibilityIssueDetails) -> Self { self.element_accessibility_issue_details = Some(element_accessibility_issue_details); self }
+    pub fn sri_message_signature_issue_details(mut self, sri_message_signature_issue_details: SRIMessageSignatureIssueDetails<'a>) -> Self { self.sri_message_signature_issue_details = Some(sri_message_signature_issue_details); self }
+    pub fn unencoded_digest_issue_details(mut self, unencoded_digest_issue_details: UnencodedDigestIssueDetails<'a>) -> Self { self.unencoded_digest_issue_details = Some(unencoded_digest_issue_details); self }
+    pub fn connection_allowlist_issue_details(mut self, connection_allowlist_issue_details: ConnectionAllowlistIssueDetails<'a>) -> Self { self.connection_allowlist_issue_details = Some(connection_allowlist_issue_details); self }
+    pub fn user_reidentification_issue_details(mut self, user_reidentification_issue_details: UserReidentificationIssueDetails<'a>) -> Self { self.user_reidentification_issue_details = Some(user_reidentification_issue_details); self }
+    pub fn permission_element_issue_details(mut self, permission_element_issue_details: PermissionElementIssueDetails<'a>) -> Self { self.permission_element_issue_details = Some(permission_element_issue_details); self }
+    pub fn performance_issue_details(mut self, performance_issue_details: PerformanceIssueDetails<'a>) -> Self { self.performance_issue_details = Some(performance_issue_details); self }
+    pub fn selective_permissions_intervention_issue_details(mut self, selective_permissions_intervention_issue_details: SelectivePermissionsInterventionIssueDetails<'a>) -> Self { self.selective_permissions_intervention_issue_details = Some(selective_permissions_intervention_issue_details); self }
     pub fn build(self) -> InspectorIssueDetails<'a> {
         InspectorIssueDetails {
-            cookieIssueDetails: self.cookieIssueDetails,
-            mixedContentIssueDetails: self.mixedContentIssueDetails,
-            blockedByResponseIssueDetails: self.blockedByResponseIssueDetails,
-            heavyAdIssueDetails: self.heavyAdIssueDetails,
-            contentSecurityPolicyIssueDetails: self.contentSecurityPolicyIssueDetails,
-            sharedArrayBufferIssueDetails: self.sharedArrayBufferIssueDetails,
-            corsIssueDetails: self.corsIssueDetails,
-            attributionReportingIssueDetails: self.attributionReportingIssueDetails,
-            quirksModeIssueDetails: self.quirksModeIssueDetails,
-            partitioningBlobURLIssueDetails: self.partitioningBlobURLIssueDetails,
-            navigatorUserAgentIssueDetails: self.navigatorUserAgentIssueDetails,
-            genericIssueDetails: self.genericIssueDetails,
-            deprecationIssueDetails: self.deprecationIssueDetails,
-            clientHintIssueDetails: self.clientHintIssueDetails,
-            federatedAuthRequestIssueDetails: self.federatedAuthRequestIssueDetails,
-            bounceTrackingIssueDetails: self.bounceTrackingIssueDetails,
-            cookieDeprecationMetadataIssueDetails: self.cookieDeprecationMetadataIssueDetails,
-            stylesheetLoadingIssueDetails: self.stylesheetLoadingIssueDetails,
-            propertyRuleIssueDetails: self.propertyRuleIssueDetails,
-            federatedAuthUserInfoRequestIssueDetails: self.federatedAuthUserInfoRequestIssueDetails,
-            sharedDictionaryIssueDetails: self.sharedDictionaryIssueDetails,
-            elementAccessibilityIssueDetails: self.elementAccessibilityIssueDetails,
-            sriMessageSignatureIssueDetails: self.sriMessageSignatureIssueDetails,
-            unencodedDigestIssueDetails: self.unencodedDigestIssueDetails,
-            connectionAllowlistIssueDetails: self.connectionAllowlistIssueDetails,
-            userReidentificationIssueDetails: self.userReidentificationIssueDetails,
-            permissionElementIssueDetails: self.permissionElementIssueDetails,
-            performanceIssueDetails: self.performanceIssueDetails,
-            selectivePermissionsInterventionIssueDetails: self.selectivePermissionsInterventionIssueDetails,
+            cookie_issue_details: self.cookie_issue_details,
+            mixed_content_issue_details: self.mixed_content_issue_details,
+            blocked_by_response_issue_details: self.blocked_by_response_issue_details,
+            heavy_ad_issue_details: self.heavy_ad_issue_details,
+            content_security_policy_issue_details: self.content_security_policy_issue_details,
+            shared_array_buffer_issue_details: self.shared_array_buffer_issue_details,
+            cors_issue_details: self.cors_issue_details,
+            attribution_reporting_issue_details: self.attribution_reporting_issue_details,
+            quirks_mode_issue_details: self.quirks_mode_issue_details,
+            partitioning_blob_url_issue_details: self.partitioning_blob_url_issue_details,
+            navigator_user_agent_issue_details: self.navigator_user_agent_issue_details,
+            generic_issue_details: self.generic_issue_details,
+            deprecation_issue_details: self.deprecation_issue_details,
+            client_hint_issue_details: self.client_hint_issue_details,
+            federated_auth_request_issue_details: self.federated_auth_request_issue_details,
+            bounce_tracking_issue_details: self.bounce_tracking_issue_details,
+            cookie_deprecation_metadata_issue_details: self.cookie_deprecation_metadata_issue_details,
+            stylesheet_loading_issue_details: self.stylesheet_loading_issue_details,
+            property_rule_issue_details: self.property_rule_issue_details,
+            federated_auth_user_info_request_issue_details: self.federated_auth_user_info_request_issue_details,
+            shared_dictionary_issue_details: self.shared_dictionary_issue_details,
+            element_accessibility_issue_details: self.element_accessibility_issue_details,
+            sri_message_signature_issue_details: self.sri_message_signature_issue_details,
+            unencoded_digest_issue_details: self.unencoded_digest_issue_details,
+            connection_allowlist_issue_details: self.connection_allowlist_issue_details,
+            user_reidentification_issue_details: self.user_reidentification_issue_details,
+            permission_element_issue_details: self.permission_element_issue_details,
+            performance_issue_details: self.performance_issue_details,
+            selective_permissions_intervention_issue_details: self.selective_permissions_intervention_issue_details,
         }
     }
 }
@@ -2692,39 +2900,44 @@ pub struct InspectorIssue<'a> {
     details: InspectorIssueDetails<'a>,
     /// A unique id for this issue. May be omitted if no other entity (e.g.
     /// exception, CDP message, etc.) is referencing this issue.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    issueId: Option<IssueId<'a>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "issueId")]
+    issue_id: Option<IssueId<'a>>,
 }
 
 impl<'a> InspectorIssue<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `code`: 
+    /// * `details`: 
     pub fn builder(code: impl Into<InspectorIssueCode>, details: InspectorIssueDetails<'a>) -> InspectorIssueBuilder<'a> {
         InspectorIssueBuilder {
             code: code.into(),
             details: details,
-            issueId: None,
+            issue_id: None,
         }
     }
     pub fn code(&self) -> &InspectorIssueCode { &self.code }
     pub fn details(&self) -> &InspectorIssueDetails<'a> { &self.details }
-    pub fn issueId(&self) -> Option<&IssueId<'a>> { self.issueId.as_ref() }
+    /// A unique id for this issue. May be omitted if no other entity (e.g.
+    /// exception, CDP message, etc.) is referencing this issue.
+    pub fn issue_id(&self) -> Option<&IssueId<'a>> { self.issue_id.as_ref() }
 }
 
 
 pub struct InspectorIssueBuilder<'a> {
     code: InspectorIssueCode,
     details: InspectorIssueDetails<'a>,
-    issueId: Option<IssueId<'a>>,
+    issue_id: Option<IssueId<'a>>,
 }
 
 impl<'a> InspectorIssueBuilder<'a> {
     /// A unique id for this issue. May be omitted if no other entity (e.g.
     /// exception, CDP message, etc.) is referencing this issue.
-    pub fn issueId(mut self, issueId: impl Into<IssueId<'a>>) -> Self { self.issueId = Some(issueId.into()); self }
+    pub fn issue_id(mut self, issue_id: impl Into<IssueId<'a>>) -> Self { self.issue_id = Some(issue_id.into()); self }
     pub fn build(self) -> InspectorIssue<'a> {
         InspectorIssue {
             code: self.code,
             details: self.details,
-            issueId: self.issueId,
+            issue_id: self.issue_id,
         }
     }
 }
@@ -2736,51 +2949,59 @@ impl<'a> InspectorIssueBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct GetEncodedResponseParams<'a> {
     /// Identifier of the network request to get content for.
-    requestId: crate::network::RequestId<'a>,
+    #[serde(rename = "requestId")]
+    request_id: crate::network::RequestId<'a>,
     /// The encoding to use.
     encoding: Cow<'a, str>,
     /// The quality of the encoding (0-1). (defaults to 1)
     #[serde(skip_serializing_if = "Option::is_none")]
     quality: Option<f64>,
     /// Whether to only return the size information (defaults to false).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    sizeOnly: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sizeOnly")]
+    size_only: Option<bool>,
 }
 
 impl<'a> GetEncodedResponseParams<'a> {
-    pub fn builder(requestId: crate::network::RequestId<'a>, encoding: impl Into<Cow<'a, str>>) -> GetEncodedResponseParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_id`: Identifier of the network request to get content for.
+    /// * `encoding`: The encoding to use.
+    pub fn builder(request_id: crate::network::RequestId<'a>, encoding: impl Into<Cow<'a, str>>) -> GetEncodedResponseParamsBuilder<'a> {
         GetEncodedResponseParamsBuilder {
-            requestId: requestId,
+            request_id: request_id,
             encoding: encoding.into(),
             quality: None,
-            sizeOnly: None,
+            size_only: None,
         }
     }
-    pub fn requestId(&self) -> &crate::network::RequestId<'a> { &self.requestId }
+    /// Identifier of the network request to get content for.
+    pub fn request_id(&self) -> &crate::network::RequestId<'a> { &self.request_id }
+    /// The encoding to use.
     pub fn encoding(&self) -> &str { self.encoding.as_ref() }
+    /// The quality of the encoding (0-1). (defaults to 1)
     pub fn quality(&self) -> Option<f64> { self.quality }
-    pub fn sizeOnly(&self) -> Option<bool> { self.sizeOnly }
+    /// Whether to only return the size information (defaults to false).
+    pub fn size_only(&self) -> Option<bool> { self.size_only }
 }
 
 
 pub struct GetEncodedResponseParamsBuilder<'a> {
-    requestId: crate::network::RequestId<'a>,
+    request_id: crate::network::RequestId<'a>,
     encoding: Cow<'a, str>,
     quality: Option<f64>,
-    sizeOnly: Option<bool>,
+    size_only: Option<bool>,
 }
 
 impl<'a> GetEncodedResponseParamsBuilder<'a> {
     /// The quality of the encoding (0-1). (defaults to 1)
     pub fn quality(mut self, quality: f64) -> Self { self.quality = Some(quality); self }
     /// Whether to only return the size information (defaults to false).
-    pub fn sizeOnly(mut self, sizeOnly: bool) -> Self { self.sizeOnly = Some(sizeOnly); self }
+    pub fn size_only(mut self, size_only: bool) -> Self { self.size_only = Some(size_only); self }
     pub fn build(self) -> GetEncodedResponseParams<'a> {
         GetEncodedResponseParams {
-            requestId: self.requestId,
+            request_id: self.request_id,
             encoding: self.encoding,
             quality: self.quality,
-            sizeOnly: self.sizeOnly,
+            size_only: self.size_only,
         }
     }
 }
@@ -2795,29 +3016,37 @@ pub struct GetEncodedResponseReturns<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     body: Option<Cow<'a, str>>,
     /// Size before re-encoding.
-    originalSize: u64,
+    #[serde(rename = "originalSize")]
+    original_size: u64,
     /// Size after re-encoding.
-    encodedSize: u64,
+    #[serde(rename = "encodedSize")]
+    encoded_size: u64,
 }
 
 impl<'a> GetEncodedResponseReturns<'a> {
-    pub fn builder(originalSize: u64, encodedSize: u64) -> GetEncodedResponseReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `original_size`: Size before re-encoding.
+    /// * `encoded_size`: Size after re-encoding.
+    pub fn builder(original_size: u64, encoded_size: u64) -> GetEncodedResponseReturnsBuilder<'a> {
         GetEncodedResponseReturnsBuilder {
             body: None,
-            originalSize: originalSize,
-            encodedSize: encodedSize,
+            original_size: original_size,
+            encoded_size: encoded_size,
         }
     }
+    /// The encoded body as a base64 string. Omitted if sizeOnly is true. (Encoded as a base64 string when passed over JSON)
     pub fn body(&self) -> Option<&str> { self.body.as_deref() }
-    pub fn originalSize(&self) -> u64 { self.originalSize }
-    pub fn encodedSize(&self) -> u64 { self.encodedSize }
+    /// Size before re-encoding.
+    pub fn original_size(&self) -> u64 { self.original_size }
+    /// Size after re-encoding.
+    pub fn encoded_size(&self) -> u64 { self.encoded_size }
 }
 
 
 pub struct GetEncodedResponseReturnsBuilder<'a> {
     body: Option<Cow<'a, str>>,
-    originalSize: u64,
-    encodedSize: u64,
+    original_size: u64,
+    encoded_size: u64,
 }
 
 impl<'a> GetEncodedResponseReturnsBuilder<'a> {
@@ -2826,8 +3055,8 @@ impl<'a> GetEncodedResponseReturnsBuilder<'a> {
     pub fn build(self) -> GetEncodedResponseReturns<'a> {
         GetEncodedResponseReturns {
             body: self.body,
-            originalSize: self.originalSize,
-            encodedSize: self.encodedSize,
+            original_size: self.original_size,
+            encoded_size: self.encoded_size,
         }
     }
 }
@@ -2865,27 +3094,30 @@ impl<'a> crate::CdpCommand<'a> for EnableParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct CheckFormsIssuesReturns<'a> {
-    formIssues: Vec<GenericIssueDetails<'a>>,
+    #[serde(rename = "formIssues")]
+    form_issues: Vec<GenericIssueDetails<'a>>,
 }
 
 impl<'a> CheckFormsIssuesReturns<'a> {
-    pub fn builder(formIssues: Vec<GenericIssueDetails<'a>>) -> CheckFormsIssuesReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `form_issues`: 
+    pub fn builder(form_issues: Vec<GenericIssueDetails<'a>>) -> CheckFormsIssuesReturnsBuilder<'a> {
         CheckFormsIssuesReturnsBuilder {
-            formIssues: formIssues,
+            form_issues: form_issues,
         }
     }
-    pub fn formIssues(&self) -> &[GenericIssueDetails<'a>] { &self.formIssues }
+    pub fn form_issues(&self) -> &[GenericIssueDetails<'a>] { &self.form_issues }
 }
 
 
 pub struct CheckFormsIssuesReturnsBuilder<'a> {
-    formIssues: Vec<GenericIssueDetails<'a>>,
+    form_issues: Vec<GenericIssueDetails<'a>>,
 }
 
 impl<'a> CheckFormsIssuesReturnsBuilder<'a> {
     pub fn build(self) -> CheckFormsIssuesReturns<'a> {
         CheckFormsIssuesReturns {
-            formIssues: self.formIssues,
+            form_issues: self.form_issues,
         }
     }
 }

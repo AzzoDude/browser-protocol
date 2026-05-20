@@ -28,51 +28,56 @@ pub enum RequestStage {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct RequestPattern<'a> {
-    /// Wildcards (''*'' -> zero or more, ''?'' -> exactly one) are allowed. Escape character is
+    /// Wildcards (''*'' -\> zero or more, ''?'' -\> exactly one) are allowed. Escape character is
     /// backslash. Omitting is equivalent to '"*"'.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    urlPattern: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "urlPattern")]
+    url_pattern: Option<Cow<'a, str>>,
     /// If set, only requests for matching resource types will be intercepted.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    resourceType: Option<crate::network::ResourceType>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "resourceType")]
+    resource_type: Option<crate::network::ResourceType>,
     /// Stage at which to begin intercepting requests. Default is Request.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    requestStage: Option<RequestStage>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "requestStage")]
+    request_stage: Option<RequestStage>,
 }
 
 impl<'a> RequestPattern<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> RequestPatternBuilder<'a> {
         RequestPatternBuilder {
-            urlPattern: None,
-            resourceType: None,
-            requestStage: None,
+            url_pattern: None,
+            resource_type: None,
+            request_stage: None,
         }
     }
-    pub fn urlPattern(&self) -> Option<&str> { self.urlPattern.as_deref() }
-    pub fn resourceType(&self) -> Option<&crate::network::ResourceType> { self.resourceType.as_ref() }
-    pub fn requestStage(&self) -> Option<&RequestStage> { self.requestStage.as_ref() }
+    /// Wildcards (''*'' -\> zero or more, ''?'' -\> exactly one) are allowed. Escape character is
+    /// backslash. Omitting is equivalent to '"*"'.
+    pub fn url_pattern(&self) -> Option<&str> { self.url_pattern.as_deref() }
+    /// If set, only requests for matching resource types will be intercepted.
+    pub fn resource_type(&self) -> Option<&crate::network::ResourceType> { self.resource_type.as_ref() }
+    /// Stage at which to begin intercepting requests. Default is Request.
+    pub fn request_stage(&self) -> Option<&RequestStage> { self.request_stage.as_ref() }
 }
 
 #[derive(Default)]
 pub struct RequestPatternBuilder<'a> {
-    urlPattern: Option<Cow<'a, str>>,
-    resourceType: Option<crate::network::ResourceType>,
-    requestStage: Option<RequestStage>,
+    url_pattern: Option<Cow<'a, str>>,
+    resource_type: Option<crate::network::ResourceType>,
+    request_stage: Option<RequestStage>,
 }
 
 impl<'a> RequestPatternBuilder<'a> {
-    /// Wildcards (''*'' -> zero or more, ''?'' -> exactly one) are allowed. Escape character is
+    /// Wildcards (''*'' -\> zero or more, ''?'' -\> exactly one) are allowed. Escape character is
     /// backslash. Omitting is equivalent to '"*"'.
-    pub fn urlPattern(mut self, urlPattern: impl Into<Cow<'a, str>>) -> Self { self.urlPattern = Some(urlPattern.into()); self }
+    pub fn url_pattern(mut self, url_pattern: impl Into<Cow<'a, str>>) -> Self { self.url_pattern = Some(url_pattern.into()); self }
     /// If set, only requests for matching resource types will be intercepted.
-    pub fn resourceType(mut self, resourceType: crate::network::ResourceType) -> Self { self.resourceType = Some(resourceType); self }
+    pub fn resource_type(mut self, resource_type: crate::network::ResourceType) -> Self { self.resource_type = Some(resource_type); self }
     /// Stage at which to begin intercepting requests. Default is Request.
-    pub fn requestStage(mut self, requestStage: impl Into<RequestStage>) -> Self { self.requestStage = Some(requestStage.into()); self }
+    pub fn request_stage(mut self, request_stage: impl Into<RequestStage>) -> Self { self.request_stage = Some(request_stage.into()); self }
     pub fn build(self) -> RequestPattern<'a> {
         RequestPattern {
-            urlPattern: self.urlPattern,
-            resourceType: self.resourceType,
-            requestStage: self.requestStage,
+            url_pattern: self.url_pattern,
+            resource_type: self.resource_type,
+            request_stage: self.request_stage,
         }
     }
 }
@@ -87,6 +92,9 @@ pub struct HeaderEntry<'a> {
 }
 
 impl<'a> HeaderEntry<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: 
+    /// * `value`: 
     pub fn builder(name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> HeaderEntryBuilder<'a> {
         HeaderEntryBuilder {
             name: name.into(),
@@ -129,6 +137,10 @@ pub struct AuthChallenge<'a> {
 }
 
 impl<'a> AuthChallenge<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `origin`: Origin of the challenger.
+    /// * `scheme`: The authentication scheme used, such as basic or digest
+    /// * `realm`: The realm of the challenge. May be empty.
     pub fn builder(origin: impl Into<Cow<'a, str>>, scheme: impl Into<Cow<'a, str>>, realm: impl Into<Cow<'a, str>>) -> AuthChallengeBuilder<'a> {
         AuthChallengeBuilder {
             source: None,
@@ -137,9 +149,13 @@ impl<'a> AuthChallenge<'a> {
             realm: realm.into(),
         }
     }
+    /// Source of the authentication challenge.
     pub fn source(&self) -> Option<&str> { self.source.as_deref() }
+    /// Origin of the challenger.
     pub fn origin(&self) -> &str { self.origin.as_ref() }
+    /// The authentication scheme used, such as basic or digest
     pub fn scheme(&self) -> &str { self.scheme.as_ref() }
+    /// The realm of the challenge. May be empty.
     pub fn realm(&self) -> &str { self.realm.as_ref() }
 }
 
@@ -184,6 +200,8 @@ pub struct AuthChallengeResponse<'a> {
 }
 
 impl<'a> AuthChallengeResponse<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `response`: The decision on what to do in response to the authorization challenge.  Default means deferring to the default behavior of the net stack, which will likely either the Cancel authentication or display a popup dialog box.
     pub fn builder(response: impl Into<Cow<'a, str>>) -> AuthChallengeResponseBuilder<'a> {
         AuthChallengeResponseBuilder {
             response: response.into(),
@@ -191,8 +209,15 @@ impl<'a> AuthChallengeResponse<'a> {
             password: None,
         }
     }
+    /// The decision on what to do in response to the authorization challenge.  Default means
+    /// deferring to the default behavior of the net stack, which will likely either the Cancel
+    /// authentication or display a popup dialog box.
     pub fn response(&self) -> &str { self.response.as_ref() }
+    /// The username to provide, possibly empty. Should only be set if response is
+    /// ProvideCredentials.
     pub fn username(&self) -> Option<&str> { self.username.as_deref() }
+    /// The password to provide, possibly empty. Should only be set if response is
+    /// ProvideCredentials.
     pub fn password(&self) -> Option<&str> { self.password.as_deref() }
 }
 
@@ -242,25 +267,31 @@ pub struct EnableParams<'a> {
     patterns: Option<Vec<RequestPattern<'a>>>,
     /// If true, authRequired events will be issued and requests will be paused
     /// expecting a call to continueWithAuth.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    handleAuthRequests: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "handleAuthRequests")]
+    handle_auth_requests: Option<bool>,
 }
 
 impl<'a> EnableParams<'a> {
+    /// Creates a builder for this type.
     pub fn builder() -> EnableParamsBuilder<'a> {
         EnableParamsBuilder {
             patterns: None,
-            handleAuthRequests: None,
+            handle_auth_requests: None,
         }
     }
+    /// If specified, only requests matching any of these patterns will produce
+    /// fetchRequested event and will be paused until clients response. If not set,
+    /// all requests will be affected.
     pub fn patterns(&self) -> Option<&[RequestPattern<'a>]> { self.patterns.as_deref() }
-    pub fn handleAuthRequests(&self) -> Option<bool> { self.handleAuthRequests }
+    /// If true, authRequired events will be issued and requests will be paused
+    /// expecting a call to continueWithAuth.
+    pub fn handle_auth_requests(&self) -> Option<bool> { self.handle_auth_requests }
 }
 
 #[derive(Default)]
 pub struct EnableParamsBuilder<'a> {
     patterns: Option<Vec<RequestPattern<'a>>>,
-    handleAuthRequests: Option<bool>,
+    handle_auth_requests: Option<bool>,
 }
 
 impl<'a> EnableParamsBuilder<'a> {
@@ -270,11 +301,11 @@ impl<'a> EnableParamsBuilder<'a> {
     pub fn patterns(mut self, patterns: Vec<RequestPattern<'a>>) -> Self { self.patterns = Some(patterns); self }
     /// If true, authRequired events will be issued and requests will be paused
     /// expecting a call to continueWithAuth.
-    pub fn handleAuthRequests(mut self, handleAuthRequests: bool) -> Self { self.handleAuthRequests = Some(handleAuthRequests); self }
+    pub fn handle_auth_requests(mut self, handle_auth_requests: bool) -> Self { self.handle_auth_requests = Some(handle_auth_requests); self }
     pub fn build(self) -> EnableParams<'a> {
         EnableParams {
             patterns: self.patterns,
-            handleAuthRequests: self.handleAuthRequests,
+            handle_auth_requests: self.handle_auth_requests,
         }
     }
 }
@@ -292,33 +323,40 @@ impl<'a> crate::CdpCommand<'a> for EnableParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct FailRequestParams<'a> {
     /// An id the client received in requestPaused event.
-    requestId: RequestId<'a>,
+    #[serde(rename = "requestId")]
+    request_id: RequestId<'a>,
     /// Causes the request to fail with the given reason.
-    errorReason: crate::network::ErrorReason,
+    #[serde(rename = "errorReason")]
+    error_reason: crate::network::ErrorReason,
 }
 
 impl<'a> FailRequestParams<'a> {
-    pub fn builder(requestId: impl Into<RequestId<'a>>, errorReason: crate::network::ErrorReason) -> FailRequestParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_id`: An id the client received in requestPaused event.
+    /// * `error_reason`: Causes the request to fail with the given reason.
+    pub fn builder(request_id: impl Into<RequestId<'a>>, error_reason: crate::network::ErrorReason) -> FailRequestParamsBuilder<'a> {
         FailRequestParamsBuilder {
-            requestId: requestId.into(),
-            errorReason: errorReason,
+            request_id: request_id.into(),
+            error_reason: error_reason,
         }
     }
-    pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
-    pub fn errorReason(&self) -> &crate::network::ErrorReason { &self.errorReason }
+    /// An id the client received in requestPaused event.
+    pub fn request_id(&self) -> &RequestId<'a> { &self.request_id }
+    /// Causes the request to fail with the given reason.
+    pub fn error_reason(&self) -> &crate::network::ErrorReason { &self.error_reason }
 }
 
 
 pub struct FailRequestParamsBuilder<'a> {
-    requestId: RequestId<'a>,
-    errorReason: crate::network::ErrorReason,
+    request_id: RequestId<'a>,
+    error_reason: crate::network::ErrorReason,
 }
 
 impl<'a> FailRequestParamsBuilder<'a> {
     pub fn build(self) -> FailRequestParams<'a> {
         FailRequestParams {
-            requestId: self.requestId,
-            errorReason: self.errorReason,
+            request_id: self.request_id,
+            error_reason: self.error_reason,
         }
     }
 }
@@ -336,18 +374,20 @@ impl<'a> crate::CdpCommand<'a> for FailRequestParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct FulfillRequestParams<'a> {
     /// An id the client received in requestPaused event.
-    requestId: RequestId<'a>,
+    #[serde(rename = "requestId")]
+    request_id: RequestId<'a>,
     /// An HTTP response code.
-    responseCode: i64,
+    #[serde(rename = "responseCode")]
+    response_code: i64,
     /// Response headers.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    responseHeaders: Option<Vec<HeaderEntry<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "responseHeaders")]
+    response_headers: Option<Vec<HeaderEntry<'a>>>,
     /// Alternative way of specifying response headers as a \0-separated
     /// series of name: value pairs. Prefer the above method unless you
     /// need to represent some non-UTF8 values that can't be transmitted
     /// over the protocol as text. (Encoded as a base64 string when passed over JSON)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    binaryResponseHeaders: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "binaryResponseHeaders")]
+    binary_response_headers: Option<Cow<'a, str>>,
     /// A response body. If absent, original response body will be used if
     /// the request is intercepted at the response stage and empty body
     /// will be used if the request is intercepted at the request stage. (Encoded as a base64 string when passed over JSON)
@@ -355,62 +395,77 @@ pub struct FulfillRequestParams<'a> {
     body: Option<Cow<'a, str>>,
     /// A textual representation of responseCode.
     /// If absent, a standard phrase matching responseCode is used.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    responsePhrase: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "responsePhrase")]
+    response_phrase: Option<Cow<'a, str>>,
 }
 
 impl<'a> FulfillRequestParams<'a> {
-    pub fn builder(requestId: impl Into<RequestId<'a>>, responseCode: i64) -> FulfillRequestParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_id`: An id the client received in requestPaused event.
+    /// * `response_code`: An HTTP response code.
+    pub fn builder(request_id: impl Into<RequestId<'a>>, response_code: i64) -> FulfillRequestParamsBuilder<'a> {
         FulfillRequestParamsBuilder {
-            requestId: requestId.into(),
-            responseCode: responseCode,
-            responseHeaders: None,
-            binaryResponseHeaders: None,
+            request_id: request_id.into(),
+            response_code: response_code,
+            response_headers: None,
+            binary_response_headers: None,
             body: None,
-            responsePhrase: None,
+            response_phrase: None,
         }
     }
-    pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
-    pub fn responseCode(&self) -> i64 { self.responseCode }
-    pub fn responseHeaders(&self) -> Option<&[HeaderEntry<'a>]> { self.responseHeaders.as_deref() }
-    pub fn binaryResponseHeaders(&self) -> Option<&str> { self.binaryResponseHeaders.as_deref() }
-    pub fn body(&self) -> Option<&str> { self.body.as_deref() }
-    pub fn responsePhrase(&self) -> Option<&str> { self.responsePhrase.as_deref() }
-}
-
-
-pub struct FulfillRequestParamsBuilder<'a> {
-    requestId: RequestId<'a>,
-    responseCode: i64,
-    responseHeaders: Option<Vec<HeaderEntry<'a>>>,
-    binaryResponseHeaders: Option<Cow<'a, str>>,
-    body: Option<Cow<'a, str>>,
-    responsePhrase: Option<Cow<'a, str>>,
-}
-
-impl<'a> FulfillRequestParamsBuilder<'a> {
+    /// An id the client received in requestPaused event.
+    pub fn request_id(&self) -> &RequestId<'a> { &self.request_id }
+    /// An HTTP response code.
+    pub fn response_code(&self) -> i64 { self.response_code }
     /// Response headers.
-    pub fn responseHeaders(mut self, responseHeaders: Vec<HeaderEntry<'a>>) -> Self { self.responseHeaders = Some(responseHeaders); self }
+    pub fn response_headers(&self) -> Option<&[HeaderEntry<'a>]> { self.response_headers.as_deref() }
     /// Alternative way of specifying response headers as a \0-separated
     /// series of name: value pairs. Prefer the above method unless you
     /// need to represent some non-UTF8 values that can't be transmitted
     /// over the protocol as text. (Encoded as a base64 string when passed over JSON)
-    pub fn binaryResponseHeaders(mut self, binaryResponseHeaders: impl Into<Cow<'a, str>>) -> Self { self.binaryResponseHeaders = Some(binaryResponseHeaders.into()); self }
+    pub fn binary_response_headers(&self) -> Option<&str> { self.binary_response_headers.as_deref() }
+    /// A response body. If absent, original response body will be used if
+    /// the request is intercepted at the response stage and empty body
+    /// will be used if the request is intercepted at the request stage. (Encoded as a base64 string when passed over JSON)
+    pub fn body(&self) -> Option<&str> { self.body.as_deref() }
+    /// A textual representation of responseCode.
+    /// If absent, a standard phrase matching responseCode is used.
+    pub fn response_phrase(&self) -> Option<&str> { self.response_phrase.as_deref() }
+}
+
+
+pub struct FulfillRequestParamsBuilder<'a> {
+    request_id: RequestId<'a>,
+    response_code: i64,
+    response_headers: Option<Vec<HeaderEntry<'a>>>,
+    binary_response_headers: Option<Cow<'a, str>>,
+    body: Option<Cow<'a, str>>,
+    response_phrase: Option<Cow<'a, str>>,
+}
+
+impl<'a> FulfillRequestParamsBuilder<'a> {
+    /// Response headers.
+    pub fn response_headers(mut self, response_headers: Vec<HeaderEntry<'a>>) -> Self { self.response_headers = Some(response_headers); self }
+    /// Alternative way of specifying response headers as a \0-separated
+    /// series of name: value pairs. Prefer the above method unless you
+    /// need to represent some non-UTF8 values that can't be transmitted
+    /// over the protocol as text. (Encoded as a base64 string when passed over JSON)
+    pub fn binary_response_headers(mut self, binary_response_headers: impl Into<Cow<'a, str>>) -> Self { self.binary_response_headers = Some(binary_response_headers.into()); self }
     /// A response body. If absent, original response body will be used if
     /// the request is intercepted at the response stage and empty body
     /// will be used if the request is intercepted at the request stage. (Encoded as a base64 string when passed over JSON)
     pub fn body(mut self, body: impl Into<Cow<'a, str>>) -> Self { self.body = Some(body.into()); self }
     /// A textual representation of responseCode.
     /// If absent, a standard phrase matching responseCode is used.
-    pub fn responsePhrase(mut self, responsePhrase: impl Into<Cow<'a, str>>) -> Self { self.responsePhrase = Some(responsePhrase.into()); self }
+    pub fn response_phrase(mut self, response_phrase: impl Into<Cow<'a, str>>) -> Self { self.response_phrase = Some(response_phrase.into()); self }
     pub fn build(self) -> FulfillRequestParams<'a> {
         FulfillRequestParams {
-            requestId: self.requestId,
-            responseCode: self.responseCode,
-            responseHeaders: self.responseHeaders,
-            binaryResponseHeaders: self.binaryResponseHeaders,
+            request_id: self.request_id,
+            response_code: self.response_code,
+            response_headers: self.response_headers,
+            binary_response_headers: self.binary_response_headers,
             body: self.body,
-            responsePhrase: self.responsePhrase,
+            response_phrase: self.response_phrase,
         }
     }
 }
@@ -428,7 +483,8 @@ impl<'a> crate::CdpCommand<'a> for FulfillRequestParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ContinueRequestParams<'a> {
     /// An id the client received in requestPaused event.
-    requestId: RequestId<'a>,
+    #[serde(rename = "requestId")]
+    request_id: RequestId<'a>,
     /// If set, the request url will be modified in a way that's not observable by page.
     #[serde(skip_serializing_if = "Option::is_none")]
     url: Option<Cow<'a, str>>,
@@ -436,45 +492,55 @@ pub struct ContinueRequestParams<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     method: Option<Cow<'a, str>>,
     /// If set, overrides the post data in the request. (Encoded as a base64 string when passed over JSON)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    postData: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "postData")]
+    post_data: Option<Cow<'a, str>>,
     /// If set, overrides the request headers. Note that the overrides do not
     /// extend to subsequent redirect hops, if a redirect happens. Another override
     /// may be applied to a different request produced by a redirect.
     #[serde(skip_serializing_if = "Option::is_none")]
     headers: Option<Vec<HeaderEntry<'a>>>,
     /// If set, overrides response interception behavior for this request.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    interceptResponse: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "interceptResponse")]
+    intercept_response: Option<bool>,
 }
 
 impl<'a> ContinueRequestParams<'a> {
-    pub fn builder(requestId: impl Into<RequestId<'a>>) -> ContinueRequestParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_id`: An id the client received in requestPaused event.
+    pub fn builder(request_id: impl Into<RequestId<'a>>) -> ContinueRequestParamsBuilder<'a> {
         ContinueRequestParamsBuilder {
-            requestId: requestId.into(),
+            request_id: request_id.into(),
             url: None,
             method: None,
-            postData: None,
+            post_data: None,
             headers: None,
-            interceptResponse: None,
+            intercept_response: None,
         }
     }
-    pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
+    /// An id the client received in requestPaused event.
+    pub fn request_id(&self) -> &RequestId<'a> { &self.request_id }
+    /// If set, the request url will be modified in a way that's not observable by page.
     pub fn url(&self) -> Option<&str> { self.url.as_deref() }
+    /// If set, the request method is overridden.
     pub fn method(&self) -> Option<&str> { self.method.as_deref() }
-    pub fn postData(&self) -> Option<&str> { self.postData.as_deref() }
+    /// If set, overrides the post data in the request. (Encoded as a base64 string when passed over JSON)
+    pub fn post_data(&self) -> Option<&str> { self.post_data.as_deref() }
+    /// If set, overrides the request headers. Note that the overrides do not
+    /// extend to subsequent redirect hops, if a redirect happens. Another override
+    /// may be applied to a different request produced by a redirect.
     pub fn headers(&self) -> Option<&[HeaderEntry<'a>]> { self.headers.as_deref() }
-    pub fn interceptResponse(&self) -> Option<bool> { self.interceptResponse }
+    /// If set, overrides response interception behavior for this request.
+    pub fn intercept_response(&self) -> Option<bool> { self.intercept_response }
 }
 
 
 pub struct ContinueRequestParamsBuilder<'a> {
-    requestId: RequestId<'a>,
+    request_id: RequestId<'a>,
     url: Option<Cow<'a, str>>,
     method: Option<Cow<'a, str>>,
-    postData: Option<Cow<'a, str>>,
+    post_data: Option<Cow<'a, str>>,
     headers: Option<Vec<HeaderEntry<'a>>>,
-    interceptResponse: Option<bool>,
+    intercept_response: Option<bool>,
 }
 
 impl<'a> ContinueRequestParamsBuilder<'a> {
@@ -483,21 +549,21 @@ impl<'a> ContinueRequestParamsBuilder<'a> {
     /// If set, the request method is overridden.
     pub fn method(mut self, method: impl Into<Cow<'a, str>>) -> Self { self.method = Some(method.into()); self }
     /// If set, overrides the post data in the request. (Encoded as a base64 string when passed over JSON)
-    pub fn postData(mut self, postData: impl Into<Cow<'a, str>>) -> Self { self.postData = Some(postData.into()); self }
+    pub fn post_data(mut self, post_data: impl Into<Cow<'a, str>>) -> Self { self.post_data = Some(post_data.into()); self }
     /// If set, overrides the request headers. Note that the overrides do not
     /// extend to subsequent redirect hops, if a redirect happens. Another override
     /// may be applied to a different request produced by a redirect.
     pub fn headers(mut self, headers: Vec<HeaderEntry<'a>>) -> Self { self.headers = Some(headers); self }
     /// If set, overrides response interception behavior for this request.
-    pub fn interceptResponse(mut self, interceptResponse: bool) -> Self { self.interceptResponse = Some(interceptResponse); self }
+    pub fn intercept_response(mut self, intercept_response: bool) -> Self { self.intercept_response = Some(intercept_response); self }
     pub fn build(self) -> ContinueRequestParams<'a> {
         ContinueRequestParams {
-            requestId: self.requestId,
+            request_id: self.request_id,
             url: self.url,
             method: self.method,
-            postData: self.postData,
+            post_data: self.post_data,
             headers: self.headers,
-            interceptResponse: self.interceptResponse,
+            intercept_response: self.intercept_response,
         }
     }
 }
@@ -515,33 +581,40 @@ impl<'a> crate::CdpCommand<'a> for ContinueRequestParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ContinueWithAuthParams<'a> {
     /// An id the client received in authRequired event.
-    requestId: RequestId<'a>,
+    #[serde(rename = "requestId")]
+    request_id: RequestId<'a>,
     /// Response to  with an authChallenge.
-    authChallengeResponse: AuthChallengeResponse<'a>,
+    #[serde(rename = "authChallengeResponse")]
+    auth_challenge_response: AuthChallengeResponse<'a>,
 }
 
 impl<'a> ContinueWithAuthParams<'a> {
-    pub fn builder(requestId: impl Into<RequestId<'a>>, authChallengeResponse: AuthChallengeResponse<'a>) -> ContinueWithAuthParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_id`: An id the client received in authRequired event.
+    /// * `auth_challenge_response`: Response to  with an authChallenge.
+    pub fn builder(request_id: impl Into<RequestId<'a>>, auth_challenge_response: AuthChallengeResponse<'a>) -> ContinueWithAuthParamsBuilder<'a> {
         ContinueWithAuthParamsBuilder {
-            requestId: requestId.into(),
-            authChallengeResponse: authChallengeResponse,
+            request_id: request_id.into(),
+            auth_challenge_response: auth_challenge_response,
         }
     }
-    pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
-    pub fn authChallengeResponse(&self) -> &AuthChallengeResponse<'a> { &self.authChallengeResponse }
+    /// An id the client received in authRequired event.
+    pub fn request_id(&self) -> &RequestId<'a> { &self.request_id }
+    /// Response to  with an authChallenge.
+    pub fn auth_challenge_response(&self) -> &AuthChallengeResponse<'a> { &self.auth_challenge_response }
 }
 
 
 pub struct ContinueWithAuthParamsBuilder<'a> {
-    requestId: RequestId<'a>,
-    authChallengeResponse: AuthChallengeResponse<'a>,
+    request_id: RequestId<'a>,
+    auth_challenge_response: AuthChallengeResponse<'a>,
 }
 
 impl<'a> ContinueWithAuthParamsBuilder<'a> {
     pub fn build(self) -> ContinueWithAuthParams<'a> {
         ContinueWithAuthParams {
-            requestId: self.requestId,
-            authChallengeResponse: self.authChallengeResponse,
+            request_id: self.request_id,
+            auth_challenge_response: self.auth_challenge_response,
         }
     }
 }
@@ -561,71 +634,83 @@ impl<'a> crate::CdpCommand<'a> for ContinueWithAuthParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ContinueResponseParams<'a> {
     /// An id the client received in requestPaused event.
-    requestId: RequestId<'a>,
+    #[serde(rename = "requestId")]
+    request_id: RequestId<'a>,
     /// An HTTP response code. If absent, original response code will be used.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    responseCode: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "responseCode")]
+    response_code: Option<i64>,
     /// A textual representation of responseCode.
     /// If absent, a standard phrase matching responseCode is used.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    responsePhrase: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "responsePhrase")]
+    response_phrase: Option<Cow<'a, str>>,
     /// Response headers. If absent, original response headers will be used.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    responseHeaders: Option<Vec<HeaderEntry<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "responseHeaders")]
+    response_headers: Option<Vec<HeaderEntry<'a>>>,
     /// Alternative way of specifying response headers as a \0-separated
     /// series of name: value pairs. Prefer the above method unless you
     /// need to represent some non-UTF8 values that can't be transmitted
     /// over the protocol as text. (Encoded as a base64 string when passed over JSON)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    binaryResponseHeaders: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "binaryResponseHeaders")]
+    binary_response_headers: Option<Cow<'a, str>>,
 }
 
 impl<'a> ContinueResponseParams<'a> {
-    pub fn builder(requestId: impl Into<RequestId<'a>>) -> ContinueResponseParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_id`: An id the client received in requestPaused event.
+    pub fn builder(request_id: impl Into<RequestId<'a>>) -> ContinueResponseParamsBuilder<'a> {
         ContinueResponseParamsBuilder {
-            requestId: requestId.into(),
-            responseCode: None,
-            responsePhrase: None,
-            responseHeaders: None,
-            binaryResponseHeaders: None,
+            request_id: request_id.into(),
+            response_code: None,
+            response_phrase: None,
+            response_headers: None,
+            binary_response_headers: None,
         }
     }
-    pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
-    pub fn responseCode(&self) -> Option<i64> { self.responseCode }
-    pub fn responsePhrase(&self) -> Option<&str> { self.responsePhrase.as_deref() }
-    pub fn responseHeaders(&self) -> Option<&[HeaderEntry<'a>]> { self.responseHeaders.as_deref() }
-    pub fn binaryResponseHeaders(&self) -> Option<&str> { self.binaryResponseHeaders.as_deref() }
+    /// An id the client received in requestPaused event.
+    pub fn request_id(&self) -> &RequestId<'a> { &self.request_id }
+    /// An HTTP response code. If absent, original response code will be used.
+    pub fn response_code(&self) -> Option<i64> { self.response_code }
+    /// A textual representation of responseCode.
+    /// If absent, a standard phrase matching responseCode is used.
+    pub fn response_phrase(&self) -> Option<&str> { self.response_phrase.as_deref() }
+    /// Response headers. If absent, original response headers will be used.
+    pub fn response_headers(&self) -> Option<&[HeaderEntry<'a>]> { self.response_headers.as_deref() }
+    /// Alternative way of specifying response headers as a \0-separated
+    /// series of name: value pairs. Prefer the above method unless you
+    /// need to represent some non-UTF8 values that can't be transmitted
+    /// over the protocol as text. (Encoded as a base64 string when passed over JSON)
+    pub fn binary_response_headers(&self) -> Option<&str> { self.binary_response_headers.as_deref() }
 }
 
 
 pub struct ContinueResponseParamsBuilder<'a> {
-    requestId: RequestId<'a>,
-    responseCode: Option<i64>,
-    responsePhrase: Option<Cow<'a, str>>,
-    responseHeaders: Option<Vec<HeaderEntry<'a>>>,
-    binaryResponseHeaders: Option<Cow<'a, str>>,
+    request_id: RequestId<'a>,
+    response_code: Option<i64>,
+    response_phrase: Option<Cow<'a, str>>,
+    response_headers: Option<Vec<HeaderEntry<'a>>>,
+    binary_response_headers: Option<Cow<'a, str>>,
 }
 
 impl<'a> ContinueResponseParamsBuilder<'a> {
     /// An HTTP response code. If absent, original response code will be used.
-    pub fn responseCode(mut self, responseCode: i64) -> Self { self.responseCode = Some(responseCode); self }
+    pub fn response_code(mut self, response_code: i64) -> Self { self.response_code = Some(response_code); self }
     /// A textual representation of responseCode.
     /// If absent, a standard phrase matching responseCode is used.
-    pub fn responsePhrase(mut self, responsePhrase: impl Into<Cow<'a, str>>) -> Self { self.responsePhrase = Some(responsePhrase.into()); self }
+    pub fn response_phrase(mut self, response_phrase: impl Into<Cow<'a, str>>) -> Self { self.response_phrase = Some(response_phrase.into()); self }
     /// Response headers. If absent, original response headers will be used.
-    pub fn responseHeaders(mut self, responseHeaders: Vec<HeaderEntry<'a>>) -> Self { self.responseHeaders = Some(responseHeaders); self }
+    pub fn response_headers(mut self, response_headers: Vec<HeaderEntry<'a>>) -> Self { self.response_headers = Some(response_headers); self }
     /// Alternative way of specifying response headers as a \0-separated
     /// series of name: value pairs. Prefer the above method unless you
     /// need to represent some non-UTF8 values that can't be transmitted
     /// over the protocol as text. (Encoded as a base64 string when passed over JSON)
-    pub fn binaryResponseHeaders(mut self, binaryResponseHeaders: impl Into<Cow<'a, str>>) -> Self { self.binaryResponseHeaders = Some(binaryResponseHeaders.into()); self }
+    pub fn binary_response_headers(mut self, binary_response_headers: impl Into<Cow<'a, str>>) -> Self { self.binary_response_headers = Some(binary_response_headers.into()); self }
     pub fn build(self) -> ContinueResponseParams<'a> {
         ContinueResponseParams {
-            requestId: self.requestId,
-            responseCode: self.responseCode,
-            responsePhrase: self.responsePhrase,
-            responseHeaders: self.responseHeaders,
-            binaryResponseHeaders: self.binaryResponseHeaders,
+            request_id: self.request_id,
+            response_code: self.response_code,
+            response_phrase: self.response_phrase,
+            response_headers: self.response_headers,
+            binary_response_headers: self.binary_response_headers,
         }
     }
 }
@@ -652,27 +737,31 @@ impl<'a> crate::CdpCommand<'a> for ContinueResponseParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct GetResponseBodyParams<'a> {
     /// Identifier for the intercepted request to get body for.
-    requestId: RequestId<'a>,
+    #[serde(rename = "requestId")]
+    request_id: RequestId<'a>,
 }
 
 impl<'a> GetResponseBodyParams<'a> {
-    pub fn builder(requestId: impl Into<RequestId<'a>>) -> GetResponseBodyParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_id`: Identifier for the intercepted request to get body for.
+    pub fn builder(request_id: impl Into<RequestId<'a>>) -> GetResponseBodyParamsBuilder<'a> {
         GetResponseBodyParamsBuilder {
-            requestId: requestId.into(),
+            request_id: request_id.into(),
         }
     }
-    pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
+    /// Identifier for the intercepted request to get body for.
+    pub fn request_id(&self) -> &RequestId<'a> { &self.request_id }
 }
 
 
 pub struct GetResponseBodyParamsBuilder<'a> {
-    requestId: RequestId<'a>,
+    request_id: RequestId<'a>,
 }
 
 impl<'a> GetResponseBodyParamsBuilder<'a> {
     pub fn build(self) -> GetResponseBodyParams<'a> {
         GetResponseBodyParams {
-            requestId: self.requestId,
+            request_id: self.request_id,
         }
     }
 }
@@ -694,31 +783,37 @@ pub struct GetResponseBodyReturns<'a> {
     /// Response body.
     body: Cow<'a, str>,
     /// True, if content was sent as base64.
-    base64Encoded: bool,
+    #[serde(rename = "base64Encoded")]
+    base64_encoded: bool,
 }
 
 impl<'a> GetResponseBodyReturns<'a> {
-    pub fn builder(body: impl Into<Cow<'a, str>>, base64Encoded: bool) -> GetResponseBodyReturnsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `body`: Response body.
+    /// * `base64_encoded`: True, if content was sent as base64.
+    pub fn builder(body: impl Into<Cow<'a, str>>, base64_encoded: bool) -> GetResponseBodyReturnsBuilder<'a> {
         GetResponseBodyReturnsBuilder {
             body: body.into(),
-            base64Encoded: base64Encoded,
+            base64_encoded: base64_encoded,
         }
     }
+    /// Response body.
     pub fn body(&self) -> &str { self.body.as_ref() }
-    pub fn base64Encoded(&self) -> bool { self.base64Encoded }
+    /// True, if content was sent as base64.
+    pub fn base64_encoded(&self) -> bool { self.base64_encoded }
 }
 
 
 pub struct GetResponseBodyReturnsBuilder<'a> {
     body: Cow<'a, str>,
-    base64Encoded: bool,
+    base64_encoded: bool,
 }
 
 impl<'a> GetResponseBodyReturnsBuilder<'a> {
     pub fn build(self) -> GetResponseBodyReturns<'a> {
         GetResponseBodyReturns {
             body: self.body,
-            base64Encoded: self.base64Encoded,
+            base64_encoded: self.base64_encoded,
         }
     }
 }
@@ -744,27 +839,30 @@ impl<'a> crate::CdpCommand<'a> for GetResponseBodyParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct TakeResponseBodyAsStreamParams<'a> {
-    requestId: RequestId<'a>,
+    #[serde(rename = "requestId")]
+    request_id: RequestId<'a>,
 }
 
 impl<'a> TakeResponseBodyAsStreamParams<'a> {
-    pub fn builder(requestId: impl Into<RequestId<'a>>) -> TakeResponseBodyAsStreamParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `request_id`: 
+    pub fn builder(request_id: impl Into<RequestId<'a>>) -> TakeResponseBodyAsStreamParamsBuilder<'a> {
         TakeResponseBodyAsStreamParamsBuilder {
-            requestId: requestId.into(),
+            request_id: request_id.into(),
         }
     }
-    pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
+    pub fn request_id(&self) -> &RequestId<'a> { &self.request_id }
 }
 
 
 pub struct TakeResponseBodyAsStreamParamsBuilder<'a> {
-    requestId: RequestId<'a>,
+    request_id: RequestId<'a>,
 }
 
 impl<'a> TakeResponseBodyAsStreamParamsBuilder<'a> {
     pub fn build(self) -> TakeResponseBodyAsStreamParams<'a> {
         TakeResponseBodyAsStreamParams {
-            requestId: self.requestId,
+            request_id: self.request_id,
         }
     }
 }
@@ -787,6 +885,8 @@ pub struct TakeResponseBodyAsStreamReturns<'a> {
 }
 
 impl<'a> TakeResponseBodyAsStreamReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `stream`: 
     pub fn builder(stream: crate::io::StreamHandle<'a>) -> TakeResponseBodyAsStreamReturnsBuilder<'a> {
         TakeResponseBodyAsStreamReturnsBuilder {
             stream: stream,

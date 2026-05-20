@@ -27,6 +27,10 @@ pub struct SamplingProfileNode<'a> {
 }
 
 impl<'a> SamplingProfileNode<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `size`: Size of the sampled allocation.
+    /// * `total`: Total bytes attributed to this sample.
+    /// * `stack`: Execution stack at the point of allocation.
     pub fn builder(size: f64, total: f64, stack: Vec<Cow<'a, str>>) -> SamplingProfileNodeBuilder<'a> {
         SamplingProfileNodeBuilder {
             size: size,
@@ -34,8 +38,11 @@ impl<'a> SamplingProfileNode<'a> {
             stack: stack,
         }
     }
+    /// Size of the sampled allocation.
     pub fn size(&self) -> f64 { self.size }
+    /// Total bytes attributed to this sample.
     pub fn total(&self) -> f64 { self.total }
+    /// Execution stack at the point of allocation.
     pub fn stack(&self) -> &[Cow<'a, str>] { &self.stack }
 }
 
@@ -66,6 +73,9 @@ pub struct SamplingProfile<'a> {
 }
 
 impl<'a> SamplingProfile<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `samples`: 
+    /// * `modules`: 
     pub fn builder(samples: Vec<SamplingProfileNode<'a>>, modules: Vec<Module<'a>>) -> SamplingProfileBuilder<'a> {
         SamplingProfileBuilder {
             samples: samples,
@@ -102,23 +112,34 @@ pub struct Module<'a> {
     uuid: Cow<'a, str>,
     /// Base address where the module is loaded into memory. Encoded as a decimal
     /// or hexadecimal (0x prefixed) string.
-    baseAddress: Cow<'a, str>,
+    #[serde(rename = "baseAddress")]
+    base_address: Cow<'a, str>,
     /// Size of the module in bytes.
     size: f64,
 }
 
 impl<'a> Module<'a> {
-    pub fn builder(name: impl Into<Cow<'a, str>>, uuid: impl Into<Cow<'a, str>>, baseAddress: impl Into<Cow<'a, str>>, size: f64) -> ModuleBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: Name of the module.
+    /// * `uuid`: UUID of the module.
+    /// * `base_address`: Base address where the module is loaded into memory. Encoded as a decimal or hexadecimal (0x prefixed) string.
+    /// * `size`: Size of the module in bytes.
+    pub fn builder(name: impl Into<Cow<'a, str>>, uuid: impl Into<Cow<'a, str>>, base_address: impl Into<Cow<'a, str>>, size: f64) -> ModuleBuilder<'a> {
         ModuleBuilder {
             name: name.into(),
             uuid: uuid.into(),
-            baseAddress: baseAddress.into(),
+            base_address: base_address.into(),
             size: size,
         }
     }
+    /// Name of the module.
     pub fn name(&self) -> &str { self.name.as_ref() }
+    /// UUID of the module.
     pub fn uuid(&self) -> &str { self.uuid.as_ref() }
-    pub fn baseAddress(&self) -> &str { self.baseAddress.as_ref() }
+    /// Base address where the module is loaded into memory. Encoded as a decimal
+    /// or hexadecimal (0x prefixed) string.
+    pub fn base_address(&self) -> &str { self.base_address.as_ref() }
+    /// Size of the module in bytes.
     pub fn size(&self) -> f64 { self.size }
 }
 
@@ -126,7 +147,7 @@ impl<'a> Module<'a> {
 pub struct ModuleBuilder<'a> {
     name: Cow<'a, str>,
     uuid: Cow<'a, str>,
-    baseAddress: Cow<'a, str>,
+    base_address: Cow<'a, str>,
     size: f64,
 }
 
@@ -135,7 +156,7 @@ impl<'a> ModuleBuilder<'a> {
         Module {
             name: self.name,
             uuid: self.uuid,
-            baseAddress: self.baseAddress,
+            base_address: self.base_address,
             size: self.size,
         }
     }
@@ -154,13 +175,19 @@ pub struct DOMCounter<'a> {
 }
 
 impl<'a> DOMCounter<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `name`: Object name. Note: object names should be presumed volatile and clients should not expect the returned names to be consistent across runs.
+    /// * `count`: Object count.
     pub fn builder(name: impl Into<Cow<'a, str>>, count: u64) -> DOMCounterBuilder<'a> {
         DOMCounterBuilder {
             name: name.into(),
             count: count,
         }
     }
+    /// Object name. Note: object names should be presumed volatile and clients should not expect
+    /// the returned names to be consistent across runs.
     pub fn name(&self) -> &str { self.name.as_ref() }
+    /// Object count.
     pub fn count(&self) -> u64 { self.count }
 }
 
@@ -186,27 +213,32 @@ impl<'a> DOMCounterBuilder<'a> {
 pub struct GetDOMCountersReturns {
     documents: i64,
     nodes: i64,
-    jsEventListeners: i64,
+    #[serde(rename = "jsEventListeners")]
+    js_event_listeners: i64,
 }
 
 impl GetDOMCountersReturns {
-    pub fn builder(documents: i64, nodes: i64, jsEventListeners: i64) -> GetDOMCountersReturnsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `documents`: 
+    /// * `nodes`: 
+    /// * `js_event_listeners`: 
+    pub fn builder(documents: i64, nodes: i64, js_event_listeners: i64) -> GetDOMCountersReturnsBuilder {
         GetDOMCountersReturnsBuilder {
             documents: documents,
             nodes: nodes,
-            jsEventListeners: jsEventListeners,
+            js_event_listeners: js_event_listeners,
         }
     }
     pub fn documents(&self) -> i64 { self.documents }
     pub fn nodes(&self) -> i64 { self.nodes }
-    pub fn jsEventListeners(&self) -> i64 { self.jsEventListeners }
+    pub fn js_event_listeners(&self) -> i64 { self.js_event_listeners }
 }
 
 
 pub struct GetDOMCountersReturnsBuilder {
     documents: i64,
     nodes: i64,
-    jsEventListeners: i64,
+    js_event_listeners: i64,
 }
 
 impl GetDOMCountersReturnsBuilder {
@@ -214,7 +246,7 @@ impl GetDOMCountersReturnsBuilder {
         GetDOMCountersReturns {
             documents: self.documents,
             nodes: self.nodes,
-            jsEventListeners: self.jsEventListeners,
+            js_event_listeners: self.js_event_listeners,
         }
     }
 }
@@ -239,11 +271,14 @@ pub struct GetDOMCountersForLeakDetectionReturns<'a> {
 }
 
 impl<'a> GetDOMCountersForLeakDetectionReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `counters`: DOM object counters.
     pub fn builder(counters: Vec<DOMCounter<'a>>) -> GetDOMCountersForLeakDetectionReturnsBuilder<'a> {
         GetDOMCountersForLeakDetectionReturnsBuilder {
             counters: counters,
         }
     }
+    /// DOM object counters.
     pub fn counters(&self) -> &[DOMCounter<'a>] { &self.counters }
 }
 
@@ -300,11 +335,14 @@ pub struct SetPressureNotificationsSuppressedParams {
 }
 
 impl SetPressureNotificationsSuppressedParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `suppressed`: If true, memory pressure notifications will be suppressed.
     pub fn builder(suppressed: bool) -> SetPressureNotificationsSuppressedParamsBuilder {
         SetPressureNotificationsSuppressedParamsBuilder {
             suppressed: suppressed,
         }
     }
+    /// If true, memory pressure notifications will be suppressed.
     pub fn suppressed(&self) -> bool { self.suppressed }
 }
 
@@ -338,11 +376,14 @@ pub struct SimulatePressureNotificationParams {
 }
 
 impl SimulatePressureNotificationParams {
+    /// Creates a builder for this type with the required parameters:
+    /// * `level`: Memory pressure level of the notification.
     pub fn builder(level: impl Into<PressureLevel>) -> SimulatePressureNotificationParamsBuilder {
         SimulatePressureNotificationParamsBuilder {
             level: level.into(),
         }
     }
+    /// Memory pressure level of the notification.
     pub fn level(&self) -> &PressureLevel { &self.level }
 }
 
@@ -372,39 +413,42 @@ impl<'a> crate::CdpCommand<'a> for SimulatePressureNotificationParams {
 #[serde(rename_all = "camelCase")]
 pub struct StartSamplingParams {
     /// Average number of bytes between samples.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    samplingInterval: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "samplingInterval")]
+    sampling_interval: Option<i64>,
     /// Do not randomize intervals between samples.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    suppressRandomness: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "suppressRandomness")]
+    suppress_randomness: Option<bool>,
 }
 
 impl StartSamplingParams {
+    /// Creates a builder for this type.
     pub fn builder() -> StartSamplingParamsBuilder {
         StartSamplingParamsBuilder {
-            samplingInterval: None,
-            suppressRandomness: None,
+            sampling_interval: None,
+            suppress_randomness: None,
         }
     }
-    pub fn samplingInterval(&self) -> Option<i64> { self.samplingInterval }
-    pub fn suppressRandomness(&self) -> Option<bool> { self.suppressRandomness }
+    /// Average number of bytes between samples.
+    pub fn sampling_interval(&self) -> Option<i64> { self.sampling_interval }
+    /// Do not randomize intervals between samples.
+    pub fn suppress_randomness(&self) -> Option<bool> { self.suppress_randomness }
 }
 
 #[derive(Default)]
 pub struct StartSamplingParamsBuilder {
-    samplingInterval: Option<i64>,
-    suppressRandomness: Option<bool>,
+    sampling_interval: Option<i64>,
+    suppress_randomness: Option<bool>,
 }
 
 impl StartSamplingParamsBuilder {
     /// Average number of bytes between samples.
-    pub fn samplingInterval(mut self, samplingInterval: i64) -> Self { self.samplingInterval = Some(samplingInterval); self }
+    pub fn sampling_interval(mut self, sampling_interval: i64) -> Self { self.sampling_interval = Some(sampling_interval); self }
     /// Do not randomize intervals between samples.
-    pub fn suppressRandomness(mut self, suppressRandomness: bool) -> Self { self.suppressRandomness = Some(suppressRandomness); self }
+    pub fn suppress_randomness(mut self, suppress_randomness: bool) -> Self { self.suppress_randomness = Some(suppress_randomness); self }
     pub fn build(self) -> StartSamplingParams {
         StartSamplingParams {
-            samplingInterval: self.samplingInterval,
-            suppressRandomness: self.suppressRandomness,
+            sampling_interval: self.sampling_interval,
+            suppress_randomness: self.suppress_randomness,
         }
     }
 }
@@ -436,6 +480,8 @@ pub struct GetAllTimeSamplingProfileReturns<'a> {
 }
 
 impl<'a> GetAllTimeSamplingProfileReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `profile`: 
     pub fn builder(profile: SamplingProfile<'a>) -> GetAllTimeSamplingProfileReturnsBuilder<'a> {
         GetAllTimeSamplingProfileReturnsBuilder {
             profile: profile,
@@ -477,6 +523,8 @@ pub struct GetBrowserSamplingProfileReturns<'a> {
 }
 
 impl<'a> GetBrowserSamplingProfileReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `profile`: 
     pub fn builder(profile: SamplingProfile<'a>) -> GetBrowserSamplingProfileReturnsBuilder<'a> {
         GetBrowserSamplingProfileReturnsBuilder {
             profile: profile,
@@ -518,6 +566,8 @@ pub struct GetSamplingProfileReturns<'a> {
 }
 
 impl<'a> GetSamplingProfileReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `profile`: 
     pub fn builder(profile: SamplingProfile<'a>) -> GetSamplingProfileReturnsBuilder<'a> {
         GetSamplingProfileReturnsBuilder {
             profile: profile,

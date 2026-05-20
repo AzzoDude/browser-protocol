@@ -39,88 +39,110 @@ pub struct EventListener<'a> {
     #[serde(rename = "type")]
     type_: Cow<'a, str>,
     /// 'EventListener''s useCapture.
-    useCapture: bool,
+    #[serde(rename = "useCapture")]
+    use_capture: bool,
     /// 'EventListener''s passive flag.
     passive: bool,
     /// 'EventListener''s once flag.
     once: bool,
     /// Script id of the handler code.
-    scriptId: crate::runtime::ScriptId<'a>,
+    #[serde(rename = "scriptId")]
+    script_id: crate::runtime::ScriptId<'a>,
     /// Line number in the script (0-based).
-    lineNumber: i64,
+    #[serde(rename = "lineNumber")]
+    line_number: i64,
     /// Column number in the script (0-based).
-    columnNumber: i64,
+    #[serde(rename = "columnNumber")]
+    column_number: i64,
     /// Event handler function value.
     #[serde(skip_serializing_if = "Option::is_none")]
     handler: Option<crate::runtime::RemoteObject>,
     /// Event original handler function value.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    originalHandler: Option<crate::runtime::RemoteObject>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "originalHandler")]
+    original_handler: Option<crate::runtime::RemoteObject>,
     /// Node the listener is added to (if any).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    backendNodeId: Option<crate::dom::BackendNodeId>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "backendNodeId")]
+    backend_node_id: Option<crate::dom::BackendNodeId>,
 }
 
 impl<'a> EventListener<'a> {
-    pub fn builder(type_: impl Into<Cow<'a, str>>, useCapture: bool, passive: bool, once: bool, scriptId: crate::runtime::ScriptId<'a>, lineNumber: i64, columnNumber: i64) -> EventListenerBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `type_`: `EventListener`'s type.
+    /// * `use_capture`: `EventListener`'s useCapture.
+    /// * `passive`: `EventListener`'s passive flag.
+    /// * `once`: `EventListener`'s once flag.
+    /// * `script_id`: Script id of the handler code.
+    /// * `line_number`: Line number in the script (0-based).
+    /// * `column_number`: Column number in the script (0-based).
+    pub fn builder(type_: impl Into<Cow<'a, str>>, use_capture: bool, passive: bool, once: bool, script_id: crate::runtime::ScriptId<'a>, line_number: i64, column_number: i64) -> EventListenerBuilder<'a> {
         EventListenerBuilder {
             type_: type_.into(),
-            useCapture: useCapture,
+            use_capture: use_capture,
             passive: passive,
             once: once,
-            scriptId: scriptId,
-            lineNumber: lineNumber,
-            columnNumber: columnNumber,
+            script_id: script_id,
+            line_number: line_number,
+            column_number: column_number,
             handler: None,
-            originalHandler: None,
-            backendNodeId: None,
+            original_handler: None,
+            backend_node_id: None,
         }
     }
+    /// 'EventListener''s type.
     pub fn type_(&self) -> &str { self.type_.as_ref() }
-    pub fn useCapture(&self) -> bool { self.useCapture }
+    /// 'EventListener''s useCapture.
+    pub fn use_capture(&self) -> bool { self.use_capture }
+    /// 'EventListener''s passive flag.
     pub fn passive(&self) -> bool { self.passive }
+    /// 'EventListener''s once flag.
     pub fn once(&self) -> bool { self.once }
-    pub fn scriptId(&self) -> &crate::runtime::ScriptId<'a> { &self.scriptId }
-    pub fn lineNumber(&self) -> i64 { self.lineNumber }
-    pub fn columnNumber(&self) -> i64 { self.columnNumber }
+    /// Script id of the handler code.
+    pub fn script_id(&self) -> &crate::runtime::ScriptId<'a> { &self.script_id }
+    /// Line number in the script (0-based).
+    pub fn line_number(&self) -> i64 { self.line_number }
+    /// Column number in the script (0-based).
+    pub fn column_number(&self) -> i64 { self.column_number }
+    /// Event handler function value.
     pub fn handler(&self) -> Option<&crate::runtime::RemoteObject> { self.handler.as_ref() }
-    pub fn originalHandler(&self) -> Option<&crate::runtime::RemoteObject> { self.originalHandler.as_ref() }
-    pub fn backendNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.backendNodeId.as_ref() }
+    /// Event original handler function value.
+    pub fn original_handler(&self) -> Option<&crate::runtime::RemoteObject> { self.original_handler.as_ref() }
+    /// Node the listener is added to (if any).
+    pub fn backend_node_id(&self) -> Option<&crate::dom::BackendNodeId> { self.backend_node_id.as_ref() }
 }
 
 
 pub struct EventListenerBuilder<'a> {
     type_: Cow<'a, str>,
-    useCapture: bool,
+    use_capture: bool,
     passive: bool,
     once: bool,
-    scriptId: crate::runtime::ScriptId<'a>,
-    lineNumber: i64,
-    columnNumber: i64,
+    script_id: crate::runtime::ScriptId<'a>,
+    line_number: i64,
+    column_number: i64,
     handler: Option<crate::runtime::RemoteObject>,
-    originalHandler: Option<crate::runtime::RemoteObject>,
-    backendNodeId: Option<crate::dom::BackendNodeId>,
+    original_handler: Option<crate::runtime::RemoteObject>,
+    backend_node_id: Option<crate::dom::BackendNodeId>,
 }
 
 impl<'a> EventListenerBuilder<'a> {
     /// Event handler function value.
     pub fn handler(mut self, handler: crate::runtime::RemoteObject) -> Self { self.handler = Some(handler); self }
     /// Event original handler function value.
-    pub fn originalHandler(mut self, originalHandler: crate::runtime::RemoteObject) -> Self { self.originalHandler = Some(originalHandler); self }
+    pub fn original_handler(mut self, original_handler: crate::runtime::RemoteObject) -> Self { self.original_handler = Some(original_handler); self }
     /// Node the listener is added to (if any).
-    pub fn backendNodeId(mut self, backendNodeId: crate::dom::BackendNodeId) -> Self { self.backendNodeId = Some(backendNodeId); self }
+    pub fn backend_node_id(mut self, backend_node_id: crate::dom::BackendNodeId) -> Self { self.backend_node_id = Some(backend_node_id); self }
     pub fn build(self) -> EventListener<'a> {
         EventListener {
             type_: self.type_,
-            useCapture: self.useCapture,
+            use_capture: self.use_capture,
             passive: self.passive,
             once: self.once,
-            scriptId: self.scriptId,
-            lineNumber: self.lineNumber,
-            columnNumber: self.columnNumber,
+            script_id: self.script_id,
+            line_number: self.line_number,
+            column_number: self.column_number,
             handler: self.handler,
-            originalHandler: self.originalHandler,
-            backendNodeId: self.backendNodeId,
+            original_handler: self.original_handler,
+            backend_node_id: self.backend_node_id,
         }
     }
 }
@@ -131,7 +153,8 @@ impl<'a> EventListenerBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct GetEventListenersParams<'a> {
     /// Identifier of the object to return listeners for.
-    objectId: crate::runtime::RemoteObjectId<'a>,
+    #[serde(rename = "objectId")]
+    object_id: crate::runtime::RemoteObjectId<'a>,
     /// The maximum depth at which Node children should be retrieved, defaults to 1. Use -1 for the
     /// entire subtree or provide an integer larger than 0.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -143,21 +166,28 @@ pub struct GetEventListenersParams<'a> {
 }
 
 impl<'a> GetEventListenersParams<'a> {
-    pub fn builder(objectId: crate::runtime::RemoteObjectId<'a>) -> GetEventListenersParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `object_id`: Identifier of the object to return listeners for.
+    pub fn builder(object_id: crate::runtime::RemoteObjectId<'a>) -> GetEventListenersParamsBuilder<'a> {
         GetEventListenersParamsBuilder {
-            objectId: objectId,
+            object_id: object_id,
             depth: None,
             pierce: None,
         }
     }
-    pub fn objectId(&self) -> &crate::runtime::RemoteObjectId<'a> { &self.objectId }
+    /// Identifier of the object to return listeners for.
+    pub fn object_id(&self) -> &crate::runtime::RemoteObjectId<'a> { &self.object_id }
+    /// The maximum depth at which Node children should be retrieved, defaults to 1. Use -1 for the
+    /// entire subtree or provide an integer larger than 0.
     pub fn depth(&self) -> Option<i64> { self.depth }
+    /// Whether or not iframes and shadow roots should be traversed when returning the subtree
+    /// (default is false). Reports listeners for all contexts if pierce is enabled.
     pub fn pierce(&self) -> Option<bool> { self.pierce }
 }
 
 
 pub struct GetEventListenersParamsBuilder<'a> {
-    objectId: crate::runtime::RemoteObjectId<'a>,
+    object_id: crate::runtime::RemoteObjectId<'a>,
     depth: Option<i64>,
     pierce: Option<bool>,
 }
@@ -171,7 +201,7 @@ impl<'a> GetEventListenersParamsBuilder<'a> {
     pub fn pierce(mut self, pierce: bool) -> Self { self.pierce = Some(pierce); self }
     pub fn build(self) -> GetEventListenersParams<'a> {
         GetEventListenersParams {
-            objectId: self.objectId,
+            object_id: self.object_id,
             depth: self.depth,
             pierce: self.pierce,
         }
@@ -188,11 +218,14 @@ pub struct GetEventListenersReturns<'a> {
 }
 
 impl<'a> GetEventListenersReturns<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `listeners`: Array of relevant listeners.
     pub fn builder(listeners: Vec<EventListener<'a>>) -> GetEventListenersReturnsBuilder<'a> {
         GetEventListenersReturnsBuilder {
             listeners: listeners,
         }
     }
+    /// Array of relevant listeners.
     pub fn listeners(&self) -> &[EventListener<'a>] { &self.listeners }
 }
 
@@ -222,33 +255,39 @@ impl<'a> crate::CdpCommand<'a> for GetEventListenersParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct RemoveDOMBreakpointParams {
     /// Identifier of the node to remove breakpoint from.
-    nodeId: crate::dom::NodeId,
+    #[serde(rename = "nodeId")]
+    node_id: crate::dom::NodeId,
     /// Type of the breakpoint to remove.
     #[serde(rename = "type")]
     type_: DOMBreakpointType,
 }
 
 impl RemoveDOMBreakpointParams {
-    pub fn builder(nodeId: crate::dom::NodeId, type_: impl Into<DOMBreakpointType>) -> RemoveDOMBreakpointParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `node_id`: Identifier of the node to remove breakpoint from.
+    /// * `type_`: Type of the breakpoint to remove.
+    pub fn builder(node_id: crate::dom::NodeId, type_: impl Into<DOMBreakpointType>) -> RemoveDOMBreakpointParamsBuilder {
         RemoveDOMBreakpointParamsBuilder {
-            nodeId: nodeId,
+            node_id: node_id,
             type_: type_.into(),
         }
     }
-    pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
+    /// Identifier of the node to remove breakpoint from.
+    pub fn node_id(&self) -> &crate::dom::NodeId { &self.node_id }
+    /// Type of the breakpoint to remove.
     pub fn type_(&self) -> &DOMBreakpointType { &self.type_ }
 }
 
 
 pub struct RemoveDOMBreakpointParamsBuilder {
-    nodeId: crate::dom::NodeId,
+    node_id: crate::dom::NodeId,
     type_: DOMBreakpointType,
 }
 
 impl RemoveDOMBreakpointParamsBuilder {
     pub fn build(self) -> RemoveDOMBreakpointParams {
         RemoveDOMBreakpointParams {
-            nodeId: self.nodeId,
+            node_id: self.node_id,
             type_: self.type_,
         }
     }
@@ -267,36 +306,41 @@ impl<'a> crate::CdpCommand<'a> for RemoveDOMBreakpointParams {
 #[serde(rename_all = "camelCase")]
 pub struct RemoveEventListenerBreakpointParams<'a> {
     /// Event name.
-    eventName: Cow<'a, str>,
+    #[serde(rename = "eventName")]
+    event_name: Cow<'a, str>,
     /// EventTarget interface name.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    targetName: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "targetName")]
+    target_name: Option<Cow<'a, str>>,
 }
 
 impl<'a> RemoveEventListenerBreakpointParams<'a> {
-    pub fn builder(eventName: impl Into<Cow<'a, str>>) -> RemoveEventListenerBreakpointParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `event_name`: Event name.
+    pub fn builder(event_name: impl Into<Cow<'a, str>>) -> RemoveEventListenerBreakpointParamsBuilder<'a> {
         RemoveEventListenerBreakpointParamsBuilder {
-            eventName: eventName.into(),
-            targetName: None,
+            event_name: event_name.into(),
+            target_name: None,
         }
     }
-    pub fn eventName(&self) -> &str { self.eventName.as_ref() }
-    pub fn targetName(&self) -> Option<&str> { self.targetName.as_deref() }
+    /// Event name.
+    pub fn event_name(&self) -> &str { self.event_name.as_ref() }
+    /// EventTarget interface name.
+    pub fn target_name(&self) -> Option<&str> { self.target_name.as_deref() }
 }
 
 
 pub struct RemoveEventListenerBreakpointParamsBuilder<'a> {
-    eventName: Cow<'a, str>,
-    targetName: Option<Cow<'a, str>>,
+    event_name: Cow<'a, str>,
+    target_name: Option<Cow<'a, str>>,
 }
 
 impl<'a> RemoveEventListenerBreakpointParamsBuilder<'a> {
     /// EventTarget interface name.
-    pub fn targetName(mut self, targetName: impl Into<Cow<'a, str>>) -> Self { self.targetName = Some(targetName.into()); self }
+    pub fn target_name(mut self, target_name: impl Into<Cow<'a, str>>) -> Self { self.target_name = Some(target_name.into()); self }
     pub fn build(self) -> RemoveEventListenerBreakpointParams<'a> {
         RemoveEventListenerBreakpointParams {
-            eventName: self.eventName,
-            targetName: self.targetName,
+            event_name: self.event_name,
+            target_name: self.target_name,
         }
     }
 }
@@ -314,27 +358,31 @@ impl<'a> crate::CdpCommand<'a> for RemoveEventListenerBreakpointParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct RemoveInstrumentationBreakpointParams<'a> {
     /// Instrumentation name to stop on.
-    eventName: Cow<'a, str>,
+    #[serde(rename = "eventName")]
+    event_name: Cow<'a, str>,
 }
 
 impl<'a> RemoveInstrumentationBreakpointParams<'a> {
-    pub fn builder(eventName: impl Into<Cow<'a, str>>) -> RemoveInstrumentationBreakpointParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `event_name`: Instrumentation name to stop on.
+    pub fn builder(event_name: impl Into<Cow<'a, str>>) -> RemoveInstrumentationBreakpointParamsBuilder<'a> {
         RemoveInstrumentationBreakpointParamsBuilder {
-            eventName: eventName.into(),
+            event_name: event_name.into(),
         }
     }
-    pub fn eventName(&self) -> &str { self.eventName.as_ref() }
+    /// Instrumentation name to stop on.
+    pub fn event_name(&self) -> &str { self.event_name.as_ref() }
 }
 
 
 pub struct RemoveInstrumentationBreakpointParamsBuilder<'a> {
-    eventName: Cow<'a, str>,
+    event_name: Cow<'a, str>,
 }
 
 impl<'a> RemoveInstrumentationBreakpointParamsBuilder<'a> {
     pub fn build(self) -> RemoveInstrumentationBreakpointParams<'a> {
         RemoveInstrumentationBreakpointParams {
-            eventName: self.eventName,
+            event_name: self.event_name,
         }
     }
 }
@@ -356,11 +404,14 @@ pub struct RemoveXHRBreakpointParams<'a> {
 }
 
 impl<'a> RemoveXHRBreakpointParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url`: Resource URL substring.
     pub fn builder(url: impl Into<Cow<'a, str>>) -> RemoveXHRBreakpointParamsBuilder<'a> {
         RemoveXHRBreakpointParamsBuilder {
             url: url.into(),
         }
     }
+    /// Resource URL substring.
     pub fn url(&self) -> &str { self.url.as_ref() }
 }
 
@@ -390,27 +441,31 @@ impl<'a> crate::CdpCommand<'a> for RemoveXHRBreakpointParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SetBreakOnCSPViolationParams {
     /// CSP Violations to stop upon.
-    violationTypes: Vec<CSPViolationType>,
+    #[serde(rename = "violationTypes")]
+    violation_types: Vec<CSPViolationType>,
 }
 
 impl SetBreakOnCSPViolationParams {
-    pub fn builder(violationTypes: Vec<CSPViolationType>) -> SetBreakOnCSPViolationParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `violation_types`: CSP Violations to stop upon.
+    pub fn builder(violation_types: Vec<CSPViolationType>) -> SetBreakOnCSPViolationParamsBuilder {
         SetBreakOnCSPViolationParamsBuilder {
-            violationTypes: violationTypes,
+            violation_types: violation_types,
         }
     }
-    pub fn violationTypes(&self) -> &[CSPViolationType] { &self.violationTypes }
+    /// CSP Violations to stop upon.
+    pub fn violation_types(&self) -> &[CSPViolationType] { &self.violation_types }
 }
 
 
 pub struct SetBreakOnCSPViolationParamsBuilder {
-    violationTypes: Vec<CSPViolationType>,
+    violation_types: Vec<CSPViolationType>,
 }
 
 impl SetBreakOnCSPViolationParamsBuilder {
     pub fn build(self) -> SetBreakOnCSPViolationParams {
         SetBreakOnCSPViolationParams {
-            violationTypes: self.violationTypes,
+            violation_types: self.violation_types,
         }
     }
 }
@@ -428,33 +483,39 @@ impl<'a> crate::CdpCommand<'a> for SetBreakOnCSPViolationParams {
 #[serde(rename_all = "camelCase")]
 pub struct SetDOMBreakpointParams {
     /// Identifier of the node to set breakpoint on.
-    nodeId: crate::dom::NodeId,
+    #[serde(rename = "nodeId")]
+    node_id: crate::dom::NodeId,
     /// Type of the operation to stop upon.
     #[serde(rename = "type")]
     type_: DOMBreakpointType,
 }
 
 impl SetDOMBreakpointParams {
-    pub fn builder(nodeId: crate::dom::NodeId, type_: impl Into<DOMBreakpointType>) -> SetDOMBreakpointParamsBuilder {
+    /// Creates a builder for this type with the required parameters:
+    /// * `node_id`: Identifier of the node to set breakpoint on.
+    /// * `type_`: Type of the operation to stop upon.
+    pub fn builder(node_id: crate::dom::NodeId, type_: impl Into<DOMBreakpointType>) -> SetDOMBreakpointParamsBuilder {
         SetDOMBreakpointParamsBuilder {
-            nodeId: nodeId,
+            node_id: node_id,
             type_: type_.into(),
         }
     }
-    pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
+    /// Identifier of the node to set breakpoint on.
+    pub fn node_id(&self) -> &crate::dom::NodeId { &self.node_id }
+    /// Type of the operation to stop upon.
     pub fn type_(&self) -> &DOMBreakpointType { &self.type_ }
 }
 
 
 pub struct SetDOMBreakpointParamsBuilder {
-    nodeId: crate::dom::NodeId,
+    node_id: crate::dom::NodeId,
     type_: DOMBreakpointType,
 }
 
 impl SetDOMBreakpointParamsBuilder {
     pub fn build(self) -> SetDOMBreakpointParams {
         SetDOMBreakpointParams {
-            nodeId: self.nodeId,
+            node_id: self.node_id,
             type_: self.type_,
         }
     }
@@ -473,38 +534,44 @@ impl<'a> crate::CdpCommand<'a> for SetDOMBreakpointParams {
 #[serde(rename_all = "camelCase")]
 pub struct SetEventListenerBreakpointParams<'a> {
     /// DOM Event name to stop on (any DOM event will do).
-    eventName: Cow<'a, str>,
+    #[serde(rename = "eventName")]
+    event_name: Cow<'a, str>,
     /// EventTarget interface name to stop on. If equal to '"*"' or not provided, will stop on any
     /// EventTarget.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    targetName: Option<Cow<'a, str>>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "targetName")]
+    target_name: Option<Cow<'a, str>>,
 }
 
 impl<'a> SetEventListenerBreakpointParams<'a> {
-    pub fn builder(eventName: impl Into<Cow<'a, str>>) -> SetEventListenerBreakpointParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `event_name`: DOM Event name to stop on (any DOM event will do).
+    pub fn builder(event_name: impl Into<Cow<'a, str>>) -> SetEventListenerBreakpointParamsBuilder<'a> {
         SetEventListenerBreakpointParamsBuilder {
-            eventName: eventName.into(),
-            targetName: None,
+            event_name: event_name.into(),
+            target_name: None,
         }
     }
-    pub fn eventName(&self) -> &str { self.eventName.as_ref() }
-    pub fn targetName(&self) -> Option<&str> { self.targetName.as_deref() }
+    /// DOM Event name to stop on (any DOM event will do).
+    pub fn event_name(&self) -> &str { self.event_name.as_ref() }
+    /// EventTarget interface name to stop on. If equal to '"*"' or not provided, will stop on any
+    /// EventTarget.
+    pub fn target_name(&self) -> Option<&str> { self.target_name.as_deref() }
 }
 
 
 pub struct SetEventListenerBreakpointParamsBuilder<'a> {
-    eventName: Cow<'a, str>,
-    targetName: Option<Cow<'a, str>>,
+    event_name: Cow<'a, str>,
+    target_name: Option<Cow<'a, str>>,
 }
 
 impl<'a> SetEventListenerBreakpointParamsBuilder<'a> {
     /// EventTarget interface name to stop on. If equal to '"*"' or not provided, will stop on any
     /// EventTarget.
-    pub fn targetName(mut self, targetName: impl Into<Cow<'a, str>>) -> Self { self.targetName = Some(targetName.into()); self }
+    pub fn target_name(mut self, target_name: impl Into<Cow<'a, str>>) -> Self { self.target_name = Some(target_name.into()); self }
     pub fn build(self) -> SetEventListenerBreakpointParams<'a> {
         SetEventListenerBreakpointParams {
-            eventName: self.eventName,
-            targetName: self.targetName,
+            event_name: self.event_name,
+            target_name: self.target_name,
         }
     }
 }
@@ -522,27 +589,31 @@ impl<'a> crate::CdpCommand<'a> for SetEventListenerBreakpointParams<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SetInstrumentationBreakpointParams<'a> {
     /// Instrumentation name to stop on.
-    eventName: Cow<'a, str>,
+    #[serde(rename = "eventName")]
+    event_name: Cow<'a, str>,
 }
 
 impl<'a> SetInstrumentationBreakpointParams<'a> {
-    pub fn builder(eventName: impl Into<Cow<'a, str>>) -> SetInstrumentationBreakpointParamsBuilder<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `event_name`: Instrumentation name to stop on.
+    pub fn builder(event_name: impl Into<Cow<'a, str>>) -> SetInstrumentationBreakpointParamsBuilder<'a> {
         SetInstrumentationBreakpointParamsBuilder {
-            eventName: eventName.into(),
+            event_name: event_name.into(),
         }
     }
-    pub fn eventName(&self) -> &str { self.eventName.as_ref() }
+    /// Instrumentation name to stop on.
+    pub fn event_name(&self) -> &str { self.event_name.as_ref() }
 }
 
 
 pub struct SetInstrumentationBreakpointParamsBuilder<'a> {
-    eventName: Cow<'a, str>,
+    event_name: Cow<'a, str>,
 }
 
 impl<'a> SetInstrumentationBreakpointParamsBuilder<'a> {
     pub fn build(self) -> SetInstrumentationBreakpointParams<'a> {
         SetInstrumentationBreakpointParams {
-            eventName: self.eventName,
+            event_name: self.event_name,
         }
     }
 }
@@ -564,11 +635,14 @@ pub struct SetXHRBreakpointParams<'a> {
 }
 
 impl<'a> SetXHRBreakpointParams<'a> {
+    /// Creates a builder for this type with the required parameters:
+    /// * `url`: Resource URL substring. All XHRs having this substring in the URL will get stopped upon.
     pub fn builder(url: impl Into<Cow<'a, str>>) -> SetXHRBreakpointParamsBuilder<'a> {
         SetXHRBreakpointParamsBuilder {
             url: url.into(),
         }
     }
+    /// Resource URL substring. All XHRs having this substring in the URL will get stopped upon.
     pub fn url(&self) -> &str { self.url.as_ref() }
 }
 
