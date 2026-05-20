@@ -38,7 +38,15 @@ pub struct ExtensionInfo<'a> {
 }
 
 impl<'a> ExtensionInfo<'a> {
-    pub fn builder() -> ExtensionInfoBuilder<'a> { ExtensionInfoBuilder::default() }
+    pub fn builder(id: impl Into<Cow<'a, str>>, name: impl Into<Cow<'a, str>>, version: impl Into<Cow<'a, str>>, path: impl Into<Cow<'a, str>>, enabled: bool) -> ExtensionInfoBuilder<'a> {
+        ExtensionInfoBuilder {
+            id: id.into(),
+            name: name.into(),
+            version: version.into(),
+            path: path.into(),
+            enabled: enabled,
+        }
+    }
     pub fn id(&self) -> &str { self.id.as_ref() }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn version(&self) -> &str { self.version.as_ref() }
@@ -46,33 +54,23 @@ impl<'a> ExtensionInfo<'a> {
     pub fn enabled(&self) -> bool { self.enabled }
 }
 
-#[derive(Default)]
+
 pub struct ExtensionInfoBuilder<'a> {
-    id: Option<Cow<'a, str>>,
-    name: Option<Cow<'a, str>>,
-    version: Option<Cow<'a, str>>,
-    path: Option<Cow<'a, str>>,
-    enabled: Option<bool>,
+    id: Cow<'a, str>,
+    name: Cow<'a, str>,
+    version: Cow<'a, str>,
+    path: Cow<'a, str>,
+    enabled: bool,
 }
 
 impl<'a> ExtensionInfoBuilder<'a> {
-    /// Extension id.
-    pub fn id(mut self, id: impl Into<Cow<'a, str>>) -> Self { self.id = Some(id.into()); self }
-    /// Extension name.
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    /// Extension version.
-    pub fn version(mut self, version: impl Into<Cow<'a, str>>) -> Self { self.version = Some(version.into()); self }
-    /// The path from which the extension was loaded.
-    pub fn path(mut self, path: impl Into<Cow<'a, str>>) -> Self { self.path = Some(path.into()); self }
-    /// Extension enabled status.
-    pub fn enabled(mut self, enabled: bool) -> Self { self.enabled = Some(enabled); self }
     pub fn build(self) -> ExtensionInfo<'a> {
         ExtensionInfo {
-            id: self.id.unwrap_or_default(),
-            name: self.name.unwrap_or_default(),
-            version: self.version.unwrap_or_default(),
-            path: self.path.unwrap_or_default(),
-            enabled: self.enabled.unwrap_or_default(),
+            id: self.id,
+            name: self.name,
+            version: self.version,
+            path: self.path,
+            enabled: self.enabled,
         }
     }
 }
@@ -91,26 +89,27 @@ pub struct TriggerActionParams<'a> {
 }
 
 impl<'a> TriggerActionParams<'a> {
-    pub fn builder() -> TriggerActionParamsBuilder<'a> { TriggerActionParamsBuilder::default() }
+    pub fn builder(id: impl Into<Cow<'a, str>>, targetId: impl Into<Cow<'a, str>>) -> TriggerActionParamsBuilder<'a> {
+        TriggerActionParamsBuilder {
+            id: id.into(),
+            targetId: targetId.into(),
+        }
+    }
     pub fn id(&self) -> &str { self.id.as_ref() }
     pub fn targetId(&self) -> &str { self.targetId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct TriggerActionParamsBuilder<'a> {
-    id: Option<Cow<'a, str>>,
-    targetId: Option<Cow<'a, str>>,
+    id: Cow<'a, str>,
+    targetId: Cow<'a, str>,
 }
 
 impl<'a> TriggerActionParamsBuilder<'a> {
-    /// Extension id.
-    pub fn id(mut self, id: impl Into<Cow<'a, str>>) -> Self { self.id = Some(id.into()); self }
-    /// A tab target ID to trigger the default extension action on.
-    pub fn targetId(mut self, targetId: impl Into<Cow<'a, str>>) -> Self { self.targetId = Some(targetId.into()); self }
     pub fn build(self) -> TriggerActionParams<'a> {
         TriggerActionParams {
-            id: self.id.unwrap_or_default(),
-            targetId: self.targetId.unwrap_or_default(),
+            id: self.id,
+            targetId: self.targetId,
         }
     }
 }
@@ -139,25 +138,28 @@ pub struct LoadUnpackedParams<'a> {
 }
 
 impl<'a> LoadUnpackedParams<'a> {
-    pub fn builder() -> LoadUnpackedParamsBuilder<'a> { LoadUnpackedParamsBuilder::default() }
+    pub fn builder(path: impl Into<Cow<'a, str>>) -> LoadUnpackedParamsBuilder<'a> {
+        LoadUnpackedParamsBuilder {
+            path: path.into(),
+            enableInIncognito: None,
+        }
+    }
     pub fn path(&self) -> &str { self.path.as_ref() }
     pub fn enableInIncognito(&self) -> Option<bool> { self.enableInIncognito }
 }
 
-#[derive(Default)]
+
 pub struct LoadUnpackedParamsBuilder<'a> {
-    path: Option<Cow<'a, str>>,
+    path: Cow<'a, str>,
     enableInIncognito: Option<bool>,
 }
 
 impl<'a> LoadUnpackedParamsBuilder<'a> {
-    /// Absolute file path.
-    pub fn path(mut self, path: impl Into<Cow<'a, str>>) -> Self { self.path = Some(path.into()); self }
     /// Enable the extension in incognito
     pub fn enableInIncognito(mut self, enableInIncognito: bool) -> Self { self.enableInIncognito = Some(enableInIncognito); self }
     pub fn build(self) -> LoadUnpackedParams<'a> {
         LoadUnpackedParams {
-            path: self.path.unwrap_or_default(),
+            path: self.path,
             enableInIncognito: self.enableInIncognito,
         }
     }
@@ -177,21 +179,23 @@ pub struct LoadUnpackedReturns<'a> {
 }
 
 impl<'a> LoadUnpackedReturns<'a> {
-    pub fn builder() -> LoadUnpackedReturnsBuilder<'a> { LoadUnpackedReturnsBuilder::default() }
+    pub fn builder(id: impl Into<Cow<'a, str>>) -> LoadUnpackedReturnsBuilder<'a> {
+        LoadUnpackedReturnsBuilder {
+            id: id.into(),
+        }
+    }
     pub fn id(&self) -> &str { self.id.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct LoadUnpackedReturnsBuilder<'a> {
-    id: Option<Cow<'a, str>>,
+    id: Cow<'a, str>,
 }
 
 impl<'a> LoadUnpackedReturnsBuilder<'a> {
-    /// Extension id.
-    pub fn id(mut self, id: impl Into<Cow<'a, str>>) -> Self { self.id = Some(id.into()); self }
     pub fn build(self) -> LoadUnpackedReturns<'a> {
         LoadUnpackedReturns {
-            id: self.id.unwrap_or_default(),
+            id: self.id,
         }
     }
 }
@@ -214,41 +218,29 @@ pub struct GetExtensionsReturns<'a> {
 }
 
 impl<'a> GetExtensionsReturns<'a> {
-    pub fn builder() -> GetExtensionsReturnsBuilder<'a> { GetExtensionsReturnsBuilder::default() }
+    pub fn builder(extensions: Vec<ExtensionInfo<'a>>) -> GetExtensionsReturnsBuilder<'a> {
+        GetExtensionsReturnsBuilder {
+            extensions: extensions,
+        }
+    }
     pub fn extensions(&self) -> &[ExtensionInfo<'a>] { &self.extensions }
 }
 
-#[derive(Default)]
+
 pub struct GetExtensionsReturnsBuilder<'a> {
-    extensions: Option<Vec<ExtensionInfo<'a>>>,
+    extensions: Vec<ExtensionInfo<'a>>,
 }
 
 impl<'a> GetExtensionsReturnsBuilder<'a> {
-    pub fn extensions(mut self, extensions: Vec<ExtensionInfo<'a>>) -> Self { self.extensions = Some(extensions); self }
     pub fn build(self) -> GetExtensionsReturns<'a> {
         GetExtensionsReturns {
-            extensions: self.extensions.unwrap_or_default(),
+            extensions: self.extensions,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetExtensionsParams {}
-
-impl GetExtensionsParams {
-    pub fn builder() -> GetExtensionsParamsBuilder {
-        GetExtensionsParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetExtensionsParamsBuilder {}
-
-impl GetExtensionsParamsBuilder {
-    pub fn build(self) -> GetExtensionsParams {
-        GetExtensionsParams {}
-    }
-}
 
 impl GetExtensionsParams { pub const METHOD: &'static str = "Extensions.getExtensions"; }
 
@@ -269,21 +261,23 @@ pub struct UninstallParams<'a> {
 }
 
 impl<'a> UninstallParams<'a> {
-    pub fn builder() -> UninstallParamsBuilder<'a> { UninstallParamsBuilder::default() }
+    pub fn builder(id: impl Into<Cow<'a, str>>) -> UninstallParamsBuilder<'a> {
+        UninstallParamsBuilder {
+            id: id.into(),
+        }
+    }
     pub fn id(&self) -> &str { self.id.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct UninstallParamsBuilder<'a> {
-    id: Option<Cow<'a, str>>,
+    id: Cow<'a, str>,
 }
 
 impl<'a> UninstallParamsBuilder<'a> {
-    /// Extension id.
-    pub fn id(mut self, id: impl Into<Cow<'a, str>>) -> Self { self.id = Some(id.into()); self }
     pub fn build(self) -> UninstallParams<'a> {
         UninstallParams {
-            id: self.id.unwrap_or_default(),
+            id: self.id,
         }
     }
 }
@@ -311,30 +305,32 @@ pub struct GetStorageItemsParams<'a> {
 }
 
 impl<'a> GetStorageItemsParams<'a> {
-    pub fn builder() -> GetStorageItemsParamsBuilder<'a> { GetStorageItemsParamsBuilder::default() }
+    pub fn builder(id: impl Into<Cow<'a, str>>, storageArea: StorageArea) -> GetStorageItemsParamsBuilder<'a> {
+        GetStorageItemsParamsBuilder {
+            id: id.into(),
+            storageArea: storageArea,
+            keys: None,
+        }
+    }
     pub fn id(&self) -> &str { self.id.as_ref() }
     pub fn storageArea(&self) -> &StorageArea { &self.storageArea }
     pub fn keys(&self) -> Option<&[Cow<'a, str>]> { self.keys.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct GetStorageItemsParamsBuilder<'a> {
-    id: Option<Cow<'a, str>>,
-    storageArea: Option<StorageArea>,
+    id: Cow<'a, str>,
+    storageArea: StorageArea,
     keys: Option<Vec<Cow<'a, str>>>,
 }
 
 impl<'a> GetStorageItemsParamsBuilder<'a> {
-    /// ID of extension.
-    pub fn id(mut self, id: impl Into<Cow<'a, str>>) -> Self { self.id = Some(id.into()); self }
-    /// StorageArea to retrieve data from.
-    pub fn storageArea(mut self, storageArea: StorageArea) -> Self { self.storageArea = Some(storageArea); self }
     /// Keys to retrieve.
     pub fn keys(mut self, keys: Vec<Cow<'a, str>>) -> Self { self.keys = Some(keys); self }
     pub fn build(self) -> GetStorageItemsParams<'a> {
         GetStorageItemsParams {
-            id: self.id.unwrap_or_default(),
-            storageArea: self.storageArea.unwrap_or_default(),
+            id: self.id,
+            storageArea: self.storageArea,
             keys: self.keys,
         }
     }
@@ -350,20 +346,23 @@ pub struct GetStorageItemsReturns {
 }
 
 impl GetStorageItemsReturns {
-    pub fn builder() -> GetStorageItemsReturnsBuilder { GetStorageItemsReturnsBuilder::default() }
+    pub fn builder(data: serde_json::Map<String, JsonValue>) -> GetStorageItemsReturnsBuilder {
+        GetStorageItemsReturnsBuilder {
+            data: data,
+        }
+    }
     pub fn data(&self) -> &serde_json::Map<String, JsonValue> { &self.data }
 }
 
-#[derive(Default)]
+
 pub struct GetStorageItemsReturnsBuilder {
-    data: Option<serde_json::Map<String, JsonValue>>,
+    data: serde_json::Map<String, JsonValue>,
 }
 
 impl GetStorageItemsReturnsBuilder {
-    pub fn data(mut self, data: serde_json::Map<String, JsonValue>) -> Self { self.data = Some(data); self }
     pub fn build(self) -> GetStorageItemsReturns {
         GetStorageItemsReturns {
-            data: self.data.unwrap_or_default(),
+            data: self.data,
         }
     }
 }
@@ -389,31 +388,31 @@ pub struct RemoveStorageItemsParams<'a> {
 }
 
 impl<'a> RemoveStorageItemsParams<'a> {
-    pub fn builder() -> RemoveStorageItemsParamsBuilder<'a> { RemoveStorageItemsParamsBuilder::default() }
+    pub fn builder(id: impl Into<Cow<'a, str>>, storageArea: StorageArea, keys: Vec<Cow<'a, str>>) -> RemoveStorageItemsParamsBuilder<'a> {
+        RemoveStorageItemsParamsBuilder {
+            id: id.into(),
+            storageArea: storageArea,
+            keys: keys,
+        }
+    }
     pub fn id(&self) -> &str { self.id.as_ref() }
     pub fn storageArea(&self) -> &StorageArea { &self.storageArea }
     pub fn keys(&self) -> &[Cow<'a, str>] { &self.keys }
 }
 
-#[derive(Default)]
+
 pub struct RemoveStorageItemsParamsBuilder<'a> {
-    id: Option<Cow<'a, str>>,
-    storageArea: Option<StorageArea>,
-    keys: Option<Vec<Cow<'a, str>>>,
+    id: Cow<'a, str>,
+    storageArea: StorageArea,
+    keys: Vec<Cow<'a, str>>,
 }
 
 impl<'a> RemoveStorageItemsParamsBuilder<'a> {
-    /// ID of extension.
-    pub fn id(mut self, id: impl Into<Cow<'a, str>>) -> Self { self.id = Some(id.into()); self }
-    /// StorageArea to remove data from.
-    pub fn storageArea(mut self, storageArea: StorageArea) -> Self { self.storageArea = Some(storageArea); self }
-    /// Keys to remove.
-    pub fn keys(mut self, keys: Vec<Cow<'a, str>>) -> Self { self.keys = Some(keys); self }
     pub fn build(self) -> RemoveStorageItemsParams<'a> {
         RemoveStorageItemsParams {
-            id: self.id.unwrap_or_default(),
-            storageArea: self.storageArea.unwrap_or_default(),
-            keys: self.keys.unwrap_or_default(),
+            id: self.id,
+            storageArea: self.storageArea,
+            keys: self.keys,
         }
     }
 }
@@ -437,26 +436,27 @@ pub struct ClearStorageItemsParams<'a> {
 }
 
 impl<'a> ClearStorageItemsParams<'a> {
-    pub fn builder() -> ClearStorageItemsParamsBuilder<'a> { ClearStorageItemsParamsBuilder::default() }
+    pub fn builder(id: impl Into<Cow<'a, str>>, storageArea: StorageArea) -> ClearStorageItemsParamsBuilder<'a> {
+        ClearStorageItemsParamsBuilder {
+            id: id.into(),
+            storageArea: storageArea,
+        }
+    }
     pub fn id(&self) -> &str { self.id.as_ref() }
     pub fn storageArea(&self) -> &StorageArea { &self.storageArea }
 }
 
-#[derive(Default)]
+
 pub struct ClearStorageItemsParamsBuilder<'a> {
-    id: Option<Cow<'a, str>>,
-    storageArea: Option<StorageArea>,
+    id: Cow<'a, str>,
+    storageArea: StorageArea,
 }
 
 impl<'a> ClearStorageItemsParamsBuilder<'a> {
-    /// ID of extension.
-    pub fn id(mut self, id: impl Into<Cow<'a, str>>) -> Self { self.id = Some(id.into()); self }
-    /// StorageArea to remove data from.
-    pub fn storageArea(mut self, storageArea: StorageArea) -> Self { self.storageArea = Some(storageArea); self }
     pub fn build(self) -> ClearStorageItemsParams<'a> {
         ClearStorageItemsParams {
-            id: self.id.unwrap_or_default(),
-            storageArea: self.storageArea.unwrap_or_default(),
+            id: self.id,
+            storageArea: self.storageArea,
         }
     }
 }
@@ -483,31 +483,31 @@ pub struct SetStorageItemsParams<'a> {
 }
 
 impl<'a> SetStorageItemsParams<'a> {
-    pub fn builder() -> SetStorageItemsParamsBuilder<'a> { SetStorageItemsParamsBuilder::default() }
+    pub fn builder(id: impl Into<Cow<'a, str>>, storageArea: StorageArea, values: serde_json::Map<String, JsonValue>) -> SetStorageItemsParamsBuilder<'a> {
+        SetStorageItemsParamsBuilder {
+            id: id.into(),
+            storageArea: storageArea,
+            values: values,
+        }
+    }
     pub fn id(&self) -> &str { self.id.as_ref() }
     pub fn storageArea(&self) -> &StorageArea { &self.storageArea }
     pub fn values(&self) -> &serde_json::Map<String, JsonValue> { &self.values }
 }
 
-#[derive(Default)]
+
 pub struct SetStorageItemsParamsBuilder<'a> {
-    id: Option<Cow<'a, str>>,
-    storageArea: Option<StorageArea>,
-    values: Option<serde_json::Map<String, JsonValue>>,
+    id: Cow<'a, str>,
+    storageArea: StorageArea,
+    values: serde_json::Map<String, JsonValue>,
 }
 
 impl<'a> SetStorageItemsParamsBuilder<'a> {
-    /// ID of extension.
-    pub fn id(mut self, id: impl Into<Cow<'a, str>>) -> Self { self.id = Some(id.into()); self }
-    /// StorageArea to set data in.
-    pub fn storageArea(mut self, storageArea: StorageArea) -> Self { self.storageArea = Some(storageArea); self }
-    /// Values to set.
-    pub fn values(mut self, values: serde_json::Map<String, JsonValue>) -> Self { self.values = Some(values); self }
     pub fn build(self) -> SetStorageItemsParams<'a> {
         SetStorageItemsParams {
-            id: self.id.unwrap_or_default(),
-            storageArea: self.storageArea.unwrap_or_default(),
-            values: self.values.unwrap_or_default(),
+            id: self.id,
+            storageArea: self.storageArea,
+            values: self.values,
         }
     }
 }

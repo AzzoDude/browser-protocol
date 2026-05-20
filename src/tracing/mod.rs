@@ -41,7 +41,19 @@ pub struct TraceConfig<'a> {
 }
 
 impl<'a> TraceConfig<'a> {
-    pub fn builder() -> TraceConfigBuilder<'a> { TraceConfigBuilder::default() }
+    pub fn builder() -> TraceConfigBuilder<'a> {
+        TraceConfigBuilder {
+            recordMode: None,
+            traceBufferSizeInKb: None,
+            enableSampling: None,
+            enableSystrace: None,
+            enableArgumentFilter: None,
+            includedCategories: None,
+            excludedCategories: None,
+            syntheticDelays: None,
+            memoryDumpConfig: None,
+        }
+    }
     pub fn recordMode(&self) -> Option<&str> { self.recordMode.as_deref() }
     pub fn traceBufferSizeInKb(&self) -> Option<f64> { self.traceBufferSizeInKb }
     pub fn enableSampling(&self) -> Option<bool> { self.enableSampling }
@@ -159,21 +171,6 @@ pub enum TracingBackend {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct EndParams {}
 
-impl EndParams {
-    pub fn builder() -> EndParamsBuilder {
-        EndParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct EndParamsBuilder {}
-
-impl EndParamsBuilder {
-    pub fn build(self) -> EndParams {
-        EndParams {}
-    }
-}
-
 impl EndParams { pub const METHOD: &'static str = "Tracing.end"; }
 
 impl<'a> crate::CdpCommand<'a> for EndParams {
@@ -191,42 +188,29 @@ pub struct GetCategoriesReturns<'a> {
 }
 
 impl<'a> GetCategoriesReturns<'a> {
-    pub fn builder() -> GetCategoriesReturnsBuilder<'a> { GetCategoriesReturnsBuilder::default() }
+    pub fn builder(categories: Vec<Cow<'a, str>>) -> GetCategoriesReturnsBuilder<'a> {
+        GetCategoriesReturnsBuilder {
+            categories: categories,
+        }
+    }
     pub fn categories(&self) -> &[Cow<'a, str>] { &self.categories }
 }
 
-#[derive(Default)]
+
 pub struct GetCategoriesReturnsBuilder<'a> {
-    categories: Option<Vec<Cow<'a, str>>>,
+    categories: Vec<Cow<'a, str>>,
 }
 
 impl<'a> GetCategoriesReturnsBuilder<'a> {
-    /// A list of supported tracing categories.
-    pub fn categories(mut self, categories: Vec<Cow<'a, str>>) -> Self { self.categories = Some(categories); self }
     pub fn build(self) -> GetCategoriesReturns<'a> {
         GetCategoriesReturns {
-            categories: self.categories.unwrap_or_default(),
+            categories: self.categories,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetCategoriesParams {}
-
-impl GetCategoriesParams {
-    pub fn builder() -> GetCategoriesParamsBuilder {
-        GetCategoriesParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetCategoriesParamsBuilder {}
-
-impl GetCategoriesParamsBuilder {
-    pub fn build(self) -> GetCategoriesParams {
-        GetCategoriesParams {}
-    }
-}
 
 impl GetCategoriesParams { pub const METHOD: &'static str = "Tracing.getCategories"; }
 
@@ -245,42 +229,29 @@ pub struct GetTrackEventDescriptorReturns<'a> {
 }
 
 impl<'a> GetTrackEventDescriptorReturns<'a> {
-    pub fn builder() -> GetTrackEventDescriptorReturnsBuilder<'a> { GetTrackEventDescriptorReturnsBuilder::default() }
+    pub fn builder(descriptor: impl Into<Cow<'a, str>>) -> GetTrackEventDescriptorReturnsBuilder<'a> {
+        GetTrackEventDescriptorReturnsBuilder {
+            descriptor: descriptor.into(),
+        }
+    }
     pub fn descriptor(&self) -> &str { self.descriptor.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct GetTrackEventDescriptorReturnsBuilder<'a> {
-    descriptor: Option<Cow<'a, str>>,
+    descriptor: Cow<'a, str>,
 }
 
 impl<'a> GetTrackEventDescriptorReturnsBuilder<'a> {
-    /// Base64-encoded serialized perfetto.protos.TrackEventDescriptor protobuf message. (Encoded as a base64 string when passed over JSON)
-    pub fn descriptor(mut self, descriptor: impl Into<Cow<'a, str>>) -> Self { self.descriptor = Some(descriptor.into()); self }
     pub fn build(self) -> GetTrackEventDescriptorReturns<'a> {
         GetTrackEventDescriptorReturns {
-            descriptor: self.descriptor.unwrap_or_default(),
+            descriptor: self.descriptor,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetTrackEventDescriptorParams {}
-
-impl GetTrackEventDescriptorParams {
-    pub fn builder() -> GetTrackEventDescriptorParamsBuilder {
-        GetTrackEventDescriptorParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetTrackEventDescriptorParamsBuilder {}
-
-impl GetTrackEventDescriptorParamsBuilder {
-    pub fn build(self) -> GetTrackEventDescriptorParams {
-        GetTrackEventDescriptorParams {}
-    }
-}
 
 impl GetTrackEventDescriptorParams { pub const METHOD: &'static str = "Tracing.getTrackEventDescriptor"; }
 
@@ -299,21 +270,23 @@ pub struct RecordClockSyncMarkerParams<'a> {
 }
 
 impl<'a> RecordClockSyncMarkerParams<'a> {
-    pub fn builder() -> RecordClockSyncMarkerParamsBuilder<'a> { RecordClockSyncMarkerParamsBuilder::default() }
+    pub fn builder(syncId: impl Into<Cow<'a, str>>) -> RecordClockSyncMarkerParamsBuilder<'a> {
+        RecordClockSyncMarkerParamsBuilder {
+            syncId: syncId.into(),
+        }
+    }
     pub fn syncId(&self) -> &str { self.syncId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct RecordClockSyncMarkerParamsBuilder<'a> {
-    syncId: Option<Cow<'a, str>>,
+    syncId: Cow<'a, str>,
 }
 
 impl<'a> RecordClockSyncMarkerParamsBuilder<'a> {
-    /// The ID of this clock sync marker
-    pub fn syncId(mut self, syncId: impl Into<Cow<'a, str>>) -> Self { self.syncId = Some(syncId.into()); self }
     pub fn build(self) -> RecordClockSyncMarkerParams<'a> {
         RecordClockSyncMarkerParams {
-            syncId: self.syncId.unwrap_or_default(),
+            syncId: self.syncId,
         }
     }
 }
@@ -339,7 +312,12 @@ pub struct RequestMemoryDumpParams {
 }
 
 impl RequestMemoryDumpParams {
-    pub fn builder() -> RequestMemoryDumpParamsBuilder { RequestMemoryDumpParamsBuilder::default() }
+    pub fn builder() -> RequestMemoryDumpParamsBuilder {
+        RequestMemoryDumpParamsBuilder {
+            deterministic: None,
+            levelOfDetail: None,
+        }
+    }
     pub fn deterministic(&self) -> Option<bool> { self.deterministic }
     pub fn levelOfDetail(&self) -> Option<&MemoryDumpLevelOfDetail> { self.levelOfDetail.as_ref() }
 }
@@ -375,26 +353,27 @@ pub struct RequestMemoryDumpReturns<'a> {
 }
 
 impl<'a> RequestMemoryDumpReturns<'a> {
-    pub fn builder() -> RequestMemoryDumpReturnsBuilder<'a> { RequestMemoryDumpReturnsBuilder::default() }
+    pub fn builder(dumpGuid: impl Into<Cow<'a, str>>, success: bool) -> RequestMemoryDumpReturnsBuilder<'a> {
+        RequestMemoryDumpReturnsBuilder {
+            dumpGuid: dumpGuid.into(),
+            success: success,
+        }
+    }
     pub fn dumpGuid(&self) -> &str { self.dumpGuid.as_ref() }
     pub fn success(&self) -> bool { self.success }
 }
 
-#[derive(Default)]
+
 pub struct RequestMemoryDumpReturnsBuilder<'a> {
-    dumpGuid: Option<Cow<'a, str>>,
-    success: Option<bool>,
+    dumpGuid: Cow<'a, str>,
+    success: bool,
 }
 
 impl<'a> RequestMemoryDumpReturnsBuilder<'a> {
-    /// GUID of the resulting global memory dump.
-    pub fn dumpGuid(mut self, dumpGuid: impl Into<Cow<'a, str>>) -> Self { self.dumpGuid = Some(dumpGuid.into()); self }
-    /// True iff the global memory dump succeeded.
-    pub fn success(mut self, success: bool) -> Self { self.success = Some(success); self }
     pub fn build(self) -> RequestMemoryDumpReturns<'a> {
         RequestMemoryDumpReturns {
-            dumpGuid: self.dumpGuid.unwrap_or_default(),
-            success: self.success.unwrap_or_default(),
+            dumpGuid: self.dumpGuid,
+            success: self.success,
         }
     }
 }
@@ -445,7 +424,19 @@ pub struct StartParams<'a> {
 }
 
 impl<'a> StartParams<'a> {
-    pub fn builder() -> StartParamsBuilder<'a> { StartParamsBuilder::default() }
+    pub fn builder() -> StartParamsBuilder<'a> {
+        StartParamsBuilder {
+            categories: None,
+            options: None,
+            bufferUsageReportingInterval: None,
+            transferMode: None,
+            streamFormat: None,
+            streamCompression: None,
+            traceConfig: None,
+            perfettoConfig: None,
+            tracingBackend: None,
+        }
+    }
     pub fn categories(&self) -> Option<&str> { self.categories.as_deref() }
     pub fn options(&self) -> Option<&str> { self.options.as_deref() }
     pub fn bufferUsageReportingInterval(&self) -> Option<f64> { self.bufferUsageReportingInterval }

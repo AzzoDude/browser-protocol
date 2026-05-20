@@ -45,23 +45,27 @@ pub struct AdFrameStatus {
 }
 
 impl AdFrameStatus {
-    pub fn builder() -> AdFrameStatusBuilder { AdFrameStatusBuilder::default() }
+    pub fn builder(adFrameType: AdFrameType) -> AdFrameStatusBuilder {
+        AdFrameStatusBuilder {
+            adFrameType: adFrameType,
+            explanations: None,
+        }
+    }
     pub fn adFrameType(&self) -> &AdFrameType { &self.adFrameType }
     pub fn explanations(&self) -> Option<&[AdFrameExplanation]> { self.explanations.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct AdFrameStatusBuilder {
-    adFrameType: Option<AdFrameType>,
+    adFrameType: AdFrameType,
     explanations: Option<Vec<AdFrameExplanation>>,
 }
 
 impl AdFrameStatusBuilder {
-    pub fn adFrameType(mut self, adFrameType: AdFrameType) -> Self { self.adFrameType = Some(adFrameType); self }
     pub fn explanations(mut self, explanations: Vec<AdFrameExplanation>) -> Self { self.explanations = Some(explanations); self }
     pub fn build(self) -> AdFrameStatus {
         AdFrameStatus {
-            adFrameType: self.adFrameType.unwrap_or_default(),
+            adFrameType: self.adFrameType,
             explanations: self.explanations,
         }
     }
@@ -360,24 +364,27 @@ pub struct PermissionsPolicyBlockLocator<'a> {
 }
 
 impl<'a> PermissionsPolicyBlockLocator<'a> {
-    pub fn builder() -> PermissionsPolicyBlockLocatorBuilder<'a> { PermissionsPolicyBlockLocatorBuilder::default() }
+    pub fn builder(frameId: FrameId<'a>, blockReason: PermissionsPolicyBlockReason) -> PermissionsPolicyBlockLocatorBuilder<'a> {
+        PermissionsPolicyBlockLocatorBuilder {
+            frameId: frameId,
+            blockReason: blockReason,
+        }
+    }
     pub fn frameId(&self) -> &FrameId<'a> { &self.frameId }
     pub fn blockReason(&self) -> &PermissionsPolicyBlockReason { &self.blockReason }
 }
 
-#[derive(Default)]
+
 pub struct PermissionsPolicyBlockLocatorBuilder<'a> {
-    frameId: Option<FrameId<'a>>,
-    blockReason: Option<PermissionsPolicyBlockReason>,
+    frameId: FrameId<'a>,
+    blockReason: PermissionsPolicyBlockReason,
 }
 
 impl<'a> PermissionsPolicyBlockLocatorBuilder<'a> {
-    pub fn frameId(mut self, frameId: FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
-    pub fn blockReason(mut self, blockReason: PermissionsPolicyBlockReason) -> Self { self.blockReason = Some(blockReason); self }
     pub fn build(self) -> PermissionsPolicyBlockLocator<'a> {
         PermissionsPolicyBlockLocator {
-            frameId: self.frameId.unwrap_or_default(),
-            blockReason: self.blockReason.unwrap_or_default(),
+            frameId: self.frameId,
+            blockReason: self.blockReason,
         }
     }
 }
@@ -393,27 +400,31 @@ pub struct PermissionsPolicyFeatureState<'a> {
 }
 
 impl<'a> PermissionsPolicyFeatureState<'a> {
-    pub fn builder() -> PermissionsPolicyFeatureStateBuilder<'a> { PermissionsPolicyFeatureStateBuilder::default() }
+    pub fn builder(feature: PermissionsPolicyFeature, allowed: bool) -> PermissionsPolicyFeatureStateBuilder<'a> {
+        PermissionsPolicyFeatureStateBuilder {
+            feature: feature,
+            allowed: allowed,
+            locator: None,
+        }
+    }
     pub fn feature(&self) -> &PermissionsPolicyFeature { &self.feature }
     pub fn allowed(&self) -> bool { self.allowed }
     pub fn locator(&self) -> Option<&PermissionsPolicyBlockLocator<'a>> { self.locator.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct PermissionsPolicyFeatureStateBuilder<'a> {
-    feature: Option<PermissionsPolicyFeature>,
-    allowed: Option<bool>,
+    feature: PermissionsPolicyFeature,
+    allowed: bool,
     locator: Option<PermissionsPolicyBlockLocator<'a>>,
 }
 
 impl<'a> PermissionsPolicyFeatureStateBuilder<'a> {
-    pub fn feature(mut self, feature: PermissionsPolicyFeature) -> Self { self.feature = Some(feature); self }
-    pub fn allowed(mut self, allowed: bool) -> Self { self.allowed = Some(allowed); self }
     pub fn locator(mut self, locator: PermissionsPolicyBlockLocator<'a>) -> Self { self.locator = Some(locator); self }
     pub fn build(self) -> PermissionsPolicyFeatureState<'a> {
         PermissionsPolicyFeatureState {
-            feature: self.feature.unwrap_or_default(),
-            allowed: self.allowed.unwrap_or_default(),
+            feature: self.feature,
+            allowed: self.allowed,
             locator: self.locator,
         }
     }
@@ -489,7 +500,16 @@ pub struct OriginTrialToken<'a> {
 }
 
 impl<'a> OriginTrialToken<'a> {
-    pub fn builder() -> OriginTrialTokenBuilder<'a> { OriginTrialTokenBuilder::default() }
+    pub fn builder(origin: impl Into<Cow<'a, str>>, matchSubDomains: bool, trialName: impl Into<Cow<'a, str>>, expiryTime: crate::network::TimeSinceEpoch, isThirdParty: bool, usageRestriction: OriginTrialUsageRestriction) -> OriginTrialTokenBuilder<'a> {
+        OriginTrialTokenBuilder {
+            origin: origin.into(),
+            matchSubDomains: matchSubDomains,
+            trialName: trialName.into(),
+            expiryTime: expiryTime,
+            isThirdParty: isThirdParty,
+            usageRestriction: usageRestriction,
+        }
+    }
     pub fn origin(&self) -> &str { self.origin.as_ref() }
     pub fn matchSubDomains(&self) -> bool { self.matchSubDomains }
     pub fn trialName(&self) -> &str { self.trialName.as_ref() }
@@ -498,31 +518,25 @@ impl<'a> OriginTrialToken<'a> {
     pub fn usageRestriction(&self) -> &OriginTrialUsageRestriction { &self.usageRestriction }
 }
 
-#[derive(Default)]
+
 pub struct OriginTrialTokenBuilder<'a> {
-    origin: Option<Cow<'a, str>>,
-    matchSubDomains: Option<bool>,
-    trialName: Option<Cow<'a, str>>,
-    expiryTime: Option<crate::network::TimeSinceEpoch>,
-    isThirdParty: Option<bool>,
-    usageRestriction: Option<OriginTrialUsageRestriction>,
+    origin: Cow<'a, str>,
+    matchSubDomains: bool,
+    trialName: Cow<'a, str>,
+    expiryTime: crate::network::TimeSinceEpoch,
+    isThirdParty: bool,
+    usageRestriction: OriginTrialUsageRestriction,
 }
 
 impl<'a> OriginTrialTokenBuilder<'a> {
-    pub fn origin(mut self, origin: impl Into<Cow<'a, str>>) -> Self { self.origin = Some(origin.into()); self }
-    pub fn matchSubDomains(mut self, matchSubDomains: bool) -> Self { self.matchSubDomains = Some(matchSubDomains); self }
-    pub fn trialName(mut self, trialName: impl Into<Cow<'a, str>>) -> Self { self.trialName = Some(trialName.into()); self }
-    pub fn expiryTime(mut self, expiryTime: crate::network::TimeSinceEpoch) -> Self { self.expiryTime = Some(expiryTime); self }
-    pub fn isThirdParty(mut self, isThirdParty: bool) -> Self { self.isThirdParty = Some(isThirdParty); self }
-    pub fn usageRestriction(mut self, usageRestriction: OriginTrialUsageRestriction) -> Self { self.usageRestriction = Some(usageRestriction); self }
     pub fn build(self) -> OriginTrialToken<'a> {
         OriginTrialToken {
-            origin: self.origin.unwrap_or_default(),
-            matchSubDomains: self.matchSubDomains.unwrap_or_default(),
-            trialName: self.trialName.unwrap_or_default(),
-            expiryTime: self.expiryTime.unwrap_or_default(),
-            isThirdParty: self.isThirdParty.unwrap_or_default(),
-            usageRestriction: self.usageRestriction.unwrap_or_default(),
+            origin: self.origin,
+            matchSubDomains: self.matchSubDomains,
+            trialName: self.trialName,
+            expiryTime: self.expiryTime,
+            isThirdParty: self.isThirdParty,
+            usageRestriction: self.usageRestriction,
         }
     }
 }
@@ -540,30 +554,34 @@ pub struct OriginTrialTokenWithStatus<'a> {
 }
 
 impl<'a> OriginTrialTokenWithStatus<'a> {
-    pub fn builder() -> OriginTrialTokenWithStatusBuilder<'a> { OriginTrialTokenWithStatusBuilder::default() }
+    pub fn builder(rawTokenText: impl Into<Cow<'a, str>>, status: OriginTrialTokenStatus) -> OriginTrialTokenWithStatusBuilder<'a> {
+        OriginTrialTokenWithStatusBuilder {
+            rawTokenText: rawTokenText.into(),
+            parsedToken: None,
+            status: status,
+        }
+    }
     pub fn rawTokenText(&self) -> &str { self.rawTokenText.as_ref() }
     pub fn parsedToken(&self) -> Option<&OriginTrialToken<'a>> { self.parsedToken.as_ref() }
     pub fn status(&self) -> &OriginTrialTokenStatus { &self.status }
 }
 
-#[derive(Default)]
+
 pub struct OriginTrialTokenWithStatusBuilder<'a> {
-    rawTokenText: Option<Cow<'a, str>>,
+    rawTokenText: Cow<'a, str>,
     parsedToken: Option<OriginTrialToken<'a>>,
-    status: Option<OriginTrialTokenStatus>,
+    status: OriginTrialTokenStatus,
 }
 
 impl<'a> OriginTrialTokenWithStatusBuilder<'a> {
-    pub fn rawTokenText(mut self, rawTokenText: impl Into<Cow<'a, str>>) -> Self { self.rawTokenText = Some(rawTokenText.into()); self }
     /// 'parsedToken' is present only when the token is extractable and
     /// parsable.
     pub fn parsedToken(mut self, parsedToken: OriginTrialToken<'a>) -> Self { self.parsedToken = Some(parsedToken); self }
-    pub fn status(mut self, status: OriginTrialTokenStatus) -> Self { self.status = Some(status); self }
     pub fn build(self) -> OriginTrialTokenWithStatus<'a> {
         OriginTrialTokenWithStatus {
-            rawTokenText: self.rawTokenText.unwrap_or_default(),
+            rawTokenText: self.rawTokenText,
             parsedToken: self.parsedToken,
-            status: self.status.unwrap_or_default(),
+            status: self.status,
         }
     }
 }
@@ -578,28 +596,31 @@ pub struct OriginTrial<'a> {
 }
 
 impl<'a> OriginTrial<'a> {
-    pub fn builder() -> OriginTrialBuilder<'a> { OriginTrialBuilder::default() }
+    pub fn builder(trialName: impl Into<Cow<'a, str>>, status: OriginTrialStatus, tokensWithStatus: Vec<OriginTrialTokenWithStatus<'a>>) -> OriginTrialBuilder<'a> {
+        OriginTrialBuilder {
+            trialName: trialName.into(),
+            status: status,
+            tokensWithStatus: tokensWithStatus,
+        }
+    }
     pub fn trialName(&self) -> &str { self.trialName.as_ref() }
     pub fn status(&self) -> &OriginTrialStatus { &self.status }
     pub fn tokensWithStatus(&self) -> &[OriginTrialTokenWithStatus<'a>] { &self.tokensWithStatus }
 }
 
-#[derive(Default)]
+
 pub struct OriginTrialBuilder<'a> {
-    trialName: Option<Cow<'a, str>>,
-    status: Option<OriginTrialStatus>,
-    tokensWithStatus: Option<Vec<OriginTrialTokenWithStatus<'a>>>,
+    trialName: Cow<'a, str>,
+    status: OriginTrialStatus,
+    tokensWithStatus: Vec<OriginTrialTokenWithStatus<'a>>,
 }
 
 impl<'a> OriginTrialBuilder<'a> {
-    pub fn trialName(mut self, trialName: impl Into<Cow<'a, str>>) -> Self { self.trialName = Some(trialName.into()); self }
-    pub fn status(mut self, status: OriginTrialStatus) -> Self { self.status = Some(status); self }
-    pub fn tokensWithStatus(mut self, tokensWithStatus: Vec<OriginTrialTokenWithStatus<'a>>) -> Self { self.tokensWithStatus = Some(tokensWithStatus); self }
     pub fn build(self) -> OriginTrial<'a> {
         OriginTrial {
-            trialName: self.trialName.unwrap_or_default(),
-            status: self.status.unwrap_or_default(),
-            tokensWithStatus: self.tokensWithStatus.unwrap_or_default(),
+            trialName: self.trialName,
+            status: self.status,
+            tokensWithStatus: self.tokensWithStatus,
         }
     }
 }
@@ -616,23 +637,23 @@ pub struct SecurityOriginDetails {
 }
 
 impl SecurityOriginDetails {
-    pub fn builder() -> SecurityOriginDetailsBuilder { SecurityOriginDetailsBuilder::default() }
+    pub fn builder(isLocalhost: bool) -> SecurityOriginDetailsBuilder {
+        SecurityOriginDetailsBuilder {
+            isLocalhost: isLocalhost,
+        }
+    }
     pub fn isLocalhost(&self) -> bool { self.isLocalhost }
 }
 
-#[derive(Default)]
+
 pub struct SecurityOriginDetailsBuilder {
-    isLocalhost: Option<bool>,
+    isLocalhost: bool,
 }
 
 impl SecurityOriginDetailsBuilder {
-    /// Indicates whether the frame document's security origin is one
-    /// of the local hostnames (e.g. "localhost") or IP addresses (IPv4
-    /// 127.0.0.0/8 or IPv6 ::1).
-    pub fn isLocalhost(mut self, isLocalhost: bool) -> Self { self.isLocalhost = Some(isLocalhost); self }
     pub fn build(self) -> SecurityOriginDetails {
         SecurityOriginDetails {
-            isLocalhost: self.isLocalhost.unwrap_or_default(),
+            isLocalhost: self.isLocalhost,
         }
     }
 }
@@ -684,7 +705,25 @@ pub struct Frame<'a> {
 }
 
 impl<'a> Frame<'a> {
-    pub fn builder() -> FrameBuilder<'a> { FrameBuilder::default() }
+    pub fn builder(id: FrameId<'a>, loaderId: crate::network::LoaderId<'a>, url: impl Into<Cow<'a, str>>, domainAndRegistry: impl Into<Cow<'a, str>>, securityOrigin: impl Into<Cow<'a, str>>, mimeType: impl Into<Cow<'a, str>>, secureContextType: SecureContextType, crossOriginIsolatedContextType: CrossOriginIsolatedContextType, gatedAPIFeatures: Vec<GatedAPIFeatures>) -> FrameBuilder<'a> {
+        FrameBuilder {
+            id: id,
+            parentId: None,
+            loaderId: loaderId,
+            name: None,
+            url: url.into(),
+            urlFragment: None,
+            domainAndRegistry: domainAndRegistry.into(),
+            securityOrigin: securityOrigin.into(),
+            securityOriginDetails: None,
+            mimeType: mimeType.into(),
+            unreachableUrl: None,
+            adFrameStatus: None,
+            secureContextType: secureContextType,
+            crossOriginIsolatedContextType: crossOriginIsolatedContextType,
+            gatedAPIFeatures: gatedAPIFeatures,
+        }
+    }
     pub fn id(&self) -> &FrameId<'a> { &self.id }
     pub fn parentId(&self) -> Option<&FrameId<'a>> { self.parentId.as_ref() }
     pub fn loaderId(&self) -> &crate::network::LoaderId<'a> { &self.loaderId }
@@ -702,76 +741,55 @@ impl<'a> Frame<'a> {
     pub fn gatedAPIFeatures(&self) -> &[GatedAPIFeatures] { &self.gatedAPIFeatures }
 }
 
-#[derive(Default)]
+
 pub struct FrameBuilder<'a> {
-    id: Option<FrameId<'a>>,
+    id: FrameId<'a>,
     parentId: Option<FrameId<'a>>,
-    loaderId: Option<crate::network::LoaderId<'a>>,
+    loaderId: crate::network::LoaderId<'a>,
     name: Option<Cow<'a, str>>,
-    url: Option<Cow<'a, str>>,
+    url: Cow<'a, str>,
     urlFragment: Option<Cow<'a, str>>,
-    domainAndRegistry: Option<Cow<'a, str>>,
-    securityOrigin: Option<Cow<'a, str>>,
+    domainAndRegistry: Cow<'a, str>,
+    securityOrigin: Cow<'a, str>,
     securityOriginDetails: Option<SecurityOriginDetails>,
-    mimeType: Option<Cow<'a, str>>,
+    mimeType: Cow<'a, str>,
     unreachableUrl: Option<Cow<'a, str>>,
     adFrameStatus: Option<AdFrameStatus>,
-    secureContextType: Option<SecureContextType>,
-    crossOriginIsolatedContextType: Option<CrossOriginIsolatedContextType>,
-    gatedAPIFeatures: Option<Vec<GatedAPIFeatures>>,
+    secureContextType: SecureContextType,
+    crossOriginIsolatedContextType: CrossOriginIsolatedContextType,
+    gatedAPIFeatures: Vec<GatedAPIFeatures>,
 }
 
 impl<'a> FrameBuilder<'a> {
-    /// Frame unique identifier.
-    pub fn id(mut self, id: FrameId<'a>) -> Self { self.id = Some(id); self }
     /// Parent frame identifier.
     pub fn parentId(mut self, parentId: FrameId<'a>) -> Self { self.parentId = Some(parentId); self }
-    /// Identifier of the loader associated with this frame.
-    pub fn loaderId(mut self, loaderId: crate::network::LoaderId<'a>) -> Self { self.loaderId = Some(loaderId); self }
     /// Frame's name as specified in the tag.
     pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    /// Frame document's URL without fragment.
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
     /// Frame document's URL fragment including the '#'.
     pub fn urlFragment(mut self, urlFragment: impl Into<Cow<'a, str>>) -> Self { self.urlFragment = Some(urlFragment.into()); self }
-    /// Frame document's registered domain, taking the public suffixes list into account.
-    /// Extracted from the Frame's url.
-    /// Example URLs: http://www.google.com/file.html -> "google.com"
-    /// http://a.b.co.uk/file.html      -> "b.co.uk"
-    pub fn domainAndRegistry(mut self, domainAndRegistry: impl Into<Cow<'a, str>>) -> Self { self.domainAndRegistry = Some(domainAndRegistry.into()); self }
-    /// Frame document's security origin.
-    pub fn securityOrigin(mut self, securityOrigin: impl Into<Cow<'a, str>>) -> Self { self.securityOrigin = Some(securityOrigin.into()); self }
     /// Additional details about the frame document's security origin.
     pub fn securityOriginDetails(mut self, securityOriginDetails: SecurityOriginDetails) -> Self { self.securityOriginDetails = Some(securityOriginDetails); self }
-    /// Frame document's mimeType as determined by the browser.
-    pub fn mimeType(mut self, mimeType: impl Into<Cow<'a, str>>) -> Self { self.mimeType = Some(mimeType.into()); self }
     /// If the frame failed to load, this contains the URL that could not be loaded. Note that unlike url above, this URL may contain a fragment.
     pub fn unreachableUrl(mut self, unreachableUrl: impl Into<Cow<'a, str>>) -> Self { self.unreachableUrl = Some(unreachableUrl.into()); self }
     /// Indicates whether this frame was tagged as an ad and why.
     pub fn adFrameStatus(mut self, adFrameStatus: AdFrameStatus) -> Self { self.adFrameStatus = Some(adFrameStatus); self }
-    /// Indicates whether the main document is a secure context and explains why that is the case.
-    pub fn secureContextType(mut self, secureContextType: SecureContextType) -> Self { self.secureContextType = Some(secureContextType); self }
-    /// Indicates whether this is a cross origin isolated context.
-    pub fn crossOriginIsolatedContextType(mut self, crossOriginIsolatedContextType: CrossOriginIsolatedContextType) -> Self { self.crossOriginIsolatedContextType = Some(crossOriginIsolatedContextType); self }
-    /// Indicated which gated APIs / features are available.
-    pub fn gatedAPIFeatures(mut self, gatedAPIFeatures: Vec<GatedAPIFeatures>) -> Self { self.gatedAPIFeatures = Some(gatedAPIFeatures); self }
     pub fn build(self) -> Frame<'a> {
         Frame {
-            id: self.id.unwrap_or_default(),
+            id: self.id,
             parentId: self.parentId,
-            loaderId: self.loaderId.unwrap_or_default(),
+            loaderId: self.loaderId,
             name: self.name,
-            url: self.url.unwrap_or_default(),
+            url: self.url,
             urlFragment: self.urlFragment,
-            domainAndRegistry: self.domainAndRegistry.unwrap_or_default(),
-            securityOrigin: self.securityOrigin.unwrap_or_default(),
+            domainAndRegistry: self.domainAndRegistry,
+            securityOrigin: self.securityOrigin,
             securityOriginDetails: self.securityOriginDetails,
-            mimeType: self.mimeType.unwrap_or_default(),
+            mimeType: self.mimeType,
             unreachableUrl: self.unreachableUrl,
             adFrameStatus: self.adFrameStatus,
-            secureContextType: self.secureContextType.unwrap_or_default(),
-            crossOriginIsolatedContextType: self.crossOriginIsolatedContextType.unwrap_or_default(),
-            gatedAPIFeatures: self.gatedAPIFeatures.unwrap_or_default(),
+            secureContextType: self.secureContextType,
+            crossOriginIsolatedContextType: self.crossOriginIsolatedContextType,
+            gatedAPIFeatures: self.gatedAPIFeatures,
         }
     }
 }
@@ -803,7 +821,17 @@ pub struct FrameResource<'a> {
 }
 
 impl<'a> FrameResource<'a> {
-    pub fn builder() -> FrameResourceBuilder<'a> { FrameResourceBuilder::default() }
+    pub fn builder(url: impl Into<Cow<'a, str>>, type_: crate::network::ResourceType, mimeType: impl Into<Cow<'a, str>>) -> FrameResourceBuilder<'a> {
+        FrameResourceBuilder {
+            url: url.into(),
+            type_: type_,
+            mimeType: mimeType.into(),
+            lastModified: None,
+            contentSize: None,
+            failed: None,
+            canceled: None,
+        }
+    }
     pub fn url(&self) -> &str { self.url.as_ref() }
     pub fn type_(&self) -> &crate::network::ResourceType { &self.type_ }
     pub fn mimeType(&self) -> &str { self.mimeType.as_ref() }
@@ -813,11 +841,11 @@ impl<'a> FrameResource<'a> {
     pub fn canceled(&self) -> Option<bool> { self.canceled }
 }
 
-#[derive(Default)]
+
 pub struct FrameResourceBuilder<'a> {
-    url: Option<Cow<'a, str>>,
-    type_: Option<crate::network::ResourceType>,
-    mimeType: Option<Cow<'a, str>>,
+    url: Cow<'a, str>,
+    type_: crate::network::ResourceType,
+    mimeType: Cow<'a, str>,
     lastModified: Option<crate::network::TimeSinceEpoch>,
     contentSize: Option<f64>,
     failed: Option<bool>,
@@ -825,12 +853,6 @@ pub struct FrameResourceBuilder<'a> {
 }
 
 impl<'a> FrameResourceBuilder<'a> {
-    /// Resource URL.
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
-    /// Type of this resource.
-    pub fn type_(mut self, type_: crate::network::ResourceType) -> Self { self.type_ = Some(type_); self }
-    /// Resource mimeType as determined by the browser.
-    pub fn mimeType(mut self, mimeType: impl Into<Cow<'a, str>>) -> Self { self.mimeType = Some(mimeType.into()); self }
     /// last-modified timestamp as reported by server.
     pub fn lastModified(mut self, lastModified: crate::network::TimeSinceEpoch) -> Self { self.lastModified = Some(lastModified); self }
     /// Resource content size.
@@ -841,9 +863,9 @@ impl<'a> FrameResourceBuilder<'a> {
     pub fn canceled(mut self, canceled: bool) -> Self { self.canceled = Some(canceled); self }
     pub fn build(self) -> FrameResource<'a> {
         FrameResource {
-            url: self.url.unwrap_or_default(),
-            type_: self.type_.unwrap_or_default(),
-            mimeType: self.mimeType.unwrap_or_default(),
+            url: self.url,
+            type_: self.type_,
+            mimeType: self.mimeType,
             lastModified: self.lastModified,
             contentSize: self.contentSize,
             failed: self.failed,
@@ -867,31 +889,33 @@ pub struct FrameResourceTree<'a> {
 }
 
 impl<'a> FrameResourceTree<'a> {
-    pub fn builder() -> FrameResourceTreeBuilder<'a> { FrameResourceTreeBuilder::default() }
+    pub fn builder(frame: Frame<'a>, resources: Vec<FrameResource<'a>>) -> FrameResourceTreeBuilder<'a> {
+        FrameResourceTreeBuilder {
+            frame: frame,
+            childFrames: None,
+            resources: resources,
+        }
+    }
     pub fn frame(&self) -> &Frame<'a> { &self.frame }
     pub fn childFrames(&self) -> Option<&[Box<FrameResourceTree<'a>>]> { self.childFrames.as_deref() }
     pub fn resources(&self) -> &[FrameResource<'a>] { &self.resources }
 }
 
-#[derive(Default)]
+
 pub struct FrameResourceTreeBuilder<'a> {
-    frame: Option<Frame<'a>>,
+    frame: Frame<'a>,
     childFrames: Option<Vec<Box<FrameResourceTree<'a>>>>,
-    resources: Option<Vec<FrameResource<'a>>>,
+    resources: Vec<FrameResource<'a>>,
 }
 
 impl<'a> FrameResourceTreeBuilder<'a> {
-    /// Frame information for this tree item.
-    pub fn frame(mut self, frame: Frame<'a>) -> Self { self.frame = Some(frame); self }
     /// Child frames.
     pub fn childFrames(mut self, childFrames: Vec<Box<FrameResourceTree<'a>>>) -> Self { self.childFrames = Some(childFrames); self }
-    /// Information about frame resources.
-    pub fn resources(mut self, resources: Vec<FrameResource<'a>>) -> Self { self.resources = Some(resources); self }
     pub fn build(self) -> FrameResourceTree<'a> {
         FrameResourceTree {
-            frame: self.frame.unwrap_or_default(),
+            frame: self.frame,
             childFrames: self.childFrames,
-            resources: self.resources.unwrap_or_default(),
+            resources: self.resources,
         }
     }
 }
@@ -909,25 +933,28 @@ pub struct FrameTree<'a> {
 }
 
 impl<'a> FrameTree<'a> {
-    pub fn builder() -> FrameTreeBuilder<'a> { FrameTreeBuilder::default() }
+    pub fn builder(frame: Frame<'a>) -> FrameTreeBuilder<'a> {
+        FrameTreeBuilder {
+            frame: frame,
+            childFrames: None,
+        }
+    }
     pub fn frame(&self) -> &Frame<'a> { &self.frame }
     pub fn childFrames(&self) -> Option<&[Box<FrameTree<'a>>]> { self.childFrames.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct FrameTreeBuilder<'a> {
-    frame: Option<Frame<'a>>,
+    frame: Frame<'a>,
     childFrames: Option<Vec<Box<FrameTree<'a>>>>,
 }
 
 impl<'a> FrameTreeBuilder<'a> {
-    /// Frame information for this tree item.
-    pub fn frame(mut self, frame: Frame<'a>) -> Self { self.frame = Some(frame); self }
     /// Child frames.
     pub fn childFrames(mut self, childFrames: Vec<Box<FrameTree<'a>>>) -> Self { self.childFrames = Some(childFrames); self }
     pub fn build(self) -> FrameTree<'a> {
         FrameTree {
-            frame: self.frame.unwrap_or_default(),
+            frame: self.frame,
             childFrames: self.childFrames,
         }
     }
@@ -988,7 +1015,15 @@ pub struct NavigationEntry<'a> {
 }
 
 impl<'a> NavigationEntry<'a> {
-    pub fn builder() -> NavigationEntryBuilder<'a> { NavigationEntryBuilder::default() }
+    pub fn builder(id: u64, url: impl Into<Cow<'a, str>>, userTypedURL: impl Into<Cow<'a, str>>, title: impl Into<Cow<'a, str>>, transitionType: TransitionType) -> NavigationEntryBuilder<'a> {
+        NavigationEntryBuilder {
+            id: id,
+            url: url.into(),
+            userTypedURL: userTypedURL.into(),
+            title: title.into(),
+            transitionType: transitionType,
+        }
+    }
     pub fn id(&self) -> u64 { self.id }
     pub fn url(&self) -> &str { self.url.as_ref() }
     pub fn userTypedURL(&self) -> &str { self.userTypedURL.as_ref() }
@@ -996,33 +1031,23 @@ impl<'a> NavigationEntry<'a> {
     pub fn transitionType(&self) -> &TransitionType { &self.transitionType }
 }
 
-#[derive(Default)]
+
 pub struct NavigationEntryBuilder<'a> {
-    id: Option<u64>,
-    url: Option<Cow<'a, str>>,
-    userTypedURL: Option<Cow<'a, str>>,
-    title: Option<Cow<'a, str>>,
-    transitionType: Option<TransitionType>,
+    id: u64,
+    url: Cow<'a, str>,
+    userTypedURL: Cow<'a, str>,
+    title: Cow<'a, str>,
+    transitionType: TransitionType,
 }
 
 impl<'a> NavigationEntryBuilder<'a> {
-    /// Unique id of the navigation history entry.
-    pub fn id(mut self, id: u64) -> Self { self.id = Some(id); self }
-    /// URL of the navigation history entry.
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
-    /// URL that the user typed in the url bar.
-    pub fn userTypedURL(mut self, userTypedURL: impl Into<Cow<'a, str>>) -> Self { self.userTypedURL = Some(userTypedURL.into()); self }
-    /// Title of the navigation history entry.
-    pub fn title(mut self, title: impl Into<Cow<'a, str>>) -> Self { self.title = Some(title.into()); self }
-    /// Transition type.
-    pub fn transitionType(mut self, transitionType: TransitionType) -> Self { self.transitionType = Some(transitionType); self }
     pub fn build(self) -> NavigationEntry<'a> {
         NavigationEntry {
-            id: self.id.unwrap_or_default(),
-            url: self.url.unwrap_or_default(),
-            userTypedURL: self.userTypedURL.unwrap_or_default(),
-            title: self.title.unwrap_or_default(),
-            transitionType: self.transitionType.unwrap_or_default(),
+            id: self.id,
+            url: self.url,
+            userTypedURL: self.userTypedURL,
+            title: self.title,
+            transitionType: self.transitionType,
         }
     }
 }
@@ -1050,7 +1075,17 @@ pub struct ScreencastFrameMetadata {
 }
 
 impl ScreencastFrameMetadata {
-    pub fn builder() -> ScreencastFrameMetadataBuilder { ScreencastFrameMetadataBuilder::default() }
+    pub fn builder(offsetTop: f64, pageScaleFactor: f64, deviceWidth: f64, deviceHeight: f64, scrollOffsetX: f64, scrollOffsetY: f64) -> ScreencastFrameMetadataBuilder {
+        ScreencastFrameMetadataBuilder {
+            offsetTop: offsetTop,
+            pageScaleFactor: pageScaleFactor,
+            deviceWidth: deviceWidth,
+            deviceHeight: deviceHeight,
+            scrollOffsetX: scrollOffsetX,
+            scrollOffsetY: scrollOffsetY,
+            timestamp: None,
+        }
+    }
     pub fn offsetTop(&self) -> f64 { self.offsetTop }
     pub fn pageScaleFactor(&self) -> f64 { self.pageScaleFactor }
     pub fn deviceWidth(&self) -> f64 { self.deviceWidth }
@@ -1060,40 +1095,28 @@ impl ScreencastFrameMetadata {
     pub fn timestamp(&self) -> Option<&crate::network::TimeSinceEpoch> { self.timestamp.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct ScreencastFrameMetadataBuilder {
-    offsetTop: Option<f64>,
-    pageScaleFactor: Option<f64>,
-    deviceWidth: Option<f64>,
-    deviceHeight: Option<f64>,
-    scrollOffsetX: Option<f64>,
-    scrollOffsetY: Option<f64>,
+    offsetTop: f64,
+    pageScaleFactor: f64,
+    deviceWidth: f64,
+    deviceHeight: f64,
+    scrollOffsetX: f64,
+    scrollOffsetY: f64,
     timestamp: Option<crate::network::TimeSinceEpoch>,
 }
 
 impl ScreencastFrameMetadataBuilder {
-    /// Top offset in DIP.
-    pub fn offsetTop(mut self, offsetTop: f64) -> Self { self.offsetTop = Some(offsetTop); self }
-    /// Page scale factor.
-    pub fn pageScaleFactor(mut self, pageScaleFactor: f64) -> Self { self.pageScaleFactor = Some(pageScaleFactor); self }
-    /// Device screen width in DIP.
-    pub fn deviceWidth(mut self, deviceWidth: f64) -> Self { self.deviceWidth = Some(deviceWidth); self }
-    /// Device screen height in DIP.
-    pub fn deviceHeight(mut self, deviceHeight: f64) -> Self { self.deviceHeight = Some(deviceHeight); self }
-    /// Position of horizontal scroll in CSS pixels.
-    pub fn scrollOffsetX(mut self, scrollOffsetX: f64) -> Self { self.scrollOffsetX = Some(scrollOffsetX); self }
-    /// Position of vertical scroll in CSS pixels.
-    pub fn scrollOffsetY(mut self, scrollOffsetY: f64) -> Self { self.scrollOffsetY = Some(scrollOffsetY); self }
     /// Frame swap timestamp.
     pub fn timestamp(mut self, timestamp: crate::network::TimeSinceEpoch) -> Self { self.timestamp = Some(timestamp); self }
     pub fn build(self) -> ScreencastFrameMetadata {
         ScreencastFrameMetadata {
-            offsetTop: self.offsetTop.unwrap_or_default(),
-            pageScaleFactor: self.pageScaleFactor.unwrap_or_default(),
-            deviceWidth: self.deviceWidth.unwrap_or_default(),
-            deviceHeight: self.deviceHeight.unwrap_or_default(),
-            scrollOffsetX: self.scrollOffsetX.unwrap_or_default(),
-            scrollOffsetY: self.scrollOffsetY.unwrap_or_default(),
+            offsetTop: self.offsetTop,
+            pageScaleFactor: self.pageScaleFactor,
+            deviceWidth: self.deviceWidth,
+            deviceHeight: self.deviceHeight,
+            scrollOffsetX: self.scrollOffsetX,
+            scrollOffsetY: self.scrollOffsetY,
             timestamp: self.timestamp,
         }
     }
@@ -1130,36 +1153,35 @@ pub struct AppManifestError<'a> {
 }
 
 impl<'a> AppManifestError<'a> {
-    pub fn builder() -> AppManifestErrorBuilder<'a> { AppManifestErrorBuilder::default() }
+    pub fn builder(message: impl Into<Cow<'a, str>>, critical: i64, line: i64, column: i64) -> AppManifestErrorBuilder<'a> {
+        AppManifestErrorBuilder {
+            message: message.into(),
+            critical: critical,
+            line: line,
+            column: column,
+        }
+    }
     pub fn message(&self) -> &str { self.message.as_ref() }
     pub fn critical(&self) -> i64 { self.critical }
     pub fn line(&self) -> i64 { self.line }
     pub fn column(&self) -> i64 { self.column }
 }
 
-#[derive(Default)]
+
 pub struct AppManifestErrorBuilder<'a> {
-    message: Option<Cow<'a, str>>,
-    critical: Option<i64>,
-    line: Option<i64>,
-    column: Option<i64>,
+    message: Cow<'a, str>,
+    critical: i64,
+    line: i64,
+    column: i64,
 }
 
 impl<'a> AppManifestErrorBuilder<'a> {
-    /// Error message.
-    pub fn message(mut self, message: impl Into<Cow<'a, str>>) -> Self { self.message = Some(message.into()); self }
-    /// If critical, this is a non-recoverable parse error.
-    pub fn critical(mut self, critical: i64) -> Self { self.critical = Some(critical); self }
-    /// Error line.
-    pub fn line(mut self, line: i64) -> Self { self.line = Some(line); self }
-    /// Error column.
-    pub fn column(mut self, column: i64) -> Self { self.column = Some(column); self }
     pub fn build(self) -> AppManifestError<'a> {
         AppManifestError {
-            message: self.message.unwrap_or_default(),
-            critical: self.critical.unwrap_or_default(),
-            line: self.line.unwrap_or_default(),
-            column: self.column.unwrap_or_default(),
+            message: self.message,
+            critical: self.critical,
+            line: self.line,
+            column: self.column,
         }
     }
 }
@@ -1174,21 +1196,23 @@ pub struct AppManifestParsedProperties<'a> {
 }
 
 impl<'a> AppManifestParsedProperties<'a> {
-    pub fn builder() -> AppManifestParsedPropertiesBuilder<'a> { AppManifestParsedPropertiesBuilder::default() }
+    pub fn builder(scope: impl Into<Cow<'a, str>>) -> AppManifestParsedPropertiesBuilder<'a> {
+        AppManifestParsedPropertiesBuilder {
+            scope: scope.into(),
+        }
+    }
     pub fn scope(&self) -> &str { self.scope.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct AppManifestParsedPropertiesBuilder<'a> {
-    scope: Option<Cow<'a, str>>,
+    scope: Cow<'a, str>,
 }
 
 impl<'a> AppManifestParsedPropertiesBuilder<'a> {
-    /// Computed scope value
-    pub fn scope(mut self, scope: impl Into<Cow<'a, str>>) -> Self { self.scope = Some(scope.into()); self }
     pub fn build(self) -> AppManifestParsedProperties<'a> {
         AppManifestParsedProperties {
-            scope: self.scope.unwrap_or_default(),
+            scope: self.scope,
         }
     }
 }
@@ -1209,36 +1233,35 @@ pub struct LayoutViewport {
 }
 
 impl LayoutViewport {
-    pub fn builder() -> LayoutViewportBuilder { LayoutViewportBuilder::default() }
+    pub fn builder(pageX: i64, pageY: i64, clientWidth: u64, clientHeight: i64) -> LayoutViewportBuilder {
+        LayoutViewportBuilder {
+            pageX: pageX,
+            pageY: pageY,
+            clientWidth: clientWidth,
+            clientHeight: clientHeight,
+        }
+    }
     pub fn pageX(&self) -> i64 { self.pageX }
     pub fn pageY(&self) -> i64 { self.pageY }
     pub fn clientWidth(&self) -> u64 { self.clientWidth }
     pub fn clientHeight(&self) -> i64 { self.clientHeight }
 }
 
-#[derive(Default)]
+
 pub struct LayoutViewportBuilder {
-    pageX: Option<i64>,
-    pageY: Option<i64>,
-    clientWidth: Option<u64>,
-    clientHeight: Option<i64>,
+    pageX: i64,
+    pageY: i64,
+    clientWidth: u64,
+    clientHeight: i64,
 }
 
 impl LayoutViewportBuilder {
-    /// Horizontal offset relative to the document (CSS pixels).
-    pub fn pageX(mut self, pageX: i64) -> Self { self.pageX = Some(pageX); self }
-    /// Vertical offset relative to the document (CSS pixels).
-    pub fn pageY(mut self, pageY: i64) -> Self { self.pageY = Some(pageY); self }
-    /// Width (CSS pixels), excludes scrollbar if present.
-    pub fn clientWidth(mut self, clientWidth: u64) -> Self { self.clientWidth = Some(clientWidth); self }
-    /// Height (CSS pixels), excludes scrollbar if present.
-    pub fn clientHeight(mut self, clientHeight: i64) -> Self { self.clientHeight = Some(clientHeight); self }
     pub fn build(self) -> LayoutViewport {
         LayoutViewport {
-            pageX: self.pageX.unwrap_or_default(),
-            pageY: self.pageY.unwrap_or_default(),
-            clientWidth: self.clientWidth.unwrap_or_default(),
-            clientHeight: self.clientHeight.unwrap_or_default(),
+            pageX: self.pageX,
+            pageY: self.pageY,
+            clientWidth: self.clientWidth,
+            clientHeight: self.clientHeight,
         }
     }
 }
@@ -1268,7 +1291,18 @@ pub struct VisualViewport {
 }
 
 impl VisualViewport {
-    pub fn builder() -> VisualViewportBuilder { VisualViewportBuilder::default() }
+    pub fn builder(offsetX: f64, offsetY: f64, pageX: f64, pageY: f64, clientWidth: f64, clientHeight: f64, scale: f64) -> VisualViewportBuilder {
+        VisualViewportBuilder {
+            offsetX: offsetX,
+            offsetY: offsetY,
+            pageX: pageX,
+            pageY: pageY,
+            clientWidth: clientWidth,
+            clientHeight: clientHeight,
+            scale: scale,
+            zoom: None,
+        }
+    }
     pub fn offsetX(&self) -> f64 { self.offsetX }
     pub fn offsetY(&self) -> f64 { self.offsetY }
     pub fn pageX(&self) -> f64 { self.pageX }
@@ -1279,44 +1313,30 @@ impl VisualViewport {
     pub fn zoom(&self) -> Option<f64> { self.zoom }
 }
 
-#[derive(Default)]
+
 pub struct VisualViewportBuilder {
-    offsetX: Option<f64>,
-    offsetY: Option<f64>,
-    pageX: Option<f64>,
-    pageY: Option<f64>,
-    clientWidth: Option<f64>,
-    clientHeight: Option<f64>,
-    scale: Option<f64>,
+    offsetX: f64,
+    offsetY: f64,
+    pageX: f64,
+    pageY: f64,
+    clientWidth: f64,
+    clientHeight: f64,
+    scale: f64,
     zoom: Option<f64>,
 }
 
 impl VisualViewportBuilder {
-    /// Horizontal offset relative to the layout viewport (CSS pixels).
-    pub fn offsetX(mut self, offsetX: f64) -> Self { self.offsetX = Some(offsetX); self }
-    /// Vertical offset relative to the layout viewport (CSS pixels).
-    pub fn offsetY(mut self, offsetY: f64) -> Self { self.offsetY = Some(offsetY); self }
-    /// Horizontal offset relative to the document (CSS pixels).
-    pub fn pageX(mut self, pageX: f64) -> Self { self.pageX = Some(pageX); self }
-    /// Vertical offset relative to the document (CSS pixels).
-    pub fn pageY(mut self, pageY: f64) -> Self { self.pageY = Some(pageY); self }
-    /// Width (CSS pixels), excludes scrollbar if present.
-    pub fn clientWidth(mut self, clientWidth: f64) -> Self { self.clientWidth = Some(clientWidth); self }
-    /// Height (CSS pixels), excludes scrollbar if present.
-    pub fn clientHeight(mut self, clientHeight: f64) -> Self { self.clientHeight = Some(clientHeight); self }
-    /// Scale relative to the ideal viewport (size at width=device-width).
-    pub fn scale(mut self, scale: f64) -> Self { self.scale = Some(scale); self }
     /// Page zoom factor (CSS to device independent pixels ratio).
     pub fn zoom(mut self, zoom: f64) -> Self { self.zoom = Some(zoom); self }
     pub fn build(self) -> VisualViewport {
         VisualViewport {
-            offsetX: self.offsetX.unwrap_or_default(),
-            offsetY: self.offsetY.unwrap_or_default(),
-            pageX: self.pageX.unwrap_or_default(),
-            pageY: self.pageY.unwrap_or_default(),
-            clientWidth: self.clientWidth.unwrap_or_default(),
-            clientHeight: self.clientHeight.unwrap_or_default(),
-            scale: self.scale.unwrap_or_default(),
+            offsetX: self.offsetX,
+            offsetY: self.offsetY,
+            pageX: self.pageX,
+            pageY: self.pageY,
+            clientWidth: self.clientWidth,
+            clientHeight: self.clientHeight,
+            scale: self.scale,
             zoom: self.zoom,
         }
     }
@@ -1340,7 +1360,15 @@ pub struct Viewport {
 }
 
 impl Viewport {
-    pub fn builder() -> ViewportBuilder { ViewportBuilder::default() }
+    pub fn builder(x: f64, y: f64, width: f64, height: f64, scale: f64) -> ViewportBuilder {
+        ViewportBuilder {
+            x: x,
+            y: y,
+            width: width,
+            height: height,
+            scale: scale,
+        }
+    }
     pub fn x(&self) -> f64 { self.x }
     pub fn y(&self) -> f64 { self.y }
     pub fn width(&self) -> f64 { self.width }
@@ -1348,33 +1376,23 @@ impl Viewport {
     pub fn scale(&self) -> f64 { self.scale }
 }
 
-#[derive(Default)]
+
 pub struct ViewportBuilder {
-    x: Option<f64>,
-    y: Option<f64>,
-    width: Option<f64>,
-    height: Option<f64>,
-    scale: Option<f64>,
+    x: f64,
+    y: f64,
+    width: f64,
+    height: f64,
+    scale: f64,
 }
 
 impl ViewportBuilder {
-    /// X offset in device independent pixels (dip).
-    pub fn x(mut self, x: f64) -> Self { self.x = Some(x); self }
-    /// Y offset in device independent pixels (dip).
-    pub fn y(mut self, y: f64) -> Self { self.y = Some(y); self }
-    /// Rectangle width in device independent pixels (dip).
-    pub fn width(mut self, width: f64) -> Self { self.width = Some(width); self }
-    /// Rectangle height in device independent pixels (dip).
-    pub fn height(mut self, height: f64) -> Self { self.height = Some(height); self }
-    /// Page scale factor.
-    pub fn scale(mut self, scale: f64) -> Self { self.scale = Some(scale); self }
     pub fn build(self) -> Viewport {
         Viewport {
-            x: self.x.unwrap_or_default(),
-            y: self.y.unwrap_or_default(),
-            width: self.width.unwrap_or_default(),
-            height: self.height.unwrap_or_default(),
-            scale: self.scale.unwrap_or_default(),
+            x: self.x,
+            y: self.y,
+            width: self.width,
+            height: self.height,
+            scale: self.scale,
         }
     }
 }
@@ -1408,7 +1426,17 @@ pub struct FontFamilies<'a> {
 }
 
 impl<'a> FontFamilies<'a> {
-    pub fn builder() -> FontFamiliesBuilder<'a> { FontFamiliesBuilder::default() }
+    pub fn builder() -> FontFamiliesBuilder<'a> {
+        FontFamiliesBuilder {
+            standard: None,
+            fixed: None,
+            serif: None,
+            sansSerif: None,
+            cursive: None,
+            fantasy: None,
+            math: None,
+        }
+    }
     pub fn standard(&self) -> Option<&str> { self.standard.as_deref() }
     pub fn fixed(&self) -> Option<&str> { self.fixed.as_deref() }
     pub fn serif(&self) -> Option<&str> { self.serif.as_deref() }
@@ -1469,26 +1497,27 @@ pub struct ScriptFontFamilies<'a> {
 }
 
 impl<'a> ScriptFontFamilies<'a> {
-    pub fn builder() -> ScriptFontFamiliesBuilder<'a> { ScriptFontFamiliesBuilder::default() }
+    pub fn builder(script: impl Into<Cow<'a, str>>, fontFamilies: FontFamilies<'a>) -> ScriptFontFamiliesBuilder<'a> {
+        ScriptFontFamiliesBuilder {
+            script: script.into(),
+            fontFamilies: fontFamilies,
+        }
+    }
     pub fn script(&self) -> &str { self.script.as_ref() }
     pub fn fontFamilies(&self) -> &FontFamilies<'a> { &self.fontFamilies }
 }
 
-#[derive(Default)]
+
 pub struct ScriptFontFamiliesBuilder<'a> {
-    script: Option<Cow<'a, str>>,
-    fontFamilies: Option<FontFamilies<'a>>,
+    script: Cow<'a, str>,
+    fontFamilies: FontFamilies<'a>,
 }
 
 impl<'a> ScriptFontFamiliesBuilder<'a> {
-    /// Name of the script which these font families are defined for.
-    pub fn script(mut self, script: impl Into<Cow<'a, str>>) -> Self { self.script = Some(script.into()); self }
-    /// Generic font families collection for the script.
-    pub fn fontFamilies(mut self, fontFamilies: FontFamilies<'a>) -> Self { self.fontFamilies = Some(fontFamilies); self }
     pub fn build(self) -> ScriptFontFamilies<'a> {
         ScriptFontFamilies {
-            script: self.script.unwrap_or_default(),
-            fontFamilies: self.fontFamilies.unwrap_or_default(),
+            script: self.script,
+            fontFamilies: self.fontFamilies,
         }
     }
 }
@@ -1507,7 +1536,12 @@ pub struct FontSizes {
 }
 
 impl FontSizes {
-    pub fn builder() -> FontSizesBuilder { FontSizesBuilder::default() }
+    pub fn builder() -> FontSizesBuilder {
+        FontSizesBuilder {
+            standard: None,
+            fixed: None,
+        }
+    }
     pub fn standard(&self) -> Option<i64> { self.standard }
     pub fn fixed(&self) -> Option<i64> { self.fixed }
 }
@@ -1582,26 +1616,27 @@ pub struct InstallabilityErrorArgument<'a> {
 }
 
 impl<'a> InstallabilityErrorArgument<'a> {
-    pub fn builder() -> InstallabilityErrorArgumentBuilder<'a> { InstallabilityErrorArgumentBuilder::default() }
+    pub fn builder(name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> InstallabilityErrorArgumentBuilder<'a> {
+        InstallabilityErrorArgumentBuilder {
+            name: name.into(),
+            value: value.into(),
+        }
+    }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn value(&self) -> &str { self.value.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct InstallabilityErrorArgumentBuilder<'a> {
-    name: Option<Cow<'a, str>>,
-    value: Option<Cow<'a, str>>,
+    name: Cow<'a, str>,
+    value: Cow<'a, str>,
 }
 
 impl<'a> InstallabilityErrorArgumentBuilder<'a> {
-    /// Argument name (e.g. name:'minimum-icon-size-in-pixels').
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    /// Argument value (e.g. value:'64').
-    pub fn value(mut self, value: impl Into<Cow<'a, str>>) -> Self { self.value = Some(value.into()); self }
     pub fn build(self) -> InstallabilityErrorArgument<'a> {
         InstallabilityErrorArgument {
-            name: self.name.unwrap_or_default(),
-            value: self.value.unwrap_or_default(),
+            name: self.name,
+            value: self.value,
         }
     }
 }
@@ -1618,26 +1653,27 @@ pub struct InstallabilityError<'a> {
 }
 
 impl<'a> InstallabilityError<'a> {
-    pub fn builder() -> InstallabilityErrorBuilder<'a> { InstallabilityErrorBuilder::default() }
+    pub fn builder(errorId: impl Into<Cow<'a, str>>, errorArguments: Vec<InstallabilityErrorArgument<'a>>) -> InstallabilityErrorBuilder<'a> {
+        InstallabilityErrorBuilder {
+            errorId: errorId.into(),
+            errorArguments: errorArguments,
+        }
+    }
     pub fn errorId(&self) -> &str { self.errorId.as_ref() }
     pub fn errorArguments(&self) -> &[InstallabilityErrorArgument<'a>] { &self.errorArguments }
 }
 
-#[derive(Default)]
+
 pub struct InstallabilityErrorBuilder<'a> {
-    errorId: Option<Cow<'a, str>>,
-    errorArguments: Option<Vec<InstallabilityErrorArgument<'a>>>,
+    errorId: Cow<'a, str>,
+    errorArguments: Vec<InstallabilityErrorArgument<'a>>,
 }
 
 impl<'a> InstallabilityErrorBuilder<'a> {
-    /// The error id (e.g. 'manifest-missing-suitable-icon').
-    pub fn errorId(mut self, errorId: impl Into<Cow<'a, str>>) -> Self { self.errorId = Some(errorId.into()); self }
-    /// The list of error arguments (e.g. {name:'minimum-icon-size-in-pixels', value:'64'}).
-    pub fn errorArguments(mut self, errorArguments: Vec<InstallabilityErrorArgument<'a>>) -> Self { self.errorArguments = Some(errorArguments); self }
     pub fn build(self) -> InstallabilityError<'a> {
         InstallabilityError {
-            errorId: self.errorId.unwrap_or_default(),
-            errorArguments: self.errorArguments.unwrap_or_default(),
+            errorId: self.errorId,
+            errorArguments: self.errorArguments,
         }
     }
 }
@@ -1679,26 +1715,29 @@ pub struct CompilationCacheParams<'a> {
 }
 
 impl<'a> CompilationCacheParams<'a> {
-    pub fn builder() -> CompilationCacheParamsBuilder<'a> { CompilationCacheParamsBuilder::default() }
+    pub fn builder(url: impl Into<Cow<'a, str>>) -> CompilationCacheParamsBuilder<'a> {
+        CompilationCacheParamsBuilder {
+            url: url.into(),
+            eager: None,
+        }
+    }
     pub fn url(&self) -> &str { self.url.as_ref() }
     pub fn eager(&self) -> Option<bool> { self.eager }
 }
 
-#[derive(Default)]
+
 pub struct CompilationCacheParamsBuilder<'a> {
-    url: Option<Cow<'a, str>>,
+    url: Cow<'a, str>,
     eager: Option<bool>,
 }
 
 impl<'a> CompilationCacheParamsBuilder<'a> {
-    /// The URL of the script to produce a compilation cache entry for.
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
     /// A hint to the backend whether eager compilation is recommended.
     /// (the actual compilation mode used is upon backend discretion).
     pub fn eager(mut self, eager: bool) -> Self { self.eager = Some(eager); self }
     pub fn build(self) -> CompilationCacheParams<'a> {
         CompilationCacheParams {
-            url: self.url.unwrap_or_default(),
+            url: self.url,
             eager: self.eager,
         }
     }
@@ -1715,7 +1754,12 @@ pub struct FileFilter<'a> {
 }
 
 impl<'a> FileFilter<'a> {
-    pub fn builder() -> FileFilterBuilder<'a> { FileFilterBuilder::default() }
+    pub fn builder() -> FileFilterBuilder<'a> {
+        FileFilterBuilder {
+            name: None,
+            accepts: None,
+        }
+    }
     pub fn name(&self) -> Option<&str> { self.name.as_deref() }
     pub fn accepts(&self) -> Option<&[Cow<'a, str>]> { self.accepts.as_deref() }
 }
@@ -1754,7 +1798,15 @@ pub struct FileHandler<'a> {
 }
 
 impl<'a> FileHandler<'a> {
-    pub fn builder() -> FileHandlerBuilder<'a> { FileHandlerBuilder::default() }
+    pub fn builder(action: impl Into<Cow<'a, str>>, name: impl Into<Cow<'a, str>>, launchType: impl Into<Cow<'a, str>>) -> FileHandlerBuilder<'a> {
+        FileHandlerBuilder {
+            action: action.into(),
+            name: name.into(),
+            icons: None,
+            accepts: None,
+            launchType: launchType.into(),
+        }
+    }
     pub fn action(&self) -> &str { self.action.as_ref() }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn icons(&self) -> Option<&[ImageResource<'a>]> { self.icons.as_deref() }
@@ -1762,31 +1814,26 @@ impl<'a> FileHandler<'a> {
     pub fn launchType(&self) -> &str { self.launchType.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct FileHandlerBuilder<'a> {
-    action: Option<Cow<'a, str>>,
-    name: Option<Cow<'a, str>>,
+    action: Cow<'a, str>,
+    name: Cow<'a, str>,
     icons: Option<Vec<ImageResource<'a>>>,
     accepts: Option<Vec<FileFilter<'a>>>,
-    launchType: Option<Cow<'a, str>>,
+    launchType: Cow<'a, str>,
 }
 
 impl<'a> FileHandlerBuilder<'a> {
-    pub fn action(mut self, action: impl Into<Cow<'a, str>>) -> Self { self.action = Some(action.into()); self }
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
     pub fn icons(mut self, icons: Vec<ImageResource<'a>>) -> Self { self.icons = Some(icons); self }
     /// Mimic a map, name is the key, accepts is the value.
     pub fn accepts(mut self, accepts: Vec<FileFilter<'a>>) -> Self { self.accepts = Some(accepts); self }
-    /// Won't repeat the enums, using string for easy comparison. Same as the
-    /// other enums below.
-    pub fn launchType(mut self, launchType: impl Into<Cow<'a, str>>) -> Self { self.launchType = Some(launchType.into()); self }
     pub fn build(self) -> FileHandler<'a> {
         FileHandler {
-            action: self.action.unwrap_or_default(),
-            name: self.name.unwrap_or_default(),
+            action: self.action,
+            name: self.name,
             icons: self.icons,
             accepts: self.accepts,
-            launchType: self.launchType.unwrap_or_default(),
+            launchType: self.launchType,
         }
     }
 }
@@ -1806,28 +1853,31 @@ pub struct ImageResource<'a> {
 }
 
 impl<'a> ImageResource<'a> {
-    pub fn builder() -> ImageResourceBuilder<'a> { ImageResourceBuilder::default() }
+    pub fn builder(url: impl Into<Cow<'a, str>>) -> ImageResourceBuilder<'a> {
+        ImageResourceBuilder {
+            url: url.into(),
+            sizes: None,
+            type_: None,
+        }
+    }
     pub fn url(&self) -> &str { self.url.as_ref() }
     pub fn sizes(&self) -> Option<&str> { self.sizes.as_deref() }
     pub fn type_(&self) -> Option<&str> { self.type_.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct ImageResourceBuilder<'a> {
-    url: Option<Cow<'a, str>>,
+    url: Cow<'a, str>,
     sizes: Option<Cow<'a, str>>,
     type_: Option<Cow<'a, str>>,
 }
 
 impl<'a> ImageResourceBuilder<'a> {
-    /// The src field in the definition, but changing to url in favor of
-    /// consistency.
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
     pub fn sizes(mut self, sizes: impl Into<Cow<'a, str>>) -> Self { self.sizes = Some(sizes.into()); self }
     pub fn type_(mut self, type_: impl Into<Cow<'a, str>>) -> Self { self.type_ = Some(type_.into()); self }
     pub fn build(self) -> ImageResource<'a> {
         ImageResource {
-            url: self.url.unwrap_or_default(),
+            url: self.url,
             sizes: self.sizes,
             type_: self.type_,
         }
@@ -1842,20 +1892,23 @@ pub struct LaunchHandler<'a> {
 }
 
 impl<'a> LaunchHandler<'a> {
-    pub fn builder() -> LaunchHandlerBuilder<'a> { LaunchHandlerBuilder::default() }
+    pub fn builder(clientMode: impl Into<Cow<'a, str>>) -> LaunchHandlerBuilder<'a> {
+        LaunchHandlerBuilder {
+            clientMode: clientMode.into(),
+        }
+    }
     pub fn clientMode(&self) -> &str { self.clientMode.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct LaunchHandlerBuilder<'a> {
-    clientMode: Option<Cow<'a, str>>,
+    clientMode: Cow<'a, str>,
 }
 
 impl<'a> LaunchHandlerBuilder<'a> {
-    pub fn clientMode(mut self, clientMode: impl Into<Cow<'a, str>>) -> Self { self.clientMode = Some(clientMode.into()); self }
     pub fn build(self) -> LaunchHandler<'a> {
         LaunchHandler {
-            clientMode: self.clientMode.unwrap_or_default(),
+            clientMode: self.clientMode,
         }
     }
 }
@@ -1869,24 +1922,27 @@ pub struct ProtocolHandler<'a> {
 }
 
 impl<'a> ProtocolHandler<'a> {
-    pub fn builder() -> ProtocolHandlerBuilder<'a> { ProtocolHandlerBuilder::default() }
+    pub fn builder(protocol: impl Into<Cow<'a, str>>, url: impl Into<Cow<'a, str>>) -> ProtocolHandlerBuilder<'a> {
+        ProtocolHandlerBuilder {
+            protocol: protocol.into(),
+            url: url.into(),
+        }
+    }
     pub fn protocol(&self) -> &str { self.protocol.as_ref() }
     pub fn url(&self) -> &str { self.url.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct ProtocolHandlerBuilder<'a> {
-    protocol: Option<Cow<'a, str>>,
-    url: Option<Cow<'a, str>>,
+    protocol: Cow<'a, str>,
+    url: Cow<'a, str>,
 }
 
 impl<'a> ProtocolHandlerBuilder<'a> {
-    pub fn protocol(mut self, protocol: impl Into<Cow<'a, str>>) -> Self { self.protocol = Some(protocol.into()); self }
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
     pub fn build(self) -> ProtocolHandler<'a> {
         ProtocolHandler {
-            protocol: self.protocol.unwrap_or_default(),
-            url: self.url.unwrap_or_default(),
+            protocol: self.protocol,
+            url: self.url,
         }
     }
 }
@@ -1901,24 +1957,28 @@ pub struct RelatedApplication<'a> {
 }
 
 impl<'a> RelatedApplication<'a> {
-    pub fn builder() -> RelatedApplicationBuilder<'a> { RelatedApplicationBuilder::default() }
+    pub fn builder(url: impl Into<Cow<'a, str>>) -> RelatedApplicationBuilder<'a> {
+        RelatedApplicationBuilder {
+            id: None,
+            url: url.into(),
+        }
+    }
     pub fn id(&self) -> Option<&str> { self.id.as_deref() }
     pub fn url(&self) -> &str { self.url.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct RelatedApplicationBuilder<'a> {
     id: Option<Cow<'a, str>>,
-    url: Option<Cow<'a, str>>,
+    url: Cow<'a, str>,
 }
 
 impl<'a> RelatedApplicationBuilder<'a> {
     pub fn id(mut self, id: impl Into<Cow<'a, str>>) -> Self { self.id = Some(id.into()); self }
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
     pub fn build(self) -> RelatedApplication<'a> {
         RelatedApplication {
             id: self.id,
-            url: self.url.unwrap_or_default(),
+            url: self.url,
         }
     }
 }
@@ -1934,26 +1994,27 @@ pub struct ScopeExtension<'a> {
 }
 
 impl<'a> ScopeExtension<'a> {
-    pub fn builder() -> ScopeExtensionBuilder<'a> { ScopeExtensionBuilder::default() }
+    pub fn builder(origin: impl Into<Cow<'a, str>>, hasOriginWildcard: bool) -> ScopeExtensionBuilder<'a> {
+        ScopeExtensionBuilder {
+            origin: origin.into(),
+            hasOriginWildcard: hasOriginWildcard,
+        }
+    }
     pub fn origin(&self) -> &str { self.origin.as_ref() }
     pub fn hasOriginWildcard(&self) -> bool { self.hasOriginWildcard }
 }
 
-#[derive(Default)]
+
 pub struct ScopeExtensionBuilder<'a> {
-    origin: Option<Cow<'a, str>>,
-    hasOriginWildcard: Option<bool>,
+    origin: Cow<'a, str>,
+    hasOriginWildcard: bool,
 }
 
 impl<'a> ScopeExtensionBuilder<'a> {
-    /// Instead of using tuple, this field always returns the serialized string
-    /// for easy understanding and comparison.
-    pub fn origin(mut self, origin: impl Into<Cow<'a, str>>) -> Self { self.origin = Some(origin.into()); self }
-    pub fn hasOriginWildcard(mut self, hasOriginWildcard: bool) -> Self { self.hasOriginWildcard = Some(hasOriginWildcard); self }
     pub fn build(self) -> ScopeExtension<'a> {
         ScopeExtension {
-            origin: self.origin.unwrap_or_default(),
-            hasOriginWildcard: self.hasOriginWildcard.unwrap_or_default(),
+            origin: self.origin,
+            hasOriginWildcard: self.hasOriginWildcard,
         }
     }
 }
@@ -1969,27 +2030,31 @@ pub struct Screenshot<'a> {
 }
 
 impl<'a> Screenshot<'a> {
-    pub fn builder() -> ScreenshotBuilder<'a> { ScreenshotBuilder::default() }
+    pub fn builder(image: ImageResource<'a>, formFactor: impl Into<Cow<'a, str>>) -> ScreenshotBuilder<'a> {
+        ScreenshotBuilder {
+            image: image,
+            formFactor: formFactor.into(),
+            label: None,
+        }
+    }
     pub fn image(&self) -> &ImageResource<'a> { &self.image }
     pub fn formFactor(&self) -> &str { self.formFactor.as_ref() }
     pub fn label(&self) -> Option<&str> { self.label.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct ScreenshotBuilder<'a> {
-    image: Option<ImageResource<'a>>,
-    formFactor: Option<Cow<'a, str>>,
+    image: ImageResource<'a>,
+    formFactor: Cow<'a, str>,
     label: Option<Cow<'a, str>>,
 }
 
 impl<'a> ScreenshotBuilder<'a> {
-    pub fn image(mut self, image: ImageResource<'a>) -> Self { self.image = Some(image); self }
-    pub fn formFactor(mut self, formFactor: impl Into<Cow<'a, str>>) -> Self { self.formFactor = Some(formFactor.into()); self }
     pub fn label(mut self, label: impl Into<Cow<'a, str>>) -> Self { self.label = Some(label.into()); self }
     pub fn build(self) -> Screenshot<'a> {
         Screenshot {
-            image: self.image.unwrap_or_default(),
-            formFactor: self.formFactor.unwrap_or_default(),
+            image: self.image,
+            formFactor: self.formFactor,
             label: self.label,
         }
     }
@@ -2014,7 +2079,17 @@ pub struct ShareTarget<'a> {
 }
 
 impl<'a> ShareTarget<'a> {
-    pub fn builder() -> ShareTargetBuilder<'a> { ShareTargetBuilder::default() }
+    pub fn builder(action: impl Into<Cow<'a, str>>, method: impl Into<Cow<'a, str>>, enctype: impl Into<Cow<'a, str>>) -> ShareTargetBuilder<'a> {
+        ShareTargetBuilder {
+            action: action.into(),
+            method: method.into(),
+            enctype: enctype.into(),
+            title: None,
+            text: None,
+            url: None,
+            files: None,
+        }
+    }
     pub fn action(&self) -> &str { self.action.as_ref() }
     pub fn method(&self) -> &str { self.method.as_ref() }
     pub fn enctype(&self) -> &str { self.enctype.as_ref() }
@@ -2024,11 +2099,11 @@ impl<'a> ShareTarget<'a> {
     pub fn files(&self) -> Option<&[FileFilter<'a>]> { self.files.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct ShareTargetBuilder<'a> {
-    action: Option<Cow<'a, str>>,
-    method: Option<Cow<'a, str>>,
-    enctype: Option<Cow<'a, str>>,
+    action: Cow<'a, str>,
+    method: Cow<'a, str>,
+    enctype: Cow<'a, str>,
     title: Option<Cow<'a, str>>,
     text: Option<Cow<'a, str>>,
     url: Option<Cow<'a, str>>,
@@ -2036,9 +2111,6 @@ pub struct ShareTargetBuilder<'a> {
 }
 
 impl<'a> ShareTargetBuilder<'a> {
-    pub fn action(mut self, action: impl Into<Cow<'a, str>>) -> Self { self.action = Some(action.into()); self }
-    pub fn method(mut self, method: impl Into<Cow<'a, str>>) -> Self { self.method = Some(method.into()); self }
-    pub fn enctype(mut self, enctype: impl Into<Cow<'a, str>>) -> Self { self.enctype = Some(enctype.into()); self }
     /// Embed the ShareTargetParams
     pub fn title(mut self, title: impl Into<Cow<'a, str>>) -> Self { self.title = Some(title.into()); self }
     pub fn text(mut self, text: impl Into<Cow<'a, str>>) -> Self { self.text = Some(text.into()); self }
@@ -2046,9 +2118,9 @@ impl<'a> ShareTargetBuilder<'a> {
     pub fn files(mut self, files: Vec<FileFilter<'a>>) -> Self { self.files = Some(files); self }
     pub fn build(self) -> ShareTarget<'a> {
         ShareTarget {
-            action: self.action.unwrap_or_default(),
-            method: self.method.unwrap_or_default(),
-            enctype: self.enctype.unwrap_or_default(),
+            action: self.action,
+            method: self.method,
+            enctype: self.enctype,
             title: self.title,
             text: self.text,
             url: self.url,
@@ -2066,24 +2138,27 @@ pub struct Shortcut<'a> {
 }
 
 impl<'a> Shortcut<'a> {
-    pub fn builder() -> ShortcutBuilder<'a> { ShortcutBuilder::default() }
+    pub fn builder(name: impl Into<Cow<'a, str>>, url: impl Into<Cow<'a, str>>) -> ShortcutBuilder<'a> {
+        ShortcutBuilder {
+            name: name.into(),
+            url: url.into(),
+        }
+    }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn url(&self) -> &str { self.url.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct ShortcutBuilder<'a> {
-    name: Option<Cow<'a, str>>,
-    url: Option<Cow<'a, str>>,
+    name: Cow<'a, str>,
+    url: Cow<'a, str>,
 }
 
 impl<'a> ShortcutBuilder<'a> {
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
     pub fn build(self) -> Shortcut<'a> {
         Shortcut {
-            name: self.name.unwrap_or_default(),
-            url: self.url.unwrap_or_default(),
+            name: self.name,
+            url: self.url,
         }
     }
 }
@@ -2151,7 +2226,33 @@ pub struct WebAppManifest<'a> {
 }
 
 impl<'a> WebAppManifest<'a> {
-    pub fn builder() -> WebAppManifestBuilder<'a> { WebAppManifestBuilder::default() }
+    pub fn builder() -> WebAppManifestBuilder<'a> {
+        WebAppManifestBuilder {
+            backgroundColor: None,
+            description: None,
+            dir: None,
+            display: None,
+            displayOverrides: None,
+            fileHandlers: None,
+            icons: None,
+            id: None,
+            lang: None,
+            launchHandler: None,
+            name: None,
+            orientation: None,
+            preferRelatedApplications: None,
+            protocolHandlers: None,
+            relatedApplications: None,
+            scope: None,
+            scopeExtensions: None,
+            screenshots: None,
+            shareTarget: None,
+            shortName: None,
+            shortcuts: None,
+            startUrl: None,
+            themeColor: None,
+        }
+    }
     pub fn backgroundColor(&self) -> Option<&str> { self.backgroundColor.as_deref() }
     pub fn description(&self) -> Option<&str> { self.description.as_deref() }
     pub fn dir(&self) -> Option<&str> { self.dir.as_deref() }
@@ -2609,19 +2710,26 @@ pub struct BackForwardCacheBlockingDetails<'a> {
 }
 
 impl<'a> BackForwardCacheBlockingDetails<'a> {
-    pub fn builder() -> BackForwardCacheBlockingDetailsBuilder<'a> { BackForwardCacheBlockingDetailsBuilder::default() }
+    pub fn builder(lineNumber: i64, columnNumber: i64) -> BackForwardCacheBlockingDetailsBuilder<'a> {
+        BackForwardCacheBlockingDetailsBuilder {
+            url: None,
+            function: None,
+            lineNumber: lineNumber,
+            columnNumber: columnNumber,
+        }
+    }
     pub fn url(&self) -> Option<&str> { self.url.as_deref() }
     pub fn function(&self) -> Option<&str> { self.function.as_deref() }
     pub fn lineNumber(&self) -> i64 { self.lineNumber }
     pub fn columnNumber(&self) -> i64 { self.columnNumber }
 }
 
-#[derive(Default)]
+
 pub struct BackForwardCacheBlockingDetailsBuilder<'a> {
     url: Option<Cow<'a, str>>,
     function: Option<Cow<'a, str>>,
-    lineNumber: Option<i64>,
-    columnNumber: Option<i64>,
+    lineNumber: i64,
+    columnNumber: i64,
 }
 
 impl<'a> BackForwardCacheBlockingDetailsBuilder<'a> {
@@ -2629,16 +2737,12 @@ impl<'a> BackForwardCacheBlockingDetailsBuilder<'a> {
     pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
     /// Function name where blockage happened. Optional because of anonymous functions and tests.
     pub fn function(mut self, function: impl Into<Cow<'a, str>>) -> Self { self.function = Some(function.into()); self }
-    /// Line number in the script (0-based).
-    pub fn lineNumber(mut self, lineNumber: i64) -> Self { self.lineNumber = Some(lineNumber); self }
-    /// Column number in the script (0-based).
-    pub fn columnNumber(mut self, columnNumber: i64) -> Self { self.columnNumber = Some(columnNumber); self }
     pub fn build(self) -> BackForwardCacheBlockingDetails<'a> {
         BackForwardCacheBlockingDetails {
             url: self.url,
             function: self.function,
-            lineNumber: self.lineNumber.unwrap_or_default(),
-            columnNumber: self.columnNumber.unwrap_or_default(),
+            lineNumber: self.lineNumber,
+            columnNumber: self.columnNumber,
         }
     }
 }
@@ -2662,26 +2766,29 @@ pub struct BackForwardCacheNotRestoredExplanation<'a> {
 }
 
 impl<'a> BackForwardCacheNotRestoredExplanation<'a> {
-    pub fn builder() -> BackForwardCacheNotRestoredExplanationBuilder<'a> { BackForwardCacheNotRestoredExplanationBuilder::default() }
+    pub fn builder(type_: BackForwardCacheNotRestoredReasonType, reason: BackForwardCacheNotRestoredReason) -> BackForwardCacheNotRestoredExplanationBuilder<'a> {
+        BackForwardCacheNotRestoredExplanationBuilder {
+            type_: type_,
+            reason: reason,
+            context: None,
+            details: None,
+        }
+    }
     pub fn type_(&self) -> &BackForwardCacheNotRestoredReasonType { &self.type_ }
     pub fn reason(&self) -> &BackForwardCacheNotRestoredReason { &self.reason }
     pub fn context(&self) -> Option<&str> { self.context.as_deref() }
     pub fn details(&self) -> Option<&[BackForwardCacheBlockingDetails<'a>]> { self.details.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct BackForwardCacheNotRestoredExplanationBuilder<'a> {
-    type_: Option<BackForwardCacheNotRestoredReasonType>,
-    reason: Option<BackForwardCacheNotRestoredReason>,
+    type_: BackForwardCacheNotRestoredReasonType,
+    reason: BackForwardCacheNotRestoredReason,
     context: Option<Cow<'a, str>>,
     details: Option<Vec<BackForwardCacheBlockingDetails<'a>>>,
 }
 
 impl<'a> BackForwardCacheNotRestoredExplanationBuilder<'a> {
-    /// Type of the reason
-    pub fn type_(mut self, type_: BackForwardCacheNotRestoredReasonType) -> Self { self.type_ = Some(type_); self }
-    /// Not restored reason
-    pub fn reason(mut self, reason: BackForwardCacheNotRestoredReason) -> Self { self.reason = Some(reason); self }
     /// Context associated with the reason. The meaning of this context is
     /// dependent on the reason:
     /// - EmbedderExtensionSentMessageToCachedFrame: the extension ID.
@@ -2689,8 +2796,8 @@ impl<'a> BackForwardCacheNotRestoredExplanationBuilder<'a> {
     pub fn details(mut self, details: Vec<BackForwardCacheBlockingDetails<'a>>) -> Self { self.details = Some(details); self }
     pub fn build(self) -> BackForwardCacheNotRestoredExplanation<'a> {
         BackForwardCacheNotRestoredExplanation {
-            type_: self.type_.unwrap_or_default(),
-            reason: self.reason.unwrap_or_default(),
+            type_: self.type_,
+            reason: self.reason,
             context: self.context,
             details: self.details,
         }
@@ -2710,31 +2817,31 @@ pub struct BackForwardCacheNotRestoredExplanationTree<'a> {
 }
 
 impl<'a> BackForwardCacheNotRestoredExplanationTree<'a> {
-    pub fn builder() -> BackForwardCacheNotRestoredExplanationTreeBuilder<'a> { BackForwardCacheNotRestoredExplanationTreeBuilder::default() }
+    pub fn builder(url: impl Into<Cow<'a, str>>, explanations: Vec<BackForwardCacheNotRestoredExplanation<'a>>, children: Vec<Box<BackForwardCacheNotRestoredExplanationTree<'a>>>) -> BackForwardCacheNotRestoredExplanationTreeBuilder<'a> {
+        BackForwardCacheNotRestoredExplanationTreeBuilder {
+            url: url.into(),
+            explanations: explanations,
+            children: children,
+        }
+    }
     pub fn url(&self) -> &str { self.url.as_ref() }
     pub fn explanations(&self) -> &[BackForwardCacheNotRestoredExplanation<'a>] { &self.explanations }
     pub fn children(&self) -> &[Box<BackForwardCacheNotRestoredExplanationTree<'a>>] { &self.children }
 }
 
-#[derive(Default)]
+
 pub struct BackForwardCacheNotRestoredExplanationTreeBuilder<'a> {
-    url: Option<Cow<'a, str>>,
-    explanations: Option<Vec<BackForwardCacheNotRestoredExplanation<'a>>>,
-    children: Option<Vec<Box<BackForwardCacheNotRestoredExplanationTree<'a>>>>,
+    url: Cow<'a, str>,
+    explanations: Vec<BackForwardCacheNotRestoredExplanation<'a>>,
+    children: Vec<Box<BackForwardCacheNotRestoredExplanationTree<'a>>>,
 }
 
 impl<'a> BackForwardCacheNotRestoredExplanationTreeBuilder<'a> {
-    /// URL of each frame
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
-    /// Not restored reasons of each frame
-    pub fn explanations(mut self, explanations: Vec<BackForwardCacheNotRestoredExplanation<'a>>) -> Self { self.explanations = Some(explanations); self }
-    /// Array of children frame
-    pub fn children(mut self, children: Vec<Box<BackForwardCacheNotRestoredExplanationTree<'a>>>) -> Self { self.children = Some(children); self }
     pub fn build(self) -> BackForwardCacheNotRestoredExplanationTree<'a> {
         BackForwardCacheNotRestoredExplanationTree {
-            url: self.url.unwrap_or_default(),
-            explanations: self.explanations.unwrap_or_default(),
-            children: self.children.unwrap_or_default(),
+            url: self.url,
+            explanations: self.explanations,
+            children: self.children,
         }
     }
 }
@@ -2748,20 +2855,23 @@ pub struct AddScriptToEvaluateOnLoadParams<'a> {
 }
 
 impl<'a> AddScriptToEvaluateOnLoadParams<'a> {
-    pub fn builder() -> AddScriptToEvaluateOnLoadParamsBuilder<'a> { AddScriptToEvaluateOnLoadParamsBuilder::default() }
+    pub fn builder(scriptSource: impl Into<Cow<'a, str>>) -> AddScriptToEvaluateOnLoadParamsBuilder<'a> {
+        AddScriptToEvaluateOnLoadParamsBuilder {
+            scriptSource: scriptSource.into(),
+        }
+    }
     pub fn scriptSource(&self) -> &str { self.scriptSource.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct AddScriptToEvaluateOnLoadParamsBuilder<'a> {
-    scriptSource: Option<Cow<'a, str>>,
+    scriptSource: Cow<'a, str>,
 }
 
 impl<'a> AddScriptToEvaluateOnLoadParamsBuilder<'a> {
-    pub fn scriptSource(mut self, scriptSource: impl Into<Cow<'a, str>>) -> Self { self.scriptSource = Some(scriptSource.into()); self }
     pub fn build(self) -> AddScriptToEvaluateOnLoadParams<'a> {
         AddScriptToEvaluateOnLoadParams {
-            scriptSource: self.scriptSource.unwrap_or_default(),
+            scriptSource: self.scriptSource,
         }
     }
 }
@@ -2776,21 +2886,23 @@ pub struct AddScriptToEvaluateOnLoadReturns<'a> {
 }
 
 impl<'a> AddScriptToEvaluateOnLoadReturns<'a> {
-    pub fn builder() -> AddScriptToEvaluateOnLoadReturnsBuilder<'a> { AddScriptToEvaluateOnLoadReturnsBuilder::default() }
+    pub fn builder(identifier: ScriptIdentifier<'a>) -> AddScriptToEvaluateOnLoadReturnsBuilder<'a> {
+        AddScriptToEvaluateOnLoadReturnsBuilder {
+            identifier: identifier,
+        }
+    }
     pub fn identifier(&self) -> &ScriptIdentifier<'a> { &self.identifier }
 }
 
-#[derive(Default)]
+
 pub struct AddScriptToEvaluateOnLoadReturnsBuilder<'a> {
-    identifier: Option<ScriptIdentifier<'a>>,
+    identifier: ScriptIdentifier<'a>,
 }
 
 impl<'a> AddScriptToEvaluateOnLoadReturnsBuilder<'a> {
-    /// Identifier of the added script.
-    pub fn identifier(mut self, identifier: ScriptIdentifier<'a>) -> Self { self.identifier = Some(identifier); self }
     pub fn build(self) -> AddScriptToEvaluateOnLoadReturns<'a> {
         AddScriptToEvaluateOnLoadReturns {
-            identifier: self.identifier.unwrap_or_default(),
+            identifier: self.identifier,
         }
     }
 }
@@ -2824,23 +2936,29 @@ pub struct AddScriptToEvaluateOnNewDocumentParams<'a> {
 }
 
 impl<'a> AddScriptToEvaluateOnNewDocumentParams<'a> {
-    pub fn builder() -> AddScriptToEvaluateOnNewDocumentParamsBuilder<'a> { AddScriptToEvaluateOnNewDocumentParamsBuilder::default() }
+    pub fn builder(source: impl Into<Cow<'a, str>>) -> AddScriptToEvaluateOnNewDocumentParamsBuilder<'a> {
+        AddScriptToEvaluateOnNewDocumentParamsBuilder {
+            source: source.into(),
+            worldName: None,
+            includeCommandLineAPI: None,
+            runImmediately: None,
+        }
+    }
     pub fn source(&self) -> &str { self.source.as_ref() }
     pub fn worldName(&self) -> Option<&str> { self.worldName.as_deref() }
     pub fn includeCommandLineAPI(&self) -> Option<bool> { self.includeCommandLineAPI }
     pub fn runImmediately(&self) -> Option<bool> { self.runImmediately }
 }
 
-#[derive(Default)]
+
 pub struct AddScriptToEvaluateOnNewDocumentParamsBuilder<'a> {
-    source: Option<Cow<'a, str>>,
+    source: Cow<'a, str>,
     worldName: Option<Cow<'a, str>>,
     includeCommandLineAPI: Option<bool>,
     runImmediately: Option<bool>,
 }
 
 impl<'a> AddScriptToEvaluateOnNewDocumentParamsBuilder<'a> {
-    pub fn source(mut self, source: impl Into<Cow<'a, str>>) -> Self { self.source = Some(source.into()); self }
     /// If specified, creates an isolated world with the given name and evaluates given script in it.
     /// This world name will be used as the ExecutionContextDescription::name when the corresponding
     /// event is emitted.
@@ -2853,7 +2971,7 @@ impl<'a> AddScriptToEvaluateOnNewDocumentParamsBuilder<'a> {
     pub fn runImmediately(mut self, runImmediately: bool) -> Self { self.runImmediately = Some(runImmediately); self }
     pub fn build(self) -> AddScriptToEvaluateOnNewDocumentParams<'a> {
         AddScriptToEvaluateOnNewDocumentParams {
-            source: self.source.unwrap_or_default(),
+            source: self.source,
             worldName: self.worldName,
             includeCommandLineAPI: self.includeCommandLineAPI,
             runImmediately: self.runImmediately,
@@ -2871,21 +2989,23 @@ pub struct AddScriptToEvaluateOnNewDocumentReturns<'a> {
 }
 
 impl<'a> AddScriptToEvaluateOnNewDocumentReturns<'a> {
-    pub fn builder() -> AddScriptToEvaluateOnNewDocumentReturnsBuilder<'a> { AddScriptToEvaluateOnNewDocumentReturnsBuilder::default() }
+    pub fn builder(identifier: ScriptIdentifier<'a>) -> AddScriptToEvaluateOnNewDocumentReturnsBuilder<'a> {
+        AddScriptToEvaluateOnNewDocumentReturnsBuilder {
+            identifier: identifier,
+        }
+    }
     pub fn identifier(&self) -> &ScriptIdentifier<'a> { &self.identifier }
 }
 
-#[derive(Default)]
+
 pub struct AddScriptToEvaluateOnNewDocumentReturnsBuilder<'a> {
-    identifier: Option<ScriptIdentifier<'a>>,
+    identifier: ScriptIdentifier<'a>,
 }
 
 impl<'a> AddScriptToEvaluateOnNewDocumentReturnsBuilder<'a> {
-    /// Identifier of the added script.
-    pub fn identifier(mut self, identifier: ScriptIdentifier<'a>) -> Self { self.identifier = Some(identifier); self }
     pub fn build(self) -> AddScriptToEvaluateOnNewDocumentReturns<'a> {
         AddScriptToEvaluateOnNewDocumentReturns {
-            identifier: self.identifier.unwrap_or_default(),
+            identifier: self.identifier,
         }
     }
 }
@@ -2899,21 +3019,6 @@ impl<'a> crate::CdpCommand<'a> for AddScriptToEvaluateOnNewDocumentParams<'a> {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct BringToFrontParams {}
-
-impl BringToFrontParams {
-    pub fn builder() -> BringToFrontParamsBuilder {
-        BringToFrontParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct BringToFrontParamsBuilder {}
-
-impl BringToFrontParamsBuilder {
-    pub fn build(self) -> BringToFrontParams {
-        BringToFrontParams {}
-    }
-}
 
 impl BringToFrontParams { pub const METHOD: &'static str = "Page.bringToFront"; }
 
@@ -2948,7 +3053,16 @@ pub struct CaptureScreenshotParams<'a> {
 }
 
 impl<'a> CaptureScreenshotParams<'a> {
-    pub fn builder() -> CaptureScreenshotParamsBuilder<'a> { CaptureScreenshotParamsBuilder::default() }
+    pub fn builder() -> CaptureScreenshotParamsBuilder<'a> {
+        CaptureScreenshotParamsBuilder {
+            format: None,
+            quality: None,
+            clip: None,
+            fromSurface: None,
+            captureBeyondViewport: None,
+            optimizeForSpeed: None,
+        }
+    }
     pub fn format(&self) -> Option<&str> { self.format.as_deref() }
     pub fn quality(&self) -> Option<i64> { self.quality }
     pub fn clip(&self) -> Option<&Viewport> { self.clip.as_ref() }
@@ -3002,21 +3116,23 @@ pub struct CaptureScreenshotReturns<'a> {
 }
 
 impl<'a> CaptureScreenshotReturns<'a> {
-    pub fn builder() -> CaptureScreenshotReturnsBuilder<'a> { CaptureScreenshotReturnsBuilder::default() }
+    pub fn builder(data: impl Into<Cow<'a, str>>) -> CaptureScreenshotReturnsBuilder<'a> {
+        CaptureScreenshotReturnsBuilder {
+            data: data.into(),
+        }
+    }
     pub fn data(&self) -> &str { self.data.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct CaptureScreenshotReturnsBuilder<'a> {
-    data: Option<Cow<'a, str>>,
+    data: Cow<'a, str>,
 }
 
 impl<'a> CaptureScreenshotReturnsBuilder<'a> {
-    /// Base64-encoded image data. (Encoded as a base64 string when passed over JSON)
-    pub fn data(mut self, data: impl Into<Cow<'a, str>>) -> Self { self.data = Some(data.into()); self }
     pub fn build(self) -> CaptureScreenshotReturns<'a> {
         CaptureScreenshotReturns {
-            data: self.data.unwrap_or_default(),
+            data: self.data,
         }
     }
 }
@@ -3040,7 +3156,11 @@ pub struct CaptureSnapshotParams<'a> {
 }
 
 impl<'a> CaptureSnapshotParams<'a> {
-    pub fn builder() -> CaptureSnapshotParamsBuilder<'a> { CaptureSnapshotParamsBuilder::default() }
+    pub fn builder() -> CaptureSnapshotParamsBuilder<'a> {
+        CaptureSnapshotParamsBuilder {
+            format: None,
+        }
+    }
     pub fn format(&self) -> Option<&str> { self.format.as_deref() }
 }
 
@@ -3070,21 +3190,23 @@ pub struct CaptureSnapshotReturns<'a> {
 }
 
 impl<'a> CaptureSnapshotReturns<'a> {
-    pub fn builder() -> CaptureSnapshotReturnsBuilder<'a> { CaptureSnapshotReturnsBuilder::default() }
+    pub fn builder(data: impl Into<Cow<'a, str>>) -> CaptureSnapshotReturnsBuilder<'a> {
+        CaptureSnapshotReturnsBuilder {
+            data: data.into(),
+        }
+    }
     pub fn data(&self) -> &str { self.data.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct CaptureSnapshotReturnsBuilder<'a> {
-    data: Option<Cow<'a, str>>,
+    data: Cow<'a, str>,
 }
 
 impl<'a> CaptureSnapshotReturnsBuilder<'a> {
-    /// Serialized page data.
-    pub fn data(mut self, data: impl Into<Cow<'a, str>>) -> Self { self.data = Some(data.into()); self }
     pub fn build(self) -> CaptureSnapshotReturns<'a> {
         CaptureSnapshotReturns {
-            data: self.data.unwrap_or_default(),
+            data: self.data,
         }
     }
 }
@@ -3099,21 +3221,6 @@ impl<'a> crate::CdpCommand<'a> for CaptureSnapshotParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ClearDeviceMetricsOverrideParams {}
 
-impl ClearDeviceMetricsOverrideParams {
-    pub fn builder() -> ClearDeviceMetricsOverrideParamsBuilder {
-        ClearDeviceMetricsOverrideParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct ClearDeviceMetricsOverrideParamsBuilder {}
-
-impl ClearDeviceMetricsOverrideParamsBuilder {
-    pub fn build(self) -> ClearDeviceMetricsOverrideParams {
-        ClearDeviceMetricsOverrideParams {}
-    }
-}
-
 impl ClearDeviceMetricsOverrideParams { pub const METHOD: &'static str = "Page.clearDeviceMetricsOverride"; }
 
 impl<'a> crate::CdpCommand<'a> for ClearDeviceMetricsOverrideParams {
@@ -3124,21 +3231,6 @@ impl<'a> crate::CdpCommand<'a> for ClearDeviceMetricsOverrideParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ClearDeviceOrientationOverrideParams {}
 
-impl ClearDeviceOrientationOverrideParams {
-    pub fn builder() -> ClearDeviceOrientationOverrideParamsBuilder {
-        ClearDeviceOrientationOverrideParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct ClearDeviceOrientationOverrideParamsBuilder {}
-
-impl ClearDeviceOrientationOverrideParamsBuilder {
-    pub fn build(self) -> ClearDeviceOrientationOverrideParams {
-        ClearDeviceOrientationOverrideParams {}
-    }
-}
-
 impl ClearDeviceOrientationOverrideParams { pub const METHOD: &'static str = "Page.clearDeviceOrientationOverride"; }
 
 impl<'a> crate::CdpCommand<'a> for ClearDeviceOrientationOverrideParams {
@@ -3148,21 +3240,6 @@ impl<'a> crate::CdpCommand<'a> for ClearDeviceOrientationOverrideParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ClearGeolocationOverrideParams {}
-
-impl ClearGeolocationOverrideParams {
-    pub fn builder() -> ClearGeolocationOverrideParamsBuilder {
-        ClearGeolocationOverrideParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct ClearGeolocationOverrideParamsBuilder {}
-
-impl ClearGeolocationOverrideParamsBuilder {
-    pub fn build(self) -> ClearGeolocationOverrideParams {
-        ClearGeolocationOverrideParams {}
-    }
-}
 
 impl ClearGeolocationOverrideParams { pub const METHOD: &'static str = "Page.clearGeolocationOverride"; }
 
@@ -3188,22 +3265,26 @@ pub struct CreateIsolatedWorldParams<'a> {
 }
 
 impl<'a> CreateIsolatedWorldParams<'a> {
-    pub fn builder() -> CreateIsolatedWorldParamsBuilder<'a> { CreateIsolatedWorldParamsBuilder::default() }
+    pub fn builder(frameId: FrameId<'a>) -> CreateIsolatedWorldParamsBuilder<'a> {
+        CreateIsolatedWorldParamsBuilder {
+            frameId: frameId,
+            worldName: None,
+            grantUniveralAccess: None,
+        }
+    }
     pub fn frameId(&self) -> &FrameId<'a> { &self.frameId }
     pub fn worldName(&self) -> Option<&str> { self.worldName.as_deref() }
     pub fn grantUniveralAccess(&self) -> Option<bool> { self.grantUniveralAccess }
 }
 
-#[derive(Default)]
+
 pub struct CreateIsolatedWorldParamsBuilder<'a> {
-    frameId: Option<FrameId<'a>>,
+    frameId: FrameId<'a>,
     worldName: Option<Cow<'a, str>>,
     grantUniveralAccess: Option<bool>,
 }
 
 impl<'a> CreateIsolatedWorldParamsBuilder<'a> {
-    /// Id of the frame in which the isolated world should be created.
-    pub fn frameId(mut self, frameId: FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
     /// An optional name which is reported in the Execution Context.
     pub fn worldName(mut self, worldName: impl Into<Cow<'a, str>>) -> Self { self.worldName = Some(worldName.into()); self }
     /// Whether or not universal access should be granted to the isolated world. This is a powerful
@@ -3211,7 +3292,7 @@ impl<'a> CreateIsolatedWorldParamsBuilder<'a> {
     pub fn grantUniveralAccess(mut self, grantUniveralAccess: bool) -> Self { self.grantUniveralAccess = Some(grantUniveralAccess); self }
     pub fn build(self) -> CreateIsolatedWorldParams<'a> {
         CreateIsolatedWorldParams {
-            frameId: self.frameId.unwrap_or_default(),
+            frameId: self.frameId,
             worldName: self.worldName,
             grantUniveralAccess: self.grantUniveralAccess,
         }
@@ -3228,21 +3309,23 @@ pub struct CreateIsolatedWorldReturns {
 }
 
 impl CreateIsolatedWorldReturns {
-    pub fn builder() -> CreateIsolatedWorldReturnsBuilder { CreateIsolatedWorldReturnsBuilder::default() }
+    pub fn builder(executionContextId: crate::runtime::ExecutionContextId) -> CreateIsolatedWorldReturnsBuilder {
+        CreateIsolatedWorldReturnsBuilder {
+            executionContextId: executionContextId,
+        }
+    }
     pub fn executionContextId(&self) -> &crate::runtime::ExecutionContextId { &self.executionContextId }
 }
 
-#[derive(Default)]
+
 pub struct CreateIsolatedWorldReturnsBuilder {
-    executionContextId: Option<crate::runtime::ExecutionContextId>,
+    executionContextId: crate::runtime::ExecutionContextId,
 }
 
 impl CreateIsolatedWorldReturnsBuilder {
-    /// Execution context of the isolated world.
-    pub fn executionContextId(mut self, executionContextId: crate::runtime::ExecutionContextId) -> Self { self.executionContextId = Some(executionContextId); self }
     pub fn build(self) -> CreateIsolatedWorldReturns {
         CreateIsolatedWorldReturns {
-            executionContextId: self.executionContextId.unwrap_or_default(),
+            executionContextId: self.executionContextId,
         }
     }
 }
@@ -3266,26 +3349,27 @@ pub struct DeleteCookieParams<'a> {
 }
 
 impl<'a> DeleteCookieParams<'a> {
-    pub fn builder() -> DeleteCookieParamsBuilder<'a> { DeleteCookieParamsBuilder::default() }
+    pub fn builder(cookieName: impl Into<Cow<'a, str>>, url: impl Into<Cow<'a, str>>) -> DeleteCookieParamsBuilder<'a> {
+        DeleteCookieParamsBuilder {
+            cookieName: cookieName.into(),
+            url: url.into(),
+        }
+    }
     pub fn cookieName(&self) -> &str { self.cookieName.as_ref() }
     pub fn url(&self) -> &str { self.url.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct DeleteCookieParamsBuilder<'a> {
-    cookieName: Option<Cow<'a, str>>,
-    url: Option<Cow<'a, str>>,
+    cookieName: Cow<'a, str>,
+    url: Cow<'a, str>,
 }
 
 impl<'a> DeleteCookieParamsBuilder<'a> {
-    /// Name of the cookie to remove.
-    pub fn cookieName(mut self, cookieName: impl Into<Cow<'a, str>>) -> Self { self.cookieName = Some(cookieName.into()); self }
-    /// URL to match cooke domain and path.
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
     pub fn build(self) -> DeleteCookieParams<'a> {
         DeleteCookieParams {
-            cookieName: self.cookieName.unwrap_or_default(),
-            url: self.url.unwrap_or_default(),
+            cookieName: self.cookieName,
+            url: self.url,
         }
     }
 }
@@ -3299,21 +3383,6 @@ impl<'a> crate::CdpCommand<'a> for DeleteCookieParams<'a> {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct DisableParams {}
-
-impl DisableParams {
-    pub fn builder() -> DisableParamsBuilder {
-        DisableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct DisableParamsBuilder {}
-
-impl DisableParamsBuilder {
-    pub fn build(self) -> DisableParams {
-        DisableParams {}
-    }
-}
 
 impl DisableParams { pub const METHOD: &'static str = "Page.disable"; }
 
@@ -3334,7 +3403,11 @@ pub struct EnableParams {
 }
 
 impl EnableParams {
-    pub fn builder() -> EnableParamsBuilder { EnableParamsBuilder::default() }
+    pub fn builder() -> EnableParamsBuilder {
+        EnableParamsBuilder {
+            enableFileChooserOpenedEvent: None,
+        }
+    }
     pub fn enableFileChooserOpenedEvent(&self) -> Option<bool> { self.enableFileChooserOpenedEvent }
 }
 
@@ -3375,7 +3448,11 @@ pub struct GetAppManifestParams<'a> {
 }
 
 impl<'a> GetAppManifestParams<'a> {
-    pub fn builder() -> GetAppManifestParamsBuilder<'a> { GetAppManifestParamsBuilder::default() }
+    pub fn builder() -> GetAppManifestParamsBuilder<'a> {
+        GetAppManifestParamsBuilder {
+            manifestId: None,
+        }
+    }
     pub fn manifestId(&self) -> Option<&str> { self.manifestId.as_deref() }
 }
 
@@ -3415,7 +3492,15 @@ pub struct GetAppManifestReturns<'a> {
 }
 
 impl<'a> GetAppManifestReturns<'a> {
-    pub fn builder() -> GetAppManifestReturnsBuilder<'a> { GetAppManifestReturnsBuilder::default() }
+    pub fn builder(url: impl Into<Cow<'a, str>>, errors: Vec<AppManifestError<'a>>, manifest: WebAppManifest<'a>) -> GetAppManifestReturnsBuilder<'a> {
+        GetAppManifestReturnsBuilder {
+            url: url.into(),
+            errors: errors,
+            data: None,
+            parsed: None,
+            manifest: manifest,
+        }
+    }
     pub fn url(&self) -> &str { self.url.as_ref() }
     pub fn errors(&self) -> &[AppManifestError<'a>] { &self.errors }
     pub fn data(&self) -> Option<&str> { self.data.as_deref() }
@@ -3423,31 +3508,27 @@ impl<'a> GetAppManifestReturns<'a> {
     pub fn manifest(&self) -> &WebAppManifest<'a> { &self.manifest }
 }
 
-#[derive(Default)]
+
 pub struct GetAppManifestReturnsBuilder<'a> {
-    url: Option<Cow<'a, str>>,
-    errors: Option<Vec<AppManifestError<'a>>>,
+    url: Cow<'a, str>,
+    errors: Vec<AppManifestError<'a>>,
     data: Option<Cow<'a, str>>,
     parsed: Option<AppManifestParsedProperties<'a>>,
-    manifest: Option<WebAppManifest<'a>>,
+    manifest: WebAppManifest<'a>,
 }
 
 impl<'a> GetAppManifestReturnsBuilder<'a> {
-    /// Manifest location.
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
-    pub fn errors(mut self, errors: Vec<AppManifestError<'a>>) -> Self { self.errors = Some(errors); self }
     /// Manifest content.
     pub fn data(mut self, data: impl Into<Cow<'a, str>>) -> Self { self.data = Some(data.into()); self }
     /// Parsed manifest properties. Deprecated, use manifest instead.
     pub fn parsed(mut self, parsed: AppManifestParsedProperties<'a>) -> Self { self.parsed = Some(parsed); self }
-    pub fn manifest(mut self, manifest: WebAppManifest<'a>) -> Self { self.manifest = Some(manifest); self }
     pub fn build(self) -> GetAppManifestReturns<'a> {
         GetAppManifestReturns {
-            url: self.url.unwrap_or_default(),
-            errors: self.errors.unwrap_or_default(),
+            url: self.url,
+            errors: self.errors,
             data: self.data,
             parsed: self.parsed,
-            manifest: self.manifest.unwrap_or_default(),
+            manifest: self.manifest,
         }
     }
 }
@@ -3467,41 +3548,29 @@ pub struct GetInstallabilityErrorsReturns<'a> {
 }
 
 impl<'a> GetInstallabilityErrorsReturns<'a> {
-    pub fn builder() -> GetInstallabilityErrorsReturnsBuilder<'a> { GetInstallabilityErrorsReturnsBuilder::default() }
+    pub fn builder(installabilityErrors: Vec<InstallabilityError<'a>>) -> GetInstallabilityErrorsReturnsBuilder<'a> {
+        GetInstallabilityErrorsReturnsBuilder {
+            installabilityErrors: installabilityErrors,
+        }
+    }
     pub fn installabilityErrors(&self) -> &[InstallabilityError<'a>] { &self.installabilityErrors }
 }
 
-#[derive(Default)]
+
 pub struct GetInstallabilityErrorsReturnsBuilder<'a> {
-    installabilityErrors: Option<Vec<InstallabilityError<'a>>>,
+    installabilityErrors: Vec<InstallabilityError<'a>>,
 }
 
 impl<'a> GetInstallabilityErrorsReturnsBuilder<'a> {
-    pub fn installabilityErrors(mut self, installabilityErrors: Vec<InstallabilityError<'a>>) -> Self { self.installabilityErrors = Some(installabilityErrors); self }
     pub fn build(self) -> GetInstallabilityErrorsReturns<'a> {
         GetInstallabilityErrorsReturns {
-            installabilityErrors: self.installabilityErrors.unwrap_or_default(),
+            installabilityErrors: self.installabilityErrors,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetInstallabilityErrorsParams {}
-
-impl GetInstallabilityErrorsParams {
-    pub fn builder() -> GetInstallabilityErrorsParamsBuilder {
-        GetInstallabilityErrorsParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetInstallabilityErrorsParamsBuilder {}
-
-impl GetInstallabilityErrorsParamsBuilder {
-    pub fn build(self) -> GetInstallabilityErrorsParams {
-        GetInstallabilityErrorsParams {}
-    }
-}
 
 impl GetInstallabilityErrorsParams { pub const METHOD: &'static str = "Page.getInstallabilityErrors"; }
 
@@ -3520,7 +3589,11 @@ pub struct GetManifestIconsReturns<'a> {
 }
 
 impl<'a> GetManifestIconsReturns<'a> {
-    pub fn builder() -> GetManifestIconsReturnsBuilder<'a> { GetManifestIconsReturnsBuilder::default() }
+    pub fn builder() -> GetManifestIconsReturnsBuilder<'a> {
+        GetManifestIconsReturnsBuilder {
+            primaryIcon: None,
+        }
+    }
     pub fn primaryIcon(&self) -> Option<&str> { self.primaryIcon.as_deref() }
 }
 
@@ -3540,21 +3613,6 @@ impl<'a> GetManifestIconsReturnsBuilder<'a> {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetManifestIconsParams {}
-
-impl GetManifestIconsParams {
-    pub fn builder() -> GetManifestIconsParamsBuilder {
-        GetManifestIconsParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetManifestIconsParamsBuilder {}
-
-impl GetManifestIconsParamsBuilder {
-    pub fn build(self) -> GetManifestIconsParams {
-        GetManifestIconsParams {}
-    }
-}
 
 impl GetManifestIconsParams { pub const METHOD: &'static str = "Page.getManifestIcons"; }
 
@@ -3578,7 +3636,12 @@ pub struct GetAppIdReturns<'a> {
 }
 
 impl<'a> GetAppIdReturns<'a> {
-    pub fn builder() -> GetAppIdReturnsBuilder<'a> { GetAppIdReturnsBuilder::default() }
+    pub fn builder() -> GetAppIdReturnsBuilder<'a> {
+        GetAppIdReturnsBuilder {
+            appId: None,
+            recommendedId: None,
+        }
+    }
     pub fn appId(&self) -> Option<&str> { self.appId.as_deref() }
     pub fn recommendedId(&self) -> Option<&str> { self.recommendedId.as_deref() }
 }
@@ -3605,21 +3668,6 @@ impl<'a> GetAppIdReturnsBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetAppIdParams {}
 
-impl GetAppIdParams {
-    pub fn builder() -> GetAppIdParamsBuilder {
-        GetAppIdParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetAppIdParamsBuilder {}
-
-impl GetAppIdParamsBuilder {
-    pub fn build(self) -> GetAppIdParams {
-        GetAppIdParams {}
-    }
-}
-
 impl GetAppIdParams { pub const METHOD: &'static str = "Page.getAppId"; }
 
 impl<'a> crate::CdpCommand<'a> for GetAppIdParams {
@@ -3635,20 +3683,23 @@ pub struct GetAdScriptAncestryParams<'a> {
 }
 
 impl<'a> GetAdScriptAncestryParams<'a> {
-    pub fn builder() -> GetAdScriptAncestryParamsBuilder<'a> { GetAdScriptAncestryParamsBuilder::default() }
+    pub fn builder(frameId: FrameId<'a>) -> GetAdScriptAncestryParamsBuilder<'a> {
+        GetAdScriptAncestryParamsBuilder {
+            frameId: frameId,
+        }
+    }
     pub fn frameId(&self) -> &FrameId<'a> { &self.frameId }
 }
 
-#[derive(Default)]
+
 pub struct GetAdScriptAncestryParamsBuilder<'a> {
-    frameId: Option<FrameId<'a>>,
+    frameId: FrameId<'a>,
 }
 
 impl<'a> GetAdScriptAncestryParamsBuilder<'a> {
-    pub fn frameId(mut self, frameId: FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
     pub fn build(self) -> GetAdScriptAncestryParams<'a> {
         GetAdScriptAncestryParams {
-            frameId: self.frameId.unwrap_or_default(),
+            frameId: self.frameId,
         }
     }
 }
@@ -3667,7 +3718,11 @@ pub struct GetAdScriptAncestryReturns<'a> {
 }
 
 impl<'a> GetAdScriptAncestryReturns<'a> {
-    pub fn builder() -> GetAdScriptAncestryReturnsBuilder<'a> { GetAdScriptAncestryReturnsBuilder::default() }
+    pub fn builder() -> GetAdScriptAncestryReturnsBuilder<'a> {
+        GetAdScriptAncestryReturnsBuilder {
+            adScriptAncestry: None,
+        }
+    }
     pub fn adScriptAncestry(&self) -> Option<&crate::network::AdAncestry<'a>> { self.adScriptAncestry.as_ref() }
 }
 
@@ -3707,42 +3762,29 @@ pub struct GetFrameTreeReturns<'a> {
 }
 
 impl<'a> GetFrameTreeReturns<'a> {
-    pub fn builder() -> GetFrameTreeReturnsBuilder<'a> { GetFrameTreeReturnsBuilder::default() }
+    pub fn builder(frameTree: FrameTree<'a>) -> GetFrameTreeReturnsBuilder<'a> {
+        GetFrameTreeReturnsBuilder {
+            frameTree: frameTree,
+        }
+    }
     pub fn frameTree(&self) -> &FrameTree<'a> { &self.frameTree }
 }
 
-#[derive(Default)]
+
 pub struct GetFrameTreeReturnsBuilder<'a> {
-    frameTree: Option<FrameTree<'a>>,
+    frameTree: FrameTree<'a>,
 }
 
 impl<'a> GetFrameTreeReturnsBuilder<'a> {
-    /// Present frame tree structure.
-    pub fn frameTree(mut self, frameTree: FrameTree<'a>) -> Self { self.frameTree = Some(frameTree); self }
     pub fn build(self) -> GetFrameTreeReturns<'a> {
         GetFrameTreeReturns {
-            frameTree: self.frameTree.unwrap_or_default(),
+            frameTree: self.frameTree,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetFrameTreeParams {}
-
-impl GetFrameTreeParams {
-    pub fn builder() -> GetFrameTreeParamsBuilder {
-        GetFrameTreeParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetFrameTreeParamsBuilder {}
-
-impl GetFrameTreeParamsBuilder {
-    pub fn build(self) -> GetFrameTreeParams {
-        GetFrameTreeParams {}
-    }
-}
 
 impl GetFrameTreeParams { pub const METHOD: &'static str = "Page.getFrameTree"; }
 
@@ -3771,7 +3813,16 @@ pub struct GetLayoutMetricsReturns {
 }
 
 impl GetLayoutMetricsReturns {
-    pub fn builder() -> GetLayoutMetricsReturnsBuilder { GetLayoutMetricsReturnsBuilder::default() }
+    pub fn builder(layoutViewport: LayoutViewport, visualViewport: VisualViewport, contentSize: crate::dom::Rect, cssLayoutViewport: LayoutViewport, cssVisualViewport: VisualViewport, cssContentSize: crate::dom::Rect) -> GetLayoutMetricsReturnsBuilder {
+        GetLayoutMetricsReturnsBuilder {
+            layoutViewport: layoutViewport,
+            visualViewport: visualViewport,
+            contentSize: contentSize,
+            cssLayoutViewport: cssLayoutViewport,
+            cssVisualViewport: cssVisualViewport,
+            cssContentSize: cssContentSize,
+        }
+    }
     pub fn layoutViewport(&self) -> &LayoutViewport { &self.layoutViewport }
     pub fn visualViewport(&self) -> &VisualViewport { &self.visualViewport }
     pub fn contentSize(&self) -> &crate::dom::Rect { &self.contentSize }
@@ -3780,58 +3831,31 @@ impl GetLayoutMetricsReturns {
     pub fn cssContentSize(&self) -> &crate::dom::Rect { &self.cssContentSize }
 }
 
-#[derive(Default)]
+
 pub struct GetLayoutMetricsReturnsBuilder {
-    layoutViewport: Option<LayoutViewport>,
-    visualViewport: Option<VisualViewport>,
-    contentSize: Option<crate::dom::Rect>,
-    cssLayoutViewport: Option<LayoutViewport>,
-    cssVisualViewport: Option<VisualViewport>,
-    cssContentSize: Option<crate::dom::Rect>,
+    layoutViewport: LayoutViewport,
+    visualViewport: VisualViewport,
+    contentSize: crate::dom::Rect,
+    cssLayoutViewport: LayoutViewport,
+    cssVisualViewport: VisualViewport,
+    cssContentSize: crate::dom::Rect,
 }
 
 impl GetLayoutMetricsReturnsBuilder {
-    /// Deprecated metrics relating to the layout viewport. Is in device pixels. Use 'cssLayoutViewport' instead.
-    pub fn layoutViewport(mut self, layoutViewport: LayoutViewport) -> Self { self.layoutViewport = Some(layoutViewport); self }
-    /// Deprecated metrics relating to the visual viewport. Is in device pixels. Use 'cssVisualViewport' instead.
-    pub fn visualViewport(mut self, visualViewport: VisualViewport) -> Self { self.visualViewport = Some(visualViewport); self }
-    /// Deprecated size of scrollable area. Is in DP. Use 'cssContentSize' instead.
-    pub fn contentSize(mut self, contentSize: crate::dom::Rect) -> Self { self.contentSize = Some(contentSize); self }
-    /// Metrics relating to the layout viewport in CSS pixels.
-    pub fn cssLayoutViewport(mut self, cssLayoutViewport: LayoutViewport) -> Self { self.cssLayoutViewport = Some(cssLayoutViewport); self }
-    /// Metrics relating to the visual viewport in CSS pixels.
-    pub fn cssVisualViewport(mut self, cssVisualViewport: VisualViewport) -> Self { self.cssVisualViewport = Some(cssVisualViewport); self }
-    /// Size of scrollable area in CSS pixels.
-    pub fn cssContentSize(mut self, cssContentSize: crate::dom::Rect) -> Self { self.cssContentSize = Some(cssContentSize); self }
     pub fn build(self) -> GetLayoutMetricsReturns {
         GetLayoutMetricsReturns {
-            layoutViewport: self.layoutViewport.unwrap_or_default(),
-            visualViewport: self.visualViewport.unwrap_or_default(),
-            contentSize: self.contentSize.unwrap_or_default(),
-            cssLayoutViewport: self.cssLayoutViewport.unwrap_or_default(),
-            cssVisualViewport: self.cssVisualViewport.unwrap_or_default(),
-            cssContentSize: self.cssContentSize.unwrap_or_default(),
+            layoutViewport: self.layoutViewport,
+            visualViewport: self.visualViewport,
+            contentSize: self.contentSize,
+            cssLayoutViewport: self.cssLayoutViewport,
+            cssVisualViewport: self.cssVisualViewport,
+            cssContentSize: self.cssContentSize,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetLayoutMetricsParams {}
-
-impl GetLayoutMetricsParams {
-    pub fn builder() -> GetLayoutMetricsParamsBuilder {
-        GetLayoutMetricsParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetLayoutMetricsParamsBuilder {}
-
-impl GetLayoutMetricsParamsBuilder {
-    pub fn build(self) -> GetLayoutMetricsParams {
-        GetLayoutMetricsParams {}
-    }
-}
 
 impl GetLayoutMetricsParams { pub const METHOD: &'static str = "Page.getLayoutMetrics"; }
 
@@ -3852,47 +3876,33 @@ pub struct GetNavigationHistoryReturns<'a> {
 }
 
 impl<'a> GetNavigationHistoryReturns<'a> {
-    pub fn builder() -> GetNavigationHistoryReturnsBuilder<'a> { GetNavigationHistoryReturnsBuilder::default() }
+    pub fn builder(currentIndex: u64, entries: Vec<NavigationEntry<'a>>) -> GetNavigationHistoryReturnsBuilder<'a> {
+        GetNavigationHistoryReturnsBuilder {
+            currentIndex: currentIndex,
+            entries: entries,
+        }
+    }
     pub fn currentIndex(&self) -> u64 { self.currentIndex }
     pub fn entries(&self) -> &[NavigationEntry<'a>] { &self.entries }
 }
 
-#[derive(Default)]
+
 pub struct GetNavigationHistoryReturnsBuilder<'a> {
-    currentIndex: Option<u64>,
-    entries: Option<Vec<NavigationEntry<'a>>>,
+    currentIndex: u64,
+    entries: Vec<NavigationEntry<'a>>,
 }
 
 impl<'a> GetNavigationHistoryReturnsBuilder<'a> {
-    /// Index of the current navigation history entry.
-    pub fn currentIndex(mut self, currentIndex: u64) -> Self { self.currentIndex = Some(currentIndex); self }
-    /// Array of navigation history entries.
-    pub fn entries(mut self, entries: Vec<NavigationEntry<'a>>) -> Self { self.entries = Some(entries); self }
     pub fn build(self) -> GetNavigationHistoryReturns<'a> {
         GetNavigationHistoryReturns {
-            currentIndex: self.currentIndex.unwrap_or_default(),
-            entries: self.entries.unwrap_or_default(),
+            currentIndex: self.currentIndex,
+            entries: self.entries,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetNavigationHistoryParams {}
-
-impl GetNavigationHistoryParams {
-    pub fn builder() -> GetNavigationHistoryParamsBuilder {
-        GetNavigationHistoryParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetNavigationHistoryParamsBuilder {}
-
-impl GetNavigationHistoryParamsBuilder {
-    pub fn build(self) -> GetNavigationHistoryParams {
-        GetNavigationHistoryParams {}
-    }
-}
 
 impl GetNavigationHistoryParams { pub const METHOD: &'static str = "Page.getNavigationHistory"; }
 
@@ -3903,21 +3913,6 @@ impl<'a> crate::CdpCommand<'a> for GetNavigationHistoryParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ResetNavigationHistoryParams {}
-
-impl ResetNavigationHistoryParams {
-    pub fn builder() -> ResetNavigationHistoryParamsBuilder {
-        ResetNavigationHistoryParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct ResetNavigationHistoryParamsBuilder {}
-
-impl ResetNavigationHistoryParamsBuilder {
-    pub fn build(self) -> ResetNavigationHistoryParams {
-        ResetNavigationHistoryParams {}
-    }
-}
 
 impl ResetNavigationHistoryParams { pub const METHOD: &'static str = "Page.resetNavigationHistory"; }
 
@@ -3938,26 +3933,27 @@ pub struct GetResourceContentParams<'a> {
 }
 
 impl<'a> GetResourceContentParams<'a> {
-    pub fn builder() -> GetResourceContentParamsBuilder<'a> { GetResourceContentParamsBuilder::default() }
+    pub fn builder(frameId: FrameId<'a>, url: impl Into<Cow<'a, str>>) -> GetResourceContentParamsBuilder<'a> {
+        GetResourceContentParamsBuilder {
+            frameId: frameId,
+            url: url.into(),
+        }
+    }
     pub fn frameId(&self) -> &FrameId<'a> { &self.frameId }
     pub fn url(&self) -> &str { self.url.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct GetResourceContentParamsBuilder<'a> {
-    frameId: Option<FrameId<'a>>,
-    url: Option<Cow<'a, str>>,
+    frameId: FrameId<'a>,
+    url: Cow<'a, str>,
 }
 
 impl<'a> GetResourceContentParamsBuilder<'a> {
-    /// Frame id to get resource for.
-    pub fn frameId(mut self, frameId: FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
-    /// URL of the resource to get content for.
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
     pub fn build(self) -> GetResourceContentParams<'a> {
         GetResourceContentParams {
-            frameId: self.frameId.unwrap_or_default(),
-            url: self.url.unwrap_or_default(),
+            frameId: self.frameId,
+            url: self.url,
         }
     }
 }
@@ -3974,26 +3970,27 @@ pub struct GetResourceContentReturns<'a> {
 }
 
 impl<'a> GetResourceContentReturns<'a> {
-    pub fn builder() -> GetResourceContentReturnsBuilder<'a> { GetResourceContentReturnsBuilder::default() }
+    pub fn builder(content: impl Into<Cow<'a, str>>, base64Encoded: bool) -> GetResourceContentReturnsBuilder<'a> {
+        GetResourceContentReturnsBuilder {
+            content: content.into(),
+            base64Encoded: base64Encoded,
+        }
+    }
     pub fn content(&self) -> &str { self.content.as_ref() }
     pub fn base64Encoded(&self) -> bool { self.base64Encoded }
 }
 
-#[derive(Default)]
+
 pub struct GetResourceContentReturnsBuilder<'a> {
-    content: Option<Cow<'a, str>>,
-    base64Encoded: Option<bool>,
+    content: Cow<'a, str>,
+    base64Encoded: bool,
 }
 
 impl<'a> GetResourceContentReturnsBuilder<'a> {
-    /// Resource content.
-    pub fn content(mut self, content: impl Into<Cow<'a, str>>) -> Self { self.content = Some(content.into()); self }
-    /// True, if content was served as base64.
-    pub fn base64Encoded(mut self, base64Encoded: bool) -> Self { self.base64Encoded = Some(base64Encoded); self }
     pub fn build(self) -> GetResourceContentReturns<'a> {
         GetResourceContentReturns {
-            content: self.content.unwrap_or_default(),
-            base64Encoded: self.base64Encoded.unwrap_or_default(),
+            content: self.content,
+            base64Encoded: self.base64Encoded,
         }
     }
 }
@@ -4015,42 +4012,29 @@ pub struct GetResourceTreeReturns<'a> {
 }
 
 impl<'a> GetResourceTreeReturns<'a> {
-    pub fn builder() -> GetResourceTreeReturnsBuilder<'a> { GetResourceTreeReturnsBuilder::default() }
+    pub fn builder(frameTree: FrameResourceTree<'a>) -> GetResourceTreeReturnsBuilder<'a> {
+        GetResourceTreeReturnsBuilder {
+            frameTree: frameTree,
+        }
+    }
     pub fn frameTree(&self) -> &FrameResourceTree<'a> { &self.frameTree }
 }
 
-#[derive(Default)]
+
 pub struct GetResourceTreeReturnsBuilder<'a> {
-    frameTree: Option<FrameResourceTree<'a>>,
+    frameTree: FrameResourceTree<'a>,
 }
 
 impl<'a> GetResourceTreeReturnsBuilder<'a> {
-    /// Present frame / resource tree structure.
-    pub fn frameTree(mut self, frameTree: FrameResourceTree<'a>) -> Self { self.frameTree = Some(frameTree); self }
     pub fn build(self) -> GetResourceTreeReturns<'a> {
         GetResourceTreeReturns {
-            frameTree: self.frameTree.unwrap_or_default(),
+            frameTree: self.frameTree,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetResourceTreeParams {}
-
-impl GetResourceTreeParams {
-    pub fn builder() -> GetResourceTreeParamsBuilder {
-        GetResourceTreeParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetResourceTreeParamsBuilder {}
-
-impl GetResourceTreeParamsBuilder {
-    pub fn build(self) -> GetResourceTreeParams {
-        GetResourceTreeParams {}
-    }
-}
 
 impl GetResourceTreeParams { pub const METHOD: &'static str = "Page.getResourceTree"; }
 
@@ -4073,26 +4057,29 @@ pub struct HandleJavaScriptDialogParams<'a> {
 }
 
 impl<'a> HandleJavaScriptDialogParams<'a> {
-    pub fn builder() -> HandleJavaScriptDialogParamsBuilder<'a> { HandleJavaScriptDialogParamsBuilder::default() }
+    pub fn builder(accept: bool) -> HandleJavaScriptDialogParamsBuilder<'a> {
+        HandleJavaScriptDialogParamsBuilder {
+            accept: accept,
+            promptText: None,
+        }
+    }
     pub fn accept(&self) -> bool { self.accept }
     pub fn promptText(&self) -> Option<&str> { self.promptText.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct HandleJavaScriptDialogParamsBuilder<'a> {
-    accept: Option<bool>,
+    accept: bool,
     promptText: Option<Cow<'a, str>>,
 }
 
 impl<'a> HandleJavaScriptDialogParamsBuilder<'a> {
-    /// Whether to accept or dismiss the dialog.
-    pub fn accept(mut self, accept: bool) -> Self { self.accept = Some(accept); self }
     /// The text to enter into the dialog prompt before accepting. Used only if this is a prompt
     /// dialog.
     pub fn promptText(mut self, promptText: impl Into<Cow<'a, str>>) -> Self { self.promptText = Some(promptText.into()); self }
     pub fn build(self) -> HandleJavaScriptDialogParams<'a> {
         HandleJavaScriptDialogParams {
-            accept: self.accept.unwrap_or_default(),
+            accept: self.accept,
             promptText: self.promptText,
         }
     }
@@ -4127,7 +4114,15 @@ pub struct NavigateParams<'a> {
 }
 
 impl<'a> NavigateParams<'a> {
-    pub fn builder() -> NavigateParamsBuilder<'a> { NavigateParamsBuilder::default() }
+    pub fn builder(url: impl Into<Cow<'a, str>>) -> NavigateParamsBuilder<'a> {
+        NavigateParamsBuilder {
+            url: url.into(),
+            referrer: None,
+            transitionType: None,
+            frameId: None,
+            referrerPolicy: None,
+        }
+    }
     pub fn url(&self) -> &str { self.url.as_ref() }
     pub fn referrer(&self) -> Option<&str> { self.referrer.as_deref() }
     pub fn transitionType(&self) -> Option<&TransitionType> { self.transitionType.as_ref() }
@@ -4135,9 +4130,9 @@ impl<'a> NavigateParams<'a> {
     pub fn referrerPolicy(&self) -> Option<&ReferrerPolicy> { self.referrerPolicy.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct NavigateParamsBuilder<'a> {
-    url: Option<Cow<'a, str>>,
+    url: Cow<'a, str>,
     referrer: Option<Cow<'a, str>>,
     transitionType: Option<TransitionType>,
     frameId: Option<FrameId<'a>>,
@@ -4145,8 +4140,6 @@ pub struct NavigateParamsBuilder<'a> {
 }
 
 impl<'a> NavigateParamsBuilder<'a> {
-    /// URL to navigate the page to.
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
     /// Referrer URL.
     pub fn referrer(mut self, referrer: impl Into<Cow<'a, str>>) -> Self { self.referrer = Some(referrer.into()); self }
     /// Intended transition type.
@@ -4157,7 +4150,7 @@ impl<'a> NavigateParamsBuilder<'a> {
     pub fn referrerPolicy(mut self, referrerPolicy: ReferrerPolicy) -> Self { self.referrerPolicy = Some(referrerPolicy); self }
     pub fn build(self) -> NavigateParams<'a> {
         NavigateParams {
-            url: self.url.unwrap_or_default(),
+            url: self.url,
             referrer: self.referrer,
             transitionType: self.transitionType,
             frameId: self.frameId,
@@ -4186,24 +4179,29 @@ pub struct NavigateReturns<'a> {
 }
 
 impl<'a> NavigateReturns<'a> {
-    pub fn builder() -> NavigateReturnsBuilder<'a> { NavigateReturnsBuilder::default() }
+    pub fn builder(frameId: FrameId<'a>) -> NavigateReturnsBuilder<'a> {
+        NavigateReturnsBuilder {
+            frameId: frameId,
+            loaderId: None,
+            errorText: None,
+            isDownload: None,
+        }
+    }
     pub fn frameId(&self) -> &FrameId<'a> { &self.frameId }
     pub fn loaderId(&self) -> Option<&crate::network::LoaderId<'a>> { self.loaderId.as_ref() }
     pub fn errorText(&self) -> Option<&str> { self.errorText.as_deref() }
     pub fn isDownload(&self) -> Option<bool> { self.isDownload }
 }
 
-#[derive(Default)]
+
 pub struct NavigateReturnsBuilder<'a> {
-    frameId: Option<FrameId<'a>>,
+    frameId: FrameId<'a>,
     loaderId: Option<crate::network::LoaderId<'a>>,
     errorText: Option<Cow<'a, str>>,
     isDownload: Option<bool>,
 }
 
 impl<'a> NavigateReturnsBuilder<'a> {
-    /// Frame id that has navigated (or failed to navigate)
-    pub fn frameId(mut self, frameId: FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
     /// Loader identifier. This is omitted in case of same-document navigation,
     /// as the previously committed loaderId would not change.
     pub fn loaderId(mut self, loaderId: crate::network::LoaderId<'a>) -> Self { self.loaderId = Some(loaderId); self }
@@ -4213,7 +4211,7 @@ impl<'a> NavigateReturnsBuilder<'a> {
     pub fn isDownload(mut self, isDownload: bool) -> Self { self.isDownload = Some(isDownload); self }
     pub fn build(self) -> NavigateReturns<'a> {
         NavigateReturns {
-            frameId: self.frameId.unwrap_or_default(),
+            frameId: self.frameId,
             loaderId: self.loaderId,
             errorText: self.errorText,
             isDownload: self.isDownload,
@@ -4238,21 +4236,23 @@ pub struct NavigateToHistoryEntryParams {
 }
 
 impl NavigateToHistoryEntryParams {
-    pub fn builder() -> NavigateToHistoryEntryParamsBuilder { NavigateToHistoryEntryParamsBuilder::default() }
+    pub fn builder(entryId: u64) -> NavigateToHistoryEntryParamsBuilder {
+        NavigateToHistoryEntryParamsBuilder {
+            entryId: entryId,
+        }
+    }
     pub fn entryId(&self) -> u64 { self.entryId }
 }
 
-#[derive(Default)]
+
 pub struct NavigateToHistoryEntryParamsBuilder {
-    entryId: Option<u64>,
+    entryId: u64,
 }
 
 impl NavigateToHistoryEntryParamsBuilder {
-    /// Unique id of the entry to navigate to.
-    pub fn entryId(mut self, entryId: u64) -> Self { self.entryId = Some(entryId); self }
     pub fn build(self) -> NavigateToHistoryEntryParams {
         NavigateToHistoryEntryParams {
-            entryId: self.entryId.unwrap_or_default(),
+            entryId: self.entryId,
         }
     }
 }
@@ -4339,7 +4339,27 @@ pub struct PrintToPDFParams<'a> {
 }
 
 impl<'a> PrintToPDFParams<'a> {
-    pub fn builder() -> PrintToPDFParamsBuilder<'a> { PrintToPDFParamsBuilder::default() }
+    pub fn builder() -> PrintToPDFParamsBuilder<'a> {
+        PrintToPDFParamsBuilder {
+            landscape: None,
+            displayHeaderFooter: None,
+            printBackground: None,
+            scale: None,
+            paperWidth: None,
+            paperHeight: None,
+            marginTop: None,
+            marginBottom: None,
+            marginLeft: None,
+            marginRight: None,
+            pageRanges: None,
+            headerTemplate: None,
+            footerTemplate: None,
+            preferCSSPageSize: None,
+            transferMode: None,
+            generateTaggedPDF: None,
+            generateDocumentOutline: None,
+        }
+    }
     pub fn landscape(&self) -> Option<bool> { self.landscape }
     pub fn displayHeaderFooter(&self) -> Option<bool> { self.displayHeaderFooter }
     pub fn printBackground(&self) -> Option<bool> { self.printBackground }
@@ -4467,25 +4487,28 @@ pub struct PrintToPDFReturns<'a> {
 }
 
 impl<'a> PrintToPDFReturns<'a> {
-    pub fn builder() -> PrintToPDFReturnsBuilder<'a> { PrintToPDFReturnsBuilder::default() }
+    pub fn builder(data: impl Into<Cow<'a, str>>) -> PrintToPDFReturnsBuilder<'a> {
+        PrintToPDFReturnsBuilder {
+            data: data.into(),
+            stream: None,
+        }
+    }
     pub fn data(&self) -> &str { self.data.as_ref() }
     pub fn stream(&self) -> Option<&crate::io::StreamHandle<'a>> { self.stream.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct PrintToPDFReturnsBuilder<'a> {
-    data: Option<Cow<'a, str>>,
+    data: Cow<'a, str>,
     stream: Option<crate::io::StreamHandle<'a>>,
 }
 
 impl<'a> PrintToPDFReturnsBuilder<'a> {
-    /// Base64-encoded pdf data. Empty if |returnAsStream| is specified. (Encoded as a base64 string when passed over JSON)
-    pub fn data(mut self, data: impl Into<Cow<'a, str>>) -> Self { self.data = Some(data.into()); self }
     /// A handle of the stream that holds resulting PDF data.
     pub fn stream(mut self, stream: crate::io::StreamHandle<'a>) -> Self { self.stream = Some(stream); self }
     pub fn build(self) -> PrintToPDFReturns<'a> {
         PrintToPDFReturns {
-            data: self.data.unwrap_or_default(),
+            data: self.data,
             stream: self.stream,
         }
     }
@@ -4518,7 +4541,13 @@ pub struct ReloadParams<'a> {
 }
 
 impl<'a> ReloadParams<'a> {
-    pub fn builder() -> ReloadParamsBuilder<'a> { ReloadParamsBuilder::default() }
+    pub fn builder() -> ReloadParamsBuilder<'a> {
+        ReloadParamsBuilder {
+            ignoreCache: None,
+            scriptToEvaluateOnLoad: None,
+            loaderId: None,
+        }
+    }
     pub fn ignoreCache(&self) -> Option<bool> { self.ignoreCache }
     pub fn scriptToEvaluateOnLoad(&self) -> Option<&str> { self.scriptToEvaluateOnLoad.as_deref() }
     pub fn loaderId(&self) -> Option<&crate::network::LoaderId<'a>> { self.loaderId.as_ref() }
@@ -4566,20 +4595,23 @@ pub struct RemoveScriptToEvaluateOnLoadParams<'a> {
 }
 
 impl<'a> RemoveScriptToEvaluateOnLoadParams<'a> {
-    pub fn builder() -> RemoveScriptToEvaluateOnLoadParamsBuilder<'a> { RemoveScriptToEvaluateOnLoadParamsBuilder::default() }
+    pub fn builder(identifier: ScriptIdentifier<'a>) -> RemoveScriptToEvaluateOnLoadParamsBuilder<'a> {
+        RemoveScriptToEvaluateOnLoadParamsBuilder {
+            identifier: identifier,
+        }
+    }
     pub fn identifier(&self) -> &ScriptIdentifier<'a> { &self.identifier }
 }
 
-#[derive(Default)]
+
 pub struct RemoveScriptToEvaluateOnLoadParamsBuilder<'a> {
-    identifier: Option<ScriptIdentifier<'a>>,
+    identifier: ScriptIdentifier<'a>,
 }
 
 impl<'a> RemoveScriptToEvaluateOnLoadParamsBuilder<'a> {
-    pub fn identifier(mut self, identifier: ScriptIdentifier<'a>) -> Self { self.identifier = Some(identifier); self }
     pub fn build(self) -> RemoveScriptToEvaluateOnLoadParams<'a> {
         RemoveScriptToEvaluateOnLoadParams {
-            identifier: self.identifier.unwrap_or_default(),
+            identifier: self.identifier,
         }
     }
 }
@@ -4600,20 +4632,23 @@ pub struct RemoveScriptToEvaluateOnNewDocumentParams<'a> {
 }
 
 impl<'a> RemoveScriptToEvaluateOnNewDocumentParams<'a> {
-    pub fn builder() -> RemoveScriptToEvaluateOnNewDocumentParamsBuilder<'a> { RemoveScriptToEvaluateOnNewDocumentParamsBuilder::default() }
+    pub fn builder(identifier: ScriptIdentifier<'a>) -> RemoveScriptToEvaluateOnNewDocumentParamsBuilder<'a> {
+        RemoveScriptToEvaluateOnNewDocumentParamsBuilder {
+            identifier: identifier,
+        }
+    }
     pub fn identifier(&self) -> &ScriptIdentifier<'a> { &self.identifier }
 }
 
-#[derive(Default)]
+
 pub struct RemoveScriptToEvaluateOnNewDocumentParamsBuilder<'a> {
-    identifier: Option<ScriptIdentifier<'a>>,
+    identifier: ScriptIdentifier<'a>,
 }
 
 impl<'a> RemoveScriptToEvaluateOnNewDocumentParamsBuilder<'a> {
-    pub fn identifier(mut self, identifier: ScriptIdentifier<'a>) -> Self { self.identifier = Some(identifier); self }
     pub fn build(self) -> RemoveScriptToEvaluateOnNewDocumentParams<'a> {
         RemoveScriptToEvaluateOnNewDocumentParams {
-            identifier: self.identifier.unwrap_or_default(),
+            identifier: self.identifier,
         }
     }
 }
@@ -4635,21 +4670,23 @@ pub struct ScreencastFrameAckParams {
 }
 
 impl ScreencastFrameAckParams {
-    pub fn builder() -> ScreencastFrameAckParamsBuilder { ScreencastFrameAckParamsBuilder::default() }
+    pub fn builder(sessionId: u64) -> ScreencastFrameAckParamsBuilder {
+        ScreencastFrameAckParamsBuilder {
+            sessionId: sessionId,
+        }
+    }
     pub fn sessionId(&self) -> u64 { self.sessionId }
 }
 
-#[derive(Default)]
+
 pub struct ScreencastFrameAckParamsBuilder {
-    sessionId: Option<u64>,
+    sessionId: u64,
 }
 
 impl ScreencastFrameAckParamsBuilder {
-    /// Frame number.
-    pub fn sessionId(mut self, sessionId: u64) -> Self { self.sessionId = Some(sessionId); self }
     pub fn build(self) -> ScreencastFrameAckParams {
         ScreencastFrameAckParams {
-            sessionId: self.sessionId.unwrap_or_default(),
+            sessionId: self.sessionId,
         }
     }
 }
@@ -4681,7 +4718,15 @@ pub struct SearchInResourceParams<'a> {
 }
 
 impl<'a> SearchInResourceParams<'a> {
-    pub fn builder() -> SearchInResourceParamsBuilder<'a> { SearchInResourceParamsBuilder::default() }
+    pub fn builder(frameId: FrameId<'a>, url: impl Into<Cow<'a, str>>, query: impl Into<Cow<'a, str>>) -> SearchInResourceParamsBuilder<'a> {
+        SearchInResourceParamsBuilder {
+            frameId: frameId,
+            url: url.into(),
+            query: query.into(),
+            caseSensitive: None,
+            isRegex: None,
+        }
+    }
     pub fn frameId(&self) -> &FrameId<'a> { &self.frameId }
     pub fn url(&self) -> &str { self.url.as_ref() }
     pub fn query(&self) -> &str { self.query.as_ref() }
@@ -4689,31 +4734,25 @@ impl<'a> SearchInResourceParams<'a> {
     pub fn isRegex(&self) -> Option<bool> { self.isRegex }
 }
 
-#[derive(Default)]
+
 pub struct SearchInResourceParamsBuilder<'a> {
-    frameId: Option<FrameId<'a>>,
-    url: Option<Cow<'a, str>>,
-    query: Option<Cow<'a, str>>,
+    frameId: FrameId<'a>,
+    url: Cow<'a, str>,
+    query: Cow<'a, str>,
     caseSensitive: Option<bool>,
     isRegex: Option<bool>,
 }
 
 impl<'a> SearchInResourceParamsBuilder<'a> {
-    /// Frame id for resource to search in.
-    pub fn frameId(mut self, frameId: FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
-    /// URL of the resource to search in.
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
-    /// String to search for.
-    pub fn query(mut self, query: impl Into<Cow<'a, str>>) -> Self { self.query = Some(query.into()); self }
     /// If true, search is case sensitive.
     pub fn caseSensitive(mut self, caseSensitive: bool) -> Self { self.caseSensitive = Some(caseSensitive); self }
     /// If true, treats string parameter as regex.
     pub fn isRegex(mut self, isRegex: bool) -> Self { self.isRegex = Some(isRegex); self }
     pub fn build(self) -> SearchInResourceParams<'a> {
         SearchInResourceParams {
-            frameId: self.frameId.unwrap_or_default(),
-            url: self.url.unwrap_or_default(),
-            query: self.query.unwrap_or_default(),
+            frameId: self.frameId,
+            url: self.url,
+            query: self.query,
             caseSensitive: self.caseSensitive,
             isRegex: self.isRegex,
         }
@@ -4730,21 +4769,23 @@ pub struct SearchInResourceReturns {
 }
 
 impl SearchInResourceReturns {
-    pub fn builder() -> SearchInResourceReturnsBuilder { SearchInResourceReturnsBuilder::default() }
+    pub fn builder(result: Vec<crate::debugger::SearchMatch>) -> SearchInResourceReturnsBuilder {
+        SearchInResourceReturnsBuilder {
+            result: result,
+        }
+    }
     pub fn result(&self) -> &[crate::debugger::SearchMatch] { &self.result }
 }
 
-#[derive(Default)]
+
 pub struct SearchInResourceReturnsBuilder {
-    result: Option<Vec<crate::debugger::SearchMatch>>,
+    result: Vec<crate::debugger::SearchMatch>,
 }
 
 impl SearchInResourceReturnsBuilder {
-    /// List of search matches.
-    pub fn result(mut self, result: Vec<crate::debugger::SearchMatch>) -> Self { self.result = Some(result); self }
     pub fn build(self) -> SearchInResourceReturns {
         SearchInResourceReturns {
-            result: self.result.unwrap_or_default(),
+            result: self.result,
         }
     }
 }
@@ -4766,21 +4807,23 @@ pub struct SetAdBlockingEnabledParams {
 }
 
 impl SetAdBlockingEnabledParams {
-    pub fn builder() -> SetAdBlockingEnabledParamsBuilder { SetAdBlockingEnabledParamsBuilder::default() }
+    pub fn builder(enabled: bool) -> SetAdBlockingEnabledParamsBuilder {
+        SetAdBlockingEnabledParamsBuilder {
+            enabled: enabled,
+        }
+    }
     pub fn enabled(&self) -> bool { self.enabled }
 }
 
-#[derive(Default)]
+
 pub struct SetAdBlockingEnabledParamsBuilder {
-    enabled: Option<bool>,
+    enabled: bool,
 }
 
 impl SetAdBlockingEnabledParamsBuilder {
-    /// Whether to block ads.
-    pub fn enabled(mut self, enabled: bool) -> Self { self.enabled = Some(enabled); self }
     pub fn build(self) -> SetAdBlockingEnabledParams {
         SetAdBlockingEnabledParams {
-            enabled: self.enabled.unwrap_or_default(),
+            enabled: self.enabled,
         }
     }
 }
@@ -4802,21 +4845,23 @@ pub struct SetBypassCSPParams {
 }
 
 impl SetBypassCSPParams {
-    pub fn builder() -> SetBypassCSPParamsBuilder { SetBypassCSPParamsBuilder::default() }
+    pub fn builder(enabled: bool) -> SetBypassCSPParamsBuilder {
+        SetBypassCSPParamsBuilder {
+            enabled: enabled,
+        }
+    }
     pub fn enabled(&self) -> bool { self.enabled }
 }
 
-#[derive(Default)]
+
 pub struct SetBypassCSPParamsBuilder {
-    enabled: Option<bool>,
+    enabled: bool,
 }
 
 impl SetBypassCSPParamsBuilder {
-    /// Whether to bypass page CSP.
-    pub fn enabled(mut self, enabled: bool) -> Self { self.enabled = Some(enabled); self }
     pub fn build(self) -> SetBypassCSPParams {
         SetBypassCSPParams {
-            enabled: self.enabled.unwrap_or_default(),
+            enabled: self.enabled,
         }
     }
 }
@@ -4837,20 +4882,23 @@ pub struct GetPermissionsPolicyStateParams<'a> {
 }
 
 impl<'a> GetPermissionsPolicyStateParams<'a> {
-    pub fn builder() -> GetPermissionsPolicyStateParamsBuilder<'a> { GetPermissionsPolicyStateParamsBuilder::default() }
+    pub fn builder(frameId: FrameId<'a>) -> GetPermissionsPolicyStateParamsBuilder<'a> {
+        GetPermissionsPolicyStateParamsBuilder {
+            frameId: frameId,
+        }
+    }
     pub fn frameId(&self) -> &FrameId<'a> { &self.frameId }
 }
 
-#[derive(Default)]
+
 pub struct GetPermissionsPolicyStateParamsBuilder<'a> {
-    frameId: Option<FrameId<'a>>,
+    frameId: FrameId<'a>,
 }
 
 impl<'a> GetPermissionsPolicyStateParamsBuilder<'a> {
-    pub fn frameId(mut self, frameId: FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
     pub fn build(self) -> GetPermissionsPolicyStateParams<'a> {
         GetPermissionsPolicyStateParams {
-            frameId: self.frameId.unwrap_or_default(),
+            frameId: self.frameId,
         }
     }
 }
@@ -4864,20 +4912,23 @@ pub struct GetPermissionsPolicyStateReturns<'a> {
 }
 
 impl<'a> GetPermissionsPolicyStateReturns<'a> {
-    pub fn builder() -> GetPermissionsPolicyStateReturnsBuilder<'a> { GetPermissionsPolicyStateReturnsBuilder::default() }
+    pub fn builder(states: Vec<PermissionsPolicyFeatureState<'a>>) -> GetPermissionsPolicyStateReturnsBuilder<'a> {
+        GetPermissionsPolicyStateReturnsBuilder {
+            states: states,
+        }
+    }
     pub fn states(&self) -> &[PermissionsPolicyFeatureState<'a>] { &self.states }
 }
 
-#[derive(Default)]
+
 pub struct GetPermissionsPolicyStateReturnsBuilder<'a> {
-    states: Option<Vec<PermissionsPolicyFeatureState<'a>>>,
+    states: Vec<PermissionsPolicyFeatureState<'a>>,
 }
 
 impl<'a> GetPermissionsPolicyStateReturnsBuilder<'a> {
-    pub fn states(mut self, states: Vec<PermissionsPolicyFeatureState<'a>>) -> Self { self.states = Some(states); self }
     pub fn build(self) -> GetPermissionsPolicyStateReturns<'a> {
         GetPermissionsPolicyStateReturns {
-            states: self.states.unwrap_or_default(),
+            states: self.states,
         }
     }
 }
@@ -4898,20 +4949,23 @@ pub struct GetOriginTrialsParams<'a> {
 }
 
 impl<'a> GetOriginTrialsParams<'a> {
-    pub fn builder() -> GetOriginTrialsParamsBuilder<'a> { GetOriginTrialsParamsBuilder::default() }
+    pub fn builder(frameId: FrameId<'a>) -> GetOriginTrialsParamsBuilder<'a> {
+        GetOriginTrialsParamsBuilder {
+            frameId: frameId,
+        }
+    }
     pub fn frameId(&self) -> &FrameId<'a> { &self.frameId }
 }
 
-#[derive(Default)]
+
 pub struct GetOriginTrialsParamsBuilder<'a> {
-    frameId: Option<FrameId<'a>>,
+    frameId: FrameId<'a>,
 }
 
 impl<'a> GetOriginTrialsParamsBuilder<'a> {
-    pub fn frameId(mut self, frameId: FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
     pub fn build(self) -> GetOriginTrialsParams<'a> {
         GetOriginTrialsParams {
-            frameId: self.frameId.unwrap_or_default(),
+            frameId: self.frameId,
         }
     }
 }
@@ -4925,20 +4979,23 @@ pub struct GetOriginTrialsReturns<'a> {
 }
 
 impl<'a> GetOriginTrialsReturns<'a> {
-    pub fn builder() -> GetOriginTrialsReturnsBuilder<'a> { GetOriginTrialsReturnsBuilder::default() }
+    pub fn builder(originTrials: Vec<OriginTrial<'a>>) -> GetOriginTrialsReturnsBuilder<'a> {
+        GetOriginTrialsReturnsBuilder {
+            originTrials: originTrials,
+        }
+    }
     pub fn originTrials(&self) -> &[OriginTrial<'a>] { &self.originTrials }
 }
 
-#[derive(Default)]
+
 pub struct GetOriginTrialsReturnsBuilder<'a> {
-    originTrials: Option<Vec<OriginTrial<'a>>>,
+    originTrials: Vec<OriginTrial<'a>>,
 }
 
 impl<'a> GetOriginTrialsReturnsBuilder<'a> {
-    pub fn originTrials(mut self, originTrials: Vec<OriginTrial<'a>>) -> Self { self.originTrials = Some(originTrials); self }
     pub fn build(self) -> GetOriginTrialsReturns<'a> {
         GetOriginTrialsReturns {
-            originTrials: self.originTrials.unwrap_or_default(),
+            originTrials: self.originTrials,
         }
     }
 }
@@ -4993,7 +5050,22 @@ pub struct SetDeviceMetricsOverrideParams<'a> {
 }
 
 impl<'a> SetDeviceMetricsOverrideParams<'a> {
-    pub fn builder() -> SetDeviceMetricsOverrideParamsBuilder<'a> { SetDeviceMetricsOverrideParamsBuilder::default() }
+    pub fn builder(width: u64, height: i64, deviceScaleFactor: f64, mobile: bool) -> SetDeviceMetricsOverrideParamsBuilder<'a> {
+        SetDeviceMetricsOverrideParamsBuilder {
+            width: width,
+            height: height,
+            deviceScaleFactor: deviceScaleFactor,
+            mobile: mobile,
+            scale: None,
+            screenWidth: None,
+            screenHeight: None,
+            positionX: None,
+            positionY: None,
+            dontSetVisibleSize: None,
+            screenOrientation: None,
+            viewport: None,
+        }
+    }
     pub fn width(&self) -> u64 { self.width }
     pub fn height(&self) -> i64 { self.height }
     pub fn deviceScaleFactor(&self) -> f64 { self.deviceScaleFactor }
@@ -5008,12 +5080,12 @@ impl<'a> SetDeviceMetricsOverrideParams<'a> {
     pub fn viewport(&self) -> Option<&Viewport> { self.viewport.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetDeviceMetricsOverrideParamsBuilder<'a> {
-    width: Option<u64>,
-    height: Option<i64>,
-    deviceScaleFactor: Option<f64>,
-    mobile: Option<bool>,
+    width: u64,
+    height: i64,
+    deviceScaleFactor: f64,
+    mobile: bool,
     scale: Option<f64>,
     screenWidth: Option<u64>,
     screenHeight: Option<i64>,
@@ -5025,15 +5097,6 @@ pub struct SetDeviceMetricsOverrideParamsBuilder<'a> {
 }
 
 impl<'a> SetDeviceMetricsOverrideParamsBuilder<'a> {
-    /// Overriding width value in pixels (minimum 0, maximum 10000000). 0 disables the override.
-    pub fn width(mut self, width: u64) -> Self { self.width = Some(width); self }
-    /// Overriding height value in pixels (minimum 0, maximum 10000000). 0 disables the override.
-    pub fn height(mut self, height: i64) -> Self { self.height = Some(height); self }
-    /// Overriding device scale factor value. 0 disables the override.
-    pub fn deviceScaleFactor(mut self, deviceScaleFactor: f64) -> Self { self.deviceScaleFactor = Some(deviceScaleFactor); self }
-    /// Whether to emulate mobile device. This includes viewport meta tag, overlay scrollbars, text
-    /// autosizing and more.
-    pub fn mobile(mut self, mobile: bool) -> Self { self.mobile = Some(mobile); self }
     /// Scale to apply to resulting view image.
     pub fn scale(mut self, scale: f64) -> Self { self.scale = Some(scale); self }
     /// Overriding screen width value in pixels (minimum 0, maximum 10000000).
@@ -5052,10 +5115,10 @@ impl<'a> SetDeviceMetricsOverrideParamsBuilder<'a> {
     pub fn viewport(mut self, viewport: Viewport) -> Self { self.viewport = Some(viewport); self }
     pub fn build(self) -> SetDeviceMetricsOverrideParams<'a> {
         SetDeviceMetricsOverrideParams {
-            width: self.width.unwrap_or_default(),
-            height: self.height.unwrap_or_default(),
-            deviceScaleFactor: self.deviceScaleFactor.unwrap_or_default(),
-            mobile: self.mobile.unwrap_or_default(),
+            width: self.width,
+            height: self.height,
+            deviceScaleFactor: self.deviceScaleFactor,
+            mobile: self.mobile,
             scale: self.scale,
             screenWidth: self.screenWidth,
             screenHeight: self.screenHeight,
@@ -5089,31 +5152,31 @@ pub struct SetDeviceOrientationOverrideParams {
 }
 
 impl SetDeviceOrientationOverrideParams {
-    pub fn builder() -> SetDeviceOrientationOverrideParamsBuilder { SetDeviceOrientationOverrideParamsBuilder::default() }
+    pub fn builder(alpha: f64, beta: f64, gamma: f64) -> SetDeviceOrientationOverrideParamsBuilder {
+        SetDeviceOrientationOverrideParamsBuilder {
+            alpha: alpha,
+            beta: beta,
+            gamma: gamma,
+        }
+    }
     pub fn alpha(&self) -> f64 { self.alpha }
     pub fn beta(&self) -> f64 { self.beta }
     pub fn gamma(&self) -> f64 { self.gamma }
 }
 
-#[derive(Default)]
+
 pub struct SetDeviceOrientationOverrideParamsBuilder {
-    alpha: Option<f64>,
-    beta: Option<f64>,
-    gamma: Option<f64>,
+    alpha: f64,
+    beta: f64,
+    gamma: f64,
 }
 
 impl SetDeviceOrientationOverrideParamsBuilder {
-    /// Mock alpha
-    pub fn alpha(mut self, alpha: f64) -> Self { self.alpha = Some(alpha); self }
-    /// Mock beta
-    pub fn beta(mut self, beta: f64) -> Self { self.beta = Some(beta); self }
-    /// Mock gamma
-    pub fn gamma(mut self, gamma: f64) -> Self { self.gamma = Some(gamma); self }
     pub fn build(self) -> SetDeviceOrientationOverrideParams {
         SetDeviceOrientationOverrideParams {
-            alpha: self.alpha.unwrap_or_default(),
-            beta: self.beta.unwrap_or_default(),
-            gamma: self.gamma.unwrap_or_default(),
+            alpha: self.alpha,
+            beta: self.beta,
+            gamma: self.gamma,
         }
     }
 }
@@ -5138,25 +5201,28 @@ pub struct SetFontFamiliesParams<'a> {
 }
 
 impl<'a> SetFontFamiliesParams<'a> {
-    pub fn builder() -> SetFontFamiliesParamsBuilder<'a> { SetFontFamiliesParamsBuilder::default() }
+    pub fn builder(fontFamilies: FontFamilies<'a>) -> SetFontFamiliesParamsBuilder<'a> {
+        SetFontFamiliesParamsBuilder {
+            fontFamilies: fontFamilies,
+            forScripts: None,
+        }
+    }
     pub fn fontFamilies(&self) -> &FontFamilies<'a> { &self.fontFamilies }
     pub fn forScripts(&self) -> Option<&[ScriptFontFamilies<'a>]> { self.forScripts.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct SetFontFamiliesParamsBuilder<'a> {
-    fontFamilies: Option<FontFamilies<'a>>,
+    fontFamilies: FontFamilies<'a>,
     forScripts: Option<Vec<ScriptFontFamilies<'a>>>,
 }
 
 impl<'a> SetFontFamiliesParamsBuilder<'a> {
-    /// Specifies font families to set. If a font family is not specified, it won't be changed.
-    pub fn fontFamilies(mut self, fontFamilies: FontFamilies<'a>) -> Self { self.fontFamilies = Some(fontFamilies); self }
     /// Specifies font families to set for individual scripts.
     pub fn forScripts(mut self, forScripts: Vec<ScriptFontFamilies<'a>>) -> Self { self.forScripts = Some(forScripts); self }
     pub fn build(self) -> SetFontFamiliesParams<'a> {
         SetFontFamiliesParams {
-            fontFamilies: self.fontFamilies.unwrap_or_default(),
+            fontFamilies: self.fontFamilies,
             forScripts: self.forScripts,
         }
     }
@@ -5179,21 +5245,23 @@ pub struct SetFontSizesParams {
 }
 
 impl SetFontSizesParams {
-    pub fn builder() -> SetFontSizesParamsBuilder { SetFontSizesParamsBuilder::default() }
+    pub fn builder(fontSizes: FontSizes) -> SetFontSizesParamsBuilder {
+        SetFontSizesParamsBuilder {
+            fontSizes: fontSizes,
+        }
+    }
     pub fn fontSizes(&self) -> &FontSizes { &self.fontSizes }
 }
 
-#[derive(Default)]
+
 pub struct SetFontSizesParamsBuilder {
-    fontSizes: Option<FontSizes>,
+    fontSizes: FontSizes,
 }
 
 impl SetFontSizesParamsBuilder {
-    /// Specifies font sizes to set. If a font size is not specified, it won't be changed.
-    pub fn fontSizes(mut self, fontSizes: FontSizes) -> Self { self.fontSizes = Some(fontSizes); self }
     pub fn build(self) -> SetFontSizesParams {
         SetFontSizesParams {
-            fontSizes: self.fontSizes.unwrap_or_default(),
+            fontSizes: self.fontSizes,
         }
     }
 }
@@ -5217,26 +5285,27 @@ pub struct SetDocumentContentParams<'a> {
 }
 
 impl<'a> SetDocumentContentParams<'a> {
-    pub fn builder() -> SetDocumentContentParamsBuilder<'a> { SetDocumentContentParamsBuilder::default() }
+    pub fn builder(frameId: FrameId<'a>, html: impl Into<Cow<'a, str>>) -> SetDocumentContentParamsBuilder<'a> {
+        SetDocumentContentParamsBuilder {
+            frameId: frameId,
+            html: html.into(),
+        }
+    }
     pub fn frameId(&self) -> &FrameId<'a> { &self.frameId }
     pub fn html(&self) -> &str { self.html.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetDocumentContentParamsBuilder<'a> {
-    frameId: Option<FrameId<'a>>,
-    html: Option<Cow<'a, str>>,
+    frameId: FrameId<'a>,
+    html: Cow<'a, str>,
 }
 
 impl<'a> SetDocumentContentParamsBuilder<'a> {
-    /// Frame id to set HTML for.
-    pub fn frameId(mut self, frameId: FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
-    /// HTML content to set.
-    pub fn html(mut self, html: impl Into<Cow<'a, str>>) -> Self { self.html = Some(html.into()); self }
     pub fn build(self) -> SetDocumentContentParams<'a> {
         SetDocumentContentParams {
-            frameId: self.frameId.unwrap_or_default(),
-            html: self.html.unwrap_or_default(),
+            frameId: self.frameId,
+            html: self.html,
         }
     }
 }
@@ -5262,26 +5331,28 @@ pub struct SetDownloadBehaviorParams<'a> {
 }
 
 impl<'a> SetDownloadBehaviorParams<'a> {
-    pub fn builder() -> SetDownloadBehaviorParamsBuilder<'a> { SetDownloadBehaviorParamsBuilder::default() }
+    pub fn builder(behavior: impl Into<Cow<'a, str>>) -> SetDownloadBehaviorParamsBuilder<'a> {
+        SetDownloadBehaviorParamsBuilder {
+            behavior: behavior.into(),
+            downloadPath: None,
+        }
+    }
     pub fn behavior(&self) -> &str { self.behavior.as_ref() }
     pub fn downloadPath(&self) -> Option<&str> { self.downloadPath.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct SetDownloadBehaviorParamsBuilder<'a> {
-    behavior: Option<Cow<'a, str>>,
+    behavior: Cow<'a, str>,
     downloadPath: Option<Cow<'a, str>>,
 }
 
 impl<'a> SetDownloadBehaviorParamsBuilder<'a> {
-    /// Whether to allow all or deny all download requests, or use default Chrome behavior if
-    /// available (otherwise deny).
-    pub fn behavior(mut self, behavior: impl Into<Cow<'a, str>>) -> Self { self.behavior = Some(behavior.into()); self }
     /// The default path to save downloaded files to. This is required if behavior is set to 'allow'
     pub fn downloadPath(mut self, downloadPath: impl Into<Cow<'a, str>>) -> Self { self.downloadPath = Some(downloadPath.into()); self }
     pub fn build(self) -> SetDownloadBehaviorParams<'a> {
         SetDownloadBehaviorParams {
-            behavior: self.behavior.unwrap_or_default(),
+            behavior: self.behavior,
             downloadPath: self.downloadPath,
         }
     }
@@ -5312,7 +5383,13 @@ pub struct SetGeolocationOverrideParams {
 }
 
 impl SetGeolocationOverrideParams {
-    pub fn builder() -> SetGeolocationOverrideParamsBuilder { SetGeolocationOverrideParamsBuilder::default() }
+    pub fn builder() -> SetGeolocationOverrideParamsBuilder {
+        SetGeolocationOverrideParamsBuilder {
+            latitude: None,
+            longitude: None,
+            accuracy: None,
+        }
+    }
     pub fn latitude(&self) -> Option<f64> { self.latitude }
     pub fn longitude(&self) -> Option<f64> { self.longitude }
     pub fn accuracy(&self) -> Option<f64> { self.accuracy }
@@ -5358,21 +5435,23 @@ pub struct SetLifecycleEventsEnabledParams {
 }
 
 impl SetLifecycleEventsEnabledParams {
-    pub fn builder() -> SetLifecycleEventsEnabledParamsBuilder { SetLifecycleEventsEnabledParamsBuilder::default() }
+    pub fn builder(enabled: bool) -> SetLifecycleEventsEnabledParamsBuilder {
+        SetLifecycleEventsEnabledParamsBuilder {
+            enabled: enabled,
+        }
+    }
     pub fn enabled(&self) -> bool { self.enabled }
 }
 
-#[derive(Default)]
+
 pub struct SetLifecycleEventsEnabledParamsBuilder {
-    enabled: Option<bool>,
+    enabled: bool,
 }
 
 impl SetLifecycleEventsEnabledParamsBuilder {
-    /// If true, starts emitting lifecycle events.
-    pub fn enabled(mut self, enabled: bool) -> Self { self.enabled = Some(enabled); self }
     pub fn build(self) -> SetLifecycleEventsEnabledParams {
         SetLifecycleEventsEnabledParams {
-            enabled: self.enabled.unwrap_or_default(),
+            enabled: self.enabled,
         }
     }
 }
@@ -5397,25 +5476,28 @@ pub struct SetTouchEmulationEnabledParams<'a> {
 }
 
 impl<'a> SetTouchEmulationEnabledParams<'a> {
-    pub fn builder() -> SetTouchEmulationEnabledParamsBuilder<'a> { SetTouchEmulationEnabledParamsBuilder::default() }
+    pub fn builder(enabled: bool) -> SetTouchEmulationEnabledParamsBuilder<'a> {
+        SetTouchEmulationEnabledParamsBuilder {
+            enabled: enabled,
+            configuration: None,
+        }
+    }
     pub fn enabled(&self) -> bool { self.enabled }
     pub fn configuration(&self) -> Option<&str> { self.configuration.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct SetTouchEmulationEnabledParamsBuilder<'a> {
-    enabled: Option<bool>,
+    enabled: bool,
     configuration: Option<Cow<'a, str>>,
 }
 
 impl<'a> SetTouchEmulationEnabledParamsBuilder<'a> {
-    /// Whether the touch event emulation should be enabled.
-    pub fn enabled(mut self, enabled: bool) -> Self { self.enabled = Some(enabled); self }
     /// Touch/gesture events configuration. Default: current platform.
     pub fn configuration(mut self, configuration: impl Into<Cow<'a, str>>) -> Self { self.configuration = Some(configuration.into()); self }
     pub fn build(self) -> SetTouchEmulationEnabledParams<'a> {
         SetTouchEmulationEnabledParams {
-            enabled: self.enabled.unwrap_or_default(),
+            enabled: self.enabled,
             configuration: self.configuration,
         }
     }
@@ -5451,7 +5533,15 @@ pub struct StartScreencastParams<'a> {
 }
 
 impl<'a> StartScreencastParams<'a> {
-    pub fn builder() -> StartScreencastParamsBuilder<'a> { StartScreencastParamsBuilder::default() }
+    pub fn builder() -> StartScreencastParamsBuilder<'a> {
+        StartScreencastParamsBuilder {
+            format: None,
+            quality: None,
+            maxWidth: None,
+            maxHeight: None,
+            everyNthFrame: None,
+        }
+    }
     pub fn format(&self) -> Option<&str> { self.format.as_deref() }
     pub fn quality(&self) -> Option<i64> { self.quality }
     pub fn maxWidth(&self) -> Option<u64> { self.maxWidth }
@@ -5500,21 +5590,6 @@ impl<'a> crate::CdpCommand<'a> for StartScreencastParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct StopLoadingParams {}
 
-impl StopLoadingParams {
-    pub fn builder() -> StopLoadingParamsBuilder {
-        StopLoadingParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct StopLoadingParamsBuilder {}
-
-impl StopLoadingParamsBuilder {
-    pub fn build(self) -> StopLoadingParams {
-        StopLoadingParams {}
-    }
-}
-
 impl StopLoadingParams { pub const METHOD: &'static str = "Page.stopLoading"; }
 
 impl<'a> crate::CdpCommand<'a> for StopLoadingParams {
@@ -5525,21 +5600,6 @@ impl<'a> crate::CdpCommand<'a> for StopLoadingParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct CrashParams {}
 
-impl CrashParams {
-    pub fn builder() -> CrashParamsBuilder {
-        CrashParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct CrashParamsBuilder {}
-
-impl CrashParamsBuilder {
-    pub fn build(self) -> CrashParams {
-        CrashParams {}
-    }
-}
-
 impl CrashParams { pub const METHOD: &'static str = "Page.crash"; }
 
 impl<'a> crate::CdpCommand<'a> for CrashParams {
@@ -5549,21 +5609,6 @@ impl<'a> crate::CdpCommand<'a> for CrashParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct CloseParams {}
-
-impl CloseParams {
-    pub fn builder() -> CloseParamsBuilder {
-        CloseParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct CloseParamsBuilder {}
-
-impl CloseParamsBuilder {
-    pub fn build(self) -> CloseParams {
-        CloseParams {}
-    }
-}
 
 impl CloseParams { pub const METHOD: &'static str = "Page.close"; }
 
@@ -5584,21 +5629,23 @@ pub struct SetWebLifecycleStateParams<'a> {
 }
 
 impl<'a> SetWebLifecycleStateParams<'a> {
-    pub fn builder() -> SetWebLifecycleStateParamsBuilder<'a> { SetWebLifecycleStateParamsBuilder::default() }
+    pub fn builder(state: impl Into<Cow<'a, str>>) -> SetWebLifecycleStateParamsBuilder<'a> {
+        SetWebLifecycleStateParamsBuilder {
+            state: state.into(),
+        }
+    }
     pub fn state(&self) -> &str { self.state.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetWebLifecycleStateParamsBuilder<'a> {
-    state: Option<Cow<'a, str>>,
+    state: Cow<'a, str>,
 }
 
 impl<'a> SetWebLifecycleStateParamsBuilder<'a> {
-    /// Target lifecycle state
-    pub fn state(mut self, state: impl Into<Cow<'a, str>>) -> Self { self.state = Some(state.into()); self }
     pub fn build(self) -> SetWebLifecycleStateParams<'a> {
         SetWebLifecycleStateParams {
-            state: self.state.unwrap_or_default(),
+            state: self.state,
         }
     }
 }
@@ -5612,21 +5659,6 @@ impl<'a> crate::CdpCommand<'a> for SetWebLifecycleStateParams<'a> {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct StopScreencastParams {}
-
-impl StopScreencastParams {
-    pub fn builder() -> StopScreencastParamsBuilder {
-        StopScreencastParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct StopScreencastParamsBuilder {}
-
-impl StopScreencastParamsBuilder {
-    pub fn build(self) -> StopScreencastParams {
-        StopScreencastParams {}
-    }
-}
 
 impl StopScreencastParams { pub const METHOD: &'static str = "Page.stopScreencast"; }
 
@@ -5649,20 +5681,23 @@ pub struct ProduceCompilationCacheParams<'a> {
 }
 
 impl<'a> ProduceCompilationCacheParams<'a> {
-    pub fn builder() -> ProduceCompilationCacheParamsBuilder<'a> { ProduceCompilationCacheParamsBuilder::default() }
+    pub fn builder(scripts: Vec<CompilationCacheParams<'a>>) -> ProduceCompilationCacheParamsBuilder<'a> {
+        ProduceCompilationCacheParamsBuilder {
+            scripts: scripts,
+        }
+    }
     pub fn scripts(&self) -> &[CompilationCacheParams<'a>] { &self.scripts }
 }
 
-#[derive(Default)]
+
 pub struct ProduceCompilationCacheParamsBuilder<'a> {
-    scripts: Option<Vec<CompilationCacheParams<'a>>>,
+    scripts: Vec<CompilationCacheParams<'a>>,
 }
 
 impl<'a> ProduceCompilationCacheParamsBuilder<'a> {
-    pub fn scripts(mut self, scripts: Vec<CompilationCacheParams<'a>>) -> Self { self.scripts = Some(scripts); self }
     pub fn build(self) -> ProduceCompilationCacheParams<'a> {
         ProduceCompilationCacheParams {
-            scripts: self.scripts.unwrap_or_default(),
+            scripts: self.scripts,
         }
     }
 }
@@ -5686,25 +5721,27 @@ pub struct AddCompilationCacheParams<'a> {
 }
 
 impl<'a> AddCompilationCacheParams<'a> {
-    pub fn builder() -> AddCompilationCacheParamsBuilder<'a> { AddCompilationCacheParamsBuilder::default() }
+    pub fn builder(url: impl Into<Cow<'a, str>>, data: impl Into<Cow<'a, str>>) -> AddCompilationCacheParamsBuilder<'a> {
+        AddCompilationCacheParamsBuilder {
+            url: url.into(),
+            data: data.into(),
+        }
+    }
     pub fn url(&self) -> &str { self.url.as_ref() }
     pub fn data(&self) -> &str { self.data.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct AddCompilationCacheParamsBuilder<'a> {
-    url: Option<Cow<'a, str>>,
-    data: Option<Cow<'a, str>>,
+    url: Cow<'a, str>,
+    data: Cow<'a, str>,
 }
 
 impl<'a> AddCompilationCacheParamsBuilder<'a> {
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
-    /// Base64-encoded data (Encoded as a base64 string when passed over JSON)
-    pub fn data(mut self, data: impl Into<Cow<'a, str>>) -> Self { self.data = Some(data.into()); self }
     pub fn build(self) -> AddCompilationCacheParams<'a> {
         AddCompilationCacheParams {
-            url: self.url.unwrap_or_default(),
-            data: self.data.unwrap_or_default(),
+            url: self.url,
+            data: self.data,
         }
     }
 }
@@ -5718,21 +5755,6 @@ impl<'a> crate::CdpCommand<'a> for AddCompilationCacheParams<'a> {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ClearCompilationCacheParams {}
-
-impl ClearCompilationCacheParams {
-    pub fn builder() -> ClearCompilationCacheParamsBuilder {
-        ClearCompilationCacheParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct ClearCompilationCacheParamsBuilder {}
-
-impl ClearCompilationCacheParamsBuilder {
-    pub fn build(self) -> ClearCompilationCacheParams {
-        ClearCompilationCacheParams {}
-    }
-}
 
 impl ClearCompilationCacheParams { pub const METHOD: &'static str = "Page.clearCompilationCache"; }
 
@@ -5751,20 +5773,23 @@ pub struct SetSPCTransactionModeParams<'a> {
 }
 
 impl<'a> SetSPCTransactionModeParams<'a> {
-    pub fn builder() -> SetSPCTransactionModeParamsBuilder<'a> { SetSPCTransactionModeParamsBuilder::default() }
+    pub fn builder(mode: impl Into<Cow<'a, str>>) -> SetSPCTransactionModeParamsBuilder<'a> {
+        SetSPCTransactionModeParamsBuilder {
+            mode: mode.into(),
+        }
+    }
     pub fn mode(&self) -> &str { self.mode.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetSPCTransactionModeParamsBuilder<'a> {
-    mode: Option<Cow<'a, str>>,
+    mode: Cow<'a, str>,
 }
 
 impl<'a> SetSPCTransactionModeParamsBuilder<'a> {
-    pub fn mode(mut self, mode: impl Into<Cow<'a, str>>) -> Self { self.mode = Some(mode.into()); self }
     pub fn build(self) -> SetSPCTransactionModeParams<'a> {
         SetSPCTransactionModeParams {
-            mode: self.mode.unwrap_or_default(),
+            mode: self.mode,
         }
     }
 }
@@ -5786,20 +5811,23 @@ pub struct SetRPHRegistrationModeParams<'a> {
 }
 
 impl<'a> SetRPHRegistrationModeParams<'a> {
-    pub fn builder() -> SetRPHRegistrationModeParamsBuilder<'a> { SetRPHRegistrationModeParamsBuilder::default() }
+    pub fn builder(mode: impl Into<Cow<'a, str>>) -> SetRPHRegistrationModeParamsBuilder<'a> {
+        SetRPHRegistrationModeParamsBuilder {
+            mode: mode.into(),
+        }
+    }
     pub fn mode(&self) -> &str { self.mode.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetRPHRegistrationModeParamsBuilder<'a> {
-    mode: Option<Cow<'a, str>>,
+    mode: Cow<'a, str>,
 }
 
 impl<'a> SetRPHRegistrationModeParamsBuilder<'a> {
-    pub fn mode(mut self, mode: impl Into<Cow<'a, str>>) -> Self { self.mode = Some(mode.into()); self }
     pub fn build(self) -> SetRPHRegistrationModeParams<'a> {
         SetRPHRegistrationModeParams {
-            mode: self.mode.unwrap_or_default(),
+            mode: self.mode,
         }
     }
 }
@@ -5824,25 +5852,28 @@ pub struct GenerateTestReportParams<'a> {
 }
 
 impl<'a> GenerateTestReportParams<'a> {
-    pub fn builder() -> GenerateTestReportParamsBuilder<'a> { GenerateTestReportParamsBuilder::default() }
+    pub fn builder(message: impl Into<Cow<'a, str>>) -> GenerateTestReportParamsBuilder<'a> {
+        GenerateTestReportParamsBuilder {
+            message: message.into(),
+            group: None,
+        }
+    }
     pub fn message(&self) -> &str { self.message.as_ref() }
     pub fn group(&self) -> Option<&str> { self.group.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct GenerateTestReportParamsBuilder<'a> {
-    message: Option<Cow<'a, str>>,
+    message: Cow<'a, str>,
     group: Option<Cow<'a, str>>,
 }
 
 impl<'a> GenerateTestReportParamsBuilder<'a> {
-    /// Message to be displayed in the report.
-    pub fn message(mut self, message: impl Into<Cow<'a, str>>) -> Self { self.message = Some(message.into()); self }
     /// Specifies the endpoint group to deliver the report to.
     pub fn group(mut self, group: impl Into<Cow<'a, str>>) -> Self { self.group = Some(group.into()); self }
     pub fn build(self) -> GenerateTestReportParams<'a> {
         GenerateTestReportParams {
-            message: self.message.unwrap_or_default(),
+            message: self.message,
             group: self.group,
         }
     }
@@ -5857,21 +5888,6 @@ impl<'a> crate::CdpCommand<'a> for GenerateTestReportParams<'a> {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct WaitForDebuggerParams {}
-
-impl WaitForDebuggerParams {
-    pub fn builder() -> WaitForDebuggerParamsBuilder {
-        WaitForDebuggerParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct WaitForDebuggerParamsBuilder {}
-
-impl WaitForDebuggerParamsBuilder {
-    pub fn build(self) -> WaitForDebuggerParams {
-        WaitForDebuggerParams {}
-    }
-}
 
 impl WaitForDebuggerParams { pub const METHOD: &'static str = "Page.waitForDebugger"; }
 
@@ -5896,26 +5912,30 @@ pub struct SetInterceptFileChooserDialogParams {
 }
 
 impl SetInterceptFileChooserDialogParams {
-    pub fn builder() -> SetInterceptFileChooserDialogParamsBuilder { SetInterceptFileChooserDialogParamsBuilder::default() }
+    pub fn builder(enabled: bool) -> SetInterceptFileChooserDialogParamsBuilder {
+        SetInterceptFileChooserDialogParamsBuilder {
+            enabled: enabled,
+            cancel: None,
+        }
+    }
     pub fn enabled(&self) -> bool { self.enabled }
     pub fn cancel(&self) -> Option<bool> { self.cancel }
 }
 
-#[derive(Default)]
+
 pub struct SetInterceptFileChooserDialogParamsBuilder {
-    enabled: Option<bool>,
+    enabled: bool,
     cancel: Option<bool>,
 }
 
 impl SetInterceptFileChooserDialogParamsBuilder {
-    pub fn enabled(mut self, enabled: bool) -> Self { self.enabled = Some(enabled); self }
     /// If true, cancels the dialog by emitting relevant events (if any)
     /// in addition to not showing it if the interception is enabled
     /// (default: false).
     pub fn cancel(mut self, cancel: bool) -> Self { self.cancel = Some(cancel); self }
     pub fn build(self) -> SetInterceptFileChooserDialogParams {
         SetInterceptFileChooserDialogParams {
-            enabled: self.enabled.unwrap_or_default(),
+            enabled: self.enabled,
             cancel: self.cancel,
         }
     }
@@ -5943,20 +5963,23 @@ pub struct SetPrerenderingAllowedParams {
 }
 
 impl SetPrerenderingAllowedParams {
-    pub fn builder() -> SetPrerenderingAllowedParamsBuilder { SetPrerenderingAllowedParamsBuilder::default() }
+    pub fn builder(isAllowed: bool) -> SetPrerenderingAllowedParamsBuilder {
+        SetPrerenderingAllowedParamsBuilder {
+            isAllowed: isAllowed,
+        }
+    }
     pub fn isAllowed(&self) -> bool { self.isAllowed }
 }
 
-#[derive(Default)]
+
 pub struct SetPrerenderingAllowedParamsBuilder {
-    isAllowed: Option<bool>,
+    isAllowed: bool,
 }
 
 impl SetPrerenderingAllowedParamsBuilder {
-    pub fn isAllowed(mut self, isAllowed: bool) -> Self { self.isAllowed = Some(isAllowed); self }
     pub fn build(self) -> SetPrerenderingAllowedParams {
         SetPrerenderingAllowedParams {
-            isAllowed: self.isAllowed.unwrap_or_default(),
+            isAllowed: self.isAllowed,
         }
     }
 }
@@ -5980,7 +6003,11 @@ pub struct GetAnnotatedPageContentParams {
 }
 
 impl GetAnnotatedPageContentParams {
-    pub fn builder() -> GetAnnotatedPageContentParamsBuilder { GetAnnotatedPageContentParamsBuilder::default() }
+    pub fn builder() -> GetAnnotatedPageContentParamsBuilder {
+        GetAnnotatedPageContentParamsBuilder {
+            includeActionableInformation: None,
+        }
+    }
     pub fn includeActionableInformation(&self) -> Option<bool> { self.includeActionableInformation }
 }
 
@@ -6012,23 +6039,23 @@ pub struct GetAnnotatedPageContentReturns<'a> {
 }
 
 impl<'a> GetAnnotatedPageContentReturns<'a> {
-    pub fn builder() -> GetAnnotatedPageContentReturnsBuilder<'a> { GetAnnotatedPageContentReturnsBuilder::default() }
+    pub fn builder(content: impl Into<Cow<'a, str>>) -> GetAnnotatedPageContentReturnsBuilder<'a> {
+        GetAnnotatedPageContentReturnsBuilder {
+            content: content.into(),
+        }
+    }
     pub fn content(&self) -> &str { self.content.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct GetAnnotatedPageContentReturnsBuilder<'a> {
-    content: Option<Cow<'a, str>>,
+    content: Cow<'a, str>,
 }
 
 impl<'a> GetAnnotatedPageContentReturnsBuilder<'a> {
-    /// The annotated page content as a base64 encoded protobuf.
-    /// The format is defined by the 'AnnotatedPageContent' message in
-    /// components/optimization_guide/proto/features/common_quality_data.proto (Encoded as a base64 string when passed over JSON)
-    pub fn content(mut self, content: impl Into<Cow<'a, str>>) -> Self { self.content = Some(content.into()); self }
     pub fn build(self) -> GetAnnotatedPageContentReturns<'a> {
         GetAnnotatedPageContentReturns {
-            content: self.content.unwrap_or_default(),
+            content: self.content,
         }
     }
 }

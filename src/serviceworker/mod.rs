@@ -16,28 +16,31 @@ pub struct ServiceWorkerRegistration<'a> {
 }
 
 impl<'a> ServiceWorkerRegistration<'a> {
-    pub fn builder() -> ServiceWorkerRegistrationBuilder<'a> { ServiceWorkerRegistrationBuilder::default() }
+    pub fn builder(registrationId: RegistrationID<'a>, scopeURL: impl Into<Cow<'a, str>>, isDeleted: bool) -> ServiceWorkerRegistrationBuilder<'a> {
+        ServiceWorkerRegistrationBuilder {
+            registrationId: registrationId,
+            scopeURL: scopeURL.into(),
+            isDeleted: isDeleted,
+        }
+    }
     pub fn registrationId(&self) -> &RegistrationID<'a> { &self.registrationId }
     pub fn scopeURL(&self) -> &str { self.scopeURL.as_ref() }
     pub fn isDeleted(&self) -> bool { self.isDeleted }
 }
 
-#[derive(Default)]
+
 pub struct ServiceWorkerRegistrationBuilder<'a> {
-    registrationId: Option<RegistrationID<'a>>,
-    scopeURL: Option<Cow<'a, str>>,
-    isDeleted: Option<bool>,
+    registrationId: RegistrationID<'a>,
+    scopeURL: Cow<'a, str>,
+    isDeleted: bool,
 }
 
 impl<'a> ServiceWorkerRegistrationBuilder<'a> {
-    pub fn registrationId(mut self, registrationId: RegistrationID<'a>) -> Self { self.registrationId = Some(registrationId); self }
-    pub fn scopeURL(mut self, scopeURL: impl Into<Cow<'a, str>>) -> Self { self.scopeURL = Some(scopeURL.into()); self }
-    pub fn isDeleted(mut self, isDeleted: bool) -> Self { self.isDeleted = Some(isDeleted); self }
     pub fn build(self) -> ServiceWorkerRegistration<'a> {
         ServiceWorkerRegistration {
-            registrationId: self.registrationId.unwrap_or_default(),
-            scopeURL: self.scopeURL.unwrap_or_default(),
-            isDeleted: self.isDeleted.unwrap_or_default(),
+            registrationId: self.registrationId,
+            scopeURL: self.scopeURL,
+            isDeleted: self.isDeleted,
         }
     }
 }
@@ -100,7 +103,20 @@ pub struct ServiceWorkerVersion<'a> {
 }
 
 impl<'a> ServiceWorkerVersion<'a> {
-    pub fn builder() -> ServiceWorkerVersionBuilder<'a> { ServiceWorkerVersionBuilder::default() }
+    pub fn builder(versionId: impl Into<Cow<'a, str>>, registrationId: RegistrationID<'a>, scriptURL: impl Into<Cow<'a, str>>, runningStatus: ServiceWorkerVersionRunningStatus, status: ServiceWorkerVersionStatus) -> ServiceWorkerVersionBuilder<'a> {
+        ServiceWorkerVersionBuilder {
+            versionId: versionId.into(),
+            registrationId: registrationId,
+            scriptURL: scriptURL.into(),
+            runningStatus: runningStatus,
+            status: status,
+            scriptLastModified: None,
+            scriptResponseTime: None,
+            controlledClients: None,
+            targetId: None,
+            routerRules: None,
+        }
+    }
     pub fn versionId(&self) -> &str { self.versionId.as_ref() }
     pub fn registrationId(&self) -> &RegistrationID<'a> { &self.registrationId }
     pub fn scriptURL(&self) -> &str { self.scriptURL.as_ref() }
@@ -113,13 +129,13 @@ impl<'a> ServiceWorkerVersion<'a> {
     pub fn routerRules(&self) -> Option<&str> { self.routerRules.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct ServiceWorkerVersionBuilder<'a> {
-    versionId: Option<Cow<'a, str>>,
-    registrationId: Option<RegistrationID<'a>>,
-    scriptURL: Option<Cow<'a, str>>,
-    runningStatus: Option<ServiceWorkerVersionRunningStatus>,
-    status: Option<ServiceWorkerVersionStatus>,
+    versionId: Cow<'a, str>,
+    registrationId: RegistrationID<'a>,
+    scriptURL: Cow<'a, str>,
+    runningStatus: ServiceWorkerVersionRunningStatus,
+    status: ServiceWorkerVersionStatus,
     scriptLastModified: Option<f64>,
     scriptResponseTime: Option<f64>,
     controlledClients: Option<Vec<crate::target::TargetID<'a>>>,
@@ -128,11 +144,6 @@ pub struct ServiceWorkerVersionBuilder<'a> {
 }
 
 impl<'a> ServiceWorkerVersionBuilder<'a> {
-    pub fn versionId(mut self, versionId: impl Into<Cow<'a, str>>) -> Self { self.versionId = Some(versionId.into()); self }
-    pub fn registrationId(mut self, registrationId: RegistrationID<'a>) -> Self { self.registrationId = Some(registrationId); self }
-    pub fn scriptURL(mut self, scriptURL: impl Into<Cow<'a, str>>) -> Self { self.scriptURL = Some(scriptURL.into()); self }
-    pub fn runningStatus(mut self, runningStatus: ServiceWorkerVersionRunningStatus) -> Self { self.runningStatus = Some(runningStatus); self }
-    pub fn status(mut self, status: ServiceWorkerVersionStatus) -> Self { self.status = Some(status); self }
     /// The Last-Modified header value of the main script.
     pub fn scriptLastModified(mut self, scriptLastModified: f64) -> Self { self.scriptLastModified = Some(scriptLastModified); self }
     /// The time at which the response headers of the main script were received from the server.
@@ -143,11 +154,11 @@ impl<'a> ServiceWorkerVersionBuilder<'a> {
     pub fn routerRules(mut self, routerRules: impl Into<Cow<'a, str>>) -> Self { self.routerRules = Some(routerRules.into()); self }
     pub fn build(self) -> ServiceWorkerVersion<'a> {
         ServiceWorkerVersion {
-            versionId: self.versionId.unwrap_or_default(),
-            registrationId: self.registrationId.unwrap_or_default(),
-            scriptURL: self.scriptURL.unwrap_or_default(),
-            runningStatus: self.runningStatus.unwrap_or_default(),
-            status: self.status.unwrap_or_default(),
+            versionId: self.versionId,
+            registrationId: self.registrationId,
+            scriptURL: self.scriptURL,
+            runningStatus: self.runningStatus,
+            status: self.status,
             scriptLastModified: self.scriptLastModified,
             scriptResponseTime: self.scriptResponseTime,
             controlledClients: self.controlledClients,
@@ -171,7 +182,16 @@ pub struct ServiceWorkerErrorMessage<'a> {
 }
 
 impl<'a> ServiceWorkerErrorMessage<'a> {
-    pub fn builder() -> ServiceWorkerErrorMessageBuilder<'a> { ServiceWorkerErrorMessageBuilder::default() }
+    pub fn builder(errorMessage: impl Into<Cow<'a, str>>, registrationId: RegistrationID<'a>, versionId: impl Into<Cow<'a, str>>, sourceURL: impl Into<Cow<'a, str>>, lineNumber: i64, columnNumber: i64) -> ServiceWorkerErrorMessageBuilder<'a> {
+        ServiceWorkerErrorMessageBuilder {
+            errorMessage: errorMessage.into(),
+            registrationId: registrationId,
+            versionId: versionId.into(),
+            sourceURL: sourceURL.into(),
+            lineNumber: lineNumber,
+            columnNumber: columnNumber,
+        }
+    }
     pub fn errorMessage(&self) -> &str { self.errorMessage.as_ref() }
     pub fn registrationId(&self) -> &RegistrationID<'a> { &self.registrationId }
     pub fn versionId(&self) -> &str { self.versionId.as_ref() }
@@ -180,31 +200,25 @@ impl<'a> ServiceWorkerErrorMessage<'a> {
     pub fn columnNumber(&self) -> i64 { self.columnNumber }
 }
 
-#[derive(Default)]
+
 pub struct ServiceWorkerErrorMessageBuilder<'a> {
-    errorMessage: Option<Cow<'a, str>>,
-    registrationId: Option<RegistrationID<'a>>,
-    versionId: Option<Cow<'a, str>>,
-    sourceURL: Option<Cow<'a, str>>,
-    lineNumber: Option<i64>,
-    columnNumber: Option<i64>,
+    errorMessage: Cow<'a, str>,
+    registrationId: RegistrationID<'a>,
+    versionId: Cow<'a, str>,
+    sourceURL: Cow<'a, str>,
+    lineNumber: i64,
+    columnNumber: i64,
 }
 
 impl<'a> ServiceWorkerErrorMessageBuilder<'a> {
-    pub fn errorMessage(mut self, errorMessage: impl Into<Cow<'a, str>>) -> Self { self.errorMessage = Some(errorMessage.into()); self }
-    pub fn registrationId(mut self, registrationId: RegistrationID<'a>) -> Self { self.registrationId = Some(registrationId); self }
-    pub fn versionId(mut self, versionId: impl Into<Cow<'a, str>>) -> Self { self.versionId = Some(versionId.into()); self }
-    pub fn sourceURL(mut self, sourceURL: impl Into<Cow<'a, str>>) -> Self { self.sourceURL = Some(sourceURL.into()); self }
-    pub fn lineNumber(mut self, lineNumber: i64) -> Self { self.lineNumber = Some(lineNumber); self }
-    pub fn columnNumber(mut self, columnNumber: i64) -> Self { self.columnNumber = Some(columnNumber); self }
     pub fn build(self) -> ServiceWorkerErrorMessage<'a> {
         ServiceWorkerErrorMessage {
-            errorMessage: self.errorMessage.unwrap_or_default(),
-            registrationId: self.registrationId.unwrap_or_default(),
-            versionId: self.versionId.unwrap_or_default(),
-            sourceURL: self.sourceURL.unwrap_or_default(),
-            lineNumber: self.lineNumber.unwrap_or_default(),
-            columnNumber: self.columnNumber.unwrap_or_default(),
+            errorMessage: self.errorMessage,
+            registrationId: self.registrationId,
+            versionId: self.versionId,
+            sourceURL: self.sourceURL,
+            lineNumber: self.lineNumber,
+            columnNumber: self.columnNumber,
         }
     }
 }
@@ -219,28 +233,31 @@ pub struct DeliverPushMessageParams<'a> {
 }
 
 impl<'a> DeliverPushMessageParams<'a> {
-    pub fn builder() -> DeliverPushMessageParamsBuilder<'a> { DeliverPushMessageParamsBuilder::default() }
+    pub fn builder(origin: impl Into<Cow<'a, str>>, registrationId: RegistrationID<'a>, data: impl Into<Cow<'a, str>>) -> DeliverPushMessageParamsBuilder<'a> {
+        DeliverPushMessageParamsBuilder {
+            origin: origin.into(),
+            registrationId: registrationId,
+            data: data.into(),
+        }
+    }
     pub fn origin(&self) -> &str { self.origin.as_ref() }
     pub fn registrationId(&self) -> &RegistrationID<'a> { &self.registrationId }
     pub fn data(&self) -> &str { self.data.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct DeliverPushMessageParamsBuilder<'a> {
-    origin: Option<Cow<'a, str>>,
-    registrationId: Option<RegistrationID<'a>>,
-    data: Option<Cow<'a, str>>,
+    origin: Cow<'a, str>,
+    registrationId: RegistrationID<'a>,
+    data: Cow<'a, str>,
 }
 
 impl<'a> DeliverPushMessageParamsBuilder<'a> {
-    pub fn origin(mut self, origin: impl Into<Cow<'a, str>>) -> Self { self.origin = Some(origin.into()); self }
-    pub fn registrationId(mut self, registrationId: RegistrationID<'a>) -> Self { self.registrationId = Some(registrationId); self }
-    pub fn data(mut self, data: impl Into<Cow<'a, str>>) -> Self { self.data = Some(data.into()); self }
     pub fn build(self) -> DeliverPushMessageParams<'a> {
         DeliverPushMessageParams {
-            origin: self.origin.unwrap_or_default(),
-            registrationId: self.registrationId.unwrap_or_default(),
-            data: self.data.unwrap_or_default(),
+            origin: self.origin,
+            registrationId: self.registrationId,
+            data: self.data,
         }
     }
 }
@@ -254,21 +271,6 @@ impl<'a> crate::CdpCommand<'a> for DeliverPushMessageParams<'a> {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct DisableParams {}
-
-impl DisableParams {
-    pub fn builder() -> DisableParamsBuilder {
-        DisableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct DisableParamsBuilder {}
-
-impl DisableParamsBuilder {
-    pub fn build(self) -> DisableParams {
-        DisableParams {}
-    }
-}
 
 impl DisableParams { pub const METHOD: &'static str = "ServiceWorker.disable"; }
 
@@ -288,32 +290,35 @@ pub struct DispatchSyncEventParams<'a> {
 }
 
 impl<'a> DispatchSyncEventParams<'a> {
-    pub fn builder() -> DispatchSyncEventParamsBuilder<'a> { DispatchSyncEventParamsBuilder::default() }
+    pub fn builder(origin: impl Into<Cow<'a, str>>, registrationId: RegistrationID<'a>, tag: impl Into<Cow<'a, str>>, lastChance: bool) -> DispatchSyncEventParamsBuilder<'a> {
+        DispatchSyncEventParamsBuilder {
+            origin: origin.into(),
+            registrationId: registrationId,
+            tag: tag.into(),
+            lastChance: lastChance,
+        }
+    }
     pub fn origin(&self) -> &str { self.origin.as_ref() }
     pub fn registrationId(&self) -> &RegistrationID<'a> { &self.registrationId }
     pub fn tag(&self) -> &str { self.tag.as_ref() }
     pub fn lastChance(&self) -> bool { self.lastChance }
 }
 
-#[derive(Default)]
+
 pub struct DispatchSyncEventParamsBuilder<'a> {
-    origin: Option<Cow<'a, str>>,
-    registrationId: Option<RegistrationID<'a>>,
-    tag: Option<Cow<'a, str>>,
-    lastChance: Option<bool>,
+    origin: Cow<'a, str>,
+    registrationId: RegistrationID<'a>,
+    tag: Cow<'a, str>,
+    lastChance: bool,
 }
 
 impl<'a> DispatchSyncEventParamsBuilder<'a> {
-    pub fn origin(mut self, origin: impl Into<Cow<'a, str>>) -> Self { self.origin = Some(origin.into()); self }
-    pub fn registrationId(mut self, registrationId: RegistrationID<'a>) -> Self { self.registrationId = Some(registrationId); self }
-    pub fn tag(mut self, tag: impl Into<Cow<'a, str>>) -> Self { self.tag = Some(tag.into()); self }
-    pub fn lastChance(mut self, lastChance: bool) -> Self { self.lastChance = Some(lastChance); self }
     pub fn build(self) -> DispatchSyncEventParams<'a> {
         DispatchSyncEventParams {
-            origin: self.origin.unwrap_or_default(),
-            registrationId: self.registrationId.unwrap_or_default(),
-            tag: self.tag.unwrap_or_default(),
-            lastChance: self.lastChance.unwrap_or_default(),
+            origin: self.origin,
+            registrationId: self.registrationId,
+            tag: self.tag,
+            lastChance: self.lastChance,
         }
     }
 }
@@ -335,28 +340,31 @@ pub struct DispatchPeriodicSyncEventParams<'a> {
 }
 
 impl<'a> DispatchPeriodicSyncEventParams<'a> {
-    pub fn builder() -> DispatchPeriodicSyncEventParamsBuilder<'a> { DispatchPeriodicSyncEventParamsBuilder::default() }
+    pub fn builder(origin: impl Into<Cow<'a, str>>, registrationId: RegistrationID<'a>, tag: impl Into<Cow<'a, str>>) -> DispatchPeriodicSyncEventParamsBuilder<'a> {
+        DispatchPeriodicSyncEventParamsBuilder {
+            origin: origin.into(),
+            registrationId: registrationId,
+            tag: tag.into(),
+        }
+    }
     pub fn origin(&self) -> &str { self.origin.as_ref() }
     pub fn registrationId(&self) -> &RegistrationID<'a> { &self.registrationId }
     pub fn tag(&self) -> &str { self.tag.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct DispatchPeriodicSyncEventParamsBuilder<'a> {
-    origin: Option<Cow<'a, str>>,
-    registrationId: Option<RegistrationID<'a>>,
-    tag: Option<Cow<'a, str>>,
+    origin: Cow<'a, str>,
+    registrationId: RegistrationID<'a>,
+    tag: Cow<'a, str>,
 }
 
 impl<'a> DispatchPeriodicSyncEventParamsBuilder<'a> {
-    pub fn origin(mut self, origin: impl Into<Cow<'a, str>>) -> Self { self.origin = Some(origin.into()); self }
-    pub fn registrationId(mut self, registrationId: RegistrationID<'a>) -> Self { self.registrationId = Some(registrationId); self }
-    pub fn tag(mut self, tag: impl Into<Cow<'a, str>>) -> Self { self.tag = Some(tag.into()); self }
     pub fn build(self) -> DispatchPeriodicSyncEventParams<'a> {
         DispatchPeriodicSyncEventParams {
-            origin: self.origin.unwrap_or_default(),
-            registrationId: self.registrationId.unwrap_or_default(),
-            tag: self.tag.unwrap_or_default(),
+            origin: self.origin,
+            registrationId: self.registrationId,
+            tag: self.tag,
         }
     }
 }
@@ -370,21 +378,6 @@ impl<'a> crate::CdpCommand<'a> for DispatchPeriodicSyncEventParams<'a> {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct EnableParams {}
-
-impl EnableParams {
-    pub fn builder() -> EnableParamsBuilder {
-        EnableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct EnableParamsBuilder {}
-
-impl EnableParamsBuilder {
-    pub fn build(self) -> EnableParams {
-        EnableParams {}
-    }
-}
 
 impl EnableParams { pub const METHOD: &'static str = "ServiceWorker.enable"; }
 
@@ -401,20 +394,23 @@ pub struct SetForceUpdateOnPageLoadParams {
 }
 
 impl SetForceUpdateOnPageLoadParams {
-    pub fn builder() -> SetForceUpdateOnPageLoadParamsBuilder { SetForceUpdateOnPageLoadParamsBuilder::default() }
+    pub fn builder(forceUpdateOnPageLoad: bool) -> SetForceUpdateOnPageLoadParamsBuilder {
+        SetForceUpdateOnPageLoadParamsBuilder {
+            forceUpdateOnPageLoad: forceUpdateOnPageLoad,
+        }
+    }
     pub fn forceUpdateOnPageLoad(&self) -> bool { self.forceUpdateOnPageLoad }
 }
 
-#[derive(Default)]
+
 pub struct SetForceUpdateOnPageLoadParamsBuilder {
-    forceUpdateOnPageLoad: Option<bool>,
+    forceUpdateOnPageLoad: bool,
 }
 
 impl SetForceUpdateOnPageLoadParamsBuilder {
-    pub fn forceUpdateOnPageLoad(mut self, forceUpdateOnPageLoad: bool) -> Self { self.forceUpdateOnPageLoad = Some(forceUpdateOnPageLoad); self }
     pub fn build(self) -> SetForceUpdateOnPageLoadParams {
         SetForceUpdateOnPageLoadParams {
-            forceUpdateOnPageLoad: self.forceUpdateOnPageLoad.unwrap_or_default(),
+            forceUpdateOnPageLoad: self.forceUpdateOnPageLoad,
         }
     }
 }
@@ -434,20 +430,23 @@ pub struct SkipWaitingParams<'a> {
 }
 
 impl<'a> SkipWaitingParams<'a> {
-    pub fn builder() -> SkipWaitingParamsBuilder<'a> { SkipWaitingParamsBuilder::default() }
+    pub fn builder(scopeURL: impl Into<Cow<'a, str>>) -> SkipWaitingParamsBuilder<'a> {
+        SkipWaitingParamsBuilder {
+            scopeURL: scopeURL.into(),
+        }
+    }
     pub fn scopeURL(&self) -> &str { self.scopeURL.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SkipWaitingParamsBuilder<'a> {
-    scopeURL: Option<Cow<'a, str>>,
+    scopeURL: Cow<'a, str>,
 }
 
 impl<'a> SkipWaitingParamsBuilder<'a> {
-    pub fn scopeURL(mut self, scopeURL: impl Into<Cow<'a, str>>) -> Self { self.scopeURL = Some(scopeURL.into()); self }
     pub fn build(self) -> SkipWaitingParams<'a> {
         SkipWaitingParams {
-            scopeURL: self.scopeURL.unwrap_or_default(),
+            scopeURL: self.scopeURL,
         }
     }
 }
@@ -467,20 +466,23 @@ pub struct StartWorkerParams<'a> {
 }
 
 impl<'a> StartWorkerParams<'a> {
-    pub fn builder() -> StartWorkerParamsBuilder<'a> { StartWorkerParamsBuilder::default() }
+    pub fn builder(scopeURL: impl Into<Cow<'a, str>>) -> StartWorkerParamsBuilder<'a> {
+        StartWorkerParamsBuilder {
+            scopeURL: scopeURL.into(),
+        }
+    }
     pub fn scopeURL(&self) -> &str { self.scopeURL.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct StartWorkerParamsBuilder<'a> {
-    scopeURL: Option<Cow<'a, str>>,
+    scopeURL: Cow<'a, str>,
 }
 
 impl<'a> StartWorkerParamsBuilder<'a> {
-    pub fn scopeURL(mut self, scopeURL: impl Into<Cow<'a, str>>) -> Self { self.scopeURL = Some(scopeURL.into()); self }
     pub fn build(self) -> StartWorkerParams<'a> {
         StartWorkerParams {
-            scopeURL: self.scopeURL.unwrap_or_default(),
+            scopeURL: self.scopeURL,
         }
     }
 }
@@ -494,21 +496,6 @@ impl<'a> crate::CdpCommand<'a> for StartWorkerParams<'a> {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct StopAllWorkersParams {}
-
-impl StopAllWorkersParams {
-    pub fn builder() -> StopAllWorkersParamsBuilder {
-        StopAllWorkersParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct StopAllWorkersParamsBuilder {}
-
-impl StopAllWorkersParamsBuilder {
-    pub fn build(self) -> StopAllWorkersParams {
-        StopAllWorkersParams {}
-    }
-}
 
 impl StopAllWorkersParams { pub const METHOD: &'static str = "ServiceWorker.stopAllWorkers"; }
 
@@ -525,20 +512,23 @@ pub struct StopWorkerParams<'a> {
 }
 
 impl<'a> StopWorkerParams<'a> {
-    pub fn builder() -> StopWorkerParamsBuilder<'a> { StopWorkerParamsBuilder::default() }
+    pub fn builder(versionId: impl Into<Cow<'a, str>>) -> StopWorkerParamsBuilder<'a> {
+        StopWorkerParamsBuilder {
+            versionId: versionId.into(),
+        }
+    }
     pub fn versionId(&self) -> &str { self.versionId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct StopWorkerParamsBuilder<'a> {
-    versionId: Option<Cow<'a, str>>,
+    versionId: Cow<'a, str>,
 }
 
 impl<'a> StopWorkerParamsBuilder<'a> {
-    pub fn versionId(mut self, versionId: impl Into<Cow<'a, str>>) -> Self { self.versionId = Some(versionId.into()); self }
     pub fn build(self) -> StopWorkerParams<'a> {
         StopWorkerParams {
-            versionId: self.versionId.unwrap_or_default(),
+            versionId: self.versionId,
         }
     }
 }
@@ -558,20 +548,23 @@ pub struct UnregisterParams<'a> {
 }
 
 impl<'a> UnregisterParams<'a> {
-    pub fn builder() -> UnregisterParamsBuilder<'a> { UnregisterParamsBuilder::default() }
+    pub fn builder(scopeURL: impl Into<Cow<'a, str>>) -> UnregisterParamsBuilder<'a> {
+        UnregisterParamsBuilder {
+            scopeURL: scopeURL.into(),
+        }
+    }
     pub fn scopeURL(&self) -> &str { self.scopeURL.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct UnregisterParamsBuilder<'a> {
-    scopeURL: Option<Cow<'a, str>>,
+    scopeURL: Cow<'a, str>,
 }
 
 impl<'a> UnregisterParamsBuilder<'a> {
-    pub fn scopeURL(mut self, scopeURL: impl Into<Cow<'a, str>>) -> Self { self.scopeURL = Some(scopeURL.into()); self }
     pub fn build(self) -> UnregisterParams<'a> {
         UnregisterParams {
-            scopeURL: self.scopeURL.unwrap_or_default(),
+            scopeURL: self.scopeURL,
         }
     }
 }
@@ -591,20 +584,23 @@ pub struct UpdateRegistrationParams<'a> {
 }
 
 impl<'a> UpdateRegistrationParams<'a> {
-    pub fn builder() -> UpdateRegistrationParamsBuilder<'a> { UpdateRegistrationParamsBuilder::default() }
+    pub fn builder(scopeURL: impl Into<Cow<'a, str>>) -> UpdateRegistrationParamsBuilder<'a> {
+        UpdateRegistrationParamsBuilder {
+            scopeURL: scopeURL.into(),
+        }
+    }
     pub fn scopeURL(&self) -> &str { self.scopeURL.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct UpdateRegistrationParamsBuilder<'a> {
-    scopeURL: Option<Cow<'a, str>>,
+    scopeURL: Cow<'a, str>,
 }
 
 impl<'a> UpdateRegistrationParamsBuilder<'a> {
-    pub fn scopeURL(mut self, scopeURL: impl Into<Cow<'a, str>>) -> Self { self.scopeURL = Some(scopeURL.into()); self }
     pub fn build(self) -> UpdateRegistrationParams<'a> {
         UpdateRegistrationParams {
-            scopeURL: self.scopeURL.unwrap_or_default(),
+            scopeURL: self.scopeURL,
         }
     }
 }

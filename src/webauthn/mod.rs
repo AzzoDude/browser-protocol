@@ -113,7 +113,25 @@ pub struct VirtualAuthenticatorOptions {
 }
 
 impl VirtualAuthenticatorOptions {
-    pub fn builder() -> VirtualAuthenticatorOptionsBuilder { VirtualAuthenticatorOptionsBuilder::default() }
+    pub fn builder(protocol: AuthenticatorProtocol, transport: AuthenticatorTransport) -> VirtualAuthenticatorOptionsBuilder {
+        VirtualAuthenticatorOptionsBuilder {
+            protocol: protocol,
+            ctap2Version: None,
+            transport: transport,
+            hasResidentKey: None,
+            hasUserVerification: None,
+            hasLargeBlob: None,
+            hasCredBlob: None,
+            hasMinPinLength: None,
+            hasPrf: None,
+            hasHmacSecret: None,
+            hasHmacSecretMc: None,
+            automaticPresenceSimulation: None,
+            isUserVerified: None,
+            defaultBackupEligibility: None,
+            defaultBackupState: None,
+        }
+    }
     pub fn protocol(&self) -> &AuthenticatorProtocol { &self.protocol }
     pub fn ctap2Version(&self) -> Option<&Ctap2Version> { self.ctap2Version.as_ref() }
     pub fn transport(&self) -> &AuthenticatorTransport { &self.transport }
@@ -131,11 +149,11 @@ impl VirtualAuthenticatorOptions {
     pub fn defaultBackupState(&self) -> Option<bool> { self.defaultBackupState }
 }
 
-#[derive(Default)]
+
 pub struct VirtualAuthenticatorOptionsBuilder {
-    protocol: Option<AuthenticatorProtocol>,
+    protocol: AuthenticatorProtocol,
     ctap2Version: Option<Ctap2Version>,
-    transport: Option<AuthenticatorTransport>,
+    transport: AuthenticatorTransport,
     hasResidentKey: Option<bool>,
     hasUserVerification: Option<bool>,
     hasLargeBlob: Option<bool>,
@@ -151,10 +169,8 @@ pub struct VirtualAuthenticatorOptionsBuilder {
 }
 
 impl VirtualAuthenticatorOptionsBuilder {
-    pub fn protocol(mut self, protocol: AuthenticatorProtocol) -> Self { self.protocol = Some(protocol); self }
     /// Defaults to ctap2_0. Ignored if |protocol| == u2f.
     pub fn ctap2Version(mut self, ctap2Version: Ctap2Version) -> Self { self.ctap2Version = Some(ctap2Version); self }
-    pub fn transport(mut self, transport: AuthenticatorTransport) -> Self { self.transport = Some(transport); self }
     /// Defaults to false.
     pub fn hasResidentKey(mut self, hasResidentKey: bool) -> Self { self.hasResidentKey = Some(hasResidentKey); self }
     /// Defaults to false.
@@ -199,9 +215,9 @@ impl VirtualAuthenticatorOptionsBuilder {
     pub fn defaultBackupState(mut self, defaultBackupState: bool) -> Self { self.defaultBackupState = Some(defaultBackupState); self }
     pub fn build(self) -> VirtualAuthenticatorOptions {
         VirtualAuthenticatorOptions {
-            protocol: self.protocol.unwrap_or_default(),
+            protocol: self.protocol,
             ctap2Version: self.ctap2Version,
-            transport: self.transport.unwrap_or_default(),
+            transport: self.transport,
             hasResidentKey: self.hasResidentKey,
             hasUserVerification: self.hasUserVerification,
             hasLargeBlob: self.hasLargeBlob,
@@ -264,7 +280,21 @@ pub struct Credential<'a> {
 }
 
 impl<'a> Credential<'a> {
-    pub fn builder() -> CredentialBuilder<'a> { CredentialBuilder::default() }
+    pub fn builder(credentialId: impl Into<Cow<'a, str>>, isResidentCredential: bool, privateKey: impl Into<Cow<'a, str>>, signCount: u64) -> CredentialBuilder<'a> {
+        CredentialBuilder {
+            credentialId: credentialId.into(),
+            isResidentCredential: isResidentCredential,
+            rpId: None,
+            privateKey: privateKey.into(),
+            userHandle: None,
+            signCount: signCount,
+            largeBlob: None,
+            backupEligibility: None,
+            backupState: None,
+            userName: None,
+            userDisplayName: None,
+        }
+    }
     pub fn credentialId(&self) -> &str { self.credentialId.as_ref() }
     pub fn isResidentCredential(&self) -> bool { self.isResidentCredential }
     pub fn rpId(&self) -> Option<&str> { self.rpId.as_deref() }
@@ -278,14 +308,14 @@ impl<'a> Credential<'a> {
     pub fn userDisplayName(&self) -> Option<&str> { self.userDisplayName.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct CredentialBuilder<'a> {
-    credentialId: Option<Cow<'a, str>>,
-    isResidentCredential: Option<bool>,
+    credentialId: Cow<'a, str>,
+    isResidentCredential: bool,
     rpId: Option<Cow<'a, str>>,
-    privateKey: Option<Cow<'a, str>>,
+    privateKey: Cow<'a, str>,
     userHandle: Option<Cow<'a, str>>,
-    signCount: Option<u64>,
+    signCount: u64,
     largeBlob: Option<Cow<'a, str>>,
     backupEligibility: Option<bool>,
     backupState: Option<bool>,
@@ -294,20 +324,12 @@ pub struct CredentialBuilder<'a> {
 }
 
 impl<'a> CredentialBuilder<'a> {
-    pub fn credentialId(mut self, credentialId: impl Into<Cow<'a, str>>) -> Self { self.credentialId = Some(credentialId.into()); self }
-    pub fn isResidentCredential(mut self, isResidentCredential: bool) -> Self { self.isResidentCredential = Some(isResidentCredential); self }
     /// Relying Party ID the credential is scoped to. Must be set when adding a
     /// credential.
     pub fn rpId(mut self, rpId: impl Into<Cow<'a, str>>) -> Self { self.rpId = Some(rpId.into()); self }
-    /// The ECDSA P-256 private key in PKCS#8 format. (Encoded as a base64 string when passed over JSON)
-    pub fn privateKey(mut self, privateKey: impl Into<Cow<'a, str>>) -> Self { self.privateKey = Some(privateKey.into()); self }
     /// An opaque byte sequence with a maximum size of 64 bytes mapping the
     /// credential to a specific user. (Encoded as a base64 string when passed over JSON)
     pub fn userHandle(mut self, userHandle: impl Into<Cow<'a, str>>) -> Self { self.userHandle = Some(userHandle.into()); self }
-    /// Signature counter. This is incremented by one for each successful
-    /// assertion.
-    /// See https://w3c.github.io/webauthn/#signature-counter
-    pub fn signCount(mut self, signCount: u64) -> Self { self.signCount = Some(signCount); self }
     /// The large blob associated with the credential.
     /// See https://w3c.github.io/webauthn/#sctn-large-blob-extension (Encoded as a base64 string when passed over JSON)
     pub fn largeBlob(mut self, largeBlob: impl Into<Cow<'a, str>>) -> Self { self.largeBlob = Some(largeBlob.into()); self }
@@ -328,12 +350,12 @@ impl<'a> CredentialBuilder<'a> {
     pub fn userDisplayName(mut self, userDisplayName: impl Into<Cow<'a, str>>) -> Self { self.userDisplayName = Some(userDisplayName.into()); self }
     pub fn build(self) -> Credential<'a> {
         Credential {
-            credentialId: self.credentialId.unwrap_or_default(),
-            isResidentCredential: self.isResidentCredential.unwrap_or_default(),
+            credentialId: self.credentialId,
+            isResidentCredential: self.isResidentCredential,
             rpId: self.rpId,
-            privateKey: self.privateKey.unwrap_or_default(),
+            privateKey: self.privateKey,
             userHandle: self.userHandle,
-            signCount: self.signCount.unwrap_or_default(),
+            signCount: self.signCount,
             largeBlob: self.largeBlob,
             backupEligibility: self.backupEligibility,
             backupState: self.backupState,
@@ -359,7 +381,11 @@ pub struct EnableParams {
 }
 
 impl EnableParams {
-    pub fn builder() -> EnableParamsBuilder { EnableParamsBuilder::default() }
+    pub fn builder() -> EnableParamsBuilder {
+        EnableParamsBuilder {
+            enableUI: None,
+        }
+    }
     pub fn enableUI(&self) -> Option<bool> { self.enableUI }
 }
 
@@ -392,21 +418,6 @@ impl<'a> crate::CdpCommand<'a> for EnableParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct DisableParams {}
 
-impl DisableParams {
-    pub fn builder() -> DisableParamsBuilder {
-        DisableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct DisableParamsBuilder {}
-
-impl DisableParamsBuilder {
-    pub fn build(self) -> DisableParams {
-        DisableParams {}
-    }
-}
-
 impl DisableParams { pub const METHOD: &'static str = "WebAuthn.disable"; }
 
 impl<'a> crate::CdpCommand<'a> for DisableParams {
@@ -423,20 +434,23 @@ pub struct AddVirtualAuthenticatorParams {
 }
 
 impl AddVirtualAuthenticatorParams {
-    pub fn builder() -> AddVirtualAuthenticatorParamsBuilder { AddVirtualAuthenticatorParamsBuilder::default() }
+    pub fn builder(options: VirtualAuthenticatorOptions) -> AddVirtualAuthenticatorParamsBuilder {
+        AddVirtualAuthenticatorParamsBuilder {
+            options: options,
+        }
+    }
     pub fn options(&self) -> &VirtualAuthenticatorOptions { &self.options }
 }
 
-#[derive(Default)]
+
 pub struct AddVirtualAuthenticatorParamsBuilder {
-    options: Option<VirtualAuthenticatorOptions>,
+    options: VirtualAuthenticatorOptions,
 }
 
 impl AddVirtualAuthenticatorParamsBuilder {
-    pub fn options(mut self, options: VirtualAuthenticatorOptions) -> Self { self.options = Some(options); self }
     pub fn build(self) -> AddVirtualAuthenticatorParams {
         AddVirtualAuthenticatorParams {
-            options: self.options.unwrap_or_default(),
+            options: self.options,
         }
     }
 }
@@ -450,20 +464,23 @@ pub struct AddVirtualAuthenticatorReturns<'a> {
 }
 
 impl<'a> AddVirtualAuthenticatorReturns<'a> {
-    pub fn builder() -> AddVirtualAuthenticatorReturnsBuilder<'a> { AddVirtualAuthenticatorReturnsBuilder::default() }
+    pub fn builder(authenticatorId: AuthenticatorId<'a>) -> AddVirtualAuthenticatorReturnsBuilder<'a> {
+        AddVirtualAuthenticatorReturnsBuilder {
+            authenticatorId: authenticatorId,
+        }
+    }
     pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
 }
 
-#[derive(Default)]
+
 pub struct AddVirtualAuthenticatorReturnsBuilder<'a> {
-    authenticatorId: Option<AuthenticatorId<'a>>,
+    authenticatorId: AuthenticatorId<'a>,
 }
 
 impl<'a> AddVirtualAuthenticatorReturnsBuilder<'a> {
-    pub fn authenticatorId(mut self, authenticatorId: AuthenticatorId<'a>) -> Self { self.authenticatorId = Some(authenticatorId); self }
     pub fn build(self) -> AddVirtualAuthenticatorReturns<'a> {
         AddVirtualAuthenticatorReturns {
-            authenticatorId: self.authenticatorId.unwrap_or_default(),
+            authenticatorId: self.authenticatorId,
         }
     }
 }
@@ -496,23 +513,29 @@ pub struct SetResponseOverrideBitsParams<'a> {
 }
 
 impl<'a> SetResponseOverrideBitsParams<'a> {
-    pub fn builder() -> SetResponseOverrideBitsParamsBuilder<'a> { SetResponseOverrideBitsParamsBuilder::default() }
+    pub fn builder(authenticatorId: AuthenticatorId<'a>) -> SetResponseOverrideBitsParamsBuilder<'a> {
+        SetResponseOverrideBitsParamsBuilder {
+            authenticatorId: authenticatorId,
+            isBogusSignature: None,
+            isBadUV: None,
+            isBadUP: None,
+        }
+    }
     pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
     pub fn isBogusSignature(&self) -> Option<bool> { self.isBogusSignature }
     pub fn isBadUV(&self) -> Option<bool> { self.isBadUV }
     pub fn isBadUP(&self) -> Option<bool> { self.isBadUP }
 }
 
-#[derive(Default)]
+
 pub struct SetResponseOverrideBitsParamsBuilder<'a> {
-    authenticatorId: Option<AuthenticatorId<'a>>,
+    authenticatorId: AuthenticatorId<'a>,
     isBogusSignature: Option<bool>,
     isBadUV: Option<bool>,
     isBadUP: Option<bool>,
 }
 
 impl<'a> SetResponseOverrideBitsParamsBuilder<'a> {
-    pub fn authenticatorId(mut self, authenticatorId: AuthenticatorId<'a>) -> Self { self.authenticatorId = Some(authenticatorId); self }
     /// If isBogusSignature is set, overrides the signature in the authenticator response to be zero.
     /// Defaults to false.
     pub fn isBogusSignature(mut self, isBogusSignature: bool) -> Self { self.isBogusSignature = Some(isBogusSignature); self }
@@ -524,7 +547,7 @@ impl<'a> SetResponseOverrideBitsParamsBuilder<'a> {
     pub fn isBadUP(mut self, isBadUP: bool) -> Self { self.isBadUP = Some(isBadUP); self }
     pub fn build(self) -> SetResponseOverrideBitsParams<'a> {
         SetResponseOverrideBitsParams {
-            authenticatorId: self.authenticatorId.unwrap_or_default(),
+            authenticatorId: self.authenticatorId,
             isBogusSignature: self.isBogusSignature,
             isBadUV: self.isBadUV,
             isBadUP: self.isBadUP,
@@ -548,20 +571,23 @@ pub struct RemoveVirtualAuthenticatorParams<'a> {
 }
 
 impl<'a> RemoveVirtualAuthenticatorParams<'a> {
-    pub fn builder() -> RemoveVirtualAuthenticatorParamsBuilder<'a> { RemoveVirtualAuthenticatorParamsBuilder::default() }
+    pub fn builder(authenticatorId: AuthenticatorId<'a>) -> RemoveVirtualAuthenticatorParamsBuilder<'a> {
+        RemoveVirtualAuthenticatorParamsBuilder {
+            authenticatorId: authenticatorId,
+        }
+    }
     pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
 }
 
-#[derive(Default)]
+
 pub struct RemoveVirtualAuthenticatorParamsBuilder<'a> {
-    authenticatorId: Option<AuthenticatorId<'a>>,
+    authenticatorId: AuthenticatorId<'a>,
 }
 
 impl<'a> RemoveVirtualAuthenticatorParamsBuilder<'a> {
-    pub fn authenticatorId(mut self, authenticatorId: AuthenticatorId<'a>) -> Self { self.authenticatorId = Some(authenticatorId); self }
     pub fn build(self) -> RemoveVirtualAuthenticatorParams<'a> {
         RemoveVirtualAuthenticatorParams {
-            authenticatorId: self.authenticatorId.unwrap_or_default(),
+            authenticatorId: self.authenticatorId,
         }
     }
 }
@@ -583,24 +609,27 @@ pub struct AddCredentialParams<'a> {
 }
 
 impl<'a> AddCredentialParams<'a> {
-    pub fn builder() -> AddCredentialParamsBuilder<'a> { AddCredentialParamsBuilder::default() }
+    pub fn builder(authenticatorId: AuthenticatorId<'a>, credential: Credential<'a>) -> AddCredentialParamsBuilder<'a> {
+        AddCredentialParamsBuilder {
+            authenticatorId: authenticatorId,
+            credential: credential,
+        }
+    }
     pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
     pub fn credential(&self) -> &Credential<'a> { &self.credential }
 }
 
-#[derive(Default)]
+
 pub struct AddCredentialParamsBuilder<'a> {
-    authenticatorId: Option<AuthenticatorId<'a>>,
-    credential: Option<Credential<'a>>,
+    authenticatorId: AuthenticatorId<'a>,
+    credential: Credential<'a>,
 }
 
 impl<'a> AddCredentialParamsBuilder<'a> {
-    pub fn authenticatorId(mut self, authenticatorId: AuthenticatorId<'a>) -> Self { self.authenticatorId = Some(authenticatorId); self }
-    pub fn credential(mut self, credential: Credential<'a>) -> Self { self.credential = Some(credential); self }
     pub fn build(self) -> AddCredentialParams<'a> {
         AddCredentialParams {
-            authenticatorId: self.authenticatorId.unwrap_or_default(),
-            credential: self.credential.unwrap_or_default(),
+            authenticatorId: self.authenticatorId,
+            credential: self.credential,
         }
     }
 }
@@ -623,24 +652,27 @@ pub struct GetCredentialParams<'a> {
 }
 
 impl<'a> GetCredentialParams<'a> {
-    pub fn builder() -> GetCredentialParamsBuilder<'a> { GetCredentialParamsBuilder::default() }
+    pub fn builder(authenticatorId: AuthenticatorId<'a>, credentialId: impl Into<Cow<'a, str>>) -> GetCredentialParamsBuilder<'a> {
+        GetCredentialParamsBuilder {
+            authenticatorId: authenticatorId,
+            credentialId: credentialId.into(),
+        }
+    }
     pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
     pub fn credentialId(&self) -> &str { self.credentialId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct GetCredentialParamsBuilder<'a> {
-    authenticatorId: Option<AuthenticatorId<'a>>,
-    credentialId: Option<Cow<'a, str>>,
+    authenticatorId: AuthenticatorId<'a>,
+    credentialId: Cow<'a, str>,
 }
 
 impl<'a> GetCredentialParamsBuilder<'a> {
-    pub fn authenticatorId(mut self, authenticatorId: AuthenticatorId<'a>) -> Self { self.authenticatorId = Some(authenticatorId); self }
-    pub fn credentialId(mut self, credentialId: impl Into<Cow<'a, str>>) -> Self { self.credentialId = Some(credentialId.into()); self }
     pub fn build(self) -> GetCredentialParams<'a> {
         GetCredentialParams {
-            authenticatorId: self.authenticatorId.unwrap_or_default(),
-            credentialId: self.credentialId.unwrap_or_default(),
+            authenticatorId: self.authenticatorId,
+            credentialId: self.credentialId,
         }
     }
 }
@@ -655,20 +687,23 @@ pub struct GetCredentialReturns<'a> {
 }
 
 impl<'a> GetCredentialReturns<'a> {
-    pub fn builder() -> GetCredentialReturnsBuilder<'a> { GetCredentialReturnsBuilder::default() }
+    pub fn builder(credential: Credential<'a>) -> GetCredentialReturnsBuilder<'a> {
+        GetCredentialReturnsBuilder {
+            credential: credential,
+        }
+    }
     pub fn credential(&self) -> &Credential<'a> { &self.credential }
 }
 
-#[derive(Default)]
+
 pub struct GetCredentialReturnsBuilder<'a> {
-    credential: Option<Credential<'a>>,
+    credential: Credential<'a>,
 }
 
 impl<'a> GetCredentialReturnsBuilder<'a> {
-    pub fn credential(mut self, credential: Credential<'a>) -> Self { self.credential = Some(credential); self }
     pub fn build(self) -> GetCredentialReturns<'a> {
         GetCredentialReturns {
-            credential: self.credential.unwrap_or_default(),
+            credential: self.credential,
         }
     }
 }
@@ -689,20 +724,23 @@ pub struct GetCredentialsParams<'a> {
 }
 
 impl<'a> GetCredentialsParams<'a> {
-    pub fn builder() -> GetCredentialsParamsBuilder<'a> { GetCredentialsParamsBuilder::default() }
+    pub fn builder(authenticatorId: AuthenticatorId<'a>) -> GetCredentialsParamsBuilder<'a> {
+        GetCredentialsParamsBuilder {
+            authenticatorId: authenticatorId,
+        }
+    }
     pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
 }
 
-#[derive(Default)]
+
 pub struct GetCredentialsParamsBuilder<'a> {
-    authenticatorId: Option<AuthenticatorId<'a>>,
+    authenticatorId: AuthenticatorId<'a>,
 }
 
 impl<'a> GetCredentialsParamsBuilder<'a> {
-    pub fn authenticatorId(mut self, authenticatorId: AuthenticatorId<'a>) -> Self { self.authenticatorId = Some(authenticatorId); self }
     pub fn build(self) -> GetCredentialsParams<'a> {
         GetCredentialsParams {
-            authenticatorId: self.authenticatorId.unwrap_or_default(),
+            authenticatorId: self.authenticatorId,
         }
     }
 }
@@ -716,20 +754,23 @@ pub struct GetCredentialsReturns<'a> {
 }
 
 impl<'a> GetCredentialsReturns<'a> {
-    pub fn builder() -> GetCredentialsReturnsBuilder<'a> { GetCredentialsReturnsBuilder::default() }
+    pub fn builder(credentials: Vec<Credential<'a>>) -> GetCredentialsReturnsBuilder<'a> {
+        GetCredentialsReturnsBuilder {
+            credentials: credentials,
+        }
+    }
     pub fn credentials(&self) -> &[Credential<'a>] { &self.credentials }
 }
 
-#[derive(Default)]
+
 pub struct GetCredentialsReturnsBuilder<'a> {
-    credentials: Option<Vec<Credential<'a>>>,
+    credentials: Vec<Credential<'a>>,
 }
 
 impl<'a> GetCredentialsReturnsBuilder<'a> {
-    pub fn credentials(mut self, credentials: Vec<Credential<'a>>) -> Self { self.credentials = Some(credentials); self }
     pub fn build(self) -> GetCredentialsReturns<'a> {
         GetCredentialsReturns {
-            credentials: self.credentials.unwrap_or_default(),
+            credentials: self.credentials,
         }
     }
 }
@@ -751,24 +792,27 @@ pub struct RemoveCredentialParams<'a> {
 }
 
 impl<'a> RemoveCredentialParams<'a> {
-    pub fn builder() -> RemoveCredentialParamsBuilder<'a> { RemoveCredentialParamsBuilder::default() }
+    pub fn builder(authenticatorId: AuthenticatorId<'a>, credentialId: impl Into<Cow<'a, str>>) -> RemoveCredentialParamsBuilder<'a> {
+        RemoveCredentialParamsBuilder {
+            authenticatorId: authenticatorId,
+            credentialId: credentialId.into(),
+        }
+    }
     pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
     pub fn credentialId(&self) -> &str { self.credentialId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct RemoveCredentialParamsBuilder<'a> {
-    authenticatorId: Option<AuthenticatorId<'a>>,
-    credentialId: Option<Cow<'a, str>>,
+    authenticatorId: AuthenticatorId<'a>,
+    credentialId: Cow<'a, str>,
 }
 
 impl<'a> RemoveCredentialParamsBuilder<'a> {
-    pub fn authenticatorId(mut self, authenticatorId: AuthenticatorId<'a>) -> Self { self.authenticatorId = Some(authenticatorId); self }
-    pub fn credentialId(mut self, credentialId: impl Into<Cow<'a, str>>) -> Self { self.credentialId = Some(credentialId.into()); self }
     pub fn build(self) -> RemoveCredentialParams<'a> {
         RemoveCredentialParams {
-            authenticatorId: self.authenticatorId.unwrap_or_default(),
-            credentialId: self.credentialId.unwrap_or_default(),
+            authenticatorId: self.authenticatorId,
+            credentialId: self.credentialId,
         }
     }
 }
@@ -789,20 +833,23 @@ pub struct ClearCredentialsParams<'a> {
 }
 
 impl<'a> ClearCredentialsParams<'a> {
-    pub fn builder() -> ClearCredentialsParamsBuilder<'a> { ClearCredentialsParamsBuilder::default() }
+    pub fn builder(authenticatorId: AuthenticatorId<'a>) -> ClearCredentialsParamsBuilder<'a> {
+        ClearCredentialsParamsBuilder {
+            authenticatorId: authenticatorId,
+        }
+    }
     pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
 }
 
-#[derive(Default)]
+
 pub struct ClearCredentialsParamsBuilder<'a> {
-    authenticatorId: Option<AuthenticatorId<'a>>,
+    authenticatorId: AuthenticatorId<'a>,
 }
 
 impl<'a> ClearCredentialsParamsBuilder<'a> {
-    pub fn authenticatorId(mut self, authenticatorId: AuthenticatorId<'a>) -> Self { self.authenticatorId = Some(authenticatorId); self }
     pub fn build(self) -> ClearCredentialsParams<'a> {
         ClearCredentialsParams {
-            authenticatorId: self.authenticatorId.unwrap_or_default(),
+            authenticatorId: self.authenticatorId,
         }
     }
 }
@@ -825,24 +872,27 @@ pub struct SetUserVerifiedParams<'a> {
 }
 
 impl<'a> SetUserVerifiedParams<'a> {
-    pub fn builder() -> SetUserVerifiedParamsBuilder<'a> { SetUserVerifiedParamsBuilder::default() }
+    pub fn builder(authenticatorId: AuthenticatorId<'a>, isUserVerified: bool) -> SetUserVerifiedParamsBuilder<'a> {
+        SetUserVerifiedParamsBuilder {
+            authenticatorId: authenticatorId,
+            isUserVerified: isUserVerified,
+        }
+    }
     pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
     pub fn isUserVerified(&self) -> bool { self.isUserVerified }
 }
 
-#[derive(Default)]
+
 pub struct SetUserVerifiedParamsBuilder<'a> {
-    authenticatorId: Option<AuthenticatorId<'a>>,
-    isUserVerified: Option<bool>,
+    authenticatorId: AuthenticatorId<'a>,
+    isUserVerified: bool,
 }
 
 impl<'a> SetUserVerifiedParamsBuilder<'a> {
-    pub fn authenticatorId(mut self, authenticatorId: AuthenticatorId<'a>) -> Self { self.authenticatorId = Some(authenticatorId); self }
-    pub fn isUserVerified(mut self, isUserVerified: bool) -> Self { self.isUserVerified = Some(isUserVerified); self }
     pub fn build(self) -> SetUserVerifiedParams<'a> {
         SetUserVerifiedParams {
-            authenticatorId: self.authenticatorId.unwrap_or_default(),
-            isUserVerified: self.isUserVerified.unwrap_or_default(),
+            authenticatorId: self.authenticatorId,
+            isUserVerified: self.isUserVerified,
         }
     }
 }
@@ -865,24 +915,27 @@ pub struct SetAutomaticPresenceSimulationParams<'a> {
 }
 
 impl<'a> SetAutomaticPresenceSimulationParams<'a> {
-    pub fn builder() -> SetAutomaticPresenceSimulationParamsBuilder<'a> { SetAutomaticPresenceSimulationParamsBuilder::default() }
+    pub fn builder(authenticatorId: AuthenticatorId<'a>, enabled: bool) -> SetAutomaticPresenceSimulationParamsBuilder<'a> {
+        SetAutomaticPresenceSimulationParamsBuilder {
+            authenticatorId: authenticatorId,
+            enabled: enabled,
+        }
+    }
     pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
     pub fn enabled(&self) -> bool { self.enabled }
 }
 
-#[derive(Default)]
+
 pub struct SetAutomaticPresenceSimulationParamsBuilder<'a> {
-    authenticatorId: Option<AuthenticatorId<'a>>,
-    enabled: Option<bool>,
+    authenticatorId: AuthenticatorId<'a>,
+    enabled: bool,
 }
 
 impl<'a> SetAutomaticPresenceSimulationParamsBuilder<'a> {
-    pub fn authenticatorId(mut self, authenticatorId: AuthenticatorId<'a>) -> Self { self.authenticatorId = Some(authenticatorId); self }
-    pub fn enabled(mut self, enabled: bool) -> Self { self.enabled = Some(enabled); self }
     pub fn build(self) -> SetAutomaticPresenceSimulationParams<'a> {
         SetAutomaticPresenceSimulationParams {
-            authenticatorId: self.authenticatorId.unwrap_or_default(),
-            enabled: self.enabled.unwrap_or_default(),
+            authenticatorId: self.authenticatorId,
+            enabled: self.enabled,
         }
     }
 }
@@ -909,30 +962,35 @@ pub struct SetCredentialPropertiesParams<'a> {
 }
 
 impl<'a> SetCredentialPropertiesParams<'a> {
-    pub fn builder() -> SetCredentialPropertiesParamsBuilder<'a> { SetCredentialPropertiesParamsBuilder::default() }
+    pub fn builder(authenticatorId: AuthenticatorId<'a>, credentialId: impl Into<Cow<'a, str>>) -> SetCredentialPropertiesParamsBuilder<'a> {
+        SetCredentialPropertiesParamsBuilder {
+            authenticatorId: authenticatorId,
+            credentialId: credentialId.into(),
+            backupEligibility: None,
+            backupState: None,
+        }
+    }
     pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
     pub fn credentialId(&self) -> &str { self.credentialId.as_ref() }
     pub fn backupEligibility(&self) -> Option<bool> { self.backupEligibility }
     pub fn backupState(&self) -> Option<bool> { self.backupState }
 }
 
-#[derive(Default)]
+
 pub struct SetCredentialPropertiesParamsBuilder<'a> {
-    authenticatorId: Option<AuthenticatorId<'a>>,
-    credentialId: Option<Cow<'a, str>>,
+    authenticatorId: AuthenticatorId<'a>,
+    credentialId: Cow<'a, str>,
     backupEligibility: Option<bool>,
     backupState: Option<bool>,
 }
 
 impl<'a> SetCredentialPropertiesParamsBuilder<'a> {
-    pub fn authenticatorId(mut self, authenticatorId: AuthenticatorId<'a>) -> Self { self.authenticatorId = Some(authenticatorId); self }
-    pub fn credentialId(mut self, credentialId: impl Into<Cow<'a, str>>) -> Self { self.credentialId = Some(credentialId.into()); self }
     pub fn backupEligibility(mut self, backupEligibility: bool) -> Self { self.backupEligibility = Some(backupEligibility); self }
     pub fn backupState(mut self, backupState: bool) -> Self { self.backupState = Some(backupState); self }
     pub fn build(self) -> SetCredentialPropertiesParams<'a> {
         SetCredentialPropertiesParams {
-            authenticatorId: self.authenticatorId.unwrap_or_default(),
-            credentialId: self.credentialId.unwrap_or_default(),
+            authenticatorId: self.authenticatorId,
+            credentialId: self.credentialId,
             backupEligibility: self.backupEligibility,
             backupState: self.backupState,
         }

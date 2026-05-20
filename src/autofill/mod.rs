@@ -22,7 +22,15 @@ pub struct CreditCard<'a> {
 }
 
 impl<'a> CreditCard<'a> {
-    pub fn builder() -> CreditCardBuilder<'a> { CreditCardBuilder::default() }
+    pub fn builder(number: impl Into<Cow<'a, str>>, name: impl Into<Cow<'a, str>>, expiryMonth: impl Into<Cow<'a, str>>, expiryYear: impl Into<Cow<'a, str>>, cvc: impl Into<Cow<'a, str>>) -> CreditCardBuilder<'a> {
+        CreditCardBuilder {
+            number: number.into(),
+            name: name.into(),
+            expiryMonth: expiryMonth.into(),
+            expiryYear: expiryYear.into(),
+            cvc: cvc.into(),
+        }
+    }
     pub fn number(&self) -> &str { self.number.as_ref() }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn expiryMonth(&self) -> &str { self.expiryMonth.as_ref() }
@@ -30,33 +38,23 @@ impl<'a> CreditCard<'a> {
     pub fn cvc(&self) -> &str { self.cvc.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct CreditCardBuilder<'a> {
-    number: Option<Cow<'a, str>>,
-    name: Option<Cow<'a, str>>,
-    expiryMonth: Option<Cow<'a, str>>,
-    expiryYear: Option<Cow<'a, str>>,
-    cvc: Option<Cow<'a, str>>,
+    number: Cow<'a, str>,
+    name: Cow<'a, str>,
+    expiryMonth: Cow<'a, str>,
+    expiryYear: Cow<'a, str>,
+    cvc: Cow<'a, str>,
 }
 
 impl<'a> CreditCardBuilder<'a> {
-    /// 16-digit credit card number.
-    pub fn number(mut self, number: impl Into<Cow<'a, str>>) -> Self { self.number = Some(number.into()); self }
-    /// Name of the credit card owner.
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    /// 2-digit expiry month.
-    pub fn expiryMonth(mut self, expiryMonth: impl Into<Cow<'a, str>>) -> Self { self.expiryMonth = Some(expiryMonth.into()); self }
-    /// 4-digit expiry year.
-    pub fn expiryYear(mut self, expiryYear: impl Into<Cow<'a, str>>) -> Self { self.expiryYear = Some(expiryYear.into()); self }
-    /// 3-digit card verification code.
-    pub fn cvc(mut self, cvc: impl Into<Cow<'a, str>>) -> Self { self.cvc = Some(cvc.into()); self }
     pub fn build(self) -> CreditCard<'a> {
         CreditCard {
-            number: self.number.unwrap_or_default(),
-            name: self.name.unwrap_or_default(),
-            expiryMonth: self.expiryMonth.unwrap_or_default(),
-            expiryYear: self.expiryYear.unwrap_or_default(),
-            cvc: self.cvc.unwrap_or_default(),
+            number: self.number,
+            name: self.name,
+            expiryMonth: self.expiryMonth,
+            expiryYear: self.expiryYear,
+            cvc: self.cvc,
         }
     }
 }
@@ -74,28 +72,27 @@ pub struct AddressField<'a> {
 }
 
 impl<'a> AddressField<'a> {
-    pub fn builder() -> AddressFieldBuilder<'a> { AddressFieldBuilder::default() }
+    pub fn builder(name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> AddressFieldBuilder<'a> {
+        AddressFieldBuilder {
+            name: name.into(),
+            value: value.into(),
+        }
+    }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn value(&self) -> &str { self.value.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct AddressFieldBuilder<'a> {
-    name: Option<Cow<'a, str>>,
-    value: Option<Cow<'a, str>>,
+    name: Cow<'a, str>,
+    value: Cow<'a, str>,
 }
 
 impl<'a> AddressFieldBuilder<'a> {
-    /// address field name, for example GIVEN_NAME.
-    /// The full list of supported field names:
-    /// https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/field_types.cc;l=38
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    /// address field value, for example Jon Doe.
-    pub fn value(mut self, value: impl Into<Cow<'a, str>>) -> Self { self.value = Some(value.into()); self }
     pub fn build(self) -> AddressField<'a> {
         AddressField {
-            name: self.name.unwrap_or_default(),
-            value: self.value.unwrap_or_default(),
+            name: self.name,
+            value: self.value,
         }
     }
 }
@@ -109,20 +106,23 @@ pub struct AddressFields<'a> {
 }
 
 impl<'a> AddressFields<'a> {
-    pub fn builder() -> AddressFieldsBuilder<'a> { AddressFieldsBuilder::default() }
+    pub fn builder(fields: Vec<AddressField<'a>>) -> AddressFieldsBuilder<'a> {
+        AddressFieldsBuilder {
+            fields: fields,
+        }
+    }
     pub fn fields(&self) -> &[AddressField<'a>] { &self.fields }
 }
 
-#[derive(Default)]
+
 pub struct AddressFieldsBuilder<'a> {
-    fields: Option<Vec<AddressField<'a>>>,
+    fields: Vec<AddressField<'a>>,
 }
 
 impl<'a> AddressFieldsBuilder<'a> {
-    pub fn fields(mut self, fields: Vec<AddressField<'a>>) -> Self { self.fields = Some(fields); self }
     pub fn build(self) -> AddressFields<'a> {
         AddressFields {
-            fields: self.fields.unwrap_or_default(),
+            fields: self.fields,
         }
     }
 }
@@ -136,21 +136,23 @@ pub struct Address<'a> {
 }
 
 impl<'a> Address<'a> {
-    pub fn builder() -> AddressBuilder<'a> { AddressBuilder::default() }
+    pub fn builder(fields: Vec<AddressField<'a>>) -> AddressBuilder<'a> {
+        AddressBuilder {
+            fields: fields,
+        }
+    }
     pub fn fields(&self) -> &[AddressField<'a>] { &self.fields }
 }
 
-#[derive(Default)]
+
 pub struct AddressBuilder<'a> {
-    fields: Option<Vec<AddressField<'a>>>,
+    fields: Vec<AddressField<'a>>,
 }
 
 impl<'a> AddressBuilder<'a> {
-    /// fields and values defining an address.
-    pub fn fields(mut self, fields: Vec<AddressField<'a>>) -> Self { self.fields = Some(fields); self }
     pub fn build(self) -> Address<'a> {
         Address {
-            fields: self.fields.unwrap_or_default(),
+            fields: self.fields,
         }
     }
 }
@@ -171,21 +173,23 @@ pub struct AddressUI<'a> {
 }
 
 impl<'a> AddressUI<'a> {
-    pub fn builder() -> AddressUIBuilder<'a> { AddressUIBuilder::default() }
+    pub fn builder(addressFields: Vec<AddressFields<'a>>) -> AddressUIBuilder<'a> {
+        AddressUIBuilder {
+            addressFields: addressFields,
+        }
+    }
     pub fn addressFields(&self) -> &[AddressFields<'a>] { &self.addressFields }
 }
 
-#[derive(Default)]
+
 pub struct AddressUIBuilder<'a> {
-    addressFields: Option<Vec<AddressFields<'a>>>,
+    addressFields: Vec<AddressFields<'a>>,
 }
 
 impl<'a> AddressUIBuilder<'a> {
-    /// A two dimension array containing the representation of values from an address profile.
-    pub fn addressFields(mut self, addressFields: Vec<AddressFields<'a>>) -> Self { self.addressFields = Some(addressFields); self }
     pub fn build(self) -> AddressUI<'a> {
         AddressUI {
-            addressFields: self.addressFields.unwrap_or_default(),
+            addressFields: self.addressFields,
         }
     }
 }
@@ -224,7 +228,18 @@ pub struct FilledField<'a> {
 }
 
 impl<'a> FilledField<'a> {
-    pub fn builder() -> FilledFieldBuilder<'a> { FilledFieldBuilder::default() }
+    pub fn builder(htmlType: impl Into<Cow<'a, str>>, id: impl Into<Cow<'a, str>>, name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>, autofillType: impl Into<Cow<'a, str>>, fillingStrategy: FillingStrategy, frameId: crate::page::FrameId<'a>, fieldId: crate::dom::BackendNodeId) -> FilledFieldBuilder<'a> {
+        FilledFieldBuilder {
+            htmlType: htmlType.into(),
+            id: id.into(),
+            name: name.into(),
+            value: value.into(),
+            autofillType: autofillType.into(),
+            fillingStrategy: fillingStrategy,
+            frameId: frameId,
+            fieldId: fieldId,
+        }
+    }
     pub fn htmlType(&self) -> &str { self.htmlType.as_ref() }
     pub fn id(&self) -> &str { self.id.as_ref() }
     pub fn name(&self) -> &str { self.name.as_ref() }
@@ -235,45 +250,29 @@ impl<'a> FilledField<'a> {
     pub fn fieldId(&self) -> &crate::dom::BackendNodeId { &self.fieldId }
 }
 
-#[derive(Default)]
+
 pub struct FilledFieldBuilder<'a> {
-    htmlType: Option<Cow<'a, str>>,
-    id: Option<Cow<'a, str>>,
-    name: Option<Cow<'a, str>>,
-    value: Option<Cow<'a, str>>,
-    autofillType: Option<Cow<'a, str>>,
-    fillingStrategy: Option<FillingStrategy>,
-    frameId: Option<crate::page::FrameId<'a>>,
-    fieldId: Option<crate::dom::BackendNodeId>,
+    htmlType: Cow<'a, str>,
+    id: Cow<'a, str>,
+    name: Cow<'a, str>,
+    value: Cow<'a, str>,
+    autofillType: Cow<'a, str>,
+    fillingStrategy: FillingStrategy,
+    frameId: crate::page::FrameId<'a>,
+    fieldId: crate::dom::BackendNodeId,
 }
 
 impl<'a> FilledFieldBuilder<'a> {
-    /// The type of the field, e.g text, password etc.
-    pub fn htmlType(mut self, htmlType: impl Into<Cow<'a, str>>) -> Self { self.htmlType = Some(htmlType.into()); self }
-    /// the html id
-    pub fn id(mut self, id: impl Into<Cow<'a, str>>) -> Self { self.id = Some(id.into()); self }
-    /// the html name
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    /// the field value
-    pub fn value(mut self, value: impl Into<Cow<'a, str>>) -> Self { self.value = Some(value.into()); self }
-    /// The actual field type, e.g FAMILY_NAME
-    pub fn autofillType(mut self, autofillType: impl Into<Cow<'a, str>>) -> Self { self.autofillType = Some(autofillType.into()); self }
-    /// The filling strategy
-    pub fn fillingStrategy(mut self, fillingStrategy: FillingStrategy) -> Self { self.fillingStrategy = Some(fillingStrategy); self }
-    /// The frame the field belongs to
-    pub fn frameId(mut self, frameId: crate::page::FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
-    /// The form field's DOM node
-    pub fn fieldId(mut self, fieldId: crate::dom::BackendNodeId) -> Self { self.fieldId = Some(fieldId); self }
     pub fn build(self) -> FilledField<'a> {
         FilledField {
-            htmlType: self.htmlType.unwrap_or_default(),
-            id: self.id.unwrap_or_default(),
-            name: self.name.unwrap_or_default(),
-            value: self.value.unwrap_or_default(),
-            autofillType: self.autofillType.unwrap_or_default(),
-            fillingStrategy: self.fillingStrategy.unwrap_or_default(),
-            frameId: self.frameId.unwrap_or_default(),
-            fieldId: self.fieldId.unwrap_or_default(),
+            htmlType: self.htmlType,
+            id: self.id,
+            name: self.name,
+            value: self.value,
+            autofillType: self.autofillType,
+            fillingStrategy: self.fillingStrategy,
+            frameId: self.frameId,
+            fieldId: self.fieldId,
         }
     }
 }
@@ -298,24 +297,29 @@ pub struct TriggerParams<'a> {
 }
 
 impl<'a> TriggerParams<'a> {
-    pub fn builder() -> TriggerParamsBuilder<'a> { TriggerParamsBuilder::default() }
+    pub fn builder(fieldId: crate::dom::BackendNodeId) -> TriggerParamsBuilder<'a> {
+        TriggerParamsBuilder {
+            fieldId: fieldId,
+            frameId: None,
+            card: None,
+            address: None,
+        }
+    }
     pub fn fieldId(&self) -> &crate::dom::BackendNodeId { &self.fieldId }
     pub fn frameId(&self) -> Option<&crate::page::FrameId<'a>> { self.frameId.as_ref() }
     pub fn card(&self) -> Option<&CreditCard<'a>> { self.card.as_ref() }
     pub fn address(&self) -> Option<&Address<'a>> { self.address.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct TriggerParamsBuilder<'a> {
-    fieldId: Option<crate::dom::BackendNodeId>,
+    fieldId: crate::dom::BackendNodeId,
     frameId: Option<crate::page::FrameId<'a>>,
     card: Option<CreditCard<'a>>,
     address: Option<Address<'a>>,
 }
 
 impl<'a> TriggerParamsBuilder<'a> {
-    /// Identifies a field that serves as an anchor for autofill.
-    pub fn fieldId(mut self, fieldId: crate::dom::BackendNodeId) -> Self { self.fieldId = Some(fieldId); self }
     /// Identifies the frame that field belongs to.
     pub fn frameId(mut self, frameId: crate::page::FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
     /// Credit card information to fill out the form. Credit card data is not saved.  Mutually exclusive with 'address'.
@@ -324,7 +328,7 @@ impl<'a> TriggerParamsBuilder<'a> {
     pub fn address(mut self, address: Address<'a>) -> Self { self.address = Some(address); self }
     pub fn build(self) -> TriggerParams<'a> {
         TriggerParams {
-            fieldId: self.fieldId.unwrap_or_default(),
+            fieldId: self.fieldId,
             frameId: self.frameId,
             card: self.card,
             address: self.address,
@@ -348,20 +352,23 @@ pub struct SetAddressesParams<'a> {
 }
 
 impl<'a> SetAddressesParams<'a> {
-    pub fn builder() -> SetAddressesParamsBuilder<'a> { SetAddressesParamsBuilder::default() }
+    pub fn builder(addresses: Vec<Address<'a>>) -> SetAddressesParamsBuilder<'a> {
+        SetAddressesParamsBuilder {
+            addresses: addresses,
+        }
+    }
     pub fn addresses(&self) -> &[Address<'a>] { &self.addresses }
 }
 
-#[derive(Default)]
+
 pub struct SetAddressesParamsBuilder<'a> {
-    addresses: Option<Vec<Address<'a>>>,
+    addresses: Vec<Address<'a>>,
 }
 
 impl<'a> SetAddressesParamsBuilder<'a> {
-    pub fn addresses(mut self, addresses: Vec<Address<'a>>) -> Self { self.addresses = Some(addresses); self }
     pub fn build(self) -> SetAddressesParams<'a> {
         SetAddressesParams {
-            addresses: self.addresses.unwrap_or_default(),
+            addresses: self.addresses,
         }
     }
 }
@@ -376,21 +383,6 @@ impl<'a> crate::CdpCommand<'a> for SetAddressesParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct DisableParams {}
 
-impl DisableParams {
-    pub fn builder() -> DisableParamsBuilder {
-        DisableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct DisableParamsBuilder {}
-
-impl DisableParamsBuilder {
-    pub fn build(self) -> DisableParams {
-        DisableParams {}
-    }
-}
-
 impl DisableParams { pub const METHOD: &'static str = "Autofill.disable"; }
 
 impl<'a> crate::CdpCommand<'a> for DisableParams {
@@ -400,21 +392,6 @@ impl<'a> crate::CdpCommand<'a> for DisableParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct EnableParams {}
-
-impl EnableParams {
-    pub fn builder() -> EnableParamsBuilder {
-        EnableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct EnableParamsBuilder {}
-
-impl EnableParamsBuilder {
-    pub fn build(self) -> EnableParams {
-        EnableParams {}
-    }
-}
 
 impl EnableParams { pub const METHOD: &'static str = "Autofill.enable"; }
 

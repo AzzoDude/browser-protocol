@@ -15,21 +15,23 @@ pub struct BindParams {
 }
 
 impl BindParams {
-    pub fn builder() -> BindParamsBuilder { BindParamsBuilder::default() }
+    pub fn builder(port: i64) -> BindParamsBuilder {
+        BindParamsBuilder {
+            port: port,
+        }
+    }
     pub fn port(&self) -> i64 { self.port }
 }
 
-#[derive(Default)]
+
 pub struct BindParamsBuilder {
-    port: Option<i64>,
+    port: i64,
 }
 
 impl BindParamsBuilder {
-    /// Port number to bind.
-    pub fn port(mut self, port: i64) -> Self { self.port = Some(port); self }
     pub fn build(self) -> BindParams {
         BindParams {
-            port: self.port.unwrap_or_default(),
+            port: self.port,
         }
     }
 }
@@ -51,21 +53,23 @@ pub struct UnbindParams {
 }
 
 impl UnbindParams {
-    pub fn builder() -> UnbindParamsBuilder { UnbindParamsBuilder::default() }
+    pub fn builder(port: i64) -> UnbindParamsBuilder {
+        UnbindParamsBuilder {
+            port: port,
+        }
+    }
     pub fn port(&self) -> i64 { self.port }
 }
 
-#[derive(Default)]
+
 pub struct UnbindParamsBuilder {
-    port: Option<i64>,
+    port: i64,
 }
 
 impl UnbindParamsBuilder {
-    /// Port number to unbind.
-    pub fn port(mut self, port: i64) -> Self { self.port = Some(port); self }
     pub fn build(self) -> UnbindParams {
         UnbindParams {
-            port: self.port.unwrap_or_default(),
+            port: self.port,
         }
     }
 }

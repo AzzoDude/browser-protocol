@@ -154,7 +154,21 @@ pub struct ReaderStateFlags {
 }
 
 impl ReaderStateFlags {
-    pub fn builder() -> ReaderStateFlagsBuilder { ReaderStateFlagsBuilder::default() }
+    pub fn builder() -> ReaderStateFlagsBuilder {
+        ReaderStateFlagsBuilder {
+            unaware: None,
+            ignore: None,
+            changed: None,
+            unknown: None,
+            unavailable: None,
+            empty: None,
+            present: None,
+            exclusive: None,
+            inuse: None,
+            mute: None,
+            unpowered: None,
+        }
+    }
     pub fn unaware(&self) -> Option<bool> { self.unaware }
     pub fn ignore(&self) -> Option<bool> { self.ignore }
     pub fn changed(&self) -> Option<bool> { self.changed }
@@ -226,7 +240,13 @@ pub struct ProtocolSet {
 }
 
 impl ProtocolSet {
-    pub fn builder() -> ProtocolSetBuilder { ProtocolSetBuilder::default() }
+    pub fn builder() -> ProtocolSetBuilder {
+        ProtocolSetBuilder {
+            t0: None,
+            t1: None,
+            raw: None,
+        }
+    }
     pub fn t0(&self) -> Option<bool> { self.t0 }
     pub fn t1(&self) -> Option<bool> { self.t1 }
     pub fn raw(&self) -> Option<bool> { self.raw }
@@ -275,28 +295,31 @@ pub struct ReaderStateIn<'a> {
 }
 
 impl<'a> ReaderStateIn<'a> {
-    pub fn builder() -> ReaderStateInBuilder<'a> { ReaderStateInBuilder::default() }
+    pub fn builder(reader: impl Into<Cow<'a, str>>, currentState: ReaderStateFlags, currentInsertionCount: u64) -> ReaderStateInBuilder<'a> {
+        ReaderStateInBuilder {
+            reader: reader.into(),
+            currentState: currentState,
+            currentInsertionCount: currentInsertionCount,
+        }
+    }
     pub fn reader(&self) -> &str { self.reader.as_ref() }
     pub fn currentState(&self) -> &ReaderStateFlags { &self.currentState }
     pub fn currentInsertionCount(&self) -> u64 { self.currentInsertionCount }
 }
 
-#[derive(Default)]
+
 pub struct ReaderStateInBuilder<'a> {
-    reader: Option<Cow<'a, str>>,
-    currentState: Option<ReaderStateFlags>,
-    currentInsertionCount: Option<u64>,
+    reader: Cow<'a, str>,
+    currentState: ReaderStateFlags,
+    currentInsertionCount: u64,
 }
 
 impl<'a> ReaderStateInBuilder<'a> {
-    pub fn reader(mut self, reader: impl Into<Cow<'a, str>>) -> Self { self.reader = Some(reader.into()); self }
-    pub fn currentState(mut self, currentState: ReaderStateFlags) -> Self { self.currentState = Some(currentState); self }
-    pub fn currentInsertionCount(mut self, currentInsertionCount: u64) -> Self { self.currentInsertionCount = Some(currentInsertionCount); self }
     pub fn build(self) -> ReaderStateIn<'a> {
         ReaderStateIn {
-            reader: self.reader.unwrap_or_default(),
-            currentState: self.currentState.unwrap_or_default(),
-            currentInsertionCount: self.currentInsertionCount.unwrap_or_default(),
+            reader: self.reader,
+            currentState: self.currentState,
+            currentInsertionCount: self.currentInsertionCount,
         }
     }
 }
@@ -312,53 +335,41 @@ pub struct ReaderStateOut<'a> {
 }
 
 impl<'a> ReaderStateOut<'a> {
-    pub fn builder() -> ReaderStateOutBuilder<'a> { ReaderStateOutBuilder::default() }
+    pub fn builder(reader: impl Into<Cow<'a, str>>, eventState: ReaderStateFlags, eventCount: u64, atr: impl Into<Cow<'a, str>>) -> ReaderStateOutBuilder<'a> {
+        ReaderStateOutBuilder {
+            reader: reader.into(),
+            eventState: eventState,
+            eventCount: eventCount,
+            atr: atr.into(),
+        }
+    }
     pub fn reader(&self) -> &str { self.reader.as_ref() }
     pub fn eventState(&self) -> &ReaderStateFlags { &self.eventState }
     pub fn eventCount(&self) -> u64 { self.eventCount }
     pub fn atr(&self) -> &str { self.atr.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct ReaderStateOutBuilder<'a> {
-    reader: Option<Cow<'a, str>>,
-    eventState: Option<ReaderStateFlags>,
-    eventCount: Option<u64>,
-    atr: Option<Cow<'a, str>>,
+    reader: Cow<'a, str>,
+    eventState: ReaderStateFlags,
+    eventCount: u64,
+    atr: Cow<'a, str>,
 }
 
 impl<'a> ReaderStateOutBuilder<'a> {
-    pub fn reader(mut self, reader: impl Into<Cow<'a, str>>) -> Self { self.reader = Some(reader.into()); self }
-    pub fn eventState(mut self, eventState: ReaderStateFlags) -> Self { self.eventState = Some(eventState); self }
-    pub fn eventCount(mut self, eventCount: u64) -> Self { self.eventCount = Some(eventCount); self }
-    pub fn atr(mut self, atr: impl Into<Cow<'a, str>>) -> Self { self.atr = Some(atr.into()); self }
     pub fn build(self) -> ReaderStateOut<'a> {
         ReaderStateOut {
-            reader: self.reader.unwrap_or_default(),
-            eventState: self.eventState.unwrap_or_default(),
-            eventCount: self.eventCount.unwrap_or_default(),
-            atr: self.atr.unwrap_or_default(),
+            reader: self.reader,
+            eventState: self.eventState,
+            eventCount: self.eventCount,
+            atr: self.atr,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct EnableParams {}
-
-impl EnableParams {
-    pub fn builder() -> EnableParamsBuilder {
-        EnableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct EnableParamsBuilder {}
-
-impl EnableParamsBuilder {
-    pub fn build(self) -> EnableParams {
-        EnableParams {}
-    }
-}
 
 impl EnableParams { pub const METHOD: &'static str = "SmartCardEmulation.enable"; }
 
@@ -369,21 +380,6 @@ impl<'a> crate::CdpCommand<'a> for EnableParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct DisableParams {}
-
-impl DisableParams {
-    pub fn builder() -> DisableParamsBuilder {
-        DisableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct DisableParamsBuilder {}
-
-impl DisableParamsBuilder {
-    pub fn build(self) -> DisableParams {
-        DisableParams {}
-    }
-}
 
 impl DisableParams { pub const METHOD: &'static str = "SmartCardEmulation.disable"; }
 
@@ -406,24 +402,27 @@ pub struct ReportEstablishContextResultParams<'a> {
 }
 
 impl<'a> ReportEstablishContextResultParams<'a> {
-    pub fn builder() -> ReportEstablishContextResultParamsBuilder<'a> { ReportEstablishContextResultParamsBuilder::default() }
+    pub fn builder(requestId: impl Into<Cow<'a, str>>, contextId: u64) -> ReportEstablishContextResultParamsBuilder<'a> {
+        ReportEstablishContextResultParamsBuilder {
+            requestId: requestId.into(),
+            contextId: contextId,
+        }
+    }
     pub fn requestId(&self) -> &str { self.requestId.as_ref() }
     pub fn contextId(&self) -> u64 { self.contextId }
 }
 
-#[derive(Default)]
+
 pub struct ReportEstablishContextResultParamsBuilder<'a> {
-    requestId: Option<Cow<'a, str>>,
-    contextId: Option<u64>,
+    requestId: Cow<'a, str>,
+    contextId: u64,
 }
 
 impl<'a> ReportEstablishContextResultParamsBuilder<'a> {
-    pub fn requestId(mut self, requestId: impl Into<Cow<'a, str>>) -> Self { self.requestId = Some(requestId.into()); self }
-    pub fn contextId(mut self, contextId: u64) -> Self { self.contextId = Some(contextId); self }
     pub fn build(self) -> ReportEstablishContextResultParams<'a> {
         ReportEstablishContextResultParams {
-            requestId: self.requestId.unwrap_or_default(),
-            contextId: self.contextId.unwrap_or_default(),
+            requestId: self.requestId,
+            contextId: self.contextId,
         }
     }
 }
@@ -448,20 +447,23 @@ pub struct ReportReleaseContextResultParams<'a> {
 }
 
 impl<'a> ReportReleaseContextResultParams<'a> {
-    pub fn builder() -> ReportReleaseContextResultParamsBuilder<'a> { ReportReleaseContextResultParamsBuilder::default() }
+    pub fn builder(requestId: impl Into<Cow<'a, str>>) -> ReportReleaseContextResultParamsBuilder<'a> {
+        ReportReleaseContextResultParamsBuilder {
+            requestId: requestId.into(),
+        }
+    }
     pub fn requestId(&self) -> &str { self.requestId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct ReportReleaseContextResultParamsBuilder<'a> {
-    requestId: Option<Cow<'a, str>>,
+    requestId: Cow<'a, str>,
 }
 
 impl<'a> ReportReleaseContextResultParamsBuilder<'a> {
-    pub fn requestId(mut self, requestId: impl Into<Cow<'a, str>>) -> Self { self.requestId = Some(requestId.into()); self }
     pub fn build(self) -> ReportReleaseContextResultParams<'a> {
         ReportReleaseContextResultParams {
-            requestId: self.requestId.unwrap_or_default(),
+            requestId: self.requestId,
         }
     }
 }
@@ -487,24 +489,27 @@ pub struct ReportListReadersResultParams<'a> {
 }
 
 impl<'a> ReportListReadersResultParams<'a> {
-    pub fn builder() -> ReportListReadersResultParamsBuilder<'a> { ReportListReadersResultParamsBuilder::default() }
+    pub fn builder(requestId: impl Into<Cow<'a, str>>, readers: Vec<Cow<'a, str>>) -> ReportListReadersResultParamsBuilder<'a> {
+        ReportListReadersResultParamsBuilder {
+            requestId: requestId.into(),
+            readers: readers,
+        }
+    }
     pub fn requestId(&self) -> &str { self.requestId.as_ref() }
     pub fn readers(&self) -> &[Cow<'a, str>] { &self.readers }
 }
 
-#[derive(Default)]
+
 pub struct ReportListReadersResultParamsBuilder<'a> {
-    requestId: Option<Cow<'a, str>>,
-    readers: Option<Vec<Cow<'a, str>>>,
+    requestId: Cow<'a, str>,
+    readers: Vec<Cow<'a, str>>,
 }
 
 impl<'a> ReportListReadersResultParamsBuilder<'a> {
-    pub fn requestId(mut self, requestId: impl Into<Cow<'a, str>>) -> Self { self.requestId = Some(requestId.into()); self }
-    pub fn readers(mut self, readers: Vec<Cow<'a, str>>) -> Self { self.readers = Some(readers); self }
     pub fn build(self) -> ReportListReadersResultParams<'a> {
         ReportListReadersResultParams {
-            requestId: self.requestId.unwrap_or_default(),
-            readers: self.readers.unwrap_or_default(),
+            requestId: self.requestId,
+            readers: self.readers,
         }
     }
 }
@@ -530,24 +535,27 @@ pub struct ReportGetStatusChangeResultParams<'a> {
 }
 
 impl<'a> ReportGetStatusChangeResultParams<'a> {
-    pub fn builder() -> ReportGetStatusChangeResultParamsBuilder<'a> { ReportGetStatusChangeResultParamsBuilder::default() }
+    pub fn builder(requestId: impl Into<Cow<'a, str>>, readerStates: Vec<ReaderStateOut<'a>>) -> ReportGetStatusChangeResultParamsBuilder<'a> {
+        ReportGetStatusChangeResultParamsBuilder {
+            requestId: requestId.into(),
+            readerStates: readerStates,
+        }
+    }
     pub fn requestId(&self) -> &str { self.requestId.as_ref() }
     pub fn readerStates(&self) -> &[ReaderStateOut<'a>] { &self.readerStates }
 }
 
-#[derive(Default)]
+
 pub struct ReportGetStatusChangeResultParamsBuilder<'a> {
-    requestId: Option<Cow<'a, str>>,
-    readerStates: Option<Vec<ReaderStateOut<'a>>>,
+    requestId: Cow<'a, str>,
+    readerStates: Vec<ReaderStateOut<'a>>,
 }
 
 impl<'a> ReportGetStatusChangeResultParamsBuilder<'a> {
-    pub fn requestId(mut self, requestId: impl Into<Cow<'a, str>>) -> Self { self.requestId = Some(requestId.into()); self }
-    pub fn readerStates(mut self, readerStates: Vec<ReaderStateOut<'a>>) -> Self { self.readerStates = Some(readerStates); self }
     pub fn build(self) -> ReportGetStatusChangeResultParams<'a> {
         ReportGetStatusChangeResultParams {
-            requestId: self.requestId.unwrap_or_default(),
-            readerStates: self.readerStates.unwrap_or_default(),
+            requestId: self.requestId,
+            readerStates: self.readerStates,
         }
     }
 }
@@ -574,24 +582,27 @@ pub struct ReportBeginTransactionResultParams<'a> {
 }
 
 impl<'a> ReportBeginTransactionResultParams<'a> {
-    pub fn builder() -> ReportBeginTransactionResultParamsBuilder<'a> { ReportBeginTransactionResultParamsBuilder::default() }
+    pub fn builder(requestId: impl Into<Cow<'a, str>>, handle: i64) -> ReportBeginTransactionResultParamsBuilder<'a> {
+        ReportBeginTransactionResultParamsBuilder {
+            requestId: requestId.into(),
+            handle: handle,
+        }
+    }
     pub fn requestId(&self) -> &str { self.requestId.as_ref() }
     pub fn handle(&self) -> i64 { self.handle }
 }
 
-#[derive(Default)]
+
 pub struct ReportBeginTransactionResultParamsBuilder<'a> {
-    requestId: Option<Cow<'a, str>>,
-    handle: Option<i64>,
+    requestId: Cow<'a, str>,
+    handle: i64,
 }
 
 impl<'a> ReportBeginTransactionResultParamsBuilder<'a> {
-    pub fn requestId(mut self, requestId: impl Into<Cow<'a, str>>) -> Self { self.requestId = Some(requestId.into()); self }
-    pub fn handle(mut self, handle: i64) -> Self { self.handle = Some(handle); self }
     pub fn build(self) -> ReportBeginTransactionResultParams<'a> {
         ReportBeginTransactionResultParams {
-            requestId: self.requestId.unwrap_or_default(),
-            handle: self.handle.unwrap_or_default(),
+            requestId: self.requestId,
+            handle: self.handle,
         }
     }
 }
@@ -630,20 +641,23 @@ pub struct ReportPlainResultParams<'a> {
 }
 
 impl<'a> ReportPlainResultParams<'a> {
-    pub fn builder() -> ReportPlainResultParamsBuilder<'a> { ReportPlainResultParamsBuilder::default() }
+    pub fn builder(requestId: impl Into<Cow<'a, str>>) -> ReportPlainResultParamsBuilder<'a> {
+        ReportPlainResultParamsBuilder {
+            requestId: requestId.into(),
+        }
+    }
     pub fn requestId(&self) -> &str { self.requestId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct ReportPlainResultParamsBuilder<'a> {
-    requestId: Option<Cow<'a, str>>,
+    requestId: Cow<'a, str>,
 }
 
 impl<'a> ReportPlainResultParamsBuilder<'a> {
-    pub fn requestId(mut self, requestId: impl Into<Cow<'a, str>>) -> Self { self.requestId = Some(requestId.into()); self }
     pub fn build(self) -> ReportPlainResultParams<'a> {
         ReportPlainResultParams {
-            requestId: self.requestId.unwrap_or_default(),
+            requestId: self.requestId,
         }
     }
 }
@@ -671,27 +685,31 @@ pub struct ReportConnectResultParams<'a> {
 }
 
 impl<'a> ReportConnectResultParams<'a> {
-    pub fn builder() -> ReportConnectResultParamsBuilder<'a> { ReportConnectResultParamsBuilder::default() }
+    pub fn builder(requestId: impl Into<Cow<'a, str>>, handle: i64) -> ReportConnectResultParamsBuilder<'a> {
+        ReportConnectResultParamsBuilder {
+            requestId: requestId.into(),
+            handle: handle,
+            activeProtocol: None,
+        }
+    }
     pub fn requestId(&self) -> &str { self.requestId.as_ref() }
     pub fn handle(&self) -> i64 { self.handle }
     pub fn activeProtocol(&self) -> Option<&Protocol> { self.activeProtocol.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct ReportConnectResultParamsBuilder<'a> {
-    requestId: Option<Cow<'a, str>>,
-    handle: Option<i64>,
+    requestId: Cow<'a, str>,
+    handle: i64,
     activeProtocol: Option<Protocol>,
 }
 
 impl<'a> ReportConnectResultParamsBuilder<'a> {
-    pub fn requestId(mut self, requestId: impl Into<Cow<'a, str>>) -> Self { self.requestId = Some(requestId.into()); self }
-    pub fn handle(mut self, handle: i64) -> Self { self.handle = Some(handle); self }
     pub fn activeProtocol(mut self, activeProtocol: Protocol) -> Self { self.activeProtocol = Some(activeProtocol); self }
     pub fn build(self) -> ReportConnectResultParams<'a> {
         ReportConnectResultParams {
-            requestId: self.requestId.unwrap_or_default(),
-            handle: self.handle.unwrap_or_default(),
+            requestId: self.requestId,
+            handle: self.handle,
             activeProtocol: self.activeProtocol,
         }
     }
@@ -728,24 +746,27 @@ pub struct ReportDataResultParams<'a> {
 }
 
 impl<'a> ReportDataResultParams<'a> {
-    pub fn builder() -> ReportDataResultParamsBuilder<'a> { ReportDataResultParamsBuilder::default() }
+    pub fn builder(requestId: impl Into<Cow<'a, str>>, data: impl Into<Cow<'a, str>>) -> ReportDataResultParamsBuilder<'a> {
+        ReportDataResultParamsBuilder {
+            requestId: requestId.into(),
+            data: data.into(),
+        }
+    }
     pub fn requestId(&self) -> &str { self.requestId.as_ref() }
     pub fn data(&self) -> &str { self.data.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct ReportDataResultParamsBuilder<'a> {
-    requestId: Option<Cow<'a, str>>,
-    data: Option<Cow<'a, str>>,
+    requestId: Cow<'a, str>,
+    data: Cow<'a, str>,
 }
 
 impl<'a> ReportDataResultParamsBuilder<'a> {
-    pub fn requestId(mut self, requestId: impl Into<Cow<'a, str>>) -> Self { self.requestId = Some(requestId.into()); self }
-    pub fn data(mut self, data: impl Into<Cow<'a, str>>) -> Self { self.data = Some(data.into()); self }
     pub fn build(self) -> ReportDataResultParams<'a> {
         ReportDataResultParams {
-            requestId: self.requestId.unwrap_or_default(),
-            data: self.data.unwrap_or_default(),
+            requestId: self.requestId,
+            data: self.data,
         }
     }
 }
@@ -775,7 +796,15 @@ pub struct ReportStatusResultParams<'a> {
 }
 
 impl<'a> ReportStatusResultParams<'a> {
-    pub fn builder() -> ReportStatusResultParamsBuilder<'a> { ReportStatusResultParamsBuilder::default() }
+    pub fn builder(requestId: impl Into<Cow<'a, str>>, readerName: impl Into<Cow<'a, str>>, state: ConnectionState, atr: impl Into<Cow<'a, str>>) -> ReportStatusResultParamsBuilder<'a> {
+        ReportStatusResultParamsBuilder {
+            requestId: requestId.into(),
+            readerName: readerName.into(),
+            state: state,
+            atr: atr.into(),
+            protocol: None,
+        }
+    }
     pub fn requestId(&self) -> &str { self.requestId.as_ref() }
     pub fn readerName(&self) -> &str { self.readerName.as_ref() }
     pub fn state(&self) -> &ConnectionState { &self.state }
@@ -783,27 +812,23 @@ impl<'a> ReportStatusResultParams<'a> {
     pub fn protocol(&self) -> Option<&Protocol> { self.protocol.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct ReportStatusResultParamsBuilder<'a> {
-    requestId: Option<Cow<'a, str>>,
-    readerName: Option<Cow<'a, str>>,
-    state: Option<ConnectionState>,
-    atr: Option<Cow<'a, str>>,
+    requestId: Cow<'a, str>,
+    readerName: Cow<'a, str>,
+    state: ConnectionState,
+    atr: Cow<'a, str>,
     protocol: Option<Protocol>,
 }
 
 impl<'a> ReportStatusResultParamsBuilder<'a> {
-    pub fn requestId(mut self, requestId: impl Into<Cow<'a, str>>) -> Self { self.requestId = Some(requestId.into()); self }
-    pub fn readerName(mut self, readerName: impl Into<Cow<'a, str>>) -> Self { self.readerName = Some(readerName.into()); self }
-    pub fn state(mut self, state: ConnectionState) -> Self { self.state = Some(state); self }
-    pub fn atr(mut self, atr: impl Into<Cow<'a, str>>) -> Self { self.atr = Some(atr.into()); self }
     pub fn protocol(mut self, protocol: Protocol) -> Self { self.protocol = Some(protocol); self }
     pub fn build(self) -> ReportStatusResultParams<'a> {
         ReportStatusResultParams {
-            requestId: self.requestId.unwrap_or_default(),
-            readerName: self.readerName.unwrap_or_default(),
-            state: self.state.unwrap_or_default(),
-            atr: self.atr.unwrap_or_default(),
+            requestId: self.requestId,
+            readerName: self.readerName,
+            state: self.state,
+            atr: self.atr,
             protocol: self.protocol,
         }
     }
@@ -826,24 +851,27 @@ pub struct ReportErrorParams<'a> {
 }
 
 impl<'a> ReportErrorParams<'a> {
-    pub fn builder() -> ReportErrorParamsBuilder<'a> { ReportErrorParamsBuilder::default() }
+    pub fn builder(requestId: impl Into<Cow<'a, str>>, resultCode: ResultCode) -> ReportErrorParamsBuilder<'a> {
+        ReportErrorParamsBuilder {
+            requestId: requestId.into(),
+            resultCode: resultCode,
+        }
+    }
     pub fn requestId(&self) -> &str { self.requestId.as_ref() }
     pub fn resultCode(&self) -> &ResultCode { &self.resultCode }
 }
 
-#[derive(Default)]
+
 pub struct ReportErrorParamsBuilder<'a> {
-    requestId: Option<Cow<'a, str>>,
-    resultCode: Option<ResultCode>,
+    requestId: Cow<'a, str>,
+    resultCode: ResultCode,
 }
 
 impl<'a> ReportErrorParamsBuilder<'a> {
-    pub fn requestId(mut self, requestId: impl Into<Cow<'a, str>>) -> Self { self.requestId = Some(requestId.into()); self }
-    pub fn resultCode(mut self, resultCode: ResultCode) -> Self { self.resultCode = Some(resultCode); self }
     pub fn build(self) -> ReportErrorParams<'a> {
         ReportErrorParams {
-            requestId: self.requestId.unwrap_or_default(),
-            resultCode: self.resultCode.unwrap_or_default(),
+            requestId: self.requestId,
+            resultCode: self.resultCode,
         }
     }
 }

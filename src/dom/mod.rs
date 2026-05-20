@@ -37,30 +37,31 @@ pub struct BackendNode<'a> {
 }
 
 impl<'a> BackendNode<'a> {
-    pub fn builder() -> BackendNodeBuilder<'a> { BackendNodeBuilder::default() }
+    pub fn builder(nodeType: i64, nodeName: impl Into<Cow<'a, str>>, backendNodeId: BackendNodeId) -> BackendNodeBuilder<'a> {
+        BackendNodeBuilder {
+            nodeType: nodeType,
+            nodeName: nodeName.into(),
+            backendNodeId: backendNodeId,
+        }
+    }
     pub fn nodeType(&self) -> i64 { self.nodeType }
     pub fn nodeName(&self) -> &str { self.nodeName.as_ref() }
     pub fn backendNodeId(&self) -> &BackendNodeId { &self.backendNodeId }
 }
 
-#[derive(Default)]
+
 pub struct BackendNodeBuilder<'a> {
-    nodeType: Option<i64>,
-    nodeName: Option<Cow<'a, str>>,
-    backendNodeId: Option<BackendNodeId>,
+    nodeType: i64,
+    nodeName: Cow<'a, str>,
+    backendNodeId: BackendNodeId,
 }
 
 impl<'a> BackendNodeBuilder<'a> {
-    /// 'Node''s nodeType.
-    pub fn nodeType(mut self, nodeType: i64) -> Self { self.nodeType = Some(nodeType); self }
-    /// 'Node''s nodeName.
-    pub fn nodeName(mut self, nodeName: impl Into<Cow<'a, str>>) -> Self { self.nodeName = Some(nodeName.into()); self }
-    pub fn backendNodeId(mut self, backendNodeId: BackendNodeId) -> Self { self.backendNodeId = Some(backendNodeId); self }
     pub fn build(self) -> BackendNode<'a> {
         BackendNode {
-            nodeType: self.nodeType.unwrap_or_default(),
-            nodeName: self.nodeName.unwrap_or_default(),
-            backendNodeId: self.backendNodeId.unwrap_or_default(),
+            nodeType: self.nodeType,
+            nodeName: self.nodeName,
+            backendNodeId: self.backendNodeId,
         }
     }
 }
@@ -324,7 +325,45 @@ pub struct Node<'a> {
 }
 
 impl<'a> Node<'a> {
-    pub fn builder() -> NodeBuilder<'a> { NodeBuilder::default() }
+    pub fn builder(nodeId: NodeId, backendNodeId: BackendNodeId, nodeType: i64, nodeName: impl Into<Cow<'a, str>>, localName: impl Into<Cow<'a, str>>, nodeValue: impl Into<Cow<'a, str>>) -> NodeBuilder<'a> {
+        NodeBuilder {
+            nodeId: nodeId,
+            parentId: None,
+            backendNodeId: backendNodeId,
+            nodeType: nodeType,
+            nodeName: nodeName.into(),
+            localName: localName.into(),
+            nodeValue: nodeValue.into(),
+            childNodeCount: None,
+            children: None,
+            attributes: None,
+            documentURL: None,
+            baseURL: None,
+            publicId: None,
+            systemId: None,
+            internalSubset: None,
+            xmlVersion: None,
+            name: None,
+            value: None,
+            pseudoType: None,
+            pseudoIdentifier: None,
+            shadowRootType: None,
+            frameId: None,
+            contentDocument: None,
+            shadowRoots: None,
+            templateContent: None,
+            pseudoElements: None,
+            importedDocument: None,
+            distributedNodes: None,
+            isSVG: None,
+            compatibilityMode: None,
+            assignedSlot: None,
+            isScrollable: None,
+            affectedByStartingStyles: None,
+            adoptedStyleSheets: None,
+            adProvenance: None,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
     pub fn parentId(&self) -> Option<&NodeId> { self.parentId.as_ref() }
     pub fn backendNodeId(&self) -> &BackendNodeId { &self.backendNodeId }
@@ -362,15 +401,15 @@ impl<'a> Node<'a> {
     pub fn adProvenance(&self) -> Option<&crate::network::AdProvenance<'a>> { self.adProvenance.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct NodeBuilder<'a> {
-    nodeId: Option<NodeId>,
+    nodeId: NodeId,
     parentId: Option<NodeId>,
-    backendNodeId: Option<BackendNodeId>,
-    nodeType: Option<i64>,
-    nodeName: Option<Cow<'a, str>>,
-    localName: Option<Cow<'a, str>>,
-    nodeValue: Option<Cow<'a, str>>,
+    backendNodeId: BackendNodeId,
+    nodeType: i64,
+    nodeName: Cow<'a, str>,
+    localName: Cow<'a, str>,
+    nodeValue: Cow<'a, str>,
     childNodeCount: Option<u64>,
     children: Option<Vec<Box<Node<'a>>>>,
     attributes: Option<Vec<Cow<'a, str>>>,
@@ -402,22 +441,8 @@ pub struct NodeBuilder<'a> {
 }
 
 impl<'a> NodeBuilder<'a> {
-    /// Node identifier that is passed into the rest of the DOM messages as the 'nodeId'. Backend
-    /// will only push node with given 'id' once. It is aware of all requested nodes and will only
-    /// fire DOM events for nodes known to the client.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
     /// The id of the parent node if any.
     pub fn parentId(mut self, parentId: NodeId) -> Self { self.parentId = Some(parentId); self }
-    /// The BackendNodeId for this node.
-    pub fn backendNodeId(mut self, backendNodeId: BackendNodeId) -> Self { self.backendNodeId = Some(backendNodeId); self }
-    /// 'Node''s nodeType.
-    pub fn nodeType(mut self, nodeType: i64) -> Self { self.nodeType = Some(nodeType); self }
-    /// 'Node''s nodeName.
-    pub fn nodeName(mut self, nodeName: impl Into<Cow<'a, str>>) -> Self { self.nodeName = Some(nodeName.into()); self }
-    /// 'Node''s localName.
-    pub fn localName(mut self, localName: impl Into<Cow<'a, str>>) -> Self { self.localName = Some(localName.into()); self }
-    /// 'Node''s nodeValue.
-    pub fn nodeValue(mut self, nodeValue: impl Into<Cow<'a, str>>) -> Self { self.nodeValue = Some(nodeValue.into()); self }
     /// Child count for 'Container' nodes.
     pub fn childNodeCount(mut self, childNodeCount: u64) -> Self { self.childNodeCount = Some(childNodeCount); self }
     /// Child nodes of this node when requested with children.
@@ -473,13 +498,13 @@ impl<'a> NodeBuilder<'a> {
     pub fn adProvenance(mut self, adProvenance: crate::network::AdProvenance<'a>) -> Self { self.adProvenance = Some(adProvenance); self }
     pub fn build(self) -> Node<'a> {
         Node {
-            nodeId: self.nodeId.unwrap_or_default(),
+            nodeId: self.nodeId,
             parentId: self.parentId,
-            backendNodeId: self.backendNodeId.unwrap_or_default(),
-            nodeType: self.nodeType.unwrap_or_default(),
-            nodeName: self.nodeName.unwrap_or_default(),
-            localName: self.localName.unwrap_or_default(),
-            nodeValue: self.nodeValue.unwrap_or_default(),
+            backendNodeId: self.backendNodeId,
+            nodeType: self.nodeType,
+            nodeName: self.nodeName,
+            localName: self.localName,
+            nodeValue: self.nodeValue,
             childNodeCount: self.childNodeCount,
             children: self.children,
             attributes: self.attributes,
@@ -522,24 +547,27 @@ pub struct DetachedElementInfo<'a> {
 }
 
 impl<'a> DetachedElementInfo<'a> {
-    pub fn builder() -> DetachedElementInfoBuilder<'a> { DetachedElementInfoBuilder::default() }
+    pub fn builder(treeNode: Node<'a>, retainedNodeIds: Vec<NodeId>) -> DetachedElementInfoBuilder<'a> {
+        DetachedElementInfoBuilder {
+            treeNode: treeNode,
+            retainedNodeIds: retainedNodeIds,
+        }
+    }
     pub fn treeNode(&self) -> &Node<'a> { &self.treeNode }
     pub fn retainedNodeIds(&self) -> &[NodeId] { &self.retainedNodeIds }
 }
 
-#[derive(Default)]
+
 pub struct DetachedElementInfoBuilder<'a> {
-    treeNode: Option<Node<'a>>,
-    retainedNodeIds: Option<Vec<NodeId>>,
+    treeNode: Node<'a>,
+    retainedNodeIds: Vec<NodeId>,
 }
 
 impl<'a> DetachedElementInfoBuilder<'a> {
-    pub fn treeNode(mut self, treeNode: Node<'a>) -> Self { self.treeNode = Some(treeNode); self }
-    pub fn retainedNodeIds(mut self, retainedNodeIds: Vec<NodeId>) -> Self { self.retainedNodeIds = Some(retainedNodeIds); self }
     pub fn build(self) -> DetachedElementInfo<'a> {
         DetachedElementInfo {
-            treeNode: self.treeNode.unwrap_or_default(),
-            retainedNodeIds: self.retainedNodeIds.unwrap_or_default(),
+            treeNode: self.treeNode,
+            retainedNodeIds: self.retainedNodeIds,
         }
     }
 }
@@ -561,35 +589,36 @@ pub struct RGBA {
 }
 
 impl RGBA {
-    pub fn builder() -> RGBABuilder { RGBABuilder::default() }
+    pub fn builder(r: i64, g: i64, b: i64) -> RGBABuilder {
+        RGBABuilder {
+            r: r,
+            g: g,
+            b: b,
+            a: None,
+        }
+    }
     pub fn r(&self) -> i64 { self.r }
     pub fn g(&self) -> i64 { self.g }
     pub fn b(&self) -> i64 { self.b }
     pub fn a(&self) -> Option<f64> { self.a }
 }
 
-#[derive(Default)]
+
 pub struct RGBABuilder {
-    r: Option<i64>,
-    g: Option<i64>,
-    b: Option<i64>,
+    r: i64,
+    g: i64,
+    b: i64,
     a: Option<f64>,
 }
 
 impl RGBABuilder {
-    /// The red component, in the [0-255] range.
-    pub fn r(mut self, r: i64) -> Self { self.r = Some(r); self }
-    /// The green component, in the [0-255] range.
-    pub fn g(mut self, g: i64) -> Self { self.g = Some(g); self }
-    /// The blue component, in the [0-255] range.
-    pub fn b(mut self, b: i64) -> Self { self.b = Some(b); self }
     /// The alpha component, in the [0-1] range (default: 1).
     pub fn a(mut self, a: f64) -> Self { self.a = Some(a); self }
     pub fn build(self) -> RGBA {
         RGBA {
-            r: self.r.unwrap_or_default(),
-            g: self.g.unwrap_or_default(),
-            b: self.b.unwrap_or_default(),
+            r: self.r,
+            g: self.g,
+            b: self.b,
             a: self.a,
         }
     }
@@ -622,7 +651,17 @@ pub struct BoxModel {
 }
 
 impl BoxModel {
-    pub fn builder() -> BoxModelBuilder { BoxModelBuilder::default() }
+    pub fn builder(content: Quad, padding: Quad, border: Quad, margin: Quad, width: u64, height: i64) -> BoxModelBuilder {
+        BoxModelBuilder {
+            content: content,
+            padding: padding,
+            border: border,
+            margin: margin,
+            width: width,
+            height: height,
+            shapeOutside: None,
+        }
+    }
     pub fn content(&self) -> &Quad { &self.content }
     pub fn padding(&self) -> &Quad { &self.padding }
     pub fn border(&self) -> &Quad { &self.border }
@@ -632,40 +671,28 @@ impl BoxModel {
     pub fn shapeOutside(&self) -> Option<&ShapeOutsideInfo> { self.shapeOutside.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct BoxModelBuilder {
-    content: Option<Quad>,
-    padding: Option<Quad>,
-    border: Option<Quad>,
-    margin: Option<Quad>,
-    width: Option<u64>,
-    height: Option<i64>,
+    content: Quad,
+    padding: Quad,
+    border: Quad,
+    margin: Quad,
+    width: u64,
+    height: i64,
     shapeOutside: Option<ShapeOutsideInfo>,
 }
 
 impl BoxModelBuilder {
-    /// Content box
-    pub fn content(mut self, content: Quad) -> Self { self.content = Some(content); self }
-    /// Padding box
-    pub fn padding(mut self, padding: Quad) -> Self { self.padding = Some(padding); self }
-    /// Border box
-    pub fn border(mut self, border: Quad) -> Self { self.border = Some(border); self }
-    /// Margin box
-    pub fn margin(mut self, margin: Quad) -> Self { self.margin = Some(margin); self }
-    /// Node width
-    pub fn width(mut self, width: u64) -> Self { self.width = Some(width); self }
-    /// Node height
-    pub fn height(mut self, height: i64) -> Self { self.height = Some(height); self }
     /// Shape outside coordinates
     pub fn shapeOutside(mut self, shapeOutside: ShapeOutsideInfo) -> Self { self.shapeOutside = Some(shapeOutside); self }
     pub fn build(self) -> BoxModel {
         BoxModel {
-            content: self.content.unwrap_or_default(),
-            padding: self.padding.unwrap_or_default(),
-            border: self.border.unwrap_or_default(),
-            margin: self.margin.unwrap_or_default(),
-            width: self.width.unwrap_or_default(),
-            height: self.height.unwrap_or_default(),
+            content: self.content,
+            padding: self.padding,
+            border: self.border,
+            margin: self.margin,
+            width: self.width,
+            height: self.height,
             shapeOutside: self.shapeOutside,
         }
     }
@@ -685,31 +712,31 @@ pub struct ShapeOutsideInfo {
 }
 
 impl ShapeOutsideInfo {
-    pub fn builder() -> ShapeOutsideInfoBuilder { ShapeOutsideInfoBuilder::default() }
+    pub fn builder(bounds: Quad, shape: Vec<JsonValue>, marginShape: Vec<JsonValue>) -> ShapeOutsideInfoBuilder {
+        ShapeOutsideInfoBuilder {
+            bounds: bounds,
+            shape: shape,
+            marginShape: marginShape,
+        }
+    }
     pub fn bounds(&self) -> &Quad { &self.bounds }
     pub fn shape(&self) -> &[JsonValue] { &self.shape }
     pub fn marginShape(&self) -> &[JsonValue] { &self.marginShape }
 }
 
-#[derive(Default)]
+
 pub struct ShapeOutsideInfoBuilder {
-    bounds: Option<Quad>,
-    shape: Option<Vec<JsonValue>>,
-    marginShape: Option<Vec<JsonValue>>,
+    bounds: Quad,
+    shape: Vec<JsonValue>,
+    marginShape: Vec<JsonValue>,
 }
 
 impl ShapeOutsideInfoBuilder {
-    /// Shape bounds
-    pub fn bounds(mut self, bounds: Quad) -> Self { self.bounds = Some(bounds); self }
-    /// Shape coordinate details
-    pub fn shape(mut self, shape: Vec<JsonValue>) -> Self { self.shape = Some(shape); self }
-    /// Margin shape bounds
-    pub fn marginShape(mut self, marginShape: Vec<JsonValue>) -> Self { self.marginShape = Some(marginShape); self }
     pub fn build(self) -> ShapeOutsideInfo {
         ShapeOutsideInfo {
-            bounds: self.bounds.unwrap_or_default(),
-            shape: self.shape.unwrap_or_default(),
-            marginShape: self.marginShape.unwrap_or_default(),
+            bounds: self.bounds,
+            shape: self.shape,
+            marginShape: self.marginShape,
         }
     }
 }
@@ -730,36 +757,35 @@ pub struct Rect {
 }
 
 impl Rect {
-    pub fn builder() -> RectBuilder { RectBuilder::default() }
+    pub fn builder(x: f64, y: f64, width: f64, height: f64) -> RectBuilder {
+        RectBuilder {
+            x: x,
+            y: y,
+            width: width,
+            height: height,
+        }
+    }
     pub fn x(&self) -> f64 { self.x }
     pub fn y(&self) -> f64 { self.y }
     pub fn width(&self) -> f64 { self.width }
     pub fn height(&self) -> f64 { self.height }
 }
 
-#[derive(Default)]
+
 pub struct RectBuilder {
-    x: Option<f64>,
-    y: Option<f64>,
-    width: Option<f64>,
-    height: Option<f64>,
+    x: f64,
+    y: f64,
+    width: f64,
+    height: f64,
 }
 
 impl RectBuilder {
-    /// X coordinate
-    pub fn x(mut self, x: f64) -> Self { self.x = Some(x); self }
-    /// Y coordinate
-    pub fn y(mut self, y: f64) -> Self { self.y = Some(y); self }
-    /// Rectangle width
-    pub fn width(mut self, width: f64) -> Self { self.width = Some(width); self }
-    /// Rectangle height
-    pub fn height(mut self, height: f64) -> Self { self.height = Some(height); self }
     pub fn build(self) -> Rect {
         Rect {
-            x: self.x.unwrap_or_default(),
-            y: self.y.unwrap_or_default(),
-            width: self.width.unwrap_or_default(),
-            height: self.height.unwrap_or_default(),
+            x: self.x,
+            y: self.y,
+            width: self.width,
+            height: self.height,
         }
     }
 }
@@ -775,26 +801,27 @@ pub struct CSSComputedStyleProperty<'a> {
 }
 
 impl<'a> CSSComputedStyleProperty<'a> {
-    pub fn builder() -> CSSComputedStylePropertyBuilder<'a> { CSSComputedStylePropertyBuilder::default() }
+    pub fn builder(name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> CSSComputedStylePropertyBuilder<'a> {
+        CSSComputedStylePropertyBuilder {
+            name: name.into(),
+            value: value.into(),
+        }
+    }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn value(&self) -> &str { self.value.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct CSSComputedStylePropertyBuilder<'a> {
-    name: Option<Cow<'a, str>>,
-    value: Option<Cow<'a, str>>,
+    name: Cow<'a, str>,
+    value: Cow<'a, str>,
 }
 
 impl<'a> CSSComputedStylePropertyBuilder<'a> {
-    /// Computed style property name.
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    /// Computed style property value.
-    pub fn value(mut self, value: impl Into<Cow<'a, str>>) -> Self { self.value = Some(value.into()); self }
     pub fn build(self) -> CSSComputedStyleProperty<'a> {
         CSSComputedStyleProperty {
-            name: self.name.unwrap_or_default(),
-            value: self.value.unwrap_or_default(),
+            name: self.name,
+            value: self.value,
         }
     }
 }
@@ -809,21 +836,23 @@ pub struct CollectClassNamesFromSubtreeParams {
 }
 
 impl CollectClassNamesFromSubtreeParams {
-    pub fn builder() -> CollectClassNamesFromSubtreeParamsBuilder { CollectClassNamesFromSubtreeParamsBuilder::default() }
+    pub fn builder(nodeId: NodeId) -> CollectClassNamesFromSubtreeParamsBuilder {
+        CollectClassNamesFromSubtreeParamsBuilder {
+            nodeId: nodeId,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
 }
 
-#[derive(Default)]
+
 pub struct CollectClassNamesFromSubtreeParamsBuilder {
-    nodeId: Option<NodeId>,
+    nodeId: NodeId,
 }
 
 impl CollectClassNamesFromSubtreeParamsBuilder {
-    /// Id of the node to collect class names.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn build(self) -> CollectClassNamesFromSubtreeParams {
         CollectClassNamesFromSubtreeParams {
-            nodeId: self.nodeId.unwrap_or_default(),
+            nodeId: self.nodeId,
         }
     }
 }
@@ -838,21 +867,23 @@ pub struct CollectClassNamesFromSubtreeReturns<'a> {
 }
 
 impl<'a> CollectClassNamesFromSubtreeReturns<'a> {
-    pub fn builder() -> CollectClassNamesFromSubtreeReturnsBuilder<'a> { CollectClassNamesFromSubtreeReturnsBuilder::default() }
+    pub fn builder(classNames: Vec<Cow<'a, str>>) -> CollectClassNamesFromSubtreeReturnsBuilder<'a> {
+        CollectClassNamesFromSubtreeReturnsBuilder {
+            classNames: classNames,
+        }
+    }
     pub fn classNames(&self) -> &[Cow<'a, str>] { &self.classNames }
 }
 
-#[derive(Default)]
+
 pub struct CollectClassNamesFromSubtreeReturnsBuilder<'a> {
-    classNames: Option<Vec<Cow<'a, str>>>,
+    classNames: Vec<Cow<'a, str>>,
 }
 
 impl<'a> CollectClassNamesFromSubtreeReturnsBuilder<'a> {
-    /// Class name list.
-    pub fn classNames(mut self, classNames: Vec<Cow<'a, str>>) -> Self { self.classNames = Some(classNames); self }
     pub fn build(self) -> CollectClassNamesFromSubtreeReturns<'a> {
         CollectClassNamesFromSubtreeReturns {
-            classNames: self.classNames.unwrap_or_default(),
+            classNames: self.classNames,
         }
     }
 }
@@ -881,31 +912,33 @@ pub struct CopyToParams {
 }
 
 impl CopyToParams {
-    pub fn builder() -> CopyToParamsBuilder { CopyToParamsBuilder::default() }
+    pub fn builder(nodeId: NodeId, targetNodeId: NodeId) -> CopyToParamsBuilder {
+        CopyToParamsBuilder {
+            nodeId: nodeId,
+            targetNodeId: targetNodeId,
+            insertBeforeNodeId: None,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
     pub fn targetNodeId(&self) -> &NodeId { &self.targetNodeId }
     pub fn insertBeforeNodeId(&self) -> Option<&NodeId> { self.insertBeforeNodeId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct CopyToParamsBuilder {
-    nodeId: Option<NodeId>,
-    targetNodeId: Option<NodeId>,
+    nodeId: NodeId,
+    targetNodeId: NodeId,
     insertBeforeNodeId: Option<NodeId>,
 }
 
 impl CopyToParamsBuilder {
-    /// Id of the node to copy.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
-    /// Id of the element to drop the copy into.
-    pub fn targetNodeId(mut self, targetNodeId: NodeId) -> Self { self.targetNodeId = Some(targetNodeId); self }
     /// Drop the copy before this node (if absent, the copy becomes the last child of
     /// 'targetNodeId').
     pub fn insertBeforeNodeId(mut self, insertBeforeNodeId: NodeId) -> Self { self.insertBeforeNodeId = Some(insertBeforeNodeId); self }
     pub fn build(self) -> CopyToParams {
         CopyToParams {
-            nodeId: self.nodeId.unwrap_or_default(),
-            targetNodeId: self.targetNodeId.unwrap_or_default(),
+            nodeId: self.nodeId,
+            targetNodeId: self.targetNodeId,
             insertBeforeNodeId: self.insertBeforeNodeId,
         }
     }
@@ -922,21 +955,23 @@ pub struct CopyToReturns {
 }
 
 impl CopyToReturns {
-    pub fn builder() -> CopyToReturnsBuilder { CopyToReturnsBuilder::default() }
+    pub fn builder(nodeId: NodeId) -> CopyToReturnsBuilder {
+        CopyToReturnsBuilder {
+            nodeId: nodeId,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
 }
 
-#[derive(Default)]
+
 pub struct CopyToReturnsBuilder {
-    nodeId: Option<NodeId>,
+    nodeId: NodeId,
 }
 
 impl CopyToReturnsBuilder {
-    /// Id of the node clone.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn build(self) -> CopyToReturns {
         CopyToReturns {
-            nodeId: self.nodeId.unwrap_or_default(),
+            nodeId: self.nodeId,
         }
     }
 }
@@ -974,7 +1009,15 @@ pub struct DescribeNodeParams<'a> {
 }
 
 impl<'a> DescribeNodeParams<'a> {
-    pub fn builder() -> DescribeNodeParamsBuilder<'a> { DescribeNodeParamsBuilder::default() }
+    pub fn builder() -> DescribeNodeParamsBuilder<'a> {
+        DescribeNodeParamsBuilder {
+            nodeId: None,
+            backendNodeId: None,
+            objectId: None,
+            depth: None,
+            pierce: None,
+        }
+    }
     pub fn nodeId(&self) -> Option<&NodeId> { self.nodeId.as_ref() }
     pub fn backendNodeId(&self) -> Option<&BackendNodeId> { self.backendNodeId.as_ref() }
     pub fn objectId(&self) -> Option<&crate::runtime::RemoteObjectId<'a>> { self.objectId.as_ref() }
@@ -1026,21 +1069,23 @@ pub struct DescribeNodeReturns<'a> {
 }
 
 impl<'a> DescribeNodeReturns<'a> {
-    pub fn builder() -> DescribeNodeReturnsBuilder<'a> { DescribeNodeReturnsBuilder::default() }
+    pub fn builder(node: Node<'a>) -> DescribeNodeReturnsBuilder<'a> {
+        DescribeNodeReturnsBuilder {
+            node: node,
+        }
+    }
     pub fn node(&self) -> &Node<'a> { &self.node }
 }
 
-#[derive(Default)]
+
 pub struct DescribeNodeReturnsBuilder<'a> {
-    node: Option<Node<'a>>,
+    node: Node<'a>,
 }
 
 impl<'a> DescribeNodeReturnsBuilder<'a> {
-    /// Node description.
-    pub fn node(mut self, node: Node<'a>) -> Self { self.node = Some(node); self }
     pub fn build(self) -> DescribeNodeReturns<'a> {
         DescribeNodeReturns {
-            node: self.node.unwrap_or_default(),
+            node: self.node,
         }
     }
 }
@@ -1075,7 +1120,14 @@ pub struct ScrollIntoViewIfNeededParams<'a> {
 }
 
 impl<'a> ScrollIntoViewIfNeededParams<'a> {
-    pub fn builder() -> ScrollIntoViewIfNeededParamsBuilder<'a> { ScrollIntoViewIfNeededParamsBuilder::default() }
+    pub fn builder() -> ScrollIntoViewIfNeededParamsBuilder<'a> {
+        ScrollIntoViewIfNeededParamsBuilder {
+            nodeId: None,
+            backendNodeId: None,
+            objectId: None,
+            rect: None,
+        }
+    }
     pub fn nodeId(&self) -> Option<&NodeId> { self.nodeId.as_ref() }
     pub fn backendNodeId(&self) -> Option<&BackendNodeId> { self.backendNodeId.as_ref() }
     pub fn objectId(&self) -> Option<&crate::runtime::RemoteObjectId<'a>> { self.objectId.as_ref() }
@@ -1120,21 +1172,6 @@ impl<'a> crate::CdpCommand<'a> for ScrollIntoViewIfNeededParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct DisableParams {}
 
-impl DisableParams {
-    pub fn builder() -> DisableParamsBuilder {
-        DisableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct DisableParamsBuilder {}
-
-impl DisableParamsBuilder {
-    pub fn build(self) -> DisableParams {
-        DisableParams {}
-    }
-}
-
 impl DisableParams { pub const METHOD: &'static str = "DOM.disable"; }
 
 impl<'a> crate::CdpCommand<'a> for DisableParams {
@@ -1153,21 +1190,23 @@ pub struct DiscardSearchResultsParams<'a> {
 }
 
 impl<'a> DiscardSearchResultsParams<'a> {
-    pub fn builder() -> DiscardSearchResultsParamsBuilder<'a> { DiscardSearchResultsParamsBuilder::default() }
+    pub fn builder(searchId: impl Into<Cow<'a, str>>) -> DiscardSearchResultsParamsBuilder<'a> {
+        DiscardSearchResultsParamsBuilder {
+            searchId: searchId.into(),
+        }
+    }
     pub fn searchId(&self) -> &str { self.searchId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct DiscardSearchResultsParamsBuilder<'a> {
-    searchId: Option<Cow<'a, str>>,
+    searchId: Cow<'a, str>,
 }
 
 impl<'a> DiscardSearchResultsParamsBuilder<'a> {
-    /// Unique search session identifier.
-    pub fn searchId(mut self, searchId: impl Into<Cow<'a, str>>) -> Self { self.searchId = Some(searchId.into()); self }
     pub fn build(self) -> DiscardSearchResultsParams<'a> {
         DiscardSearchResultsParams {
-            searchId: self.searchId.unwrap_or_default(),
+            searchId: self.searchId,
         }
     }
 }
@@ -1190,7 +1229,11 @@ pub struct EnableParams<'a> {
 }
 
 impl<'a> EnableParams<'a> {
-    pub fn builder() -> EnableParamsBuilder<'a> { EnableParamsBuilder::default() }
+    pub fn builder() -> EnableParamsBuilder<'a> {
+        EnableParamsBuilder {
+            includeWhitespace: None,
+        }
+    }
     pub fn includeWhitespace(&self) -> Option<&str> { self.includeWhitespace.as_deref() }
 }
 
@@ -1233,7 +1276,13 @@ pub struct FocusParams<'a> {
 }
 
 impl<'a> FocusParams<'a> {
-    pub fn builder() -> FocusParamsBuilder<'a> { FocusParamsBuilder::default() }
+    pub fn builder() -> FocusParamsBuilder<'a> {
+        FocusParamsBuilder {
+            nodeId: None,
+            backendNodeId: None,
+            objectId: None,
+        }
+    }
     pub fn nodeId(&self) -> Option<&NodeId> { self.nodeId.as_ref() }
     pub fn backendNodeId(&self) -> Option<&BackendNodeId> { self.backendNodeId.as_ref() }
     pub fn objectId(&self) -> Option<&crate::runtime::RemoteObjectId<'a>> { self.objectId.as_ref() }
@@ -1279,21 +1328,23 @@ pub struct GetAttributesParams {
 }
 
 impl GetAttributesParams {
-    pub fn builder() -> GetAttributesParamsBuilder { GetAttributesParamsBuilder::default() }
+    pub fn builder(nodeId: NodeId) -> GetAttributesParamsBuilder {
+        GetAttributesParamsBuilder {
+            nodeId: nodeId,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
 }
 
-#[derive(Default)]
+
 pub struct GetAttributesParamsBuilder {
-    nodeId: Option<NodeId>,
+    nodeId: NodeId,
 }
 
 impl GetAttributesParamsBuilder {
-    /// Id of the node to retrieve attributes for.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn build(self) -> GetAttributesParams {
         GetAttributesParams {
-            nodeId: self.nodeId.unwrap_or_default(),
+            nodeId: self.nodeId,
         }
     }
 }
@@ -1308,21 +1359,23 @@ pub struct GetAttributesReturns<'a> {
 }
 
 impl<'a> GetAttributesReturns<'a> {
-    pub fn builder() -> GetAttributesReturnsBuilder<'a> { GetAttributesReturnsBuilder::default() }
+    pub fn builder(attributes: Vec<Cow<'a, str>>) -> GetAttributesReturnsBuilder<'a> {
+        GetAttributesReturnsBuilder {
+            attributes: attributes,
+        }
+    }
     pub fn attributes(&self) -> &[Cow<'a, str>] { &self.attributes }
 }
 
-#[derive(Default)]
+
 pub struct GetAttributesReturnsBuilder<'a> {
-    attributes: Option<Vec<Cow<'a, str>>>,
+    attributes: Vec<Cow<'a, str>>,
 }
 
 impl<'a> GetAttributesReturnsBuilder<'a> {
-    /// An interleaved array of node attribute names and values.
-    pub fn attributes(mut self, attributes: Vec<Cow<'a, str>>) -> Self { self.attributes = Some(attributes); self }
     pub fn build(self) -> GetAttributesReturns<'a> {
         GetAttributesReturns {
-            attributes: self.attributes.unwrap_or_default(),
+            attributes: self.attributes,
         }
     }
 }
@@ -1351,7 +1404,13 @@ pub struct GetBoxModelParams<'a> {
 }
 
 impl<'a> GetBoxModelParams<'a> {
-    pub fn builder() -> GetBoxModelParamsBuilder<'a> { GetBoxModelParamsBuilder::default() }
+    pub fn builder() -> GetBoxModelParamsBuilder<'a> {
+        GetBoxModelParamsBuilder {
+            nodeId: None,
+            backendNodeId: None,
+            objectId: None,
+        }
+    }
     pub fn nodeId(&self) -> Option<&NodeId> { self.nodeId.as_ref() }
     pub fn backendNodeId(&self) -> Option<&BackendNodeId> { self.backendNodeId.as_ref() }
     pub fn objectId(&self) -> Option<&crate::runtime::RemoteObjectId<'a>> { self.objectId.as_ref() }
@@ -1390,21 +1449,23 @@ pub struct GetBoxModelReturns {
 }
 
 impl GetBoxModelReturns {
-    pub fn builder() -> GetBoxModelReturnsBuilder { GetBoxModelReturnsBuilder::default() }
+    pub fn builder(model: BoxModel) -> GetBoxModelReturnsBuilder {
+        GetBoxModelReturnsBuilder {
+            model: model,
+        }
+    }
     pub fn model(&self) -> &BoxModel { &self.model }
 }
 
-#[derive(Default)]
+
 pub struct GetBoxModelReturnsBuilder {
-    model: Option<BoxModel>,
+    model: BoxModel,
 }
 
 impl GetBoxModelReturnsBuilder {
-    /// Box model for the node.
-    pub fn model(mut self, model: BoxModel) -> Self { self.model = Some(model); self }
     pub fn build(self) -> GetBoxModelReturns {
         GetBoxModelReturns {
-            model: self.model.unwrap_or_default(),
+            model: self.model,
         }
     }
 }
@@ -1434,7 +1495,13 @@ pub struct GetContentQuadsParams<'a> {
 }
 
 impl<'a> GetContentQuadsParams<'a> {
-    pub fn builder() -> GetContentQuadsParamsBuilder<'a> { GetContentQuadsParamsBuilder::default() }
+    pub fn builder() -> GetContentQuadsParamsBuilder<'a> {
+        GetContentQuadsParamsBuilder {
+            nodeId: None,
+            backendNodeId: None,
+            objectId: None,
+        }
+    }
     pub fn nodeId(&self) -> Option<&NodeId> { self.nodeId.as_ref() }
     pub fn backendNodeId(&self) -> Option<&BackendNodeId> { self.backendNodeId.as_ref() }
     pub fn objectId(&self) -> Option<&crate::runtime::RemoteObjectId<'a>> { self.objectId.as_ref() }
@@ -1474,21 +1541,23 @@ pub struct GetContentQuadsReturns {
 }
 
 impl GetContentQuadsReturns {
-    pub fn builder() -> GetContentQuadsReturnsBuilder { GetContentQuadsReturnsBuilder::default() }
+    pub fn builder(quads: Vec<Quad>) -> GetContentQuadsReturnsBuilder {
+        GetContentQuadsReturnsBuilder {
+            quads: quads,
+        }
+    }
     pub fn quads(&self) -> &[Quad] { &self.quads }
 }
 
-#[derive(Default)]
+
 pub struct GetContentQuadsReturnsBuilder {
-    quads: Option<Vec<Quad>>,
+    quads: Vec<Quad>,
 }
 
 impl GetContentQuadsReturnsBuilder {
-    /// Quads that describe node layout relative to viewport.
-    pub fn quads(mut self, quads: Vec<Quad>) -> Self { self.quads = Some(quads); self }
     pub fn build(self) -> GetContentQuadsReturns {
         GetContentQuadsReturns {
-            quads: self.quads.unwrap_or_default(),
+            quads: self.quads,
         }
     }
 }
@@ -1517,7 +1586,12 @@ pub struct GetDocumentParams {
 }
 
 impl GetDocumentParams {
-    pub fn builder() -> GetDocumentParamsBuilder { GetDocumentParamsBuilder::default() }
+    pub fn builder() -> GetDocumentParamsBuilder {
+        GetDocumentParamsBuilder {
+            depth: None,
+            pierce: None,
+        }
+    }
     pub fn depth(&self) -> Option<i64> { self.depth }
     pub fn pierce(&self) -> Option<bool> { self.pierce }
 }
@@ -1554,21 +1628,23 @@ pub struct GetDocumentReturns<'a> {
 }
 
 impl<'a> GetDocumentReturns<'a> {
-    pub fn builder() -> GetDocumentReturnsBuilder<'a> { GetDocumentReturnsBuilder::default() }
+    pub fn builder(root: Node<'a>) -> GetDocumentReturnsBuilder<'a> {
+        GetDocumentReturnsBuilder {
+            root: root,
+        }
+    }
     pub fn root(&self) -> &Node<'a> { &self.root }
 }
 
-#[derive(Default)]
+
 pub struct GetDocumentReturnsBuilder<'a> {
-    root: Option<Node<'a>>,
+    root: Node<'a>,
 }
 
 impl<'a> GetDocumentReturnsBuilder<'a> {
-    /// Resulting node.
-    pub fn root(mut self, root: Node<'a>) -> Self { self.root = Some(root); self }
     pub fn build(self) -> GetDocumentReturns<'a> {
         GetDocumentReturns {
-            root: self.root.unwrap_or_default(),
+            root: self.root,
         }
     }
 }
@@ -1598,7 +1674,12 @@ pub struct GetFlattenedDocumentParams {
 }
 
 impl GetFlattenedDocumentParams {
-    pub fn builder() -> GetFlattenedDocumentParamsBuilder { GetFlattenedDocumentParamsBuilder::default() }
+    pub fn builder() -> GetFlattenedDocumentParamsBuilder {
+        GetFlattenedDocumentParamsBuilder {
+            depth: None,
+            pierce: None,
+        }
+    }
     pub fn depth(&self) -> Option<i64> { self.depth }
     pub fn pierce(&self) -> Option<bool> { self.pierce }
 }
@@ -1636,21 +1717,23 @@ pub struct GetFlattenedDocumentReturns<'a> {
 }
 
 impl<'a> GetFlattenedDocumentReturns<'a> {
-    pub fn builder() -> GetFlattenedDocumentReturnsBuilder<'a> { GetFlattenedDocumentReturnsBuilder::default() }
+    pub fn builder(nodes: Vec<Node<'a>>) -> GetFlattenedDocumentReturnsBuilder<'a> {
+        GetFlattenedDocumentReturnsBuilder {
+            nodes: nodes,
+        }
+    }
     pub fn nodes(&self) -> &[Node<'a>] { &self.nodes }
 }
 
-#[derive(Default)]
+
 pub struct GetFlattenedDocumentReturnsBuilder<'a> {
-    nodes: Option<Vec<Node<'a>>>,
+    nodes: Vec<Node<'a>>,
 }
 
 impl<'a> GetFlattenedDocumentReturnsBuilder<'a> {
-    /// Resulting node.
-    pub fn nodes(mut self, nodes: Vec<Node<'a>>) -> Self { self.nodes = Some(nodes); self }
     pub fn build(self) -> GetFlattenedDocumentReturns<'a> {
         GetFlattenedDocumentReturns {
-            nodes: self.nodes.unwrap_or_default(),
+            nodes: self.nodes,
         }
     }
 }
@@ -1678,31 +1761,33 @@ pub struct GetNodesForSubtreeByStyleParams<'a> {
 }
 
 impl<'a> GetNodesForSubtreeByStyleParams<'a> {
-    pub fn builder() -> GetNodesForSubtreeByStyleParamsBuilder<'a> { GetNodesForSubtreeByStyleParamsBuilder::default() }
+    pub fn builder(nodeId: NodeId, computedStyles: Vec<CSSComputedStyleProperty<'a>>) -> GetNodesForSubtreeByStyleParamsBuilder<'a> {
+        GetNodesForSubtreeByStyleParamsBuilder {
+            nodeId: nodeId,
+            computedStyles: computedStyles,
+            pierce: None,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
     pub fn computedStyles(&self) -> &[CSSComputedStyleProperty<'a>] { &self.computedStyles }
     pub fn pierce(&self) -> Option<bool> { self.pierce }
 }
 
-#[derive(Default)]
+
 pub struct GetNodesForSubtreeByStyleParamsBuilder<'a> {
-    nodeId: Option<NodeId>,
-    computedStyles: Option<Vec<CSSComputedStyleProperty<'a>>>,
+    nodeId: NodeId,
+    computedStyles: Vec<CSSComputedStyleProperty<'a>>,
     pierce: Option<bool>,
 }
 
 impl<'a> GetNodesForSubtreeByStyleParamsBuilder<'a> {
-    /// Node ID pointing to the root of a subtree.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
-    /// The style to filter nodes by (includes nodes if any of properties matches).
-    pub fn computedStyles(mut self, computedStyles: Vec<CSSComputedStyleProperty<'a>>) -> Self { self.computedStyles = Some(computedStyles); self }
     /// Whether or not iframes and shadow roots in the same target should be traversed when returning the
     /// results (default is false).
     pub fn pierce(mut self, pierce: bool) -> Self { self.pierce = Some(pierce); self }
     pub fn build(self) -> GetNodesForSubtreeByStyleParams<'a> {
         GetNodesForSubtreeByStyleParams {
-            nodeId: self.nodeId.unwrap_or_default(),
-            computedStyles: self.computedStyles.unwrap_or_default(),
+            nodeId: self.nodeId,
+            computedStyles: self.computedStyles,
             pierce: self.pierce,
         }
     }
@@ -1718,21 +1803,23 @@ pub struct GetNodesForSubtreeByStyleReturns {
 }
 
 impl GetNodesForSubtreeByStyleReturns {
-    pub fn builder() -> GetNodesForSubtreeByStyleReturnsBuilder { GetNodesForSubtreeByStyleReturnsBuilder::default() }
+    pub fn builder(nodeIds: Vec<NodeId>) -> GetNodesForSubtreeByStyleReturnsBuilder {
+        GetNodesForSubtreeByStyleReturnsBuilder {
+            nodeIds: nodeIds,
+        }
+    }
     pub fn nodeIds(&self) -> &[NodeId] { &self.nodeIds }
 }
 
-#[derive(Default)]
+
 pub struct GetNodesForSubtreeByStyleReturnsBuilder {
-    nodeIds: Option<Vec<NodeId>>,
+    nodeIds: Vec<NodeId>,
 }
 
 impl GetNodesForSubtreeByStyleReturnsBuilder {
-    /// Resulting nodes.
-    pub fn nodeIds(mut self, nodeIds: Vec<NodeId>) -> Self { self.nodeIds = Some(nodeIds); self }
     pub fn build(self) -> GetNodesForSubtreeByStyleReturns {
         GetNodesForSubtreeByStyleReturns {
-            nodeIds: self.nodeIds.unwrap_or_default(),
+            nodeIds: self.nodeIds,
         }
     }
 }
@@ -1763,34 +1850,37 @@ pub struct GetNodeForLocationParams {
 }
 
 impl GetNodeForLocationParams {
-    pub fn builder() -> GetNodeForLocationParamsBuilder { GetNodeForLocationParamsBuilder::default() }
+    pub fn builder(x: i32, y: i32) -> GetNodeForLocationParamsBuilder {
+        GetNodeForLocationParamsBuilder {
+            x: x,
+            y: y,
+            includeUserAgentShadowDOM: None,
+            ignorePointerEventsNone: None,
+        }
+    }
     pub fn x(&self) -> i32 { self.x }
     pub fn y(&self) -> i32 { self.y }
     pub fn includeUserAgentShadowDOM(&self) -> Option<bool> { self.includeUserAgentShadowDOM }
     pub fn ignorePointerEventsNone(&self) -> Option<bool> { self.ignorePointerEventsNone }
 }
 
-#[derive(Default)]
+
 pub struct GetNodeForLocationParamsBuilder {
-    x: Option<i32>,
-    y: Option<i32>,
+    x: i32,
+    y: i32,
     includeUserAgentShadowDOM: Option<bool>,
     ignorePointerEventsNone: Option<bool>,
 }
 
 impl GetNodeForLocationParamsBuilder {
-    /// X coordinate.
-    pub fn x(mut self, x: i32) -> Self { self.x = Some(x); self }
-    /// Y coordinate.
-    pub fn y(mut self, y: i32) -> Self { self.y = Some(y); self }
     /// False to skip to the nearest non-UA shadow root ancestor (default: false).
     pub fn includeUserAgentShadowDOM(mut self, includeUserAgentShadowDOM: bool) -> Self { self.includeUserAgentShadowDOM = Some(includeUserAgentShadowDOM); self }
     /// Whether to ignore pointer-events: none on elements and hit test them.
     pub fn ignorePointerEventsNone(mut self, ignorePointerEventsNone: bool) -> Self { self.ignorePointerEventsNone = Some(ignorePointerEventsNone); self }
     pub fn build(self) -> GetNodeForLocationParams {
         GetNodeForLocationParams {
-            x: self.x.unwrap_or_default(),
-            y: self.y.unwrap_or_default(),
+            x: self.x,
+            y: self.y,
             includeUserAgentShadowDOM: self.includeUserAgentShadowDOM,
             ignorePointerEventsNone: self.ignorePointerEventsNone,
         }
@@ -1813,30 +1903,32 @@ pub struct GetNodeForLocationReturns<'a> {
 }
 
 impl<'a> GetNodeForLocationReturns<'a> {
-    pub fn builder() -> GetNodeForLocationReturnsBuilder<'a> { GetNodeForLocationReturnsBuilder::default() }
+    pub fn builder(backendNodeId: BackendNodeId, frameId: crate::page::FrameId<'a>) -> GetNodeForLocationReturnsBuilder<'a> {
+        GetNodeForLocationReturnsBuilder {
+            backendNodeId: backendNodeId,
+            frameId: frameId,
+            nodeId: None,
+        }
+    }
     pub fn backendNodeId(&self) -> &BackendNodeId { &self.backendNodeId }
     pub fn frameId(&self) -> &crate::page::FrameId<'a> { &self.frameId }
     pub fn nodeId(&self) -> Option<&NodeId> { self.nodeId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct GetNodeForLocationReturnsBuilder<'a> {
-    backendNodeId: Option<BackendNodeId>,
-    frameId: Option<crate::page::FrameId<'a>>,
+    backendNodeId: BackendNodeId,
+    frameId: crate::page::FrameId<'a>,
     nodeId: Option<NodeId>,
 }
 
 impl<'a> GetNodeForLocationReturnsBuilder<'a> {
-    /// Resulting node.
-    pub fn backendNodeId(mut self, backendNodeId: BackendNodeId) -> Self { self.backendNodeId = Some(backendNodeId); self }
-    /// Frame this node belongs to.
-    pub fn frameId(mut self, frameId: crate::page::FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
     /// Id of the node at given coordinates, only when enabled and requested document.
     pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn build(self) -> GetNodeForLocationReturns<'a> {
         GetNodeForLocationReturns {
-            backendNodeId: self.backendNodeId.unwrap_or_default(),
-            frameId: self.frameId.unwrap_or_default(),
+            backendNodeId: self.backendNodeId,
+            frameId: self.frameId,
             nodeId: self.nodeId,
         }
     }
@@ -1869,7 +1961,14 @@ pub struct GetOuterHTMLParams<'a> {
 }
 
 impl<'a> GetOuterHTMLParams<'a> {
-    pub fn builder() -> GetOuterHTMLParamsBuilder<'a> { GetOuterHTMLParamsBuilder::default() }
+    pub fn builder() -> GetOuterHTMLParamsBuilder<'a> {
+        GetOuterHTMLParamsBuilder {
+            nodeId: None,
+            backendNodeId: None,
+            objectId: None,
+            includeShadowDOM: None,
+        }
+    }
     pub fn nodeId(&self) -> Option<&NodeId> { self.nodeId.as_ref() }
     pub fn backendNodeId(&self) -> Option<&BackendNodeId> { self.backendNodeId.as_ref() }
     pub fn objectId(&self) -> Option<&crate::runtime::RemoteObjectId<'a>> { self.objectId.as_ref() }
@@ -1913,21 +2012,23 @@ pub struct GetOuterHTMLReturns<'a> {
 }
 
 impl<'a> GetOuterHTMLReturns<'a> {
-    pub fn builder() -> GetOuterHTMLReturnsBuilder<'a> { GetOuterHTMLReturnsBuilder::default() }
+    pub fn builder(outerHTML: impl Into<Cow<'a, str>>) -> GetOuterHTMLReturnsBuilder<'a> {
+        GetOuterHTMLReturnsBuilder {
+            outerHTML: outerHTML.into(),
+        }
+    }
     pub fn outerHTML(&self) -> &str { self.outerHTML.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct GetOuterHTMLReturnsBuilder<'a> {
-    outerHTML: Option<Cow<'a, str>>,
+    outerHTML: Cow<'a, str>,
 }
 
 impl<'a> GetOuterHTMLReturnsBuilder<'a> {
-    /// Outer HTML markup.
-    pub fn outerHTML(mut self, outerHTML: impl Into<Cow<'a, str>>) -> Self { self.outerHTML = Some(outerHTML.into()); self }
     pub fn build(self) -> GetOuterHTMLReturns<'a> {
         GetOuterHTMLReturns {
-            outerHTML: self.outerHTML.unwrap_or_default(),
+            outerHTML: self.outerHTML,
         }
     }
 }
@@ -1949,21 +2050,23 @@ pub struct GetRelayoutBoundaryParams {
 }
 
 impl GetRelayoutBoundaryParams {
-    pub fn builder() -> GetRelayoutBoundaryParamsBuilder { GetRelayoutBoundaryParamsBuilder::default() }
+    pub fn builder(nodeId: NodeId) -> GetRelayoutBoundaryParamsBuilder {
+        GetRelayoutBoundaryParamsBuilder {
+            nodeId: nodeId,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
 }
 
-#[derive(Default)]
+
 pub struct GetRelayoutBoundaryParamsBuilder {
-    nodeId: Option<NodeId>,
+    nodeId: NodeId,
 }
 
 impl GetRelayoutBoundaryParamsBuilder {
-    /// Id of the node.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn build(self) -> GetRelayoutBoundaryParams {
         GetRelayoutBoundaryParams {
-            nodeId: self.nodeId.unwrap_or_default(),
+            nodeId: self.nodeId,
         }
     }
 }
@@ -1978,21 +2081,23 @@ pub struct GetRelayoutBoundaryReturns {
 }
 
 impl GetRelayoutBoundaryReturns {
-    pub fn builder() -> GetRelayoutBoundaryReturnsBuilder { GetRelayoutBoundaryReturnsBuilder::default() }
+    pub fn builder(nodeId: NodeId) -> GetRelayoutBoundaryReturnsBuilder {
+        GetRelayoutBoundaryReturnsBuilder {
+            nodeId: nodeId,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
 }
 
-#[derive(Default)]
+
 pub struct GetRelayoutBoundaryReturnsBuilder {
-    nodeId: Option<NodeId>,
+    nodeId: NodeId,
 }
 
 impl GetRelayoutBoundaryReturnsBuilder {
-    /// Relayout boundary node id for the given node.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn build(self) -> GetRelayoutBoundaryReturns {
         GetRelayoutBoundaryReturns {
-            nodeId: self.nodeId.unwrap_or_default(),
+            nodeId: self.nodeId,
         }
     }
 }
@@ -2019,31 +2124,31 @@ pub struct GetSearchResultsParams<'a> {
 }
 
 impl<'a> GetSearchResultsParams<'a> {
-    pub fn builder() -> GetSearchResultsParamsBuilder<'a> { GetSearchResultsParamsBuilder::default() }
+    pub fn builder(searchId: impl Into<Cow<'a, str>>, fromIndex: u64, toIndex: u64) -> GetSearchResultsParamsBuilder<'a> {
+        GetSearchResultsParamsBuilder {
+            searchId: searchId.into(),
+            fromIndex: fromIndex,
+            toIndex: toIndex,
+        }
+    }
     pub fn searchId(&self) -> &str { self.searchId.as_ref() }
     pub fn fromIndex(&self) -> u64 { self.fromIndex }
     pub fn toIndex(&self) -> u64 { self.toIndex }
 }
 
-#[derive(Default)]
+
 pub struct GetSearchResultsParamsBuilder<'a> {
-    searchId: Option<Cow<'a, str>>,
-    fromIndex: Option<u64>,
-    toIndex: Option<u64>,
+    searchId: Cow<'a, str>,
+    fromIndex: u64,
+    toIndex: u64,
 }
 
 impl<'a> GetSearchResultsParamsBuilder<'a> {
-    /// Unique search session identifier.
-    pub fn searchId(mut self, searchId: impl Into<Cow<'a, str>>) -> Self { self.searchId = Some(searchId.into()); self }
-    /// Start index of the search result to be returned.
-    pub fn fromIndex(mut self, fromIndex: u64) -> Self { self.fromIndex = Some(fromIndex); self }
-    /// End index of the search result to be returned.
-    pub fn toIndex(mut self, toIndex: u64) -> Self { self.toIndex = Some(toIndex); self }
     pub fn build(self) -> GetSearchResultsParams<'a> {
         GetSearchResultsParams {
-            searchId: self.searchId.unwrap_or_default(),
-            fromIndex: self.fromIndex.unwrap_or_default(),
-            toIndex: self.toIndex.unwrap_or_default(),
+            searchId: self.searchId,
+            fromIndex: self.fromIndex,
+            toIndex: self.toIndex,
         }
     }
 }
@@ -2059,21 +2164,23 @@ pub struct GetSearchResultsReturns {
 }
 
 impl GetSearchResultsReturns {
-    pub fn builder() -> GetSearchResultsReturnsBuilder { GetSearchResultsReturnsBuilder::default() }
+    pub fn builder(nodeIds: Vec<NodeId>) -> GetSearchResultsReturnsBuilder {
+        GetSearchResultsReturnsBuilder {
+            nodeIds: nodeIds,
+        }
+    }
     pub fn nodeIds(&self) -> &[NodeId] { &self.nodeIds }
 }
 
-#[derive(Default)]
+
 pub struct GetSearchResultsReturnsBuilder {
-    nodeIds: Option<Vec<NodeId>>,
+    nodeIds: Vec<NodeId>,
 }
 
 impl GetSearchResultsReturnsBuilder {
-    /// Ids of the search result nodes.
-    pub fn nodeIds(mut self, nodeIds: Vec<NodeId>) -> Self { self.nodeIds = Some(nodeIds); self }
     pub fn build(self) -> GetSearchResultsReturns {
         GetSearchResultsReturns {
-            nodeIds: self.nodeIds.unwrap_or_default(),
+            nodeIds: self.nodeIds,
         }
     }
 }
@@ -2088,21 +2195,6 @@ impl<'a> crate::CdpCommand<'a> for GetSearchResultsParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct HideHighlightParams {}
 
-impl HideHighlightParams {
-    pub fn builder() -> HideHighlightParamsBuilder {
-        HideHighlightParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct HideHighlightParamsBuilder {}
-
-impl HideHighlightParamsBuilder {
-    pub fn build(self) -> HideHighlightParams {
-        HideHighlightParams {}
-    }
-}
-
 impl HideHighlightParams { pub const METHOD: &'static str = "DOM.hideHighlight"; }
 
 impl<'a> crate::CdpCommand<'a> for HideHighlightParams {
@@ -2112,21 +2204,6 @@ impl<'a> crate::CdpCommand<'a> for HideHighlightParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct HighlightNodeParams {}
-
-impl HighlightNodeParams {
-    pub fn builder() -> HighlightNodeParamsBuilder {
-        HighlightNodeParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct HighlightNodeParamsBuilder {}
-
-impl HighlightNodeParamsBuilder {
-    pub fn build(self) -> HighlightNodeParams {
-        HighlightNodeParams {}
-    }
-}
 
 impl HighlightNodeParams { pub const METHOD: &'static str = "DOM.highlightNode"; }
 
@@ -2138,21 +2215,6 @@ impl<'a> crate::CdpCommand<'a> for HighlightNodeParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct HighlightRectParams {}
 
-impl HighlightRectParams {
-    pub fn builder() -> HighlightRectParamsBuilder {
-        HighlightRectParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct HighlightRectParamsBuilder {}
-
-impl HighlightRectParamsBuilder {
-    pub fn build(self) -> HighlightRectParams {
-        HighlightRectParams {}
-    }
-}
-
 impl HighlightRectParams { pub const METHOD: &'static str = "DOM.highlightRect"; }
 
 impl<'a> crate::CdpCommand<'a> for HighlightRectParams {
@@ -2162,21 +2224,6 @@ impl<'a> crate::CdpCommand<'a> for HighlightRectParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct MarkUndoableStateParams {}
-
-impl MarkUndoableStateParams {
-    pub fn builder() -> MarkUndoableStateParamsBuilder {
-        MarkUndoableStateParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct MarkUndoableStateParamsBuilder {}
-
-impl MarkUndoableStateParamsBuilder {
-    pub fn build(self) -> MarkUndoableStateParams {
-        MarkUndoableStateParams {}
-    }
-}
 
 impl MarkUndoableStateParams { pub const METHOD: &'static str = "DOM.markUndoableState"; }
 
@@ -2201,31 +2248,33 @@ pub struct MoveToParams {
 }
 
 impl MoveToParams {
-    pub fn builder() -> MoveToParamsBuilder { MoveToParamsBuilder::default() }
+    pub fn builder(nodeId: NodeId, targetNodeId: NodeId) -> MoveToParamsBuilder {
+        MoveToParamsBuilder {
+            nodeId: nodeId,
+            targetNodeId: targetNodeId,
+            insertBeforeNodeId: None,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
     pub fn targetNodeId(&self) -> &NodeId { &self.targetNodeId }
     pub fn insertBeforeNodeId(&self) -> Option<&NodeId> { self.insertBeforeNodeId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct MoveToParamsBuilder {
-    nodeId: Option<NodeId>,
-    targetNodeId: Option<NodeId>,
+    nodeId: NodeId,
+    targetNodeId: NodeId,
     insertBeforeNodeId: Option<NodeId>,
 }
 
 impl MoveToParamsBuilder {
-    /// Id of the node to move.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
-    /// Id of the element to drop the moved node into.
-    pub fn targetNodeId(mut self, targetNodeId: NodeId) -> Self { self.targetNodeId = Some(targetNodeId); self }
     /// Drop node before this one (if absent, the moved node becomes the last child of
     /// 'targetNodeId').
     pub fn insertBeforeNodeId(mut self, insertBeforeNodeId: NodeId) -> Self { self.insertBeforeNodeId = Some(insertBeforeNodeId); self }
     pub fn build(self) -> MoveToParams {
         MoveToParams {
-            nodeId: self.nodeId.unwrap_or_default(),
-            targetNodeId: self.targetNodeId.unwrap_or_default(),
+            nodeId: self.nodeId,
+            targetNodeId: self.targetNodeId,
             insertBeforeNodeId: self.insertBeforeNodeId,
         }
     }
@@ -2241,21 +2290,23 @@ pub struct MoveToReturns {
 }
 
 impl MoveToReturns {
-    pub fn builder() -> MoveToReturnsBuilder { MoveToReturnsBuilder::default() }
+    pub fn builder(nodeId: NodeId) -> MoveToReturnsBuilder {
+        MoveToReturnsBuilder {
+            nodeId: nodeId,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
 }
 
-#[derive(Default)]
+
 pub struct MoveToReturnsBuilder {
-    nodeId: Option<NodeId>,
+    nodeId: NodeId,
 }
 
 impl MoveToReturnsBuilder {
-    /// New id of the moved node.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn build(self) -> MoveToReturns {
         MoveToReturns {
-            nodeId: self.nodeId.unwrap_or_default(),
+            nodeId: self.nodeId,
         }
     }
 }
@@ -2281,25 +2332,28 @@ pub struct PerformSearchParams<'a> {
 }
 
 impl<'a> PerformSearchParams<'a> {
-    pub fn builder() -> PerformSearchParamsBuilder<'a> { PerformSearchParamsBuilder::default() }
+    pub fn builder(query: impl Into<Cow<'a, str>>) -> PerformSearchParamsBuilder<'a> {
+        PerformSearchParamsBuilder {
+            query: query.into(),
+            includeUserAgentShadowDOM: None,
+        }
+    }
     pub fn query(&self) -> &str { self.query.as_ref() }
     pub fn includeUserAgentShadowDOM(&self) -> Option<bool> { self.includeUserAgentShadowDOM }
 }
 
-#[derive(Default)]
+
 pub struct PerformSearchParamsBuilder<'a> {
-    query: Option<Cow<'a, str>>,
+    query: Cow<'a, str>,
     includeUserAgentShadowDOM: Option<bool>,
 }
 
 impl<'a> PerformSearchParamsBuilder<'a> {
-    /// Plain text or query selector or XPath search query.
-    pub fn query(mut self, query: impl Into<Cow<'a, str>>) -> Self { self.query = Some(query.into()); self }
     /// True to search in user agent shadow DOM.
     pub fn includeUserAgentShadowDOM(mut self, includeUserAgentShadowDOM: bool) -> Self { self.includeUserAgentShadowDOM = Some(includeUserAgentShadowDOM); self }
     pub fn build(self) -> PerformSearchParams<'a> {
         PerformSearchParams {
-            query: self.query.unwrap_or_default(),
+            query: self.query,
             includeUserAgentShadowDOM: self.includeUserAgentShadowDOM,
         }
     }
@@ -2318,26 +2372,27 @@ pub struct PerformSearchReturns<'a> {
 }
 
 impl<'a> PerformSearchReturns<'a> {
-    pub fn builder() -> PerformSearchReturnsBuilder<'a> { PerformSearchReturnsBuilder::default() }
+    pub fn builder(searchId: impl Into<Cow<'a, str>>, resultCount: u64) -> PerformSearchReturnsBuilder<'a> {
+        PerformSearchReturnsBuilder {
+            searchId: searchId.into(),
+            resultCount: resultCount,
+        }
+    }
     pub fn searchId(&self) -> &str { self.searchId.as_ref() }
     pub fn resultCount(&self) -> u64 { self.resultCount }
 }
 
-#[derive(Default)]
+
 pub struct PerformSearchReturnsBuilder<'a> {
-    searchId: Option<Cow<'a, str>>,
-    resultCount: Option<u64>,
+    searchId: Cow<'a, str>,
+    resultCount: u64,
 }
 
 impl<'a> PerformSearchReturnsBuilder<'a> {
-    /// Unique search session identifier.
-    pub fn searchId(mut self, searchId: impl Into<Cow<'a, str>>) -> Self { self.searchId = Some(searchId.into()); self }
-    /// Number of search results.
-    pub fn resultCount(mut self, resultCount: u64) -> Self { self.resultCount = Some(resultCount); self }
     pub fn build(self) -> PerformSearchReturns<'a> {
         PerformSearchReturns {
-            searchId: self.searchId.unwrap_or_default(),
-            resultCount: self.resultCount.unwrap_or_default(),
+            searchId: self.searchId,
+            resultCount: self.resultCount,
         }
     }
 }
@@ -2359,21 +2414,23 @@ pub struct PushNodeByPathToFrontendParams<'a> {
 }
 
 impl<'a> PushNodeByPathToFrontendParams<'a> {
-    pub fn builder() -> PushNodeByPathToFrontendParamsBuilder<'a> { PushNodeByPathToFrontendParamsBuilder::default() }
+    pub fn builder(path: impl Into<Cow<'a, str>>) -> PushNodeByPathToFrontendParamsBuilder<'a> {
+        PushNodeByPathToFrontendParamsBuilder {
+            path: path.into(),
+        }
+    }
     pub fn path(&self) -> &str { self.path.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct PushNodeByPathToFrontendParamsBuilder<'a> {
-    path: Option<Cow<'a, str>>,
+    path: Cow<'a, str>,
 }
 
 impl<'a> PushNodeByPathToFrontendParamsBuilder<'a> {
-    /// Path to node in the proprietary format.
-    pub fn path(mut self, path: impl Into<Cow<'a, str>>) -> Self { self.path = Some(path.into()); self }
     pub fn build(self) -> PushNodeByPathToFrontendParams<'a> {
         PushNodeByPathToFrontendParams {
-            path: self.path.unwrap_or_default(),
+            path: self.path,
         }
     }
 }
@@ -2388,21 +2445,23 @@ pub struct PushNodeByPathToFrontendReturns {
 }
 
 impl PushNodeByPathToFrontendReturns {
-    pub fn builder() -> PushNodeByPathToFrontendReturnsBuilder { PushNodeByPathToFrontendReturnsBuilder::default() }
+    pub fn builder(nodeId: NodeId) -> PushNodeByPathToFrontendReturnsBuilder {
+        PushNodeByPathToFrontendReturnsBuilder {
+            nodeId: nodeId,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
 }
 
-#[derive(Default)]
+
 pub struct PushNodeByPathToFrontendReturnsBuilder {
-    nodeId: Option<NodeId>,
+    nodeId: NodeId,
 }
 
 impl PushNodeByPathToFrontendReturnsBuilder {
-    /// Id of the node for given path.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn build(self) -> PushNodeByPathToFrontendReturns {
         PushNodeByPathToFrontendReturns {
-            nodeId: self.nodeId.unwrap_or_default(),
+            nodeId: self.nodeId,
         }
     }
 }
@@ -2424,21 +2483,23 @@ pub struct PushNodesByBackendIdsToFrontendParams {
 }
 
 impl PushNodesByBackendIdsToFrontendParams {
-    pub fn builder() -> PushNodesByBackendIdsToFrontendParamsBuilder { PushNodesByBackendIdsToFrontendParamsBuilder::default() }
+    pub fn builder(backendNodeIds: Vec<BackendNodeId>) -> PushNodesByBackendIdsToFrontendParamsBuilder {
+        PushNodesByBackendIdsToFrontendParamsBuilder {
+            backendNodeIds: backendNodeIds,
+        }
+    }
     pub fn backendNodeIds(&self) -> &[BackendNodeId] { &self.backendNodeIds }
 }
 
-#[derive(Default)]
+
 pub struct PushNodesByBackendIdsToFrontendParamsBuilder {
-    backendNodeIds: Option<Vec<BackendNodeId>>,
+    backendNodeIds: Vec<BackendNodeId>,
 }
 
 impl PushNodesByBackendIdsToFrontendParamsBuilder {
-    /// The array of backend node ids.
-    pub fn backendNodeIds(mut self, backendNodeIds: Vec<BackendNodeId>) -> Self { self.backendNodeIds = Some(backendNodeIds); self }
     pub fn build(self) -> PushNodesByBackendIdsToFrontendParams {
         PushNodesByBackendIdsToFrontendParams {
-            backendNodeIds: self.backendNodeIds.unwrap_or_default(),
+            backendNodeIds: self.backendNodeIds,
         }
     }
 }
@@ -2454,22 +2515,23 @@ pub struct PushNodesByBackendIdsToFrontendReturns {
 }
 
 impl PushNodesByBackendIdsToFrontendReturns {
-    pub fn builder() -> PushNodesByBackendIdsToFrontendReturnsBuilder { PushNodesByBackendIdsToFrontendReturnsBuilder::default() }
+    pub fn builder(nodeIds: Vec<NodeId>) -> PushNodesByBackendIdsToFrontendReturnsBuilder {
+        PushNodesByBackendIdsToFrontendReturnsBuilder {
+            nodeIds: nodeIds,
+        }
+    }
     pub fn nodeIds(&self) -> &[NodeId] { &self.nodeIds }
 }
 
-#[derive(Default)]
+
 pub struct PushNodesByBackendIdsToFrontendReturnsBuilder {
-    nodeIds: Option<Vec<NodeId>>,
+    nodeIds: Vec<NodeId>,
 }
 
 impl PushNodesByBackendIdsToFrontendReturnsBuilder {
-    /// The array of ids of pushed nodes that correspond to the backend ids specified in
-    /// backendNodeIds.
-    pub fn nodeIds(mut self, nodeIds: Vec<NodeId>) -> Self { self.nodeIds = Some(nodeIds); self }
     pub fn build(self) -> PushNodesByBackendIdsToFrontendReturns {
         PushNodesByBackendIdsToFrontendReturns {
-            nodeIds: self.nodeIds.unwrap_or_default(),
+            nodeIds: self.nodeIds,
         }
     }
 }
@@ -2493,26 +2555,27 @@ pub struct QuerySelectorParams<'a> {
 }
 
 impl<'a> QuerySelectorParams<'a> {
-    pub fn builder() -> QuerySelectorParamsBuilder<'a> { QuerySelectorParamsBuilder::default() }
+    pub fn builder(nodeId: NodeId, selector: impl Into<Cow<'a, str>>) -> QuerySelectorParamsBuilder<'a> {
+        QuerySelectorParamsBuilder {
+            nodeId: nodeId,
+            selector: selector.into(),
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
     pub fn selector(&self) -> &str { self.selector.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct QuerySelectorParamsBuilder<'a> {
-    nodeId: Option<NodeId>,
-    selector: Option<Cow<'a, str>>,
+    nodeId: NodeId,
+    selector: Cow<'a, str>,
 }
 
 impl<'a> QuerySelectorParamsBuilder<'a> {
-    /// Id of the node to query upon.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
-    /// Selector string.
-    pub fn selector(mut self, selector: impl Into<Cow<'a, str>>) -> Self { self.selector = Some(selector.into()); self }
     pub fn build(self) -> QuerySelectorParams<'a> {
         QuerySelectorParams {
-            nodeId: self.nodeId.unwrap_or_default(),
-            selector: self.selector.unwrap_or_default(),
+            nodeId: self.nodeId,
+            selector: self.selector,
         }
     }
 }
@@ -2527,21 +2590,23 @@ pub struct QuerySelectorReturns {
 }
 
 impl QuerySelectorReturns {
-    pub fn builder() -> QuerySelectorReturnsBuilder { QuerySelectorReturnsBuilder::default() }
+    pub fn builder(nodeId: NodeId) -> QuerySelectorReturnsBuilder {
+        QuerySelectorReturnsBuilder {
+            nodeId: nodeId,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
 }
 
-#[derive(Default)]
+
 pub struct QuerySelectorReturnsBuilder {
-    nodeId: Option<NodeId>,
+    nodeId: NodeId,
 }
 
 impl QuerySelectorReturnsBuilder {
-    /// Query selector result.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn build(self) -> QuerySelectorReturns {
         QuerySelectorReturns {
-            nodeId: self.nodeId.unwrap_or_default(),
+            nodeId: self.nodeId,
         }
     }
 }
@@ -2565,26 +2630,27 @@ pub struct QuerySelectorAllParams<'a> {
 }
 
 impl<'a> QuerySelectorAllParams<'a> {
-    pub fn builder() -> QuerySelectorAllParamsBuilder<'a> { QuerySelectorAllParamsBuilder::default() }
+    pub fn builder(nodeId: NodeId, selector: impl Into<Cow<'a, str>>) -> QuerySelectorAllParamsBuilder<'a> {
+        QuerySelectorAllParamsBuilder {
+            nodeId: nodeId,
+            selector: selector.into(),
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
     pub fn selector(&self) -> &str { self.selector.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct QuerySelectorAllParamsBuilder<'a> {
-    nodeId: Option<NodeId>,
-    selector: Option<Cow<'a, str>>,
+    nodeId: NodeId,
+    selector: Cow<'a, str>,
 }
 
 impl<'a> QuerySelectorAllParamsBuilder<'a> {
-    /// Id of the node to query upon.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
-    /// Selector string.
-    pub fn selector(mut self, selector: impl Into<Cow<'a, str>>) -> Self { self.selector = Some(selector.into()); self }
     pub fn build(self) -> QuerySelectorAllParams<'a> {
         QuerySelectorAllParams {
-            nodeId: self.nodeId.unwrap_or_default(),
-            selector: self.selector.unwrap_or_default(),
+            nodeId: self.nodeId,
+            selector: self.selector,
         }
     }
 }
@@ -2599,21 +2665,23 @@ pub struct QuerySelectorAllReturns {
 }
 
 impl QuerySelectorAllReturns {
-    pub fn builder() -> QuerySelectorAllReturnsBuilder { QuerySelectorAllReturnsBuilder::default() }
+    pub fn builder(nodeIds: Vec<NodeId>) -> QuerySelectorAllReturnsBuilder {
+        QuerySelectorAllReturnsBuilder {
+            nodeIds: nodeIds,
+        }
+    }
     pub fn nodeIds(&self) -> &[NodeId] { &self.nodeIds }
 }
 
-#[derive(Default)]
+
 pub struct QuerySelectorAllReturnsBuilder {
-    nodeIds: Option<Vec<NodeId>>,
+    nodeIds: Vec<NodeId>,
 }
 
 impl QuerySelectorAllReturnsBuilder {
-    /// Query selector result.
-    pub fn nodeIds(mut self, nodeIds: Vec<NodeId>) -> Self { self.nodeIds = Some(nodeIds); self }
     pub fn build(self) -> QuerySelectorAllReturns {
         QuerySelectorAllReturns {
-            nodeIds: self.nodeIds.unwrap_or_default(),
+            nodeIds: self.nodeIds,
         }
     }
 }
@@ -2637,42 +2705,29 @@ pub struct GetTopLayerElementsReturns {
 }
 
 impl GetTopLayerElementsReturns {
-    pub fn builder() -> GetTopLayerElementsReturnsBuilder { GetTopLayerElementsReturnsBuilder::default() }
+    pub fn builder(nodeIds: Vec<NodeId>) -> GetTopLayerElementsReturnsBuilder {
+        GetTopLayerElementsReturnsBuilder {
+            nodeIds: nodeIds,
+        }
+    }
     pub fn nodeIds(&self) -> &[NodeId] { &self.nodeIds }
 }
 
-#[derive(Default)]
+
 pub struct GetTopLayerElementsReturnsBuilder {
-    nodeIds: Option<Vec<NodeId>>,
+    nodeIds: Vec<NodeId>,
 }
 
 impl GetTopLayerElementsReturnsBuilder {
-    /// NodeIds of top layer elements
-    pub fn nodeIds(mut self, nodeIds: Vec<NodeId>) -> Self { self.nodeIds = Some(nodeIds); self }
     pub fn build(self) -> GetTopLayerElementsReturns {
         GetTopLayerElementsReturns {
-            nodeIds: self.nodeIds.unwrap_or_default(),
+            nodeIds: self.nodeIds,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetTopLayerElementsParams {}
-
-impl GetTopLayerElementsParams {
-    pub fn builder() -> GetTopLayerElementsParamsBuilder {
-        GetTopLayerElementsParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetTopLayerElementsParamsBuilder {}
-
-impl GetTopLayerElementsParamsBuilder {
-    pub fn build(self) -> GetTopLayerElementsParams {
-        GetTopLayerElementsParams {}
-    }
-}
 
 impl GetTopLayerElementsParams { pub const METHOD: &'static str = "DOM.getTopLayerElements"; }
 
@@ -2693,26 +2748,27 @@ pub struct GetElementByRelationParams<'a> {
 }
 
 impl<'a> GetElementByRelationParams<'a> {
-    pub fn builder() -> GetElementByRelationParamsBuilder<'a> { GetElementByRelationParamsBuilder::default() }
+    pub fn builder(nodeId: NodeId, relation: impl Into<Cow<'a, str>>) -> GetElementByRelationParamsBuilder<'a> {
+        GetElementByRelationParamsBuilder {
+            nodeId: nodeId,
+            relation: relation.into(),
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
     pub fn relation(&self) -> &str { self.relation.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct GetElementByRelationParamsBuilder<'a> {
-    nodeId: Option<NodeId>,
-    relation: Option<Cow<'a, str>>,
+    nodeId: NodeId,
+    relation: Cow<'a, str>,
 }
 
 impl<'a> GetElementByRelationParamsBuilder<'a> {
-    /// Id of the node from which to query the relation.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
-    /// Type of relation to get.
-    pub fn relation(mut self, relation: impl Into<Cow<'a, str>>) -> Self { self.relation = Some(relation.into()); self }
     pub fn build(self) -> GetElementByRelationParams<'a> {
         GetElementByRelationParams {
-            nodeId: self.nodeId.unwrap_or_default(),
-            relation: self.relation.unwrap_or_default(),
+            nodeId: self.nodeId,
+            relation: self.relation,
         }
     }
 }
@@ -2727,21 +2783,23 @@ pub struct GetElementByRelationReturns {
 }
 
 impl GetElementByRelationReturns {
-    pub fn builder() -> GetElementByRelationReturnsBuilder { GetElementByRelationReturnsBuilder::default() }
+    pub fn builder(nodeId: NodeId) -> GetElementByRelationReturnsBuilder {
+        GetElementByRelationReturnsBuilder {
+            nodeId: nodeId,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
 }
 
-#[derive(Default)]
+
 pub struct GetElementByRelationReturnsBuilder {
-    nodeId: Option<NodeId>,
+    nodeId: NodeId,
 }
 
 impl GetElementByRelationReturnsBuilder {
-    /// NodeId of the element matching the queried relation.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn build(self) -> GetElementByRelationReturns {
         GetElementByRelationReturns {
-            nodeId: self.nodeId.unwrap_or_default(),
+            nodeId: self.nodeId,
         }
     }
 }
@@ -2755,21 +2813,6 @@ impl<'a> crate::CdpCommand<'a> for GetElementByRelationParams<'a> {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct RedoParams {}
-
-impl RedoParams {
-    pub fn builder() -> RedoParamsBuilder {
-        RedoParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct RedoParamsBuilder {}
-
-impl RedoParamsBuilder {
-    pub fn build(self) -> RedoParams {
-        RedoParams {}
-    }
-}
 
 impl RedoParams { pub const METHOD: &'static str = "DOM.redo"; }
 
@@ -2790,26 +2833,27 @@ pub struct RemoveAttributeParams<'a> {
 }
 
 impl<'a> RemoveAttributeParams<'a> {
-    pub fn builder() -> RemoveAttributeParamsBuilder<'a> { RemoveAttributeParamsBuilder::default() }
+    pub fn builder(nodeId: NodeId, name: impl Into<Cow<'a, str>>) -> RemoveAttributeParamsBuilder<'a> {
+        RemoveAttributeParamsBuilder {
+            nodeId: nodeId,
+            name: name.into(),
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
     pub fn name(&self) -> &str { self.name.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct RemoveAttributeParamsBuilder<'a> {
-    nodeId: Option<NodeId>,
-    name: Option<Cow<'a, str>>,
+    nodeId: NodeId,
+    name: Cow<'a, str>,
 }
 
 impl<'a> RemoveAttributeParamsBuilder<'a> {
-    /// Id of the element to remove attribute from.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
-    /// Name of the attribute to remove.
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
     pub fn build(self) -> RemoveAttributeParams<'a> {
         RemoveAttributeParams {
-            nodeId: self.nodeId.unwrap_or_default(),
-            name: self.name.unwrap_or_default(),
+            nodeId: self.nodeId,
+            name: self.name,
         }
     }
 }
@@ -2831,21 +2875,23 @@ pub struct RemoveNodeParams {
 }
 
 impl RemoveNodeParams {
-    pub fn builder() -> RemoveNodeParamsBuilder { RemoveNodeParamsBuilder::default() }
+    pub fn builder(nodeId: NodeId) -> RemoveNodeParamsBuilder {
+        RemoveNodeParamsBuilder {
+            nodeId: nodeId,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
 }
 
-#[derive(Default)]
+
 pub struct RemoveNodeParamsBuilder {
-    nodeId: Option<NodeId>,
+    nodeId: NodeId,
 }
 
 impl RemoveNodeParamsBuilder {
-    /// Id of the node to remove.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn build(self) -> RemoveNodeParams {
         RemoveNodeParams {
-            nodeId: self.nodeId.unwrap_or_default(),
+            nodeId: self.nodeId,
         }
     }
 }
@@ -2877,22 +2923,26 @@ pub struct RequestChildNodesParams {
 }
 
 impl RequestChildNodesParams {
-    pub fn builder() -> RequestChildNodesParamsBuilder { RequestChildNodesParamsBuilder::default() }
+    pub fn builder(nodeId: NodeId) -> RequestChildNodesParamsBuilder {
+        RequestChildNodesParamsBuilder {
+            nodeId: nodeId,
+            depth: None,
+            pierce: None,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
     pub fn depth(&self) -> Option<i64> { self.depth }
     pub fn pierce(&self) -> Option<bool> { self.pierce }
 }
 
-#[derive(Default)]
+
 pub struct RequestChildNodesParamsBuilder {
-    nodeId: Option<NodeId>,
+    nodeId: NodeId,
     depth: Option<i64>,
     pierce: Option<bool>,
 }
 
 impl RequestChildNodesParamsBuilder {
-    /// Id of the node to get children for.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
     /// The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the
     /// entire subtree or provide an integer larger than 0.
     pub fn depth(mut self, depth: i64) -> Self { self.depth = Some(depth); self }
@@ -2901,7 +2951,7 @@ impl RequestChildNodesParamsBuilder {
     pub fn pierce(mut self, pierce: bool) -> Self { self.pierce = Some(pierce); self }
     pub fn build(self) -> RequestChildNodesParams {
         RequestChildNodesParams {
-            nodeId: self.nodeId.unwrap_or_default(),
+            nodeId: self.nodeId,
             depth: self.depth,
             pierce: self.pierce,
         }
@@ -2927,21 +2977,23 @@ pub struct RequestNodeParams<'a> {
 }
 
 impl<'a> RequestNodeParams<'a> {
-    pub fn builder() -> RequestNodeParamsBuilder<'a> { RequestNodeParamsBuilder::default() }
+    pub fn builder(objectId: crate::runtime::RemoteObjectId<'a>) -> RequestNodeParamsBuilder<'a> {
+        RequestNodeParamsBuilder {
+            objectId: objectId,
+        }
+    }
     pub fn objectId(&self) -> &crate::runtime::RemoteObjectId<'a> { &self.objectId }
 }
 
-#[derive(Default)]
+
 pub struct RequestNodeParamsBuilder<'a> {
-    objectId: Option<crate::runtime::RemoteObjectId<'a>>,
+    objectId: crate::runtime::RemoteObjectId<'a>,
 }
 
 impl<'a> RequestNodeParamsBuilder<'a> {
-    /// JavaScript object id to convert into node.
-    pub fn objectId(mut self, objectId: crate::runtime::RemoteObjectId<'a>) -> Self { self.objectId = Some(objectId); self }
     pub fn build(self) -> RequestNodeParams<'a> {
         RequestNodeParams {
-            objectId: self.objectId.unwrap_or_default(),
+            objectId: self.objectId,
         }
     }
 }
@@ -2958,21 +3010,23 @@ pub struct RequestNodeReturns {
 }
 
 impl RequestNodeReturns {
-    pub fn builder() -> RequestNodeReturnsBuilder { RequestNodeReturnsBuilder::default() }
+    pub fn builder(nodeId: NodeId) -> RequestNodeReturnsBuilder {
+        RequestNodeReturnsBuilder {
+            nodeId: nodeId,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
 }
 
-#[derive(Default)]
+
 pub struct RequestNodeReturnsBuilder {
-    nodeId: Option<NodeId>,
+    nodeId: NodeId,
 }
 
 impl RequestNodeReturnsBuilder {
-    /// Node id for given object.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn build(self) -> RequestNodeReturns {
         RequestNodeReturns {
-            nodeId: self.nodeId.unwrap_or_default(),
+            nodeId: self.nodeId,
         }
     }
 }
@@ -3004,7 +3058,14 @@ pub struct ResolveNodeParams<'a> {
 }
 
 impl<'a> ResolveNodeParams<'a> {
-    pub fn builder() -> ResolveNodeParamsBuilder<'a> { ResolveNodeParamsBuilder::default() }
+    pub fn builder() -> ResolveNodeParamsBuilder<'a> {
+        ResolveNodeParamsBuilder {
+            nodeId: None,
+            backendNodeId: None,
+            objectGroup: None,
+            executionContextId: None,
+        }
+    }
     pub fn nodeId(&self) -> Option<&NodeId> { self.nodeId.as_ref() }
     pub fn backendNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.backendNodeId.as_ref() }
     pub fn objectGroup(&self) -> Option<&str> { self.objectGroup.as_deref() }
@@ -3048,21 +3109,23 @@ pub struct ResolveNodeReturns {
 }
 
 impl ResolveNodeReturns {
-    pub fn builder() -> ResolveNodeReturnsBuilder { ResolveNodeReturnsBuilder::default() }
+    pub fn builder(object: crate::runtime::RemoteObject) -> ResolveNodeReturnsBuilder {
+        ResolveNodeReturnsBuilder {
+            object: object,
+        }
+    }
     pub fn object(&self) -> &crate::runtime::RemoteObject { &self.object }
 }
 
-#[derive(Default)]
+
 pub struct ResolveNodeReturnsBuilder {
-    object: Option<crate::runtime::RemoteObject>,
+    object: crate::runtime::RemoteObject,
 }
 
 impl ResolveNodeReturnsBuilder {
-    /// JavaScript object wrapper for given node.
-    pub fn object(mut self, object: crate::runtime::RemoteObject) -> Self { self.object = Some(object); self }
     pub fn build(self) -> ResolveNodeReturns {
         ResolveNodeReturns {
-            object: self.object.unwrap_or_default(),
+            object: self.object,
         }
     }
 }
@@ -3088,31 +3151,31 @@ pub struct SetAttributeValueParams<'a> {
 }
 
 impl<'a> SetAttributeValueParams<'a> {
-    pub fn builder() -> SetAttributeValueParamsBuilder<'a> { SetAttributeValueParamsBuilder::default() }
+    pub fn builder(nodeId: NodeId, name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> SetAttributeValueParamsBuilder<'a> {
+        SetAttributeValueParamsBuilder {
+            nodeId: nodeId,
+            name: name.into(),
+            value: value.into(),
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn value(&self) -> &str { self.value.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetAttributeValueParamsBuilder<'a> {
-    nodeId: Option<NodeId>,
-    name: Option<Cow<'a, str>>,
-    value: Option<Cow<'a, str>>,
+    nodeId: NodeId,
+    name: Cow<'a, str>,
+    value: Cow<'a, str>,
 }
 
 impl<'a> SetAttributeValueParamsBuilder<'a> {
-    /// Id of the element to set attribute for.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
-    /// Attribute name.
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    /// Attribute value.
-    pub fn value(mut self, value: impl Into<Cow<'a, str>>) -> Self { self.value = Some(value.into()); self }
     pub fn build(self) -> SetAttributeValueParams<'a> {
         SetAttributeValueParams {
-            nodeId: self.nodeId.unwrap_or_default(),
-            name: self.name.unwrap_or_default(),
-            value: self.value.unwrap_or_default(),
+            nodeId: self.nodeId,
+            name: self.name,
+            value: self.value,
         }
     }
 }
@@ -3141,31 +3204,33 @@ pub struct SetAttributesAsTextParams<'a> {
 }
 
 impl<'a> SetAttributesAsTextParams<'a> {
-    pub fn builder() -> SetAttributesAsTextParamsBuilder<'a> { SetAttributesAsTextParamsBuilder::default() }
+    pub fn builder(nodeId: NodeId, text: impl Into<Cow<'a, str>>) -> SetAttributesAsTextParamsBuilder<'a> {
+        SetAttributesAsTextParamsBuilder {
+            nodeId: nodeId,
+            text: text.into(),
+            name: None,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
     pub fn text(&self) -> &str { self.text.as_ref() }
     pub fn name(&self) -> Option<&str> { self.name.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct SetAttributesAsTextParamsBuilder<'a> {
-    nodeId: Option<NodeId>,
-    text: Option<Cow<'a, str>>,
+    nodeId: NodeId,
+    text: Cow<'a, str>,
     name: Option<Cow<'a, str>>,
 }
 
 impl<'a> SetAttributesAsTextParamsBuilder<'a> {
-    /// Id of the element to set attributes for.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
-    /// Text with a number of attributes. Will parse this text using HTML parser.
-    pub fn text(mut self, text: impl Into<Cow<'a, str>>) -> Self { self.text = Some(text.into()); self }
     /// Attribute name to replace with new attributes derived from text in case text parsed
     /// successfully.
     pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
     pub fn build(self) -> SetAttributesAsTextParams<'a> {
         SetAttributesAsTextParams {
-            nodeId: self.nodeId.unwrap_or_default(),
-            text: self.text.unwrap_or_default(),
+            nodeId: self.nodeId,
+            text: self.text,
             name: self.name,
         }
     }
@@ -3197,24 +3262,29 @@ pub struct SetFileInputFilesParams<'a> {
 }
 
 impl<'a> SetFileInputFilesParams<'a> {
-    pub fn builder() -> SetFileInputFilesParamsBuilder<'a> { SetFileInputFilesParamsBuilder::default() }
+    pub fn builder(files: Vec<Cow<'a, str>>) -> SetFileInputFilesParamsBuilder<'a> {
+        SetFileInputFilesParamsBuilder {
+            files: files,
+            nodeId: None,
+            backendNodeId: None,
+            objectId: None,
+        }
+    }
     pub fn files(&self) -> &[Cow<'a, str>] { &self.files }
     pub fn nodeId(&self) -> Option<&NodeId> { self.nodeId.as_ref() }
     pub fn backendNodeId(&self) -> Option<&BackendNodeId> { self.backendNodeId.as_ref() }
     pub fn objectId(&self) -> Option<&crate::runtime::RemoteObjectId<'a>> { self.objectId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetFileInputFilesParamsBuilder<'a> {
-    files: Option<Vec<Cow<'a, str>>>,
+    files: Vec<Cow<'a, str>>,
     nodeId: Option<NodeId>,
     backendNodeId: Option<BackendNodeId>,
     objectId: Option<crate::runtime::RemoteObjectId<'a>>,
 }
 
 impl<'a> SetFileInputFilesParamsBuilder<'a> {
-    /// Array of file paths to set.
-    pub fn files(mut self, files: Vec<Cow<'a, str>>) -> Self { self.files = Some(files); self }
     /// Identifier of the node.
     pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
     /// Identifier of the backend node.
@@ -3223,7 +3293,7 @@ impl<'a> SetFileInputFilesParamsBuilder<'a> {
     pub fn objectId(mut self, objectId: crate::runtime::RemoteObjectId<'a>) -> Self { self.objectId = Some(objectId); self }
     pub fn build(self) -> SetFileInputFilesParams<'a> {
         SetFileInputFilesParams {
-            files: self.files.unwrap_or_default(),
+            files: self.files,
             nodeId: self.nodeId,
             backendNodeId: self.backendNodeId,
             objectId: self.objectId,
@@ -3248,21 +3318,23 @@ pub struct SetNodeStackTracesEnabledParams {
 }
 
 impl SetNodeStackTracesEnabledParams {
-    pub fn builder() -> SetNodeStackTracesEnabledParamsBuilder { SetNodeStackTracesEnabledParamsBuilder::default() }
+    pub fn builder(enable: bool) -> SetNodeStackTracesEnabledParamsBuilder {
+        SetNodeStackTracesEnabledParamsBuilder {
+            enable: enable,
+        }
+    }
     pub fn enable(&self) -> bool { self.enable }
 }
 
-#[derive(Default)]
+
 pub struct SetNodeStackTracesEnabledParamsBuilder {
-    enable: Option<bool>,
+    enable: bool,
 }
 
 impl SetNodeStackTracesEnabledParamsBuilder {
-    /// Enable or disable.
-    pub fn enable(mut self, enable: bool) -> Self { self.enable = Some(enable); self }
     pub fn build(self) -> SetNodeStackTracesEnabledParams {
         SetNodeStackTracesEnabledParams {
-            enable: self.enable.unwrap_or_default(),
+            enable: self.enable,
         }
     }
 }
@@ -3284,21 +3356,23 @@ pub struct GetNodeStackTracesParams {
 }
 
 impl GetNodeStackTracesParams {
-    pub fn builder() -> GetNodeStackTracesParamsBuilder { GetNodeStackTracesParamsBuilder::default() }
+    pub fn builder(nodeId: NodeId) -> GetNodeStackTracesParamsBuilder {
+        GetNodeStackTracesParamsBuilder {
+            nodeId: nodeId,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
 }
 
-#[derive(Default)]
+
 pub struct GetNodeStackTracesParamsBuilder {
-    nodeId: Option<NodeId>,
+    nodeId: NodeId,
 }
 
 impl GetNodeStackTracesParamsBuilder {
-    /// Id of the node to get stack traces for.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn build(self) -> GetNodeStackTracesParams {
         GetNodeStackTracesParams {
-            nodeId: self.nodeId.unwrap_or_default(),
+            nodeId: self.nodeId,
         }
     }
 }
@@ -3314,7 +3388,11 @@ pub struct GetNodeStackTracesReturns {
 }
 
 impl GetNodeStackTracesReturns {
-    pub fn builder() -> GetNodeStackTracesReturnsBuilder { GetNodeStackTracesReturnsBuilder::default() }
+    pub fn builder() -> GetNodeStackTracesReturnsBuilder {
+        GetNodeStackTracesReturnsBuilder {
+            creation: None,
+        }
+    }
     pub fn creation(&self) -> Option<&crate::runtime::StackTrace> { self.creation.as_ref() }
 }
 
@@ -3351,21 +3429,23 @@ pub struct GetFileInfoParams<'a> {
 }
 
 impl<'a> GetFileInfoParams<'a> {
-    pub fn builder() -> GetFileInfoParamsBuilder<'a> { GetFileInfoParamsBuilder::default() }
+    pub fn builder(objectId: crate::runtime::RemoteObjectId<'a>) -> GetFileInfoParamsBuilder<'a> {
+        GetFileInfoParamsBuilder {
+            objectId: objectId,
+        }
+    }
     pub fn objectId(&self) -> &crate::runtime::RemoteObjectId<'a> { &self.objectId }
 }
 
-#[derive(Default)]
+
 pub struct GetFileInfoParamsBuilder<'a> {
-    objectId: Option<crate::runtime::RemoteObjectId<'a>>,
+    objectId: crate::runtime::RemoteObjectId<'a>,
 }
 
 impl<'a> GetFileInfoParamsBuilder<'a> {
-    /// JavaScript object id of the node wrapper.
-    pub fn objectId(mut self, objectId: crate::runtime::RemoteObjectId<'a>) -> Self { self.objectId = Some(objectId); self }
     pub fn build(self) -> GetFileInfoParams<'a> {
         GetFileInfoParams {
-            objectId: self.objectId.unwrap_or_default(),
+            objectId: self.objectId,
         }
     }
 }
@@ -3380,20 +3460,23 @@ pub struct GetFileInfoReturns<'a> {
 }
 
 impl<'a> GetFileInfoReturns<'a> {
-    pub fn builder() -> GetFileInfoReturnsBuilder<'a> { GetFileInfoReturnsBuilder::default() }
+    pub fn builder(path: impl Into<Cow<'a, str>>) -> GetFileInfoReturnsBuilder<'a> {
+        GetFileInfoReturnsBuilder {
+            path: path.into(),
+        }
+    }
     pub fn path(&self) -> &str { self.path.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct GetFileInfoReturnsBuilder<'a> {
-    path: Option<Cow<'a, str>>,
+    path: Cow<'a, str>,
 }
 
 impl<'a> GetFileInfoReturnsBuilder<'a> {
-    pub fn path(mut self, path: impl Into<Cow<'a, str>>) -> Self { self.path = Some(path.into()); self }
     pub fn build(self) -> GetFileInfoReturns<'a> {
         GetFileInfoReturns {
-            path: self.path.unwrap_or_default(),
+            path: self.path,
         }
     }
 }
@@ -3415,42 +3498,29 @@ pub struct GetDetachedDomNodesReturns<'a> {
 }
 
 impl<'a> GetDetachedDomNodesReturns<'a> {
-    pub fn builder() -> GetDetachedDomNodesReturnsBuilder<'a> { GetDetachedDomNodesReturnsBuilder::default() }
+    pub fn builder(detachedNodes: Vec<DetachedElementInfo<'a>>) -> GetDetachedDomNodesReturnsBuilder<'a> {
+        GetDetachedDomNodesReturnsBuilder {
+            detachedNodes: detachedNodes,
+        }
+    }
     pub fn detachedNodes(&self) -> &[DetachedElementInfo<'a>] { &self.detachedNodes }
 }
 
-#[derive(Default)]
+
 pub struct GetDetachedDomNodesReturnsBuilder<'a> {
-    detachedNodes: Option<Vec<DetachedElementInfo<'a>>>,
+    detachedNodes: Vec<DetachedElementInfo<'a>>,
 }
 
 impl<'a> GetDetachedDomNodesReturnsBuilder<'a> {
-    /// The list of detached nodes
-    pub fn detachedNodes(mut self, detachedNodes: Vec<DetachedElementInfo<'a>>) -> Self { self.detachedNodes = Some(detachedNodes); self }
     pub fn build(self) -> GetDetachedDomNodesReturns<'a> {
         GetDetachedDomNodesReturns {
-            detachedNodes: self.detachedNodes.unwrap_or_default(),
+            detachedNodes: self.detachedNodes,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetDetachedDomNodesParams {}
-
-impl GetDetachedDomNodesParams {
-    pub fn builder() -> GetDetachedDomNodesParamsBuilder {
-        GetDetachedDomNodesParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetDetachedDomNodesParamsBuilder {}
-
-impl GetDetachedDomNodesParamsBuilder {
-    pub fn build(self) -> GetDetachedDomNodesParams {
-        GetDetachedDomNodesParams {}
-    }
-}
 
 impl GetDetachedDomNodesParams { pub const METHOD: &'static str = "DOM.getDetachedDomNodes"; }
 
@@ -3470,21 +3540,23 @@ pub struct SetInspectedNodeParams {
 }
 
 impl SetInspectedNodeParams {
-    pub fn builder() -> SetInspectedNodeParamsBuilder { SetInspectedNodeParamsBuilder::default() }
+    pub fn builder(nodeId: NodeId) -> SetInspectedNodeParamsBuilder {
+        SetInspectedNodeParamsBuilder {
+            nodeId: nodeId,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
 }
 
-#[derive(Default)]
+
 pub struct SetInspectedNodeParamsBuilder {
-    nodeId: Option<NodeId>,
+    nodeId: NodeId,
 }
 
 impl SetInspectedNodeParamsBuilder {
-    /// DOM node id to be accessible by means of $x command line API.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn build(self) -> SetInspectedNodeParams {
         SetInspectedNodeParams {
-            nodeId: self.nodeId.unwrap_or_default(),
+            nodeId: self.nodeId,
         }
     }
 }
@@ -3508,26 +3580,27 @@ pub struct SetNodeNameParams<'a> {
 }
 
 impl<'a> SetNodeNameParams<'a> {
-    pub fn builder() -> SetNodeNameParamsBuilder<'a> { SetNodeNameParamsBuilder::default() }
+    pub fn builder(nodeId: NodeId, name: impl Into<Cow<'a, str>>) -> SetNodeNameParamsBuilder<'a> {
+        SetNodeNameParamsBuilder {
+            nodeId: nodeId,
+            name: name.into(),
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
     pub fn name(&self) -> &str { self.name.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetNodeNameParamsBuilder<'a> {
-    nodeId: Option<NodeId>,
-    name: Option<Cow<'a, str>>,
+    nodeId: NodeId,
+    name: Cow<'a, str>,
 }
 
 impl<'a> SetNodeNameParamsBuilder<'a> {
-    /// Id of the node to set name for.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
-    /// New node's name.
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
     pub fn build(self) -> SetNodeNameParams<'a> {
         SetNodeNameParams {
-            nodeId: self.nodeId.unwrap_or_default(),
-            name: self.name.unwrap_or_default(),
+            nodeId: self.nodeId,
+            name: self.name,
         }
     }
 }
@@ -3542,21 +3615,23 @@ pub struct SetNodeNameReturns {
 }
 
 impl SetNodeNameReturns {
-    pub fn builder() -> SetNodeNameReturnsBuilder { SetNodeNameReturnsBuilder::default() }
+    pub fn builder(nodeId: NodeId) -> SetNodeNameReturnsBuilder {
+        SetNodeNameReturnsBuilder {
+            nodeId: nodeId,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
 }
 
-#[derive(Default)]
+
 pub struct SetNodeNameReturnsBuilder {
-    nodeId: Option<NodeId>,
+    nodeId: NodeId,
 }
 
 impl SetNodeNameReturnsBuilder {
-    /// New node's id.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn build(self) -> SetNodeNameReturns {
         SetNodeNameReturns {
-            nodeId: self.nodeId.unwrap_or_default(),
+            nodeId: self.nodeId,
         }
     }
 }
@@ -3580,26 +3655,27 @@ pub struct SetNodeValueParams<'a> {
 }
 
 impl<'a> SetNodeValueParams<'a> {
-    pub fn builder() -> SetNodeValueParamsBuilder<'a> { SetNodeValueParamsBuilder::default() }
+    pub fn builder(nodeId: NodeId, value: impl Into<Cow<'a, str>>) -> SetNodeValueParamsBuilder<'a> {
+        SetNodeValueParamsBuilder {
+            nodeId: nodeId,
+            value: value.into(),
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
     pub fn value(&self) -> &str { self.value.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetNodeValueParamsBuilder<'a> {
-    nodeId: Option<NodeId>,
-    value: Option<Cow<'a, str>>,
+    nodeId: NodeId,
+    value: Cow<'a, str>,
 }
 
 impl<'a> SetNodeValueParamsBuilder<'a> {
-    /// Id of the node to set value for.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
-    /// New node's value.
-    pub fn value(mut self, value: impl Into<Cow<'a, str>>) -> Self { self.value = Some(value.into()); self }
     pub fn build(self) -> SetNodeValueParams<'a> {
         SetNodeValueParams {
-            nodeId: self.nodeId.unwrap_or_default(),
-            value: self.value.unwrap_or_default(),
+            nodeId: self.nodeId,
+            value: self.value,
         }
     }
 }
@@ -3623,26 +3699,27 @@ pub struct SetOuterHTMLParams<'a> {
 }
 
 impl<'a> SetOuterHTMLParams<'a> {
-    pub fn builder() -> SetOuterHTMLParamsBuilder<'a> { SetOuterHTMLParamsBuilder::default() }
+    pub fn builder(nodeId: NodeId, outerHTML: impl Into<Cow<'a, str>>) -> SetOuterHTMLParamsBuilder<'a> {
+        SetOuterHTMLParamsBuilder {
+            nodeId: nodeId,
+            outerHTML: outerHTML.into(),
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
     pub fn outerHTML(&self) -> &str { self.outerHTML.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetOuterHTMLParamsBuilder<'a> {
-    nodeId: Option<NodeId>,
-    outerHTML: Option<Cow<'a, str>>,
+    nodeId: NodeId,
+    outerHTML: Cow<'a, str>,
 }
 
 impl<'a> SetOuterHTMLParamsBuilder<'a> {
-    /// Id of the node to set markup for.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
-    /// Outer HTML markup to set.
-    pub fn outerHTML(mut self, outerHTML: impl Into<Cow<'a, str>>) -> Self { self.outerHTML = Some(outerHTML.into()); self }
     pub fn build(self) -> SetOuterHTMLParams<'a> {
         SetOuterHTMLParams {
-            nodeId: self.nodeId.unwrap_or_default(),
-            outerHTML: self.outerHTML.unwrap_or_default(),
+            nodeId: self.nodeId,
+            outerHTML: self.outerHTML,
         }
     }
 }
@@ -3656,21 +3733,6 @@ impl<'a> crate::CdpCommand<'a> for SetOuterHTMLParams<'a> {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct UndoParams {}
-
-impl UndoParams {
-    pub fn builder() -> UndoParamsBuilder {
-        UndoParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct UndoParamsBuilder {}
-
-impl UndoParamsBuilder {
-    pub fn build(self) -> UndoParams {
-        UndoParams {}
-    }
-}
 
 impl UndoParams { pub const METHOD: &'static str = "DOM.undo"; }
 
@@ -3688,20 +3750,23 @@ pub struct GetFrameOwnerParams<'a> {
 }
 
 impl<'a> GetFrameOwnerParams<'a> {
-    pub fn builder() -> GetFrameOwnerParamsBuilder<'a> { GetFrameOwnerParamsBuilder::default() }
+    pub fn builder(frameId: crate::page::FrameId<'a>) -> GetFrameOwnerParamsBuilder<'a> {
+        GetFrameOwnerParamsBuilder {
+            frameId: frameId,
+        }
+    }
     pub fn frameId(&self) -> &crate::page::FrameId<'a> { &self.frameId }
 }
 
-#[derive(Default)]
+
 pub struct GetFrameOwnerParamsBuilder<'a> {
-    frameId: Option<crate::page::FrameId<'a>>,
+    frameId: crate::page::FrameId<'a>,
 }
 
 impl<'a> GetFrameOwnerParamsBuilder<'a> {
-    pub fn frameId(mut self, frameId: crate::page::FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
     pub fn build(self) -> GetFrameOwnerParams<'a> {
         GetFrameOwnerParams {
-            frameId: self.frameId.unwrap_or_default(),
+            frameId: self.frameId,
         }
     }
 }
@@ -3719,25 +3784,28 @@ pub struct GetFrameOwnerReturns {
 }
 
 impl GetFrameOwnerReturns {
-    pub fn builder() -> GetFrameOwnerReturnsBuilder { GetFrameOwnerReturnsBuilder::default() }
+    pub fn builder(backendNodeId: BackendNodeId) -> GetFrameOwnerReturnsBuilder {
+        GetFrameOwnerReturnsBuilder {
+            backendNodeId: backendNodeId,
+            nodeId: None,
+        }
+    }
     pub fn backendNodeId(&self) -> &BackendNodeId { &self.backendNodeId }
     pub fn nodeId(&self) -> Option<&NodeId> { self.nodeId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct GetFrameOwnerReturnsBuilder {
-    backendNodeId: Option<BackendNodeId>,
+    backendNodeId: BackendNodeId,
     nodeId: Option<NodeId>,
 }
 
 impl GetFrameOwnerReturnsBuilder {
-    /// Resulting node.
-    pub fn backendNodeId(mut self, backendNodeId: BackendNodeId) -> Self { self.backendNodeId = Some(backendNodeId); self }
     /// Id of the node at given coordinates, only when enabled and requested document.
     pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn build(self) -> GetFrameOwnerReturns {
         GetFrameOwnerReturns {
-            backendNodeId: self.backendNodeId.unwrap_or_default(),
+            backendNodeId: self.backendNodeId,
             nodeId: self.nodeId,
         }
     }
@@ -3773,7 +3841,16 @@ pub struct GetContainerForNodeParams<'a> {
 }
 
 impl<'a> GetContainerForNodeParams<'a> {
-    pub fn builder() -> GetContainerForNodeParamsBuilder<'a> { GetContainerForNodeParamsBuilder::default() }
+    pub fn builder(nodeId: NodeId) -> GetContainerForNodeParamsBuilder<'a> {
+        GetContainerForNodeParamsBuilder {
+            nodeId: nodeId,
+            containerName: None,
+            physicalAxes: None,
+            logicalAxes: None,
+            queriesScrollState: None,
+            queriesAnchored: None,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
     pub fn containerName(&self) -> Option<&str> { self.containerName.as_deref() }
     pub fn physicalAxes(&self) -> Option<&PhysicalAxes> { self.physicalAxes.as_ref() }
@@ -3782,9 +3859,9 @@ impl<'a> GetContainerForNodeParams<'a> {
     pub fn queriesAnchored(&self) -> Option<bool> { self.queriesAnchored }
 }
 
-#[derive(Default)]
+
 pub struct GetContainerForNodeParamsBuilder<'a> {
-    nodeId: Option<NodeId>,
+    nodeId: NodeId,
     containerName: Option<Cow<'a, str>>,
     physicalAxes: Option<PhysicalAxes>,
     logicalAxes: Option<LogicalAxes>,
@@ -3793,7 +3870,6 @@ pub struct GetContainerForNodeParamsBuilder<'a> {
 }
 
 impl<'a> GetContainerForNodeParamsBuilder<'a> {
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn containerName(mut self, containerName: impl Into<Cow<'a, str>>) -> Self { self.containerName = Some(containerName.into()); self }
     pub fn physicalAxes(mut self, physicalAxes: PhysicalAxes) -> Self { self.physicalAxes = Some(physicalAxes); self }
     pub fn logicalAxes(mut self, logicalAxes: LogicalAxes) -> Self { self.logicalAxes = Some(logicalAxes); self }
@@ -3801,7 +3877,7 @@ impl<'a> GetContainerForNodeParamsBuilder<'a> {
     pub fn queriesAnchored(mut self, queriesAnchored: bool) -> Self { self.queriesAnchored = Some(queriesAnchored); self }
     pub fn build(self) -> GetContainerForNodeParams<'a> {
         GetContainerForNodeParams {
-            nodeId: self.nodeId.unwrap_or_default(),
+            nodeId: self.nodeId,
             containerName: self.containerName,
             physicalAxes: self.physicalAxes,
             logicalAxes: self.logicalAxes,
@@ -3826,7 +3902,11 @@ pub struct GetContainerForNodeReturns {
 }
 
 impl GetContainerForNodeReturns {
-    pub fn builder() -> GetContainerForNodeReturnsBuilder { GetContainerForNodeReturnsBuilder::default() }
+    pub fn builder() -> GetContainerForNodeReturnsBuilder {
+        GetContainerForNodeReturnsBuilder {
+            nodeId: None,
+        }
+    }
     pub fn nodeId(&self) -> Option<&NodeId> { self.nodeId.as_ref() }
 }
 
@@ -3863,21 +3943,23 @@ pub struct GetQueryingDescendantsForContainerParams {
 }
 
 impl GetQueryingDescendantsForContainerParams {
-    pub fn builder() -> GetQueryingDescendantsForContainerParamsBuilder { GetQueryingDescendantsForContainerParamsBuilder::default() }
+    pub fn builder(nodeId: NodeId) -> GetQueryingDescendantsForContainerParamsBuilder {
+        GetQueryingDescendantsForContainerParamsBuilder {
+            nodeId: nodeId,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
 }
 
-#[derive(Default)]
+
 pub struct GetQueryingDescendantsForContainerParamsBuilder {
-    nodeId: Option<NodeId>,
+    nodeId: NodeId,
 }
 
 impl GetQueryingDescendantsForContainerParamsBuilder {
-    /// Id of the container node to find querying descendants from.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn build(self) -> GetQueryingDescendantsForContainerParams {
         GetQueryingDescendantsForContainerParams {
-            nodeId: self.nodeId.unwrap_or_default(),
+            nodeId: self.nodeId,
         }
     }
 }
@@ -3893,21 +3975,23 @@ pub struct GetQueryingDescendantsForContainerReturns {
 }
 
 impl GetQueryingDescendantsForContainerReturns {
-    pub fn builder() -> GetQueryingDescendantsForContainerReturnsBuilder { GetQueryingDescendantsForContainerReturnsBuilder::default() }
+    pub fn builder(nodeIds: Vec<NodeId>) -> GetQueryingDescendantsForContainerReturnsBuilder {
+        GetQueryingDescendantsForContainerReturnsBuilder {
+            nodeIds: nodeIds,
+        }
+    }
     pub fn nodeIds(&self) -> &[NodeId] { &self.nodeIds }
 }
 
-#[derive(Default)]
+
 pub struct GetQueryingDescendantsForContainerReturnsBuilder {
-    nodeIds: Option<Vec<NodeId>>,
+    nodeIds: Vec<NodeId>,
 }
 
 impl GetQueryingDescendantsForContainerReturnsBuilder {
-    /// Descendant nodes with container queries against the given container.
-    pub fn nodeIds(mut self, nodeIds: Vec<NodeId>) -> Self { self.nodeIds = Some(nodeIds); self }
     pub fn build(self) -> GetQueryingDescendantsForContainerReturns {
         GetQueryingDescendantsForContainerReturns {
-            nodeIds: self.nodeIds.unwrap_or_default(),
+            nodeIds: self.nodeIds,
         }
     }
 }
@@ -3936,20 +4020,23 @@ pub struct GetAnchorElementParams<'a> {
 }
 
 impl<'a> GetAnchorElementParams<'a> {
-    pub fn builder() -> GetAnchorElementParamsBuilder<'a> { GetAnchorElementParamsBuilder::default() }
+    pub fn builder(nodeId: NodeId) -> GetAnchorElementParamsBuilder<'a> {
+        GetAnchorElementParamsBuilder {
+            nodeId: nodeId,
+            anchorSpecifier: None,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
     pub fn anchorSpecifier(&self) -> Option<&str> { self.anchorSpecifier.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct GetAnchorElementParamsBuilder<'a> {
-    nodeId: Option<NodeId>,
+    nodeId: NodeId,
     anchorSpecifier: Option<Cow<'a, str>>,
 }
 
 impl<'a> GetAnchorElementParamsBuilder<'a> {
-    /// Id of the positioned element from which to find the anchor.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
     /// An optional anchor specifier, as defined in
     /// https://www.w3.org/TR/css-anchor-position-1/#anchor-specifier.
     /// If not provided, it will return the implicit anchor element for
@@ -3957,7 +4044,7 @@ impl<'a> GetAnchorElementParamsBuilder<'a> {
     pub fn anchorSpecifier(mut self, anchorSpecifier: impl Into<Cow<'a, str>>) -> Self { self.anchorSpecifier = Some(anchorSpecifier.into()); self }
     pub fn build(self) -> GetAnchorElementParams<'a> {
         GetAnchorElementParams {
-            nodeId: self.nodeId.unwrap_or_default(),
+            nodeId: self.nodeId,
             anchorSpecifier: self.anchorSpecifier,
         }
     }
@@ -3974,21 +4061,23 @@ pub struct GetAnchorElementReturns {
 }
 
 impl GetAnchorElementReturns {
-    pub fn builder() -> GetAnchorElementReturnsBuilder { GetAnchorElementReturnsBuilder::default() }
+    pub fn builder(nodeId: NodeId) -> GetAnchorElementReturnsBuilder {
+        GetAnchorElementReturnsBuilder {
+            nodeId: nodeId,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
 }
 
-#[derive(Default)]
+
 pub struct GetAnchorElementReturnsBuilder {
-    nodeId: Option<NodeId>,
+    nodeId: NodeId,
 }
 
 impl GetAnchorElementReturnsBuilder {
-    /// The anchor element of the given anchor query.
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn build(self) -> GetAnchorElementReturns {
         GetAnchorElementReturns {
-            nodeId: self.nodeId.unwrap_or_default(),
+            nodeId: self.nodeId,
         }
     }
 }
@@ -4014,27 +4103,27 @@ pub struct ForceShowPopoverParams {
 }
 
 impl ForceShowPopoverParams {
-    pub fn builder() -> ForceShowPopoverParamsBuilder { ForceShowPopoverParamsBuilder::default() }
+    pub fn builder(nodeId: NodeId, enable: bool) -> ForceShowPopoverParamsBuilder {
+        ForceShowPopoverParamsBuilder {
+            nodeId: nodeId,
+            enable: enable,
+        }
+    }
     pub fn nodeId(&self) -> &NodeId { &self.nodeId }
     pub fn enable(&self) -> bool { self.enable }
 }
 
-#[derive(Default)]
+
 pub struct ForceShowPopoverParamsBuilder {
-    nodeId: Option<NodeId>,
-    enable: Option<bool>,
+    nodeId: NodeId,
+    enable: bool,
 }
 
 impl ForceShowPopoverParamsBuilder {
-    /// Id of the popover HTMLElement
-    pub fn nodeId(mut self, nodeId: NodeId) -> Self { self.nodeId = Some(nodeId); self }
-    /// If true, opens the popover and keeps it open. If false, closes the
-    /// popover if it was previously force-opened.
-    pub fn enable(mut self, enable: bool) -> Self { self.enable = Some(enable); self }
     pub fn build(self) -> ForceShowPopoverParams {
         ForceShowPopoverParams {
-            nodeId: self.nodeId.unwrap_or_default(),
-            enable: self.enable.unwrap_or_default(),
+            nodeId: self.nodeId,
+            enable: self.enable,
         }
     }
 }
@@ -4050,21 +4139,23 @@ pub struct ForceShowPopoverReturns {
 }
 
 impl ForceShowPopoverReturns {
-    pub fn builder() -> ForceShowPopoverReturnsBuilder { ForceShowPopoverReturnsBuilder::default() }
+    pub fn builder(nodeIds: Vec<NodeId>) -> ForceShowPopoverReturnsBuilder {
+        ForceShowPopoverReturnsBuilder {
+            nodeIds: nodeIds,
+        }
+    }
     pub fn nodeIds(&self) -> &[NodeId] { &self.nodeIds }
 }
 
-#[derive(Default)]
+
 pub struct ForceShowPopoverReturnsBuilder {
-    nodeIds: Option<Vec<NodeId>>,
+    nodeIds: Vec<NodeId>,
 }
 
 impl ForceShowPopoverReturnsBuilder {
-    /// List of popovers that were closed in order to respect popover stacking order.
-    pub fn nodeIds(mut self, nodeIds: Vec<NodeId>) -> Self { self.nodeIds = Some(nodeIds); self }
     pub fn build(self) -> ForceShowPopoverReturns {
         ForceShowPopoverReturns {
-            nodeIds: self.nodeIds.unwrap_or_default(),
+            nodeIds: self.nodeIds,
         }
     }
 }

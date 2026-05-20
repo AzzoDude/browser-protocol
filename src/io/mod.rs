@@ -20,21 +20,23 @@ pub struct CloseParams<'a> {
 }
 
 impl<'a> CloseParams<'a> {
-    pub fn builder() -> CloseParamsBuilder<'a> { CloseParamsBuilder::default() }
+    pub fn builder(handle: StreamHandle<'a>) -> CloseParamsBuilder<'a> {
+        CloseParamsBuilder {
+            handle: handle,
+        }
+    }
     pub fn handle(&self) -> &StreamHandle<'a> { &self.handle }
 }
 
-#[derive(Default)]
+
 pub struct CloseParamsBuilder<'a> {
-    handle: Option<StreamHandle<'a>>,
+    handle: StreamHandle<'a>,
 }
 
 impl<'a> CloseParamsBuilder<'a> {
-    /// Handle of the stream to close.
-    pub fn handle(mut self, handle: StreamHandle<'a>) -> Self { self.handle = Some(handle); self }
     pub fn build(self) -> CloseParams<'a> {
         CloseParams {
-            handle: self.handle.unwrap_or_default(),
+            handle: self.handle,
         }
     }
 }
@@ -63,22 +65,26 @@ pub struct ReadParams<'a> {
 }
 
 impl<'a> ReadParams<'a> {
-    pub fn builder() -> ReadParamsBuilder<'a> { ReadParamsBuilder::default() }
+    pub fn builder(handle: StreamHandle<'a>) -> ReadParamsBuilder<'a> {
+        ReadParamsBuilder {
+            handle: handle,
+            offset: None,
+            size: None,
+        }
+    }
     pub fn handle(&self) -> &StreamHandle<'a> { &self.handle }
     pub fn offset(&self) -> Option<i32> { self.offset }
     pub fn size(&self) -> Option<u64> { self.size }
 }
 
-#[derive(Default)]
+
 pub struct ReadParamsBuilder<'a> {
-    handle: Option<StreamHandle<'a>>,
+    handle: StreamHandle<'a>,
     offset: Option<i32>,
     size: Option<u64>,
 }
 
 impl<'a> ReadParamsBuilder<'a> {
-    /// Handle of the stream to read.
-    pub fn handle(mut self, handle: StreamHandle<'a>) -> Self { self.handle = Some(handle); self }
     /// Seek to the specified offset before reading (if not specified, proceed with offset
     /// following the last read). Some types of streams may only support sequential reads.
     pub fn offset(mut self, offset: i32) -> Self { self.offset = Some(offset); self }
@@ -86,7 +92,7 @@ impl<'a> ReadParamsBuilder<'a> {
     pub fn size(mut self, size: u64) -> Self { self.size = Some(size); self }
     pub fn build(self) -> ReadParams<'a> {
         ReadParams {
-            handle: self.handle.unwrap_or_default(),
+            handle: self.handle,
             offset: self.offset,
             size: self.size,
         }
@@ -108,31 +114,33 @@ pub struct ReadReturns<'a> {
 }
 
 impl<'a> ReadReturns<'a> {
-    pub fn builder() -> ReadReturnsBuilder<'a> { ReadReturnsBuilder::default() }
+    pub fn builder(data: impl Into<Cow<'a, str>>, eof: bool) -> ReadReturnsBuilder<'a> {
+        ReadReturnsBuilder {
+            base64Encoded: None,
+            data: data.into(),
+            eof: eof,
+        }
+    }
     pub fn base64Encoded(&self) -> Option<bool> { self.base64Encoded }
     pub fn data(&self) -> &str { self.data.as_ref() }
     pub fn eof(&self) -> bool { self.eof }
 }
 
-#[derive(Default)]
+
 pub struct ReadReturnsBuilder<'a> {
     base64Encoded: Option<bool>,
-    data: Option<Cow<'a, str>>,
-    eof: Option<bool>,
+    data: Cow<'a, str>,
+    eof: bool,
 }
 
 impl<'a> ReadReturnsBuilder<'a> {
     /// Set if the data is base64-encoded
     pub fn base64Encoded(mut self, base64Encoded: bool) -> Self { self.base64Encoded = Some(base64Encoded); self }
-    /// Data that were read.
-    pub fn data(mut self, data: impl Into<Cow<'a, str>>) -> Self { self.data = Some(data.into()); self }
-    /// Set if the end-of-file condition occurred while reading.
-    pub fn eof(mut self, eof: bool) -> Self { self.eof = Some(eof); self }
     pub fn build(self) -> ReadReturns<'a> {
         ReadReturns {
             base64Encoded: self.base64Encoded,
-            data: self.data.unwrap_or_default(),
-            eof: self.eof.unwrap_or_default(),
+            data: self.data,
+            eof: self.eof,
         }
     }
 }
@@ -154,21 +162,23 @@ pub struct ResolveBlobParams<'a> {
 }
 
 impl<'a> ResolveBlobParams<'a> {
-    pub fn builder() -> ResolveBlobParamsBuilder<'a> { ResolveBlobParamsBuilder::default() }
+    pub fn builder(objectId: crate::runtime::RemoteObjectId<'a>) -> ResolveBlobParamsBuilder<'a> {
+        ResolveBlobParamsBuilder {
+            objectId: objectId,
+        }
+    }
     pub fn objectId(&self) -> &crate::runtime::RemoteObjectId<'a> { &self.objectId }
 }
 
-#[derive(Default)]
+
 pub struct ResolveBlobParamsBuilder<'a> {
-    objectId: Option<crate::runtime::RemoteObjectId<'a>>,
+    objectId: crate::runtime::RemoteObjectId<'a>,
 }
 
 impl<'a> ResolveBlobParamsBuilder<'a> {
-    /// Object id of a Blob object wrapper.
-    pub fn objectId(mut self, objectId: crate::runtime::RemoteObjectId<'a>) -> Self { self.objectId = Some(objectId); self }
     pub fn build(self) -> ResolveBlobParams<'a> {
         ResolveBlobParams {
-            objectId: self.objectId.unwrap_or_default(),
+            objectId: self.objectId,
         }
     }
 }
@@ -183,21 +193,23 @@ pub struct ResolveBlobReturns<'a> {
 }
 
 impl<'a> ResolveBlobReturns<'a> {
-    pub fn builder() -> ResolveBlobReturnsBuilder<'a> { ResolveBlobReturnsBuilder::default() }
+    pub fn builder(uuid: impl Into<Cow<'a, str>>) -> ResolveBlobReturnsBuilder<'a> {
+        ResolveBlobReturnsBuilder {
+            uuid: uuid.into(),
+        }
+    }
     pub fn uuid(&self) -> &str { self.uuid.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct ResolveBlobReturnsBuilder<'a> {
-    uuid: Option<Cow<'a, str>>,
+    uuid: Cow<'a, str>,
 }
 
 impl<'a> ResolveBlobReturnsBuilder<'a> {
-    /// UUID of the specified Blob.
-    pub fn uuid(mut self, uuid: impl Into<Cow<'a, str>>) -> Self { self.uuid = Some(uuid.into()); self }
     pub fn build(self) -> ResolveBlobReturns<'a> {
         ResolveBlobReturns {
-            uuid: self.uuid.unwrap_or_default(),
+            uuid: self.uuid,
         }
     }
 }

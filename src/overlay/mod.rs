@@ -17,26 +17,27 @@ pub struct SourceOrderConfig {
 }
 
 impl SourceOrderConfig {
-    pub fn builder() -> SourceOrderConfigBuilder { SourceOrderConfigBuilder::default() }
+    pub fn builder(parentOutlineColor: crate::dom::RGBA, childOutlineColor: crate::dom::RGBA) -> SourceOrderConfigBuilder {
+        SourceOrderConfigBuilder {
+            parentOutlineColor: parentOutlineColor,
+            childOutlineColor: childOutlineColor,
+        }
+    }
     pub fn parentOutlineColor(&self) -> &crate::dom::RGBA { &self.parentOutlineColor }
     pub fn childOutlineColor(&self) -> &crate::dom::RGBA { &self.childOutlineColor }
 }
 
-#[derive(Default)]
+
 pub struct SourceOrderConfigBuilder {
-    parentOutlineColor: Option<crate::dom::RGBA>,
-    childOutlineColor: Option<crate::dom::RGBA>,
+    parentOutlineColor: crate::dom::RGBA,
+    childOutlineColor: crate::dom::RGBA,
 }
 
 impl SourceOrderConfigBuilder {
-    /// the color to outline the given element in.
-    pub fn parentOutlineColor(mut self, parentOutlineColor: crate::dom::RGBA) -> Self { self.parentOutlineColor = Some(parentOutlineColor); self }
-    /// the color to outline the child elements in.
-    pub fn childOutlineColor(mut self, childOutlineColor: crate::dom::RGBA) -> Self { self.childOutlineColor = Some(childOutlineColor); self }
     pub fn build(self) -> SourceOrderConfig {
         SourceOrderConfig {
-            parentOutlineColor: self.parentOutlineColor.unwrap_or_default(),
-            childOutlineColor: self.childOutlineColor.unwrap_or_default(),
+            parentOutlineColor: self.parentOutlineColor,
+            childOutlineColor: self.childOutlineColor,
         }
     }
 }
@@ -109,7 +110,30 @@ pub struct GridHighlightConfig {
 }
 
 impl GridHighlightConfig {
-    pub fn builder() -> GridHighlightConfigBuilder { GridHighlightConfigBuilder::default() }
+    pub fn builder() -> GridHighlightConfigBuilder {
+        GridHighlightConfigBuilder {
+            showGridExtensionLines: None,
+            showPositiveLineNumbers: None,
+            showNegativeLineNumbers: None,
+            showAreaNames: None,
+            showLineNames: None,
+            showTrackSizes: None,
+            gridBorderColor: None,
+            cellBorderColor: None,
+            rowLineColor: None,
+            columnLineColor: None,
+            gridBorderDash: None,
+            cellBorderDash: None,
+            rowLineDash: None,
+            columnLineDash: None,
+            rowGapColor: None,
+            rowHatchColor: None,
+            columnGapColor: None,
+            columnHatchColor: None,
+            areaBorderColor: None,
+            gridBackgroundColor: None,
+        }
+    }
     pub fn showGridExtensionLines(&self) -> Option<bool> { self.showGridExtensionLines }
     pub fn showPositiveLineNumbers(&self) -> Option<bool> { self.showPositiveLineNumbers }
     pub fn showNegativeLineNumbers(&self) -> Option<bool> { self.showNegativeLineNumbers }
@@ -255,7 +279,18 @@ pub struct FlexContainerHighlightConfig<'a> {
 }
 
 impl<'a> FlexContainerHighlightConfig<'a> {
-    pub fn builder() -> FlexContainerHighlightConfigBuilder<'a> { FlexContainerHighlightConfigBuilder::default() }
+    pub fn builder() -> FlexContainerHighlightConfigBuilder<'a> {
+        FlexContainerHighlightConfigBuilder {
+            containerBorder: None,
+            lineSeparator: None,
+            itemSeparator: None,
+            mainDistributedSpace: None,
+            crossDistributedSpace: None,
+            rowGapSpace: None,
+            columnGapSpace: None,
+            crossAlignment: None,
+        }
+    }
     pub fn containerBorder(&self) -> Option<&LineStyle<'a>> { self.containerBorder.as_ref() }
     pub fn lineSeparator(&self) -> Option<&LineStyle<'a>> { self.lineSeparator.as_ref() }
     pub fn itemSeparator(&self) -> Option<&LineStyle<'a>> { self.itemSeparator.as_ref() }
@@ -326,7 +361,13 @@ pub struct FlexItemHighlightConfig<'a> {
 }
 
 impl<'a> FlexItemHighlightConfig<'a> {
-    pub fn builder() -> FlexItemHighlightConfigBuilder<'a> { FlexItemHighlightConfigBuilder::default() }
+    pub fn builder() -> FlexItemHighlightConfigBuilder<'a> {
+        FlexItemHighlightConfigBuilder {
+            baseSizeBox: None,
+            baseSizeBorder: None,
+            flexibilityArrow: None,
+        }
+    }
     pub fn baseSizeBox(&self) -> Option<&BoxStyle> { self.baseSizeBox.as_ref() }
     pub fn baseSizeBorder(&self) -> Option<&LineStyle<'a>> { self.baseSizeBorder.as_ref() }
     pub fn flexibilityArrow(&self) -> Option<&LineStyle<'a>> { self.flexibilityArrow.as_ref() }
@@ -369,7 +410,12 @@ pub struct LineStyle<'a> {
 }
 
 impl<'a> LineStyle<'a> {
-    pub fn builder() -> LineStyleBuilder<'a> { LineStyleBuilder::default() }
+    pub fn builder() -> LineStyleBuilder<'a> {
+        LineStyleBuilder {
+            color: None,
+            pattern: None,
+        }
+    }
     pub fn color(&self) -> Option<&crate::dom::RGBA> { self.color.as_ref() }
     pub fn pattern(&self) -> Option<&str> { self.pattern.as_deref() }
 }
@@ -407,7 +453,12 @@ pub struct BoxStyle {
 }
 
 impl BoxStyle {
-    pub fn builder() -> BoxStyleBuilder { BoxStyleBuilder::default() }
+    pub fn builder() -> BoxStyleBuilder {
+        BoxStyleBuilder {
+            fillColor: None,
+            hatchColor: None,
+        }
+    }
     pub fn fillColor(&self) -> Option<&crate::dom::RGBA> { self.fillColor.as_ref() }
     pub fn hatchColor(&self) -> Option<&crate::dom::RGBA> { self.hatchColor.as_ref() }
 }
@@ -508,7 +559,29 @@ pub struct HighlightConfig<'a> {
 }
 
 impl<'a> HighlightConfig<'a> {
-    pub fn builder() -> HighlightConfigBuilder<'a> { HighlightConfigBuilder::default() }
+    pub fn builder() -> HighlightConfigBuilder<'a> {
+        HighlightConfigBuilder {
+            showInfo: None,
+            showStyles: None,
+            showRulers: None,
+            showAccessibilityInfo: None,
+            showExtensionLines: None,
+            contentColor: None,
+            paddingColor: None,
+            borderColor: None,
+            marginColor: None,
+            eventTargetColor: None,
+            shapeColor: None,
+            shapeMarginColor: None,
+            cssGridColor: None,
+            colorFormat: None,
+            gridHighlightConfig: None,
+            flexContainerHighlightConfig: None,
+            flexItemHighlightConfig: None,
+            contrastAlgorithm: None,
+            containerQueryContainerHighlightConfig: None,
+        }
+    }
     pub fn showInfo(&self) -> Option<bool> { self.showInfo }
     pub fn showStyles(&self) -> Option<bool> { self.showStyles }
     pub fn showRulers(&self) -> Option<bool> { self.showRulers }
@@ -643,26 +716,27 @@ pub struct GridNodeHighlightConfig {
 }
 
 impl GridNodeHighlightConfig {
-    pub fn builder() -> GridNodeHighlightConfigBuilder { GridNodeHighlightConfigBuilder::default() }
+    pub fn builder(gridHighlightConfig: GridHighlightConfig, nodeId: crate::dom::NodeId) -> GridNodeHighlightConfigBuilder {
+        GridNodeHighlightConfigBuilder {
+            gridHighlightConfig: gridHighlightConfig,
+            nodeId: nodeId,
+        }
+    }
     pub fn gridHighlightConfig(&self) -> &GridHighlightConfig { &self.gridHighlightConfig }
     pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
 }
 
-#[derive(Default)]
+
 pub struct GridNodeHighlightConfigBuilder {
-    gridHighlightConfig: Option<GridHighlightConfig>,
-    nodeId: Option<crate::dom::NodeId>,
+    gridHighlightConfig: GridHighlightConfig,
+    nodeId: crate::dom::NodeId,
 }
 
 impl GridNodeHighlightConfigBuilder {
-    /// A descriptor for the highlight appearance.
-    pub fn gridHighlightConfig(mut self, gridHighlightConfig: GridHighlightConfig) -> Self { self.gridHighlightConfig = Some(gridHighlightConfig); self }
-    /// Identifier of the node to highlight.
-    pub fn nodeId(mut self, nodeId: crate::dom::NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn build(self) -> GridNodeHighlightConfig {
         GridNodeHighlightConfig {
-            gridHighlightConfig: self.gridHighlightConfig.unwrap_or_default(),
-            nodeId: self.nodeId.unwrap_or_default(),
+            gridHighlightConfig: self.gridHighlightConfig,
+            nodeId: self.nodeId,
         }
     }
 }
@@ -678,26 +752,27 @@ pub struct FlexNodeHighlightConfig<'a> {
 }
 
 impl<'a> FlexNodeHighlightConfig<'a> {
-    pub fn builder() -> FlexNodeHighlightConfigBuilder<'a> { FlexNodeHighlightConfigBuilder::default() }
+    pub fn builder(flexContainerHighlightConfig: FlexContainerHighlightConfig<'a>, nodeId: crate::dom::NodeId) -> FlexNodeHighlightConfigBuilder<'a> {
+        FlexNodeHighlightConfigBuilder {
+            flexContainerHighlightConfig: flexContainerHighlightConfig,
+            nodeId: nodeId,
+        }
+    }
     pub fn flexContainerHighlightConfig(&self) -> &FlexContainerHighlightConfig<'a> { &self.flexContainerHighlightConfig }
     pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
 }
 
-#[derive(Default)]
+
 pub struct FlexNodeHighlightConfigBuilder<'a> {
-    flexContainerHighlightConfig: Option<FlexContainerHighlightConfig<'a>>,
-    nodeId: Option<crate::dom::NodeId>,
+    flexContainerHighlightConfig: FlexContainerHighlightConfig<'a>,
+    nodeId: crate::dom::NodeId,
 }
 
 impl<'a> FlexNodeHighlightConfigBuilder<'a> {
-    /// A descriptor for the highlight appearance of flex containers.
-    pub fn flexContainerHighlightConfig(mut self, flexContainerHighlightConfig: FlexContainerHighlightConfig<'a>) -> Self { self.flexContainerHighlightConfig = Some(flexContainerHighlightConfig); self }
-    /// Identifier of the node to highlight.
-    pub fn nodeId(mut self, nodeId: crate::dom::NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn build(self) -> FlexNodeHighlightConfig<'a> {
         FlexNodeHighlightConfig {
-            flexContainerHighlightConfig: self.flexContainerHighlightConfig.unwrap_or_default(),
-            nodeId: self.nodeId.unwrap_or_default(),
+            flexContainerHighlightConfig: self.flexContainerHighlightConfig,
+            nodeId: self.nodeId,
         }
     }
 }
@@ -721,7 +796,14 @@ pub struct ScrollSnapContainerHighlightConfig<'a> {
 }
 
 impl<'a> ScrollSnapContainerHighlightConfig<'a> {
-    pub fn builder() -> ScrollSnapContainerHighlightConfigBuilder<'a> { ScrollSnapContainerHighlightConfigBuilder::default() }
+    pub fn builder() -> ScrollSnapContainerHighlightConfigBuilder<'a> {
+        ScrollSnapContainerHighlightConfigBuilder {
+            snapportBorder: None,
+            snapAreaBorder: None,
+            scrollMarginColor: None,
+            scrollPaddingColor: None,
+        }
+    }
     pub fn snapportBorder(&self) -> Option<&LineStyle<'a>> { self.snapportBorder.as_ref() }
     pub fn snapAreaBorder(&self) -> Option<&LineStyle<'a>> { self.snapAreaBorder.as_ref() }
     pub fn scrollMarginColor(&self) -> Option<&crate::dom::RGBA> { self.scrollMarginColor.as_ref() }
@@ -766,26 +848,27 @@ pub struct ScrollSnapHighlightConfig<'a> {
 }
 
 impl<'a> ScrollSnapHighlightConfig<'a> {
-    pub fn builder() -> ScrollSnapHighlightConfigBuilder<'a> { ScrollSnapHighlightConfigBuilder::default() }
+    pub fn builder(scrollSnapContainerHighlightConfig: ScrollSnapContainerHighlightConfig<'a>, nodeId: crate::dom::NodeId) -> ScrollSnapHighlightConfigBuilder<'a> {
+        ScrollSnapHighlightConfigBuilder {
+            scrollSnapContainerHighlightConfig: scrollSnapContainerHighlightConfig,
+            nodeId: nodeId,
+        }
+    }
     pub fn scrollSnapContainerHighlightConfig(&self) -> &ScrollSnapContainerHighlightConfig<'a> { &self.scrollSnapContainerHighlightConfig }
     pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
 }
 
-#[derive(Default)]
+
 pub struct ScrollSnapHighlightConfigBuilder<'a> {
-    scrollSnapContainerHighlightConfig: Option<ScrollSnapContainerHighlightConfig<'a>>,
-    nodeId: Option<crate::dom::NodeId>,
+    scrollSnapContainerHighlightConfig: ScrollSnapContainerHighlightConfig<'a>,
+    nodeId: crate::dom::NodeId,
 }
 
 impl<'a> ScrollSnapHighlightConfigBuilder<'a> {
-    /// A descriptor for the highlight appearance of scroll snap containers.
-    pub fn scrollSnapContainerHighlightConfig(mut self, scrollSnapContainerHighlightConfig: ScrollSnapContainerHighlightConfig<'a>) -> Self { self.scrollSnapContainerHighlightConfig = Some(scrollSnapContainerHighlightConfig); self }
-    /// Identifier of the node to highlight.
-    pub fn nodeId(mut self, nodeId: crate::dom::NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn build(self) -> ScrollSnapHighlightConfig<'a> {
         ScrollSnapHighlightConfig {
-            scrollSnapContainerHighlightConfig: self.scrollSnapContainerHighlightConfig.unwrap_or_default(),
-            nodeId: self.nodeId.unwrap_or_default(),
+            scrollSnapContainerHighlightConfig: self.scrollSnapContainerHighlightConfig,
+            nodeId: self.nodeId,
         }
     }
 }
@@ -806,29 +889,33 @@ pub struct HingeConfig {
 }
 
 impl HingeConfig {
-    pub fn builder() -> HingeConfigBuilder { HingeConfigBuilder::default() }
+    pub fn builder(rect: crate::dom::Rect) -> HingeConfigBuilder {
+        HingeConfigBuilder {
+            rect: rect,
+            contentColor: None,
+            outlineColor: None,
+        }
+    }
     pub fn rect(&self) -> &crate::dom::Rect { &self.rect }
     pub fn contentColor(&self) -> Option<&crate::dom::RGBA> { self.contentColor.as_ref() }
     pub fn outlineColor(&self) -> Option<&crate::dom::RGBA> { self.outlineColor.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct HingeConfigBuilder {
-    rect: Option<crate::dom::Rect>,
+    rect: crate::dom::Rect,
     contentColor: Option<crate::dom::RGBA>,
     outlineColor: Option<crate::dom::RGBA>,
 }
 
 impl HingeConfigBuilder {
-    /// A rectangle represent hinge
-    pub fn rect(mut self, rect: crate::dom::Rect) -> Self { self.rect = Some(rect); self }
     /// The content box highlight fill color (default: a dark color).
     pub fn contentColor(mut self, contentColor: crate::dom::RGBA) -> Self { self.contentColor = Some(contentColor); self }
     /// The content box highlight outline color (default: transparent).
     pub fn outlineColor(mut self, outlineColor: crate::dom::RGBA) -> Self { self.outlineColor = Some(outlineColor); self }
     pub fn build(self) -> HingeConfig {
         HingeConfig {
-            rect: self.rect.unwrap_or_default(),
+            rect: self.rect,
             contentColor: self.contentColor,
             outlineColor: self.outlineColor,
         }
@@ -849,31 +936,31 @@ pub struct WindowControlsOverlayConfig<'a> {
 }
 
 impl<'a> WindowControlsOverlayConfig<'a> {
-    pub fn builder() -> WindowControlsOverlayConfigBuilder<'a> { WindowControlsOverlayConfigBuilder::default() }
+    pub fn builder(showCSS: bool, selectedPlatform: impl Into<Cow<'a, str>>, themeColor: impl Into<Cow<'a, str>>) -> WindowControlsOverlayConfigBuilder<'a> {
+        WindowControlsOverlayConfigBuilder {
+            showCSS: showCSS,
+            selectedPlatform: selectedPlatform.into(),
+            themeColor: themeColor.into(),
+        }
+    }
     pub fn showCSS(&self) -> bool { self.showCSS }
     pub fn selectedPlatform(&self) -> &str { self.selectedPlatform.as_ref() }
     pub fn themeColor(&self) -> &str { self.themeColor.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct WindowControlsOverlayConfigBuilder<'a> {
-    showCSS: Option<bool>,
-    selectedPlatform: Option<Cow<'a, str>>,
-    themeColor: Option<Cow<'a, str>>,
+    showCSS: bool,
+    selectedPlatform: Cow<'a, str>,
+    themeColor: Cow<'a, str>,
 }
 
 impl<'a> WindowControlsOverlayConfigBuilder<'a> {
-    /// Whether the title bar CSS should be shown when emulating the Window Controls Overlay.
-    pub fn showCSS(mut self, showCSS: bool) -> Self { self.showCSS = Some(showCSS); self }
-    /// Selected platforms to show the overlay.
-    pub fn selectedPlatform(mut self, selectedPlatform: impl Into<Cow<'a, str>>) -> Self { self.selectedPlatform = Some(selectedPlatform.into()); self }
-    /// The theme color defined in app manifest.
-    pub fn themeColor(mut self, themeColor: impl Into<Cow<'a, str>>) -> Self { self.themeColor = Some(themeColor.into()); self }
     pub fn build(self) -> WindowControlsOverlayConfig<'a> {
         WindowControlsOverlayConfig {
-            showCSS: self.showCSS.unwrap_or_default(),
-            selectedPlatform: self.selectedPlatform.unwrap_or_default(),
-            themeColor: self.themeColor.unwrap_or_default(),
+            showCSS: self.showCSS,
+            selectedPlatform: self.selectedPlatform,
+            themeColor: self.themeColor,
         }
     }
 }
@@ -889,26 +976,27 @@ pub struct ContainerQueryHighlightConfig<'a> {
 }
 
 impl<'a> ContainerQueryHighlightConfig<'a> {
-    pub fn builder() -> ContainerQueryHighlightConfigBuilder<'a> { ContainerQueryHighlightConfigBuilder::default() }
+    pub fn builder(containerQueryContainerHighlightConfig: ContainerQueryContainerHighlightConfig<'a>, nodeId: crate::dom::NodeId) -> ContainerQueryHighlightConfigBuilder<'a> {
+        ContainerQueryHighlightConfigBuilder {
+            containerQueryContainerHighlightConfig: containerQueryContainerHighlightConfig,
+            nodeId: nodeId,
+        }
+    }
     pub fn containerQueryContainerHighlightConfig(&self) -> &ContainerQueryContainerHighlightConfig<'a> { &self.containerQueryContainerHighlightConfig }
     pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
 }
 
-#[derive(Default)]
+
 pub struct ContainerQueryHighlightConfigBuilder<'a> {
-    containerQueryContainerHighlightConfig: Option<ContainerQueryContainerHighlightConfig<'a>>,
-    nodeId: Option<crate::dom::NodeId>,
+    containerQueryContainerHighlightConfig: ContainerQueryContainerHighlightConfig<'a>,
+    nodeId: crate::dom::NodeId,
 }
 
 impl<'a> ContainerQueryHighlightConfigBuilder<'a> {
-    /// A descriptor for the highlight appearance of container query containers.
-    pub fn containerQueryContainerHighlightConfig(mut self, containerQueryContainerHighlightConfig: ContainerQueryContainerHighlightConfig<'a>) -> Self { self.containerQueryContainerHighlightConfig = Some(containerQueryContainerHighlightConfig); self }
-    /// Identifier of the container node to highlight.
-    pub fn nodeId(mut self, nodeId: crate::dom::NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn build(self) -> ContainerQueryHighlightConfig<'a> {
         ContainerQueryHighlightConfig {
-            containerQueryContainerHighlightConfig: self.containerQueryContainerHighlightConfig.unwrap_or_default(),
-            nodeId: self.nodeId.unwrap_or_default(),
+            containerQueryContainerHighlightConfig: self.containerQueryContainerHighlightConfig,
+            nodeId: self.nodeId,
         }
     }
 }
@@ -926,7 +1014,12 @@ pub struct ContainerQueryContainerHighlightConfig<'a> {
 }
 
 impl<'a> ContainerQueryContainerHighlightConfig<'a> {
-    pub fn builder() -> ContainerQueryContainerHighlightConfigBuilder<'a> { ContainerQueryContainerHighlightConfigBuilder::default() }
+    pub fn builder() -> ContainerQueryContainerHighlightConfigBuilder<'a> {
+        ContainerQueryContainerHighlightConfigBuilder {
+            containerBorder: None,
+            descendantBorder: None,
+        }
+    }
     pub fn containerBorder(&self) -> Option<&LineStyle<'a>> { self.containerBorder.as_ref() }
     pub fn descendantBorder(&self) -> Option<&LineStyle<'a>> { self.descendantBorder.as_ref() }
 }
@@ -961,26 +1054,27 @@ pub struct IsolatedElementHighlightConfig {
 }
 
 impl IsolatedElementHighlightConfig {
-    pub fn builder() -> IsolatedElementHighlightConfigBuilder { IsolatedElementHighlightConfigBuilder::default() }
+    pub fn builder(isolationModeHighlightConfig: IsolationModeHighlightConfig, nodeId: crate::dom::NodeId) -> IsolatedElementHighlightConfigBuilder {
+        IsolatedElementHighlightConfigBuilder {
+            isolationModeHighlightConfig: isolationModeHighlightConfig,
+            nodeId: nodeId,
+        }
+    }
     pub fn isolationModeHighlightConfig(&self) -> &IsolationModeHighlightConfig { &self.isolationModeHighlightConfig }
     pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
 }
 
-#[derive(Default)]
+
 pub struct IsolatedElementHighlightConfigBuilder {
-    isolationModeHighlightConfig: Option<IsolationModeHighlightConfig>,
-    nodeId: Option<crate::dom::NodeId>,
+    isolationModeHighlightConfig: IsolationModeHighlightConfig,
+    nodeId: crate::dom::NodeId,
 }
 
 impl IsolatedElementHighlightConfigBuilder {
-    /// A descriptor for the highlight appearance of an element in isolation mode.
-    pub fn isolationModeHighlightConfig(mut self, isolationModeHighlightConfig: IsolationModeHighlightConfig) -> Self { self.isolationModeHighlightConfig = Some(isolationModeHighlightConfig); self }
-    /// Identifier of the isolated element to highlight.
-    pub fn nodeId(mut self, nodeId: crate::dom::NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn build(self) -> IsolatedElementHighlightConfig {
         IsolatedElementHighlightConfig {
-            isolationModeHighlightConfig: self.isolationModeHighlightConfig.unwrap_or_default(),
-            nodeId: self.nodeId.unwrap_or_default(),
+            isolationModeHighlightConfig: self.isolationModeHighlightConfig,
+            nodeId: self.nodeId,
         }
     }
 }
@@ -1001,7 +1095,13 @@ pub struct IsolationModeHighlightConfig {
 }
 
 impl IsolationModeHighlightConfig {
-    pub fn builder() -> IsolationModeHighlightConfigBuilder { IsolationModeHighlightConfigBuilder::default() }
+    pub fn builder() -> IsolationModeHighlightConfigBuilder {
+        IsolationModeHighlightConfigBuilder {
+            resizerColor: None,
+            resizerHandleColor: None,
+            maskColor: None,
+        }
+    }
     pub fn resizerColor(&self) -> Option<&crate::dom::RGBA> { self.resizerColor.as_ref() }
     pub fn resizerHandleColor(&self) -> Option<&crate::dom::RGBA> { self.resizerHandleColor.as_ref() }
     pub fn maskColor(&self) -> Option<&crate::dom::RGBA> { self.maskColor.as_ref() }
@@ -1057,7 +1157,12 @@ pub struct InspectedElementAnchorConfig {
 }
 
 impl InspectedElementAnchorConfig {
-    pub fn builder() -> InspectedElementAnchorConfigBuilder { InspectedElementAnchorConfigBuilder::default() }
+    pub fn builder() -> InspectedElementAnchorConfigBuilder {
+        InspectedElementAnchorConfigBuilder {
+            nodeId: None,
+            backendNodeId: None,
+        }
+    }
     pub fn nodeId(&self) -> Option<&crate::dom::NodeId> { self.nodeId.as_ref() }
     pub fn backendNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.backendNodeId.as_ref() }
 }
@@ -1084,21 +1189,6 @@ impl InspectedElementAnchorConfigBuilder {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct DisableParams {}
 
-impl DisableParams {
-    pub fn builder() -> DisableParamsBuilder {
-        DisableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct DisableParamsBuilder {}
-
-impl DisableParamsBuilder {
-    pub fn build(self) -> DisableParams {
-        DisableParams {}
-    }
-}
-
 impl DisableParams { pub const METHOD: &'static str = "Overlay.disable"; }
 
 impl<'a> crate::CdpCommand<'a> for DisableParams {
@@ -1108,21 +1198,6 @@ impl<'a> crate::CdpCommand<'a> for DisableParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct EnableParams {}
-
-impl EnableParams {
-    pub fn builder() -> EnableParamsBuilder {
-        EnableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct EnableParamsBuilder {}
-
-impl EnableParamsBuilder {
-    pub fn build(self) -> EnableParams {
-        EnableParams {}
-    }
-}
 
 impl EnableParams { pub const METHOD: &'static str = "Overlay.enable"; }
 
@@ -1153,7 +1228,15 @@ pub struct GetHighlightObjectForTestParams {
 }
 
 impl GetHighlightObjectForTestParams {
-    pub fn builder() -> GetHighlightObjectForTestParamsBuilder { GetHighlightObjectForTestParamsBuilder::default() }
+    pub fn builder(nodeId: crate::dom::NodeId) -> GetHighlightObjectForTestParamsBuilder {
+        GetHighlightObjectForTestParamsBuilder {
+            nodeId: nodeId,
+            includeDistance: None,
+            includeStyle: None,
+            colorFormat: None,
+            showAccessibilityInfo: None,
+        }
+    }
     pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
     pub fn includeDistance(&self) -> Option<bool> { self.includeDistance }
     pub fn includeStyle(&self) -> Option<bool> { self.includeStyle }
@@ -1161,9 +1244,9 @@ impl GetHighlightObjectForTestParams {
     pub fn showAccessibilityInfo(&self) -> Option<bool> { self.showAccessibilityInfo }
 }
 
-#[derive(Default)]
+
 pub struct GetHighlightObjectForTestParamsBuilder {
-    nodeId: Option<crate::dom::NodeId>,
+    nodeId: crate::dom::NodeId,
     includeDistance: Option<bool>,
     includeStyle: Option<bool>,
     colorFormat: Option<ColorFormat>,
@@ -1171,8 +1254,6 @@ pub struct GetHighlightObjectForTestParamsBuilder {
 }
 
 impl GetHighlightObjectForTestParamsBuilder {
-    /// Id of the node to get highlight object for.
-    pub fn nodeId(mut self, nodeId: crate::dom::NodeId) -> Self { self.nodeId = Some(nodeId); self }
     /// Whether to include distance info.
     pub fn includeDistance(mut self, includeDistance: bool) -> Self { self.includeDistance = Some(includeDistance); self }
     /// Whether to include style info.
@@ -1183,7 +1264,7 @@ impl GetHighlightObjectForTestParamsBuilder {
     pub fn showAccessibilityInfo(mut self, showAccessibilityInfo: bool) -> Self { self.showAccessibilityInfo = Some(showAccessibilityInfo); self }
     pub fn build(self) -> GetHighlightObjectForTestParams {
         GetHighlightObjectForTestParams {
-            nodeId: self.nodeId.unwrap_or_default(),
+            nodeId: self.nodeId,
             includeDistance: self.includeDistance,
             includeStyle: self.includeStyle,
             colorFormat: self.colorFormat,
@@ -1202,21 +1283,23 @@ pub struct GetHighlightObjectForTestReturns {
 }
 
 impl GetHighlightObjectForTestReturns {
-    pub fn builder() -> GetHighlightObjectForTestReturnsBuilder { GetHighlightObjectForTestReturnsBuilder::default() }
+    pub fn builder(highlight: serde_json::Map<String, JsonValue>) -> GetHighlightObjectForTestReturnsBuilder {
+        GetHighlightObjectForTestReturnsBuilder {
+            highlight: highlight,
+        }
+    }
     pub fn highlight(&self) -> &serde_json::Map<String, JsonValue> { &self.highlight }
 }
 
-#[derive(Default)]
+
 pub struct GetHighlightObjectForTestReturnsBuilder {
-    highlight: Option<serde_json::Map<String, JsonValue>>,
+    highlight: serde_json::Map<String, JsonValue>,
 }
 
 impl GetHighlightObjectForTestReturnsBuilder {
-    /// Highlight data for the node.
-    pub fn highlight(mut self, highlight: serde_json::Map<String, JsonValue>) -> Self { self.highlight = Some(highlight); self }
     pub fn build(self) -> GetHighlightObjectForTestReturns {
         GetHighlightObjectForTestReturns {
-            highlight: self.highlight.unwrap_or_default(),
+            highlight: self.highlight,
         }
     }
 }
@@ -1238,21 +1321,23 @@ pub struct GetGridHighlightObjectsForTestParams {
 }
 
 impl GetGridHighlightObjectsForTestParams {
-    pub fn builder() -> GetGridHighlightObjectsForTestParamsBuilder { GetGridHighlightObjectsForTestParamsBuilder::default() }
+    pub fn builder(nodeIds: Vec<crate::dom::NodeId>) -> GetGridHighlightObjectsForTestParamsBuilder {
+        GetGridHighlightObjectsForTestParamsBuilder {
+            nodeIds: nodeIds,
+        }
+    }
     pub fn nodeIds(&self) -> &[crate::dom::NodeId] { &self.nodeIds }
 }
 
-#[derive(Default)]
+
 pub struct GetGridHighlightObjectsForTestParamsBuilder {
-    nodeIds: Option<Vec<crate::dom::NodeId>>,
+    nodeIds: Vec<crate::dom::NodeId>,
 }
 
 impl GetGridHighlightObjectsForTestParamsBuilder {
-    /// Ids of the node to get highlight object for.
-    pub fn nodeIds(mut self, nodeIds: Vec<crate::dom::NodeId>) -> Self { self.nodeIds = Some(nodeIds); self }
     pub fn build(self) -> GetGridHighlightObjectsForTestParams {
         GetGridHighlightObjectsForTestParams {
-            nodeIds: self.nodeIds.unwrap_or_default(),
+            nodeIds: self.nodeIds,
         }
     }
 }
@@ -1267,21 +1352,23 @@ pub struct GetGridHighlightObjectsForTestReturns {
 }
 
 impl GetGridHighlightObjectsForTestReturns {
-    pub fn builder() -> GetGridHighlightObjectsForTestReturnsBuilder { GetGridHighlightObjectsForTestReturnsBuilder::default() }
+    pub fn builder(highlights: serde_json::Map<String, JsonValue>) -> GetGridHighlightObjectsForTestReturnsBuilder {
+        GetGridHighlightObjectsForTestReturnsBuilder {
+            highlights: highlights,
+        }
+    }
     pub fn highlights(&self) -> &serde_json::Map<String, JsonValue> { &self.highlights }
 }
 
-#[derive(Default)]
+
 pub struct GetGridHighlightObjectsForTestReturnsBuilder {
-    highlights: Option<serde_json::Map<String, JsonValue>>,
+    highlights: serde_json::Map<String, JsonValue>,
 }
 
 impl GetGridHighlightObjectsForTestReturnsBuilder {
-    /// Grid Highlight data for the node ids provided.
-    pub fn highlights(mut self, highlights: serde_json::Map<String, JsonValue>) -> Self { self.highlights = Some(highlights); self }
     pub fn build(self) -> GetGridHighlightObjectsForTestReturns {
         GetGridHighlightObjectsForTestReturns {
-            highlights: self.highlights.unwrap_or_default(),
+            highlights: self.highlights,
         }
     }
 }
@@ -1303,21 +1390,23 @@ pub struct GetSourceOrderHighlightObjectForTestParams {
 }
 
 impl GetSourceOrderHighlightObjectForTestParams {
-    pub fn builder() -> GetSourceOrderHighlightObjectForTestParamsBuilder { GetSourceOrderHighlightObjectForTestParamsBuilder::default() }
+    pub fn builder(nodeId: crate::dom::NodeId) -> GetSourceOrderHighlightObjectForTestParamsBuilder {
+        GetSourceOrderHighlightObjectForTestParamsBuilder {
+            nodeId: nodeId,
+        }
+    }
     pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
 }
 
-#[derive(Default)]
+
 pub struct GetSourceOrderHighlightObjectForTestParamsBuilder {
-    nodeId: Option<crate::dom::NodeId>,
+    nodeId: crate::dom::NodeId,
 }
 
 impl GetSourceOrderHighlightObjectForTestParamsBuilder {
-    /// Id of the node to highlight.
-    pub fn nodeId(mut self, nodeId: crate::dom::NodeId) -> Self { self.nodeId = Some(nodeId); self }
     pub fn build(self) -> GetSourceOrderHighlightObjectForTestParams {
         GetSourceOrderHighlightObjectForTestParams {
-            nodeId: self.nodeId.unwrap_or_default(),
+            nodeId: self.nodeId,
         }
     }
 }
@@ -1332,21 +1421,23 @@ pub struct GetSourceOrderHighlightObjectForTestReturns {
 }
 
 impl GetSourceOrderHighlightObjectForTestReturns {
-    pub fn builder() -> GetSourceOrderHighlightObjectForTestReturnsBuilder { GetSourceOrderHighlightObjectForTestReturnsBuilder::default() }
+    pub fn builder(highlight: serde_json::Map<String, JsonValue>) -> GetSourceOrderHighlightObjectForTestReturnsBuilder {
+        GetSourceOrderHighlightObjectForTestReturnsBuilder {
+            highlight: highlight,
+        }
+    }
     pub fn highlight(&self) -> &serde_json::Map<String, JsonValue> { &self.highlight }
 }
 
-#[derive(Default)]
+
 pub struct GetSourceOrderHighlightObjectForTestReturnsBuilder {
-    highlight: Option<serde_json::Map<String, JsonValue>>,
+    highlight: serde_json::Map<String, JsonValue>,
 }
 
 impl GetSourceOrderHighlightObjectForTestReturnsBuilder {
-    /// Source order highlight data for the node id provided.
-    pub fn highlight(mut self, highlight: serde_json::Map<String, JsonValue>) -> Self { self.highlight = Some(highlight); self }
     pub fn build(self) -> GetSourceOrderHighlightObjectForTestReturns {
         GetSourceOrderHighlightObjectForTestReturns {
-            highlight: self.highlight.unwrap_or_default(),
+            highlight: self.highlight,
         }
     }
 }
@@ -1360,21 +1451,6 @@ impl<'a> crate::CdpCommand<'a> for GetSourceOrderHighlightObjectForTestParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct HideHighlightParams {}
-
-impl HideHighlightParams {
-    pub fn builder() -> HideHighlightParamsBuilder {
-        HideHighlightParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct HideHighlightParamsBuilder {}
-
-impl HideHighlightParamsBuilder {
-    pub fn build(self) -> HideHighlightParams {
-        HideHighlightParams {}
-    }
-}
 
 impl HideHighlightParams { pub const METHOD: &'static str = "Overlay.hideHighlight"; }
 
@@ -1402,29 +1478,33 @@ pub struct HighlightFrameParams<'a> {
 }
 
 impl<'a> HighlightFrameParams<'a> {
-    pub fn builder() -> HighlightFrameParamsBuilder<'a> { HighlightFrameParamsBuilder::default() }
+    pub fn builder(frameId: crate::page::FrameId<'a>) -> HighlightFrameParamsBuilder<'a> {
+        HighlightFrameParamsBuilder {
+            frameId: frameId,
+            contentColor: None,
+            contentOutlineColor: None,
+        }
+    }
     pub fn frameId(&self) -> &crate::page::FrameId<'a> { &self.frameId }
     pub fn contentColor(&self) -> Option<&crate::dom::RGBA> { self.contentColor.as_ref() }
     pub fn contentOutlineColor(&self) -> Option<&crate::dom::RGBA> { self.contentOutlineColor.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct HighlightFrameParamsBuilder<'a> {
-    frameId: Option<crate::page::FrameId<'a>>,
+    frameId: crate::page::FrameId<'a>,
     contentColor: Option<crate::dom::RGBA>,
     contentOutlineColor: Option<crate::dom::RGBA>,
 }
 
 impl<'a> HighlightFrameParamsBuilder<'a> {
-    /// Identifier of the frame to highlight.
-    pub fn frameId(mut self, frameId: crate::page::FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
     /// The content box highlight fill color (default: transparent).
     pub fn contentColor(mut self, contentColor: crate::dom::RGBA) -> Self { self.contentColor = Some(contentColor); self }
     /// The content box highlight outline color (default: transparent).
     pub fn contentOutlineColor(mut self, contentOutlineColor: crate::dom::RGBA) -> Self { self.contentOutlineColor = Some(contentOutlineColor); self }
     pub fn build(self) -> HighlightFrameParams<'a> {
         HighlightFrameParams {
-            frameId: self.frameId.unwrap_or_default(),
+            frameId: self.frameId,
             contentColor: self.contentColor,
             contentOutlineColor: self.contentOutlineColor,
         }
@@ -1461,7 +1541,15 @@ pub struct HighlightNodeParams<'a> {
 }
 
 impl<'a> HighlightNodeParams<'a> {
-    pub fn builder() -> HighlightNodeParamsBuilder<'a> { HighlightNodeParamsBuilder::default() }
+    pub fn builder(highlightConfig: HighlightConfig<'a>) -> HighlightNodeParamsBuilder<'a> {
+        HighlightNodeParamsBuilder {
+            highlightConfig: highlightConfig,
+            nodeId: None,
+            backendNodeId: None,
+            objectId: None,
+            selector: None,
+        }
+    }
     pub fn highlightConfig(&self) -> &HighlightConfig<'a> { &self.highlightConfig }
     pub fn nodeId(&self) -> Option<&crate::dom::NodeId> { self.nodeId.as_ref() }
     pub fn backendNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.backendNodeId.as_ref() }
@@ -1469,9 +1557,9 @@ impl<'a> HighlightNodeParams<'a> {
     pub fn selector(&self) -> Option<&str> { self.selector.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct HighlightNodeParamsBuilder<'a> {
-    highlightConfig: Option<HighlightConfig<'a>>,
+    highlightConfig: HighlightConfig<'a>,
     nodeId: Option<crate::dom::NodeId>,
     backendNodeId: Option<crate::dom::BackendNodeId>,
     objectId: Option<crate::runtime::RemoteObjectId<'a>>,
@@ -1479,8 +1567,6 @@ pub struct HighlightNodeParamsBuilder<'a> {
 }
 
 impl<'a> HighlightNodeParamsBuilder<'a> {
-    /// A descriptor for the highlight appearance.
-    pub fn highlightConfig(mut self, highlightConfig: HighlightConfig<'a>) -> Self { self.highlightConfig = Some(highlightConfig); self }
     /// Identifier of the node to highlight.
     pub fn nodeId(mut self, nodeId: crate::dom::NodeId) -> Self { self.nodeId = Some(nodeId); self }
     /// Identifier of the backend node to highlight.
@@ -1491,7 +1577,7 @@ impl<'a> HighlightNodeParamsBuilder<'a> {
     pub fn selector(mut self, selector: impl Into<Cow<'a, str>>) -> Self { self.selector = Some(selector.into()); self }
     pub fn build(self) -> HighlightNodeParams<'a> {
         HighlightNodeParams {
-            highlightConfig: self.highlightConfig.unwrap_or_default(),
+            highlightConfig: self.highlightConfig,
             nodeId: self.nodeId,
             backendNodeId: self.backendNodeId,
             objectId: self.objectId,
@@ -1523,29 +1609,33 @@ pub struct HighlightQuadParams {
 }
 
 impl HighlightQuadParams {
-    pub fn builder() -> HighlightQuadParamsBuilder { HighlightQuadParamsBuilder::default() }
+    pub fn builder(quad: crate::dom::Quad) -> HighlightQuadParamsBuilder {
+        HighlightQuadParamsBuilder {
+            quad: quad,
+            color: None,
+            outlineColor: None,
+        }
+    }
     pub fn quad(&self) -> &crate::dom::Quad { &self.quad }
     pub fn color(&self) -> Option<&crate::dom::RGBA> { self.color.as_ref() }
     pub fn outlineColor(&self) -> Option<&crate::dom::RGBA> { self.outlineColor.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct HighlightQuadParamsBuilder {
-    quad: Option<crate::dom::Quad>,
+    quad: crate::dom::Quad,
     color: Option<crate::dom::RGBA>,
     outlineColor: Option<crate::dom::RGBA>,
 }
 
 impl HighlightQuadParamsBuilder {
-    /// Quad to highlight
-    pub fn quad(mut self, quad: crate::dom::Quad) -> Self { self.quad = Some(quad); self }
     /// The highlight fill color (default: transparent).
     pub fn color(mut self, color: crate::dom::RGBA) -> Self { self.color = Some(color); self }
     /// The highlight outline color (default: transparent).
     pub fn outlineColor(mut self, outlineColor: crate::dom::RGBA) -> Self { self.outlineColor = Some(outlineColor); self }
     pub fn build(self) -> HighlightQuadParams {
         HighlightQuadParams {
-            quad: self.quad.unwrap_or_default(),
+            quad: self.quad,
             color: self.color,
             outlineColor: self.outlineColor,
         }
@@ -1584,7 +1674,16 @@ pub struct HighlightRectParams {
 }
 
 impl HighlightRectParams {
-    pub fn builder() -> HighlightRectParamsBuilder { HighlightRectParamsBuilder::default() }
+    pub fn builder(x: i32, y: i32, width: u64, height: i64) -> HighlightRectParamsBuilder {
+        HighlightRectParamsBuilder {
+            x: x,
+            y: y,
+            width: width,
+            height: height,
+            color: None,
+            outlineColor: None,
+        }
+    }
     pub fn x(&self) -> i32 { self.x }
     pub fn y(&self) -> i32 { self.y }
     pub fn width(&self) -> u64 { self.width }
@@ -1593,35 +1692,27 @@ impl HighlightRectParams {
     pub fn outlineColor(&self) -> Option<&crate::dom::RGBA> { self.outlineColor.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct HighlightRectParamsBuilder {
-    x: Option<i32>,
-    y: Option<i32>,
-    width: Option<u64>,
-    height: Option<i64>,
+    x: i32,
+    y: i32,
+    width: u64,
+    height: i64,
     color: Option<crate::dom::RGBA>,
     outlineColor: Option<crate::dom::RGBA>,
 }
 
 impl HighlightRectParamsBuilder {
-    /// X coordinate
-    pub fn x(mut self, x: i32) -> Self { self.x = Some(x); self }
-    /// Y coordinate
-    pub fn y(mut self, y: i32) -> Self { self.y = Some(y); self }
-    /// Rectangle width
-    pub fn width(mut self, width: u64) -> Self { self.width = Some(width); self }
-    /// Rectangle height
-    pub fn height(mut self, height: i64) -> Self { self.height = Some(height); self }
     /// The highlight fill color (default: transparent).
     pub fn color(mut self, color: crate::dom::RGBA) -> Self { self.color = Some(color); self }
     /// The highlight outline color (default: transparent).
     pub fn outlineColor(mut self, outlineColor: crate::dom::RGBA) -> Self { self.outlineColor = Some(outlineColor); self }
     pub fn build(self) -> HighlightRectParams {
         HighlightRectParams {
-            x: self.x.unwrap_or_default(),
-            y: self.y.unwrap_or_default(),
-            width: self.width.unwrap_or_default(),
-            height: self.height.unwrap_or_default(),
+            x: self.x,
+            y: self.y,
+            width: self.width,
+            height: self.height,
             color: self.color,
             outlineColor: self.outlineColor,
         }
@@ -1655,24 +1746,29 @@ pub struct HighlightSourceOrderParams<'a> {
 }
 
 impl<'a> HighlightSourceOrderParams<'a> {
-    pub fn builder() -> HighlightSourceOrderParamsBuilder<'a> { HighlightSourceOrderParamsBuilder::default() }
+    pub fn builder(sourceOrderConfig: SourceOrderConfig) -> HighlightSourceOrderParamsBuilder<'a> {
+        HighlightSourceOrderParamsBuilder {
+            sourceOrderConfig: sourceOrderConfig,
+            nodeId: None,
+            backendNodeId: None,
+            objectId: None,
+        }
+    }
     pub fn sourceOrderConfig(&self) -> &SourceOrderConfig { &self.sourceOrderConfig }
     pub fn nodeId(&self) -> Option<&crate::dom::NodeId> { self.nodeId.as_ref() }
     pub fn backendNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.backendNodeId.as_ref() }
     pub fn objectId(&self) -> Option<&crate::runtime::RemoteObjectId<'a>> { self.objectId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct HighlightSourceOrderParamsBuilder<'a> {
-    sourceOrderConfig: Option<SourceOrderConfig>,
+    sourceOrderConfig: SourceOrderConfig,
     nodeId: Option<crate::dom::NodeId>,
     backendNodeId: Option<crate::dom::BackendNodeId>,
     objectId: Option<crate::runtime::RemoteObjectId<'a>>,
 }
 
 impl<'a> HighlightSourceOrderParamsBuilder<'a> {
-    /// A descriptor for the appearance of the overlay drawing.
-    pub fn sourceOrderConfig(mut self, sourceOrderConfig: SourceOrderConfig) -> Self { self.sourceOrderConfig = Some(sourceOrderConfig); self }
     /// Identifier of the node to highlight.
     pub fn nodeId(mut self, nodeId: crate::dom::NodeId) -> Self { self.nodeId = Some(nodeId); self }
     /// Identifier of the backend node to highlight.
@@ -1681,7 +1777,7 @@ impl<'a> HighlightSourceOrderParamsBuilder<'a> {
     pub fn objectId(mut self, objectId: crate::runtime::RemoteObjectId<'a>) -> Self { self.objectId = Some(objectId); self }
     pub fn build(self) -> HighlightSourceOrderParams<'a> {
         HighlightSourceOrderParams {
-            sourceOrderConfig: self.sourceOrderConfig.unwrap_or_default(),
+            sourceOrderConfig: self.sourceOrderConfig,
             nodeId: self.nodeId,
             backendNodeId: self.backendNodeId,
             objectId: self.objectId,
@@ -1711,26 +1807,29 @@ pub struct SetInspectModeParams<'a> {
 }
 
 impl<'a> SetInspectModeParams<'a> {
-    pub fn builder() -> SetInspectModeParamsBuilder<'a> { SetInspectModeParamsBuilder::default() }
+    pub fn builder(mode: InspectMode) -> SetInspectModeParamsBuilder<'a> {
+        SetInspectModeParamsBuilder {
+            mode: mode,
+            highlightConfig: None,
+        }
+    }
     pub fn mode(&self) -> &InspectMode { &self.mode }
     pub fn highlightConfig(&self) -> Option<&HighlightConfig<'a>> { self.highlightConfig.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetInspectModeParamsBuilder<'a> {
-    mode: Option<InspectMode>,
+    mode: InspectMode,
     highlightConfig: Option<HighlightConfig<'a>>,
 }
 
 impl<'a> SetInspectModeParamsBuilder<'a> {
-    /// Set an inspection mode.
-    pub fn mode(mut self, mode: InspectMode) -> Self { self.mode = Some(mode); self }
     /// A descriptor for the highlight appearance of hovered-over nodes. May be omitted if 'enabled
     /// == false'.
     pub fn highlightConfig(mut self, highlightConfig: HighlightConfig<'a>) -> Self { self.highlightConfig = Some(highlightConfig); self }
     pub fn build(self) -> SetInspectModeParams<'a> {
         SetInspectModeParams {
-            mode: self.mode.unwrap_or_default(),
+            mode: self.mode,
             highlightConfig: self.highlightConfig,
         }
     }
@@ -1753,21 +1852,23 @@ pub struct SetShowAdHighlightsParams {
 }
 
 impl SetShowAdHighlightsParams {
-    pub fn builder() -> SetShowAdHighlightsParamsBuilder { SetShowAdHighlightsParamsBuilder::default() }
+    pub fn builder(show: bool) -> SetShowAdHighlightsParamsBuilder {
+        SetShowAdHighlightsParamsBuilder {
+            show: show,
+        }
+    }
     pub fn show(&self) -> bool { self.show }
 }
 
-#[derive(Default)]
+
 pub struct SetShowAdHighlightsParamsBuilder {
-    show: Option<bool>,
+    show: bool,
 }
 
 impl SetShowAdHighlightsParamsBuilder {
-    /// True for showing ad highlights
-    pub fn show(mut self, show: bool) -> Self { self.show = Some(show); self }
     pub fn build(self) -> SetShowAdHighlightsParams {
         SetShowAdHighlightsParams {
-            show: self.show.unwrap_or_default(),
+            show: self.show,
         }
     }
 }
@@ -1789,7 +1890,11 @@ pub struct SetPausedInDebuggerMessageParams<'a> {
 }
 
 impl<'a> SetPausedInDebuggerMessageParams<'a> {
-    pub fn builder() -> SetPausedInDebuggerMessageParamsBuilder<'a> { SetPausedInDebuggerMessageParamsBuilder::default() }
+    pub fn builder() -> SetPausedInDebuggerMessageParamsBuilder<'a> {
+        SetPausedInDebuggerMessageParamsBuilder {
+            message: None,
+        }
+    }
     pub fn message(&self) -> Option<&str> { self.message.as_deref() }
 }
 
@@ -1825,21 +1930,23 @@ pub struct SetShowDebugBordersParams {
 }
 
 impl SetShowDebugBordersParams {
-    pub fn builder() -> SetShowDebugBordersParamsBuilder { SetShowDebugBordersParamsBuilder::default() }
+    pub fn builder(show: bool) -> SetShowDebugBordersParamsBuilder {
+        SetShowDebugBordersParamsBuilder {
+            show: show,
+        }
+    }
     pub fn show(&self) -> bool { self.show }
 }
 
-#[derive(Default)]
+
 pub struct SetShowDebugBordersParamsBuilder {
-    show: Option<bool>,
+    show: bool,
 }
 
 impl SetShowDebugBordersParamsBuilder {
-    /// True for showing debug borders
-    pub fn show(mut self, show: bool) -> Self { self.show = Some(show); self }
     pub fn build(self) -> SetShowDebugBordersParams {
         SetShowDebugBordersParams {
-            show: self.show.unwrap_or_default(),
+            show: self.show,
         }
     }
 }
@@ -1861,21 +1968,23 @@ pub struct SetShowFPSCounterParams {
 }
 
 impl SetShowFPSCounterParams {
-    pub fn builder() -> SetShowFPSCounterParamsBuilder { SetShowFPSCounterParamsBuilder::default() }
+    pub fn builder(show: bool) -> SetShowFPSCounterParamsBuilder {
+        SetShowFPSCounterParamsBuilder {
+            show: show,
+        }
+    }
     pub fn show(&self) -> bool { self.show }
 }
 
-#[derive(Default)]
+
 pub struct SetShowFPSCounterParamsBuilder {
-    show: Option<bool>,
+    show: bool,
 }
 
 impl SetShowFPSCounterParamsBuilder {
-    /// True for showing the FPS counter
-    pub fn show(mut self, show: bool) -> Self { self.show = Some(show); self }
     pub fn build(self) -> SetShowFPSCounterParams {
         SetShowFPSCounterParams {
-            show: self.show.unwrap_or_default(),
+            show: self.show,
         }
     }
 }
@@ -1897,21 +2006,23 @@ pub struct SetShowGridOverlaysParams {
 }
 
 impl SetShowGridOverlaysParams {
-    pub fn builder() -> SetShowGridOverlaysParamsBuilder { SetShowGridOverlaysParamsBuilder::default() }
+    pub fn builder(gridNodeHighlightConfigs: Vec<GridNodeHighlightConfig>) -> SetShowGridOverlaysParamsBuilder {
+        SetShowGridOverlaysParamsBuilder {
+            gridNodeHighlightConfigs: gridNodeHighlightConfigs,
+        }
+    }
     pub fn gridNodeHighlightConfigs(&self) -> &[GridNodeHighlightConfig] { &self.gridNodeHighlightConfigs }
 }
 
-#[derive(Default)]
+
 pub struct SetShowGridOverlaysParamsBuilder {
-    gridNodeHighlightConfigs: Option<Vec<GridNodeHighlightConfig>>,
+    gridNodeHighlightConfigs: Vec<GridNodeHighlightConfig>,
 }
 
 impl SetShowGridOverlaysParamsBuilder {
-    /// An array of node identifiers and descriptors for the highlight appearance.
-    pub fn gridNodeHighlightConfigs(mut self, gridNodeHighlightConfigs: Vec<GridNodeHighlightConfig>) -> Self { self.gridNodeHighlightConfigs = Some(gridNodeHighlightConfigs); self }
     pub fn build(self) -> SetShowGridOverlaysParams {
         SetShowGridOverlaysParams {
-            gridNodeHighlightConfigs: self.gridNodeHighlightConfigs.unwrap_or_default(),
+            gridNodeHighlightConfigs: self.gridNodeHighlightConfigs,
         }
     }
 }
@@ -1932,21 +2043,23 @@ pub struct SetShowFlexOverlaysParams<'a> {
 }
 
 impl<'a> SetShowFlexOverlaysParams<'a> {
-    pub fn builder() -> SetShowFlexOverlaysParamsBuilder<'a> { SetShowFlexOverlaysParamsBuilder::default() }
+    pub fn builder(flexNodeHighlightConfigs: Vec<FlexNodeHighlightConfig<'a>>) -> SetShowFlexOverlaysParamsBuilder<'a> {
+        SetShowFlexOverlaysParamsBuilder {
+            flexNodeHighlightConfigs: flexNodeHighlightConfigs,
+        }
+    }
     pub fn flexNodeHighlightConfigs(&self) -> &[FlexNodeHighlightConfig<'a>] { &self.flexNodeHighlightConfigs }
 }
 
-#[derive(Default)]
+
 pub struct SetShowFlexOverlaysParamsBuilder<'a> {
-    flexNodeHighlightConfigs: Option<Vec<FlexNodeHighlightConfig<'a>>>,
+    flexNodeHighlightConfigs: Vec<FlexNodeHighlightConfig<'a>>,
 }
 
 impl<'a> SetShowFlexOverlaysParamsBuilder<'a> {
-    /// An array of node identifiers and descriptors for the highlight appearance.
-    pub fn flexNodeHighlightConfigs(mut self, flexNodeHighlightConfigs: Vec<FlexNodeHighlightConfig<'a>>) -> Self { self.flexNodeHighlightConfigs = Some(flexNodeHighlightConfigs); self }
     pub fn build(self) -> SetShowFlexOverlaysParams<'a> {
         SetShowFlexOverlaysParams {
-            flexNodeHighlightConfigs: self.flexNodeHighlightConfigs.unwrap_or_default(),
+            flexNodeHighlightConfigs: self.flexNodeHighlightConfigs,
         }
     }
 }
@@ -1967,21 +2080,23 @@ pub struct SetShowScrollSnapOverlaysParams<'a> {
 }
 
 impl<'a> SetShowScrollSnapOverlaysParams<'a> {
-    pub fn builder() -> SetShowScrollSnapOverlaysParamsBuilder<'a> { SetShowScrollSnapOverlaysParamsBuilder::default() }
+    pub fn builder(scrollSnapHighlightConfigs: Vec<ScrollSnapHighlightConfig<'a>>) -> SetShowScrollSnapOverlaysParamsBuilder<'a> {
+        SetShowScrollSnapOverlaysParamsBuilder {
+            scrollSnapHighlightConfigs: scrollSnapHighlightConfigs,
+        }
+    }
     pub fn scrollSnapHighlightConfigs(&self) -> &[ScrollSnapHighlightConfig<'a>] { &self.scrollSnapHighlightConfigs }
 }
 
-#[derive(Default)]
+
 pub struct SetShowScrollSnapOverlaysParamsBuilder<'a> {
-    scrollSnapHighlightConfigs: Option<Vec<ScrollSnapHighlightConfig<'a>>>,
+    scrollSnapHighlightConfigs: Vec<ScrollSnapHighlightConfig<'a>>,
 }
 
 impl<'a> SetShowScrollSnapOverlaysParamsBuilder<'a> {
-    /// An array of node identifiers and descriptors for the highlight appearance.
-    pub fn scrollSnapHighlightConfigs(mut self, scrollSnapHighlightConfigs: Vec<ScrollSnapHighlightConfig<'a>>) -> Self { self.scrollSnapHighlightConfigs = Some(scrollSnapHighlightConfigs); self }
     pub fn build(self) -> SetShowScrollSnapOverlaysParams<'a> {
         SetShowScrollSnapOverlaysParams {
-            scrollSnapHighlightConfigs: self.scrollSnapHighlightConfigs.unwrap_or_default(),
+            scrollSnapHighlightConfigs: self.scrollSnapHighlightConfigs,
         }
     }
 }
@@ -2002,21 +2117,23 @@ pub struct SetShowContainerQueryOverlaysParams<'a> {
 }
 
 impl<'a> SetShowContainerQueryOverlaysParams<'a> {
-    pub fn builder() -> SetShowContainerQueryOverlaysParamsBuilder<'a> { SetShowContainerQueryOverlaysParamsBuilder::default() }
+    pub fn builder(containerQueryHighlightConfigs: Vec<ContainerQueryHighlightConfig<'a>>) -> SetShowContainerQueryOverlaysParamsBuilder<'a> {
+        SetShowContainerQueryOverlaysParamsBuilder {
+            containerQueryHighlightConfigs: containerQueryHighlightConfigs,
+        }
+    }
     pub fn containerQueryHighlightConfigs(&self) -> &[ContainerQueryHighlightConfig<'a>] { &self.containerQueryHighlightConfigs }
 }
 
-#[derive(Default)]
+
 pub struct SetShowContainerQueryOverlaysParamsBuilder<'a> {
-    containerQueryHighlightConfigs: Option<Vec<ContainerQueryHighlightConfig<'a>>>,
+    containerQueryHighlightConfigs: Vec<ContainerQueryHighlightConfig<'a>>,
 }
 
 impl<'a> SetShowContainerQueryOverlaysParamsBuilder<'a> {
-    /// An array of node identifiers and descriptors for the highlight appearance.
-    pub fn containerQueryHighlightConfigs(mut self, containerQueryHighlightConfigs: Vec<ContainerQueryHighlightConfig<'a>>) -> Self { self.containerQueryHighlightConfigs = Some(containerQueryHighlightConfigs); self }
     pub fn build(self) -> SetShowContainerQueryOverlaysParams<'a> {
         SetShowContainerQueryOverlaysParams {
-            containerQueryHighlightConfigs: self.containerQueryHighlightConfigs.unwrap_or_default(),
+            containerQueryHighlightConfigs: self.containerQueryHighlightConfigs,
         }
     }
 }
@@ -2037,21 +2154,23 @@ pub struct SetShowInspectedElementAnchorParams {
 }
 
 impl SetShowInspectedElementAnchorParams {
-    pub fn builder() -> SetShowInspectedElementAnchorParamsBuilder { SetShowInspectedElementAnchorParamsBuilder::default() }
+    pub fn builder(inspectedElementAnchorConfig: InspectedElementAnchorConfig) -> SetShowInspectedElementAnchorParamsBuilder {
+        SetShowInspectedElementAnchorParamsBuilder {
+            inspectedElementAnchorConfig: inspectedElementAnchorConfig,
+        }
+    }
     pub fn inspectedElementAnchorConfig(&self) -> &InspectedElementAnchorConfig { &self.inspectedElementAnchorConfig }
 }
 
-#[derive(Default)]
+
 pub struct SetShowInspectedElementAnchorParamsBuilder {
-    inspectedElementAnchorConfig: Option<InspectedElementAnchorConfig>,
+    inspectedElementAnchorConfig: InspectedElementAnchorConfig,
 }
 
 impl SetShowInspectedElementAnchorParamsBuilder {
-    /// Node identifier for which to show an anchor for.
-    pub fn inspectedElementAnchorConfig(mut self, inspectedElementAnchorConfig: InspectedElementAnchorConfig) -> Self { self.inspectedElementAnchorConfig = Some(inspectedElementAnchorConfig); self }
     pub fn build(self) -> SetShowInspectedElementAnchorParams {
         SetShowInspectedElementAnchorParams {
-            inspectedElementAnchorConfig: self.inspectedElementAnchorConfig.unwrap_or_default(),
+            inspectedElementAnchorConfig: self.inspectedElementAnchorConfig,
         }
     }
 }
@@ -2073,21 +2192,23 @@ pub struct SetShowPaintRectsParams {
 }
 
 impl SetShowPaintRectsParams {
-    pub fn builder() -> SetShowPaintRectsParamsBuilder { SetShowPaintRectsParamsBuilder::default() }
+    pub fn builder(result: bool) -> SetShowPaintRectsParamsBuilder {
+        SetShowPaintRectsParamsBuilder {
+            result: result,
+        }
+    }
     pub fn result(&self) -> bool { self.result }
 }
 
-#[derive(Default)]
+
 pub struct SetShowPaintRectsParamsBuilder {
-    result: Option<bool>,
+    result: bool,
 }
 
 impl SetShowPaintRectsParamsBuilder {
-    /// True for showing paint rectangles
-    pub fn result(mut self, result: bool) -> Self { self.result = Some(result); self }
     pub fn build(self) -> SetShowPaintRectsParams {
         SetShowPaintRectsParams {
-            result: self.result.unwrap_or_default(),
+            result: self.result,
         }
     }
 }
@@ -2109,21 +2230,23 @@ pub struct SetShowLayoutShiftRegionsParams {
 }
 
 impl SetShowLayoutShiftRegionsParams {
-    pub fn builder() -> SetShowLayoutShiftRegionsParamsBuilder { SetShowLayoutShiftRegionsParamsBuilder::default() }
+    pub fn builder(result: bool) -> SetShowLayoutShiftRegionsParamsBuilder {
+        SetShowLayoutShiftRegionsParamsBuilder {
+            result: result,
+        }
+    }
     pub fn result(&self) -> bool { self.result }
 }
 
-#[derive(Default)]
+
 pub struct SetShowLayoutShiftRegionsParamsBuilder {
-    result: Option<bool>,
+    result: bool,
 }
 
 impl SetShowLayoutShiftRegionsParamsBuilder {
-    /// True for showing layout shift regions
-    pub fn result(mut self, result: bool) -> Self { self.result = Some(result); self }
     pub fn build(self) -> SetShowLayoutShiftRegionsParams {
         SetShowLayoutShiftRegionsParams {
-            result: self.result.unwrap_or_default(),
+            result: self.result,
         }
     }
 }
@@ -2145,21 +2268,23 @@ pub struct SetShowScrollBottleneckRectsParams {
 }
 
 impl SetShowScrollBottleneckRectsParams {
-    pub fn builder() -> SetShowScrollBottleneckRectsParamsBuilder { SetShowScrollBottleneckRectsParamsBuilder::default() }
+    pub fn builder(show: bool) -> SetShowScrollBottleneckRectsParamsBuilder {
+        SetShowScrollBottleneckRectsParamsBuilder {
+            show: show,
+        }
+    }
     pub fn show(&self) -> bool { self.show }
 }
 
-#[derive(Default)]
+
 pub struct SetShowScrollBottleneckRectsParamsBuilder {
-    show: Option<bool>,
+    show: bool,
 }
 
 impl SetShowScrollBottleneckRectsParamsBuilder {
-    /// True for showing scroll bottleneck rects
-    pub fn show(mut self, show: bool) -> Self { self.show = Some(show); self }
     pub fn build(self) -> SetShowScrollBottleneckRectsParams {
         SetShowScrollBottleneckRectsParams {
-            show: self.show.unwrap_or_default(),
+            show: self.show,
         }
     }
 }
@@ -2181,21 +2306,23 @@ pub struct SetShowHitTestBordersParams {
 }
 
 impl SetShowHitTestBordersParams {
-    pub fn builder() -> SetShowHitTestBordersParamsBuilder { SetShowHitTestBordersParamsBuilder::default() }
+    pub fn builder(show: bool) -> SetShowHitTestBordersParamsBuilder {
+        SetShowHitTestBordersParamsBuilder {
+            show: show,
+        }
+    }
     pub fn show(&self) -> bool { self.show }
 }
 
-#[derive(Default)]
+
 pub struct SetShowHitTestBordersParamsBuilder {
-    show: Option<bool>,
+    show: bool,
 }
 
 impl SetShowHitTestBordersParamsBuilder {
-    /// True for showing hit-test borders
-    pub fn show(mut self, show: bool) -> Self { self.show = Some(show); self }
     pub fn build(self) -> SetShowHitTestBordersParams {
         SetShowHitTestBordersParams {
-            show: self.show.unwrap_or_default(),
+            show: self.show,
         }
     }
 }
@@ -2216,20 +2343,23 @@ pub struct SetShowWebVitalsParams {
 }
 
 impl SetShowWebVitalsParams {
-    pub fn builder() -> SetShowWebVitalsParamsBuilder { SetShowWebVitalsParamsBuilder::default() }
+    pub fn builder(show: bool) -> SetShowWebVitalsParamsBuilder {
+        SetShowWebVitalsParamsBuilder {
+            show: show,
+        }
+    }
     pub fn show(&self) -> bool { self.show }
 }
 
-#[derive(Default)]
+
 pub struct SetShowWebVitalsParamsBuilder {
-    show: Option<bool>,
+    show: bool,
 }
 
 impl SetShowWebVitalsParamsBuilder {
-    pub fn show(mut self, show: bool) -> Self { self.show = Some(show); self }
     pub fn build(self) -> SetShowWebVitalsParams {
         SetShowWebVitalsParams {
-            show: self.show.unwrap_or_default(),
+            show: self.show,
         }
     }
 }
@@ -2251,21 +2381,23 @@ pub struct SetShowViewportSizeOnResizeParams {
 }
 
 impl SetShowViewportSizeOnResizeParams {
-    pub fn builder() -> SetShowViewportSizeOnResizeParamsBuilder { SetShowViewportSizeOnResizeParamsBuilder::default() }
+    pub fn builder(show: bool) -> SetShowViewportSizeOnResizeParamsBuilder {
+        SetShowViewportSizeOnResizeParamsBuilder {
+            show: show,
+        }
+    }
     pub fn show(&self) -> bool { self.show }
 }
 
-#[derive(Default)]
+
 pub struct SetShowViewportSizeOnResizeParamsBuilder {
-    show: Option<bool>,
+    show: bool,
 }
 
 impl SetShowViewportSizeOnResizeParamsBuilder {
-    /// Whether to paint size or not.
-    pub fn show(mut self, show: bool) -> Self { self.show = Some(show); self }
     pub fn build(self) -> SetShowViewportSizeOnResizeParams {
         SetShowViewportSizeOnResizeParams {
-            show: self.show.unwrap_or_default(),
+            show: self.show,
         }
     }
 }
@@ -2288,7 +2420,11 @@ pub struct SetShowHingeParams {
 }
 
 impl SetShowHingeParams {
-    pub fn builder() -> SetShowHingeParamsBuilder { SetShowHingeParamsBuilder::default() }
+    pub fn builder() -> SetShowHingeParamsBuilder {
+        SetShowHingeParamsBuilder {
+            hingeConfig: None,
+        }
+    }
     pub fn hingeConfig(&self) -> Option<&HingeConfig> { self.hingeConfig.as_ref() }
 }
 
@@ -2324,21 +2460,23 @@ pub struct SetShowIsolatedElementsParams {
 }
 
 impl SetShowIsolatedElementsParams {
-    pub fn builder() -> SetShowIsolatedElementsParamsBuilder { SetShowIsolatedElementsParamsBuilder::default() }
+    pub fn builder(isolatedElementHighlightConfigs: Vec<IsolatedElementHighlightConfig>) -> SetShowIsolatedElementsParamsBuilder {
+        SetShowIsolatedElementsParamsBuilder {
+            isolatedElementHighlightConfigs: isolatedElementHighlightConfigs,
+        }
+    }
     pub fn isolatedElementHighlightConfigs(&self) -> &[IsolatedElementHighlightConfig] { &self.isolatedElementHighlightConfigs }
 }
 
-#[derive(Default)]
+
 pub struct SetShowIsolatedElementsParamsBuilder {
-    isolatedElementHighlightConfigs: Option<Vec<IsolatedElementHighlightConfig>>,
+    isolatedElementHighlightConfigs: Vec<IsolatedElementHighlightConfig>,
 }
 
 impl SetShowIsolatedElementsParamsBuilder {
-    /// An array of node identifiers and descriptors for the highlight appearance.
-    pub fn isolatedElementHighlightConfigs(mut self, isolatedElementHighlightConfigs: Vec<IsolatedElementHighlightConfig>) -> Self { self.isolatedElementHighlightConfigs = Some(isolatedElementHighlightConfigs); self }
     pub fn build(self) -> SetShowIsolatedElementsParams {
         SetShowIsolatedElementsParams {
-            isolatedElementHighlightConfigs: self.isolatedElementHighlightConfigs.unwrap_or_default(),
+            isolatedElementHighlightConfigs: self.isolatedElementHighlightConfigs,
         }
     }
 }
@@ -2361,7 +2499,11 @@ pub struct SetShowWindowControlsOverlayParams<'a> {
 }
 
 impl<'a> SetShowWindowControlsOverlayParams<'a> {
-    pub fn builder() -> SetShowWindowControlsOverlayParamsBuilder<'a> { SetShowWindowControlsOverlayParamsBuilder::default() }
+    pub fn builder() -> SetShowWindowControlsOverlayParamsBuilder<'a> {
+        SetShowWindowControlsOverlayParamsBuilder {
+            windowControlsOverlayConfig: None,
+        }
+    }
     pub fn windowControlsOverlayConfig(&self) -> Option<&WindowControlsOverlayConfig<'a>> { self.windowControlsOverlayConfig.as_ref() }
 }
 

@@ -49,7 +49,15 @@ pub struct Bounds {
 }
 
 impl Bounds {
-    pub fn builder() -> BoundsBuilder { BoundsBuilder::default() }
+    pub fn builder() -> BoundsBuilder {
+        BoundsBuilder {
+            left: None,
+            top: None,
+            width: None,
+            height: None,
+            windowState: None,
+        }
+    }
     pub fn left(&self) -> Option<i64> { self.left }
     pub fn top(&self) -> Option<i64> { self.top }
     pub fn width(&self) -> Option<u64> { self.width }
@@ -212,7 +220,16 @@ pub struct PermissionDescriptor<'a> {
 }
 
 impl<'a> PermissionDescriptor<'a> {
-    pub fn builder() -> PermissionDescriptorBuilder<'a> { PermissionDescriptorBuilder::default() }
+    pub fn builder(name: impl Into<Cow<'a, str>>) -> PermissionDescriptorBuilder<'a> {
+        PermissionDescriptorBuilder {
+            name: name.into(),
+            sysex: None,
+            userVisibleOnly: None,
+            allowWithoutSanitization: None,
+            allowWithoutGesture: None,
+            panTiltZoom: None,
+        }
+    }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn sysex(&self) -> Option<bool> { self.sysex }
     pub fn userVisibleOnly(&self) -> Option<bool> { self.userVisibleOnly }
@@ -221,9 +238,9 @@ impl<'a> PermissionDescriptor<'a> {
     pub fn panTiltZoom(&self) -> Option<bool> { self.panTiltZoom }
 }
 
-#[derive(Default)]
+
 pub struct PermissionDescriptorBuilder<'a> {
-    name: Option<Cow<'a, str>>,
+    name: Cow<'a, str>,
     sysex: Option<bool>,
     userVisibleOnly: Option<bool>,
     allowWithoutSanitization: Option<bool>,
@@ -232,9 +249,6 @@ pub struct PermissionDescriptorBuilder<'a> {
 }
 
 impl<'a> PermissionDescriptorBuilder<'a> {
-    /// Name of permission.
-    /// See https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/permissions/permission_descriptor.idl for valid permission names.
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
     /// For "midi" permission, may also specify sysex control.
     pub fn sysex(mut self, sysex: bool) -> Self { self.sysex = Some(sysex); self }
     /// For "push" permission, may specify userVisibleOnly.
@@ -248,7 +262,7 @@ impl<'a> PermissionDescriptorBuilder<'a> {
     pub fn panTiltZoom(mut self, panTiltZoom: bool) -> Self { self.panTiltZoom = Some(panTiltZoom); self }
     pub fn build(self) -> PermissionDescriptor<'a> {
         PermissionDescriptor {
-            name: self.name.unwrap_or_default(),
+            name: self.name,
             sysex: self.sysex,
             userVisibleOnly: self.userVisibleOnly,
             allowWithoutSanitization: self.allowWithoutSanitization,
@@ -285,31 +299,31 @@ pub struct Bucket {
 }
 
 impl Bucket {
-    pub fn builder() -> BucketBuilder { BucketBuilder::default() }
+    pub fn builder(low: i64, high: i64, count: u64) -> BucketBuilder {
+        BucketBuilder {
+            low: low,
+            high: high,
+            count: count,
+        }
+    }
     pub fn low(&self) -> i64 { self.low }
     pub fn high(&self) -> i64 { self.high }
     pub fn count(&self) -> u64 { self.count }
 }
 
-#[derive(Default)]
+
 pub struct BucketBuilder {
-    low: Option<i64>,
-    high: Option<i64>,
-    count: Option<u64>,
+    low: i64,
+    high: i64,
+    count: u64,
 }
 
 impl BucketBuilder {
-    /// Minimum value (inclusive).
-    pub fn low(mut self, low: i64) -> Self { self.low = Some(low); self }
-    /// Maximum value (exclusive).
-    pub fn high(mut self, high: i64) -> Self { self.high = Some(high); self }
-    /// Number of samples.
-    pub fn count(mut self, count: u64) -> Self { self.count = Some(count); self }
     pub fn build(self) -> Bucket {
         Bucket {
-            low: self.low.unwrap_or_default(),
-            high: self.high.unwrap_or_default(),
-            count: self.count.unwrap_or_default(),
+            low: self.low,
+            high: self.high,
+            count: self.count,
         }
     }
 }
@@ -330,36 +344,35 @@ pub struct Histogram<'a> {
 }
 
 impl<'a> Histogram<'a> {
-    pub fn builder() -> HistogramBuilder<'a> { HistogramBuilder::default() }
+    pub fn builder(name: impl Into<Cow<'a, str>>, sum: i64, count: u64, buckets: Vec<Bucket>) -> HistogramBuilder<'a> {
+        HistogramBuilder {
+            name: name.into(),
+            sum: sum,
+            count: count,
+            buckets: buckets,
+        }
+    }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn sum(&self) -> i64 { self.sum }
     pub fn count(&self) -> u64 { self.count }
     pub fn buckets(&self) -> &[Bucket] { &self.buckets }
 }
 
-#[derive(Default)]
+
 pub struct HistogramBuilder<'a> {
-    name: Option<Cow<'a, str>>,
-    sum: Option<i64>,
-    count: Option<u64>,
-    buckets: Option<Vec<Bucket>>,
+    name: Cow<'a, str>,
+    sum: i64,
+    count: u64,
+    buckets: Vec<Bucket>,
 }
 
 impl<'a> HistogramBuilder<'a> {
-    /// Name.
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    /// Sum of sample values.
-    pub fn sum(mut self, sum: i64) -> Self { self.sum = Some(sum); self }
-    /// Total number of samples.
-    pub fn count(mut self, count: u64) -> Self { self.count = Some(count); self }
-    /// Buckets.
-    pub fn buckets(mut self, buckets: Vec<Bucket>) -> Self { self.buckets = Some(buckets); self }
     pub fn build(self) -> Histogram<'a> {
         Histogram {
-            name: self.name.unwrap_or_default(),
-            sum: self.sum.unwrap_or_default(),
-            count: self.count.unwrap_or_default(),
-            buckets: self.buckets.unwrap_or_default(),
+            name: self.name,
+            sum: self.sum,
+            count: self.count,
+            buckets: self.buckets,
         }
     }
 }
@@ -397,7 +410,15 @@ pub struct SetPermissionParams<'a> {
 }
 
 impl<'a> SetPermissionParams<'a> {
-    pub fn builder() -> SetPermissionParamsBuilder<'a> { SetPermissionParamsBuilder::default() }
+    pub fn builder(permission: PermissionDescriptor<'a>, setting: PermissionSetting) -> SetPermissionParamsBuilder<'a> {
+        SetPermissionParamsBuilder {
+            permission: permission,
+            setting: setting,
+            origin: None,
+            embeddedOrigin: None,
+            browserContextId: None,
+        }
+    }
     pub fn permission(&self) -> &PermissionDescriptor<'a> { &self.permission }
     pub fn setting(&self) -> &PermissionSetting { &self.setting }
     pub fn origin(&self) -> Option<&str> { self.origin.as_deref() }
@@ -405,20 +426,16 @@ impl<'a> SetPermissionParams<'a> {
     pub fn browserContextId(&self) -> Option<&BrowserContextID<'a>> { self.browserContextId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetPermissionParamsBuilder<'a> {
-    permission: Option<PermissionDescriptor<'a>>,
-    setting: Option<PermissionSetting>,
+    permission: PermissionDescriptor<'a>,
+    setting: PermissionSetting,
     origin: Option<Cow<'a, str>>,
     embeddedOrigin: Option<Cow<'a, str>>,
     browserContextId: Option<BrowserContextID<'a>>,
 }
 
 impl<'a> SetPermissionParamsBuilder<'a> {
-    /// Descriptor of permission to override.
-    pub fn permission(mut self, permission: PermissionDescriptor<'a>) -> Self { self.permission = Some(permission); self }
-    /// Setting of the permission.
-    pub fn setting(mut self, setting: PermissionSetting) -> Self { self.setting = Some(setting); self }
     /// Embedding origin the permission applies to, all origins if not specified.
     pub fn origin(mut self, origin: impl Into<Cow<'a, str>>) -> Self { self.origin = Some(origin.into()); self }
     /// Embedded origin the permission applies to. It is ignored unless the embedding origin is
@@ -429,8 +446,8 @@ impl<'a> SetPermissionParamsBuilder<'a> {
     pub fn browserContextId(mut self, browserContextId: BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
     pub fn build(self) -> SetPermissionParams<'a> {
         SetPermissionParams {
-            permission: self.permission.unwrap_or_default(),
-            setting: self.setting.unwrap_or_default(),
+            permission: self.permission,
+            setting: self.setting,
             origin: self.origin,
             embeddedOrigin: self.embeddedOrigin,
             browserContextId: self.browserContextId,
@@ -461,28 +478,33 @@ pub struct GrantPermissionsParams<'a> {
 }
 
 impl<'a> GrantPermissionsParams<'a> {
-    pub fn builder() -> GrantPermissionsParamsBuilder<'a> { GrantPermissionsParamsBuilder::default() }
+    pub fn builder(permissions: Vec<PermissionType>) -> GrantPermissionsParamsBuilder<'a> {
+        GrantPermissionsParamsBuilder {
+            permissions: permissions,
+            origin: None,
+            browserContextId: None,
+        }
+    }
     pub fn permissions(&self) -> &[PermissionType] { &self.permissions }
     pub fn origin(&self) -> Option<&str> { self.origin.as_deref() }
     pub fn browserContextId(&self) -> Option<&BrowserContextID<'a>> { self.browserContextId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct GrantPermissionsParamsBuilder<'a> {
-    permissions: Option<Vec<PermissionType>>,
+    permissions: Vec<PermissionType>,
     origin: Option<Cow<'a, str>>,
     browserContextId: Option<BrowserContextID<'a>>,
 }
 
 impl<'a> GrantPermissionsParamsBuilder<'a> {
-    pub fn permissions(mut self, permissions: Vec<PermissionType>) -> Self { self.permissions = Some(permissions); self }
     /// Origin the permission applies to, all origins if not specified.
     pub fn origin(mut self, origin: impl Into<Cow<'a, str>>) -> Self { self.origin = Some(origin.into()); self }
     /// BrowserContext to override permissions. When omitted, default browser context is used.
     pub fn browserContextId(mut self, browserContextId: BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
     pub fn build(self) -> GrantPermissionsParams<'a> {
         GrantPermissionsParams {
-            permissions: self.permissions.unwrap_or_default(),
+            permissions: self.permissions,
             origin: self.origin,
             browserContextId: self.browserContextId,
         }
@@ -507,7 +529,11 @@ pub struct ResetPermissionsParams<'a> {
 }
 
 impl<'a> ResetPermissionsParams<'a> {
-    pub fn builder() -> ResetPermissionsParamsBuilder<'a> { ResetPermissionsParamsBuilder::default() }
+    pub fn builder() -> ResetPermissionsParamsBuilder<'a> {
+        ResetPermissionsParamsBuilder {
+            browserContextId: None,
+        }
+    }
     pub fn browserContextId(&self) -> Option<&BrowserContextID<'a>> { self.browserContextId.as_ref() }
 }
 
@@ -555,26 +581,29 @@ pub struct SetDownloadBehaviorParams<'a> {
 }
 
 impl<'a> SetDownloadBehaviorParams<'a> {
-    pub fn builder() -> SetDownloadBehaviorParamsBuilder<'a> { SetDownloadBehaviorParamsBuilder::default() }
+    pub fn builder(behavior: impl Into<Cow<'a, str>>) -> SetDownloadBehaviorParamsBuilder<'a> {
+        SetDownloadBehaviorParamsBuilder {
+            behavior: behavior.into(),
+            browserContextId: None,
+            downloadPath: None,
+            eventsEnabled: None,
+        }
+    }
     pub fn behavior(&self) -> &str { self.behavior.as_ref() }
     pub fn browserContextId(&self) -> Option<&BrowserContextID<'a>> { self.browserContextId.as_ref() }
     pub fn downloadPath(&self) -> Option<&str> { self.downloadPath.as_deref() }
     pub fn eventsEnabled(&self) -> Option<bool> { self.eventsEnabled }
 }
 
-#[derive(Default)]
+
 pub struct SetDownloadBehaviorParamsBuilder<'a> {
-    behavior: Option<Cow<'a, str>>,
+    behavior: Cow<'a, str>,
     browserContextId: Option<BrowserContextID<'a>>,
     downloadPath: Option<Cow<'a, str>>,
     eventsEnabled: Option<bool>,
 }
 
 impl<'a> SetDownloadBehaviorParamsBuilder<'a> {
-    /// Whether to allow all or deny all download requests, or use default Chrome behavior if
-    /// available (otherwise deny). |allowAndName| allows download and names files according to
-    /// their download guids.
-    pub fn behavior(mut self, behavior: impl Into<Cow<'a, str>>) -> Self { self.behavior = Some(behavior.into()); self }
     /// BrowserContext to set download behavior. When omitted, default browser context is used.
     pub fn browserContextId(mut self, browserContextId: BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
     /// The default path to save downloaded files to. This is required if behavior is set to 'allow'
@@ -584,7 +613,7 @@ impl<'a> SetDownloadBehaviorParamsBuilder<'a> {
     pub fn eventsEnabled(mut self, eventsEnabled: bool) -> Self { self.eventsEnabled = Some(eventsEnabled); self }
     pub fn build(self) -> SetDownloadBehaviorParams<'a> {
         SetDownloadBehaviorParams {
-            behavior: self.behavior.unwrap_or_default(),
+            behavior: self.behavior,
             browserContextId: self.browserContextId,
             downloadPath: self.downloadPath,
             eventsEnabled: self.eventsEnabled,
@@ -612,25 +641,28 @@ pub struct CancelDownloadParams<'a> {
 }
 
 impl<'a> CancelDownloadParams<'a> {
-    pub fn builder() -> CancelDownloadParamsBuilder<'a> { CancelDownloadParamsBuilder::default() }
+    pub fn builder(guid: impl Into<Cow<'a, str>>) -> CancelDownloadParamsBuilder<'a> {
+        CancelDownloadParamsBuilder {
+            guid: guid.into(),
+            browserContextId: None,
+        }
+    }
     pub fn guid(&self) -> &str { self.guid.as_ref() }
     pub fn browserContextId(&self) -> Option<&BrowserContextID<'a>> { self.browserContextId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct CancelDownloadParamsBuilder<'a> {
-    guid: Option<Cow<'a, str>>,
+    guid: Cow<'a, str>,
     browserContextId: Option<BrowserContextID<'a>>,
 }
 
 impl<'a> CancelDownloadParamsBuilder<'a> {
-    /// Global unique identifier of the download.
-    pub fn guid(mut self, guid: impl Into<Cow<'a, str>>) -> Self { self.guid = Some(guid.into()); self }
     /// BrowserContext to perform the action in. When omitted, default browser context is used.
     pub fn browserContextId(mut self, browserContextId: BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
     pub fn build(self) -> CancelDownloadParams<'a> {
         CancelDownloadParams {
-            guid: self.guid.unwrap_or_default(),
+            guid: self.guid,
             browserContextId: self.browserContextId,
         }
     }
@@ -646,21 +678,6 @@ impl<'a> crate::CdpCommand<'a> for CancelDownloadParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct CloseParams {}
 
-impl CloseParams {
-    pub fn builder() -> CloseParamsBuilder {
-        CloseParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct CloseParamsBuilder {}
-
-impl CloseParamsBuilder {
-    pub fn build(self) -> CloseParams {
-        CloseParams {}
-    }
-}
-
 impl CloseParams { pub const METHOD: &'static str = "Browser.close"; }
 
 impl<'a> crate::CdpCommand<'a> for CloseParams {
@@ -671,21 +688,6 @@ impl<'a> crate::CdpCommand<'a> for CloseParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct CrashParams {}
 
-impl CrashParams {
-    pub fn builder() -> CrashParamsBuilder {
-        CrashParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct CrashParamsBuilder {}
-
-impl CrashParamsBuilder {
-    pub fn build(self) -> CrashParams {
-        CrashParams {}
-    }
-}
-
 impl CrashParams { pub const METHOD: &'static str = "Browser.crash"; }
 
 impl<'a> crate::CdpCommand<'a> for CrashParams {
@@ -695,21 +697,6 @@ impl<'a> crate::CdpCommand<'a> for CrashParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct CrashGpuProcessParams {}
-
-impl CrashGpuProcessParams {
-    pub fn builder() -> CrashGpuProcessParamsBuilder {
-        CrashGpuProcessParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct CrashGpuProcessParamsBuilder {}
-
-impl CrashGpuProcessParamsBuilder {
-    pub fn build(self) -> CrashGpuProcessParams {
-        CrashGpuProcessParams {}
-    }
-}
 
 impl CrashGpuProcessParams { pub const METHOD: &'static str = "Browser.crashGpuProcess"; }
 
@@ -736,7 +723,15 @@ pub struct GetVersionReturns<'a> {
 }
 
 impl<'a> GetVersionReturns<'a> {
-    pub fn builder() -> GetVersionReturnsBuilder<'a> { GetVersionReturnsBuilder::default() }
+    pub fn builder(protocolVersion: impl Into<Cow<'a, str>>, product: impl Into<Cow<'a, str>>, revision: impl Into<Cow<'a, str>>, userAgent: impl Into<Cow<'a, str>>, jsVersion: impl Into<Cow<'a, str>>) -> GetVersionReturnsBuilder<'a> {
+        GetVersionReturnsBuilder {
+            protocolVersion: protocolVersion.into(),
+            product: product.into(),
+            revision: revision.into(),
+            userAgent: userAgent.into(),
+            jsVersion: jsVersion.into(),
+        }
+    }
     pub fn protocolVersion(&self) -> &str { self.protocolVersion.as_ref() }
     pub fn product(&self) -> &str { self.product.as_ref() }
     pub fn revision(&self) -> &str { self.revision.as_ref() }
@@ -744,54 +739,29 @@ impl<'a> GetVersionReturns<'a> {
     pub fn jsVersion(&self) -> &str { self.jsVersion.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct GetVersionReturnsBuilder<'a> {
-    protocolVersion: Option<Cow<'a, str>>,
-    product: Option<Cow<'a, str>>,
-    revision: Option<Cow<'a, str>>,
-    userAgent: Option<Cow<'a, str>>,
-    jsVersion: Option<Cow<'a, str>>,
+    protocolVersion: Cow<'a, str>,
+    product: Cow<'a, str>,
+    revision: Cow<'a, str>,
+    userAgent: Cow<'a, str>,
+    jsVersion: Cow<'a, str>,
 }
 
 impl<'a> GetVersionReturnsBuilder<'a> {
-    /// Protocol version.
-    pub fn protocolVersion(mut self, protocolVersion: impl Into<Cow<'a, str>>) -> Self { self.protocolVersion = Some(protocolVersion.into()); self }
-    /// Product name.
-    pub fn product(mut self, product: impl Into<Cow<'a, str>>) -> Self { self.product = Some(product.into()); self }
-    /// Product revision.
-    pub fn revision(mut self, revision: impl Into<Cow<'a, str>>) -> Self { self.revision = Some(revision.into()); self }
-    /// User-Agent.
-    pub fn userAgent(mut self, userAgent: impl Into<Cow<'a, str>>) -> Self { self.userAgent = Some(userAgent.into()); self }
-    /// V8 version.
-    pub fn jsVersion(mut self, jsVersion: impl Into<Cow<'a, str>>) -> Self { self.jsVersion = Some(jsVersion.into()); self }
     pub fn build(self) -> GetVersionReturns<'a> {
         GetVersionReturns {
-            protocolVersion: self.protocolVersion.unwrap_or_default(),
-            product: self.product.unwrap_or_default(),
-            revision: self.revision.unwrap_or_default(),
-            userAgent: self.userAgent.unwrap_or_default(),
-            jsVersion: self.jsVersion.unwrap_or_default(),
+            protocolVersion: self.protocolVersion,
+            product: self.product,
+            revision: self.revision,
+            userAgent: self.userAgent,
+            jsVersion: self.jsVersion,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetVersionParams {}
-
-impl GetVersionParams {
-    pub fn builder() -> GetVersionParamsBuilder {
-        GetVersionParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetVersionParamsBuilder {}
-
-impl GetVersionParamsBuilder {
-    pub fn build(self) -> GetVersionParams {
-        GetVersionParams {}
-    }
-}
 
 impl GetVersionParams { pub const METHOD: &'static str = "Browser.getVersion"; }
 
@@ -811,42 +781,29 @@ pub struct GetBrowserCommandLineReturns<'a> {
 }
 
 impl<'a> GetBrowserCommandLineReturns<'a> {
-    pub fn builder() -> GetBrowserCommandLineReturnsBuilder<'a> { GetBrowserCommandLineReturnsBuilder::default() }
+    pub fn builder(arguments: Vec<Cow<'a, str>>) -> GetBrowserCommandLineReturnsBuilder<'a> {
+        GetBrowserCommandLineReturnsBuilder {
+            arguments: arguments,
+        }
+    }
     pub fn arguments(&self) -> &[Cow<'a, str>] { &self.arguments }
 }
 
-#[derive(Default)]
+
 pub struct GetBrowserCommandLineReturnsBuilder<'a> {
-    arguments: Option<Vec<Cow<'a, str>>>,
+    arguments: Vec<Cow<'a, str>>,
 }
 
 impl<'a> GetBrowserCommandLineReturnsBuilder<'a> {
-    /// Commandline parameters
-    pub fn arguments(mut self, arguments: Vec<Cow<'a, str>>) -> Self { self.arguments = Some(arguments); self }
     pub fn build(self) -> GetBrowserCommandLineReturns<'a> {
         GetBrowserCommandLineReturns {
-            arguments: self.arguments.unwrap_or_default(),
+            arguments: self.arguments,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetBrowserCommandLineParams {}
-
-impl GetBrowserCommandLineParams {
-    pub fn builder() -> GetBrowserCommandLineParamsBuilder {
-        GetBrowserCommandLineParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetBrowserCommandLineParamsBuilder {}
-
-impl GetBrowserCommandLineParamsBuilder {
-    pub fn build(self) -> GetBrowserCommandLineParams {
-        GetBrowserCommandLineParams {}
-    }
-}
 
 impl GetBrowserCommandLineParams { pub const METHOD: &'static str = "Browser.getBrowserCommandLine"; }
 
@@ -871,7 +828,12 @@ pub struct GetHistogramsParams<'a> {
 }
 
 impl<'a> GetHistogramsParams<'a> {
-    pub fn builder() -> GetHistogramsParamsBuilder<'a> { GetHistogramsParamsBuilder::default() }
+    pub fn builder() -> GetHistogramsParamsBuilder<'a> {
+        GetHistogramsParamsBuilder {
+            query: None,
+            delta: None,
+        }
+    }
     pub fn query(&self) -> Option<&str> { self.query.as_deref() }
     pub fn delta(&self) -> Option<bool> { self.delta }
 }
@@ -907,21 +869,23 @@ pub struct GetHistogramsReturns<'a> {
 }
 
 impl<'a> GetHistogramsReturns<'a> {
-    pub fn builder() -> GetHistogramsReturnsBuilder<'a> { GetHistogramsReturnsBuilder::default() }
+    pub fn builder(histograms: Vec<Histogram<'a>>) -> GetHistogramsReturnsBuilder<'a> {
+        GetHistogramsReturnsBuilder {
+            histograms: histograms,
+        }
+    }
     pub fn histograms(&self) -> &[Histogram<'a>] { &self.histograms }
 }
 
-#[derive(Default)]
+
 pub struct GetHistogramsReturnsBuilder<'a> {
-    histograms: Option<Vec<Histogram<'a>>>,
+    histograms: Vec<Histogram<'a>>,
 }
 
 impl<'a> GetHistogramsReturnsBuilder<'a> {
-    /// Histograms.
-    pub fn histograms(mut self, histograms: Vec<Histogram<'a>>) -> Self { self.histograms = Some(histograms); self }
     pub fn build(self) -> GetHistogramsReturns<'a> {
         GetHistogramsReturns {
-            histograms: self.histograms.unwrap_or_default(),
+            histograms: self.histograms,
         }
     }
 }
@@ -946,25 +910,28 @@ pub struct GetHistogramParams<'a> {
 }
 
 impl<'a> GetHistogramParams<'a> {
-    pub fn builder() -> GetHistogramParamsBuilder<'a> { GetHistogramParamsBuilder::default() }
+    pub fn builder(name: impl Into<Cow<'a, str>>) -> GetHistogramParamsBuilder<'a> {
+        GetHistogramParamsBuilder {
+            name: name.into(),
+            delta: None,
+        }
+    }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn delta(&self) -> Option<bool> { self.delta }
 }
 
-#[derive(Default)]
+
 pub struct GetHistogramParamsBuilder<'a> {
-    name: Option<Cow<'a, str>>,
+    name: Cow<'a, str>,
     delta: Option<bool>,
 }
 
 impl<'a> GetHistogramParamsBuilder<'a> {
-    /// Requested histogram name.
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
     /// If true, retrieve delta since last delta call.
     pub fn delta(mut self, delta: bool) -> Self { self.delta = Some(delta); self }
     pub fn build(self) -> GetHistogramParams<'a> {
         GetHistogramParams {
-            name: self.name.unwrap_or_default(),
+            name: self.name,
             delta: self.delta,
         }
     }
@@ -980,21 +947,23 @@ pub struct GetHistogramReturns<'a> {
 }
 
 impl<'a> GetHistogramReturns<'a> {
-    pub fn builder() -> GetHistogramReturnsBuilder<'a> { GetHistogramReturnsBuilder::default() }
+    pub fn builder(histogram: Histogram<'a>) -> GetHistogramReturnsBuilder<'a> {
+        GetHistogramReturnsBuilder {
+            histogram: histogram,
+        }
+    }
     pub fn histogram(&self) -> &Histogram<'a> { &self.histogram }
 }
 
-#[derive(Default)]
+
 pub struct GetHistogramReturnsBuilder<'a> {
-    histogram: Option<Histogram<'a>>,
+    histogram: Histogram<'a>,
 }
 
 impl<'a> GetHistogramReturnsBuilder<'a> {
-    /// Histogram.
-    pub fn histogram(mut self, histogram: Histogram<'a>) -> Self { self.histogram = Some(histogram); self }
     pub fn build(self) -> GetHistogramReturns<'a> {
         GetHistogramReturns {
-            histogram: self.histogram.unwrap_or_default(),
+            histogram: self.histogram,
         }
     }
 }
@@ -1016,21 +985,23 @@ pub struct GetWindowBoundsParams {
 }
 
 impl GetWindowBoundsParams {
-    pub fn builder() -> GetWindowBoundsParamsBuilder { GetWindowBoundsParamsBuilder::default() }
+    pub fn builder(windowId: WindowID) -> GetWindowBoundsParamsBuilder {
+        GetWindowBoundsParamsBuilder {
+            windowId: windowId,
+        }
+    }
     pub fn windowId(&self) -> &WindowID { &self.windowId }
 }
 
-#[derive(Default)]
+
 pub struct GetWindowBoundsParamsBuilder {
-    windowId: Option<WindowID>,
+    windowId: WindowID,
 }
 
 impl GetWindowBoundsParamsBuilder {
-    /// Browser window id.
-    pub fn windowId(mut self, windowId: WindowID) -> Self { self.windowId = Some(windowId); self }
     pub fn build(self) -> GetWindowBoundsParams {
         GetWindowBoundsParams {
-            windowId: self.windowId.unwrap_or_default(),
+            windowId: self.windowId,
         }
     }
 }
@@ -1046,22 +1017,23 @@ pub struct GetWindowBoundsReturns {
 }
 
 impl GetWindowBoundsReturns {
-    pub fn builder() -> GetWindowBoundsReturnsBuilder { GetWindowBoundsReturnsBuilder::default() }
+    pub fn builder(bounds: Bounds) -> GetWindowBoundsReturnsBuilder {
+        GetWindowBoundsReturnsBuilder {
+            bounds: bounds,
+        }
+    }
     pub fn bounds(&self) -> &Bounds { &self.bounds }
 }
 
-#[derive(Default)]
+
 pub struct GetWindowBoundsReturnsBuilder {
-    bounds: Option<Bounds>,
+    bounds: Bounds,
 }
 
 impl GetWindowBoundsReturnsBuilder {
-    /// Bounds information of the window. When window state is 'minimized', the restored window
-    /// position and size are returned.
-    pub fn bounds(mut self, bounds: Bounds) -> Self { self.bounds = Some(bounds); self }
     pub fn build(self) -> GetWindowBoundsReturns {
         GetWindowBoundsReturns {
-            bounds: self.bounds.unwrap_or_default(),
+            bounds: self.bounds,
         }
     }
 }
@@ -1084,7 +1056,11 @@ pub struct GetWindowForTargetParams<'a> {
 }
 
 impl<'a> GetWindowForTargetParams<'a> {
-    pub fn builder() -> GetWindowForTargetParamsBuilder<'a> { GetWindowForTargetParamsBuilder::default() }
+    pub fn builder() -> GetWindowForTargetParamsBuilder<'a> {
+        GetWindowForTargetParamsBuilder {
+            targetId: None,
+        }
+    }
     pub fn targetId(&self) -> Option<&crate::target::TargetID<'a>> { self.targetId.as_ref() }
 }
 
@@ -1116,27 +1092,27 @@ pub struct GetWindowForTargetReturns {
 }
 
 impl GetWindowForTargetReturns {
-    pub fn builder() -> GetWindowForTargetReturnsBuilder { GetWindowForTargetReturnsBuilder::default() }
+    pub fn builder(windowId: WindowID, bounds: Bounds) -> GetWindowForTargetReturnsBuilder {
+        GetWindowForTargetReturnsBuilder {
+            windowId: windowId,
+            bounds: bounds,
+        }
+    }
     pub fn windowId(&self) -> &WindowID { &self.windowId }
     pub fn bounds(&self) -> &Bounds { &self.bounds }
 }
 
-#[derive(Default)]
+
 pub struct GetWindowForTargetReturnsBuilder {
-    windowId: Option<WindowID>,
-    bounds: Option<Bounds>,
+    windowId: WindowID,
+    bounds: Bounds,
 }
 
 impl GetWindowForTargetReturnsBuilder {
-    /// Browser window id.
-    pub fn windowId(mut self, windowId: WindowID) -> Self { self.windowId = Some(windowId); self }
-    /// Bounds information of the window. When window state is 'minimized', the restored window
-    /// position and size are returned.
-    pub fn bounds(mut self, bounds: Bounds) -> Self { self.bounds = Some(bounds); self }
     pub fn build(self) -> GetWindowForTargetReturns {
         GetWindowForTargetReturns {
-            windowId: self.windowId.unwrap_or_default(),
-            bounds: self.bounds.unwrap_or_default(),
+            windowId: self.windowId,
+            bounds: self.bounds,
         }
     }
 }
@@ -1161,27 +1137,27 @@ pub struct SetWindowBoundsParams {
 }
 
 impl SetWindowBoundsParams {
-    pub fn builder() -> SetWindowBoundsParamsBuilder { SetWindowBoundsParamsBuilder::default() }
+    pub fn builder(windowId: WindowID, bounds: Bounds) -> SetWindowBoundsParamsBuilder {
+        SetWindowBoundsParamsBuilder {
+            windowId: windowId,
+            bounds: bounds,
+        }
+    }
     pub fn windowId(&self) -> &WindowID { &self.windowId }
     pub fn bounds(&self) -> &Bounds { &self.bounds }
 }
 
-#[derive(Default)]
+
 pub struct SetWindowBoundsParamsBuilder {
-    windowId: Option<WindowID>,
-    bounds: Option<Bounds>,
+    windowId: WindowID,
+    bounds: Bounds,
 }
 
 impl SetWindowBoundsParamsBuilder {
-    /// Browser window id.
-    pub fn windowId(mut self, windowId: WindowID) -> Self { self.windowId = Some(windowId); self }
-    /// New window bounds. The 'minimized', 'maximized' and 'fullscreen' states cannot be combined
-    /// with 'left', 'top', 'width' or 'height'. Leaves unspecified fields unchanged.
-    pub fn bounds(mut self, bounds: Bounds) -> Self { self.bounds = Some(bounds); self }
     pub fn build(self) -> SetWindowBoundsParams {
         SetWindowBoundsParams {
-            windowId: self.windowId.unwrap_or_default(),
-            bounds: self.bounds.unwrap_or_default(),
+            windowId: self.windowId,
+            bounds: self.bounds,
         }
     }
 }
@@ -1211,22 +1187,26 @@ pub struct SetContentsSizeParams {
 }
 
 impl SetContentsSizeParams {
-    pub fn builder() -> SetContentsSizeParamsBuilder { SetContentsSizeParamsBuilder::default() }
+    pub fn builder(windowId: WindowID) -> SetContentsSizeParamsBuilder {
+        SetContentsSizeParamsBuilder {
+            windowId: windowId,
+            width: None,
+            height: None,
+        }
+    }
     pub fn windowId(&self) -> &WindowID { &self.windowId }
     pub fn width(&self) -> Option<u64> { self.width }
     pub fn height(&self) -> Option<i64> { self.height }
 }
 
-#[derive(Default)]
+
 pub struct SetContentsSizeParamsBuilder {
-    windowId: Option<WindowID>,
+    windowId: WindowID,
     width: Option<u64>,
     height: Option<i64>,
 }
 
 impl SetContentsSizeParamsBuilder {
-    /// Browser window id.
-    pub fn windowId(mut self, windowId: WindowID) -> Self { self.windowId = Some(windowId); self }
     /// The window contents width in DIP. Assumes current width if omitted.
     /// Must be specified if 'height' is omitted.
     pub fn width(mut self, width: u64) -> Self { self.width = Some(width); self }
@@ -1235,7 +1215,7 @@ impl SetContentsSizeParamsBuilder {
     pub fn height(mut self, height: i64) -> Self { self.height = Some(height); self }
     pub fn build(self) -> SetContentsSizeParams {
         SetContentsSizeParams {
-            windowId: self.windowId.unwrap_or_default(),
+            windowId: self.windowId,
             width: self.width,
             height: self.height,
         }
@@ -1262,7 +1242,12 @@ pub struct SetDockTileParams<'a> {
 }
 
 impl<'a> SetDockTileParams<'a> {
-    pub fn builder() -> SetDockTileParamsBuilder<'a> { SetDockTileParamsBuilder::default() }
+    pub fn builder() -> SetDockTileParamsBuilder<'a> {
+        SetDockTileParamsBuilder {
+            badgeLabel: None,
+            image: None,
+        }
+    }
     pub fn badgeLabel(&self) -> Option<&str> { self.badgeLabel.as_deref() }
     pub fn image(&self) -> Option<&str> { self.image.as_deref() }
 }
@@ -1301,20 +1286,23 @@ pub struct ExecuteBrowserCommandParams {
 }
 
 impl ExecuteBrowserCommandParams {
-    pub fn builder() -> ExecuteBrowserCommandParamsBuilder { ExecuteBrowserCommandParamsBuilder::default() }
+    pub fn builder(commandId: BrowserCommandId) -> ExecuteBrowserCommandParamsBuilder {
+        ExecuteBrowserCommandParamsBuilder {
+            commandId: commandId,
+        }
+    }
     pub fn commandId(&self) -> &BrowserCommandId { &self.commandId }
 }
 
-#[derive(Default)]
+
 pub struct ExecuteBrowserCommandParamsBuilder {
-    commandId: Option<BrowserCommandId>,
+    commandId: BrowserCommandId,
 }
 
 impl ExecuteBrowserCommandParamsBuilder {
-    pub fn commandId(mut self, commandId: BrowserCommandId) -> Self { self.commandId = Some(commandId); self }
     pub fn build(self) -> ExecuteBrowserCommandParams {
         ExecuteBrowserCommandParams {
-            commandId: self.commandId.unwrap_or_default(),
+            commandId: self.commandId,
         }
     }
 }
@@ -1336,20 +1324,23 @@ pub struct AddPrivacySandboxEnrollmentOverrideParams<'a> {
 }
 
 impl<'a> AddPrivacySandboxEnrollmentOverrideParams<'a> {
-    pub fn builder() -> AddPrivacySandboxEnrollmentOverrideParamsBuilder<'a> { AddPrivacySandboxEnrollmentOverrideParamsBuilder::default() }
+    pub fn builder(url: impl Into<Cow<'a, str>>) -> AddPrivacySandboxEnrollmentOverrideParamsBuilder<'a> {
+        AddPrivacySandboxEnrollmentOverrideParamsBuilder {
+            url: url.into(),
+        }
+    }
     pub fn url(&self) -> &str { self.url.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct AddPrivacySandboxEnrollmentOverrideParamsBuilder<'a> {
-    url: Option<Cow<'a, str>>,
+    url: Cow<'a, str>,
 }
 
 impl<'a> AddPrivacySandboxEnrollmentOverrideParamsBuilder<'a> {
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
     pub fn build(self) -> AddPrivacySandboxEnrollmentOverrideParams<'a> {
         AddPrivacySandboxEnrollmentOverrideParams {
-            url: self.url.unwrap_or_default(),
+            url: self.url,
         }
     }
 }
@@ -1379,33 +1370,37 @@ pub struct AddPrivacySandboxCoordinatorKeyConfigParams<'a> {
 }
 
 impl<'a> AddPrivacySandboxCoordinatorKeyConfigParams<'a> {
-    pub fn builder() -> AddPrivacySandboxCoordinatorKeyConfigParamsBuilder<'a> { AddPrivacySandboxCoordinatorKeyConfigParamsBuilder::default() }
+    pub fn builder(api: PrivacySandboxAPI, coordinatorOrigin: impl Into<Cow<'a, str>>, keyConfig: impl Into<Cow<'a, str>>) -> AddPrivacySandboxCoordinatorKeyConfigParamsBuilder<'a> {
+        AddPrivacySandboxCoordinatorKeyConfigParamsBuilder {
+            api: api,
+            coordinatorOrigin: coordinatorOrigin.into(),
+            keyConfig: keyConfig.into(),
+            browserContextId: None,
+        }
+    }
     pub fn api(&self) -> &PrivacySandboxAPI { &self.api }
     pub fn coordinatorOrigin(&self) -> &str { self.coordinatorOrigin.as_ref() }
     pub fn keyConfig(&self) -> &str { self.keyConfig.as_ref() }
     pub fn browserContextId(&self) -> Option<&BrowserContextID<'a>> { self.browserContextId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct AddPrivacySandboxCoordinatorKeyConfigParamsBuilder<'a> {
-    api: Option<PrivacySandboxAPI>,
-    coordinatorOrigin: Option<Cow<'a, str>>,
-    keyConfig: Option<Cow<'a, str>>,
+    api: PrivacySandboxAPI,
+    coordinatorOrigin: Cow<'a, str>,
+    keyConfig: Cow<'a, str>,
     browserContextId: Option<BrowserContextID<'a>>,
 }
 
 impl<'a> AddPrivacySandboxCoordinatorKeyConfigParamsBuilder<'a> {
-    pub fn api(mut self, api: PrivacySandboxAPI) -> Self { self.api = Some(api); self }
-    pub fn coordinatorOrigin(mut self, coordinatorOrigin: impl Into<Cow<'a, str>>) -> Self { self.coordinatorOrigin = Some(coordinatorOrigin.into()); self }
-    pub fn keyConfig(mut self, keyConfig: impl Into<Cow<'a, str>>) -> Self { self.keyConfig = Some(keyConfig.into()); self }
     /// BrowserContext to perform the action in. When omitted, default browser
     /// context is used.
     pub fn browserContextId(mut self, browserContextId: BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
     pub fn build(self) -> AddPrivacySandboxCoordinatorKeyConfigParams<'a> {
         AddPrivacySandboxCoordinatorKeyConfigParams {
-            api: self.api.unwrap_or_default(),
-            coordinatorOrigin: self.coordinatorOrigin.unwrap_or_default(),
-            keyConfig: self.keyConfig.unwrap_or_default(),
+            api: self.api,
+            coordinatorOrigin: self.coordinatorOrigin,
+            keyConfig: self.keyConfig,
             browserContextId: self.browserContextId,
         }
     }

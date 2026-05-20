@@ -52,7 +52,19 @@ pub struct RuleSet<'a> {
 }
 
 impl<'a> RuleSet<'a> {
-    pub fn builder() -> RuleSetBuilder<'a> { RuleSetBuilder::default() }
+    pub fn builder(id: RuleSetId<'a>, loaderId: crate::network::LoaderId<'a>, sourceText: impl Into<Cow<'a, str>>) -> RuleSetBuilder<'a> {
+        RuleSetBuilder {
+            id: id,
+            loaderId: loaderId,
+            sourceText: sourceText.into(),
+            backendNodeId: None,
+            url: None,
+            requestId: None,
+            errorType: None,
+            errorMessage: None,
+            tag: None,
+        }
+    }
     pub fn id(&self) -> &RuleSetId<'a> { &self.id }
     pub fn loaderId(&self) -> &crate::network::LoaderId<'a> { &self.loaderId }
     pub fn sourceText(&self) -> &str { self.sourceText.as_ref() }
@@ -64,11 +76,11 @@ impl<'a> RuleSet<'a> {
     pub fn tag(&self) -> Option<&str> { self.tag.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct RuleSetBuilder<'a> {
-    id: Option<RuleSetId<'a>>,
-    loaderId: Option<crate::network::LoaderId<'a>>,
-    sourceText: Option<Cow<'a, str>>,
+    id: RuleSetId<'a>,
+    loaderId: crate::network::LoaderId<'a>,
+    sourceText: Cow<'a, str>,
     backendNodeId: Option<crate::dom::BackendNodeId>,
     url: Option<Cow<'a, str>>,
     requestId: Option<crate::network::RequestId<'a>>,
@@ -78,17 +90,6 @@ pub struct RuleSetBuilder<'a> {
 }
 
 impl<'a> RuleSetBuilder<'a> {
-    pub fn id(mut self, id: RuleSetId<'a>) -> Self { self.id = Some(id); self }
-    /// Identifies a document which the rule set is associated with.
-    pub fn loaderId(mut self, loaderId: crate::network::LoaderId<'a>) -> Self { self.loaderId = Some(loaderId); self }
-    /// Source text of JSON representing the rule set. If it comes from
-    /// '<script>' tag, it is the textContent of the node. Note that it is
-    /// a JSON for valid case.
-    /// 
-    /// See also:
-    /// - https://wicg.github.io/nav-speculation/speculation-rules.html
-    /// - https://github.com/WICG/nav-speculation/blob/main/triggers.md
-    pub fn sourceText(mut self, sourceText: impl Into<Cow<'a, str>>) -> Self { self.sourceText = Some(sourceText.into()); self }
     /// A speculation rule set is either added through an inline
     /// '<script>' tag or through an external resource via the
     /// 'Speculation-Rules' HTTP header. For the first case, we include
@@ -112,9 +113,9 @@ impl<'a> RuleSetBuilder<'a> {
     pub fn tag(mut self, tag: impl Into<Cow<'a, str>>) -> Self { self.tag = Some(tag.into()); self }
     pub fn build(self) -> RuleSet<'a> {
         RuleSet {
-            id: self.id.unwrap_or_default(),
-            loaderId: self.loaderId.unwrap_or_default(),
-            sourceText: self.sourceText.unwrap_or_default(),
+            id: self.id,
+            loaderId: self.loaderId,
+            sourceText: self.sourceText,
             backendNodeId: self.backendNodeId,
             url: self.url,
             requestId: self.requestId,
@@ -184,7 +185,15 @@ pub struct PreloadingAttemptKey<'a> {
 }
 
 impl<'a> PreloadingAttemptKey<'a> {
-    pub fn builder() -> PreloadingAttemptKeyBuilder<'a> { PreloadingAttemptKeyBuilder::default() }
+    pub fn builder(loaderId: crate::network::LoaderId<'a>, action: SpeculationAction, url: impl Into<Cow<'a, str>>) -> PreloadingAttemptKeyBuilder<'a> {
+        PreloadingAttemptKeyBuilder {
+            loaderId: loaderId,
+            action: action,
+            url: url.into(),
+            formSubmission: None,
+            targetHint: None,
+        }
+    }
     pub fn loaderId(&self) -> &crate::network::LoaderId<'a> { &self.loaderId }
     pub fn action(&self) -> &SpeculationAction { &self.action }
     pub fn url(&self) -> &str { self.url.as_ref() }
@@ -192,26 +201,23 @@ impl<'a> PreloadingAttemptKey<'a> {
     pub fn targetHint(&self) -> Option<&SpeculationTargetHint> { self.targetHint.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct PreloadingAttemptKeyBuilder<'a> {
-    loaderId: Option<crate::network::LoaderId<'a>>,
-    action: Option<SpeculationAction>,
-    url: Option<Cow<'a, str>>,
+    loaderId: crate::network::LoaderId<'a>,
+    action: SpeculationAction,
+    url: Cow<'a, str>,
     formSubmission: Option<bool>,
     targetHint: Option<SpeculationTargetHint>,
 }
 
 impl<'a> PreloadingAttemptKeyBuilder<'a> {
-    pub fn loaderId(mut self, loaderId: crate::network::LoaderId<'a>) -> Self { self.loaderId = Some(loaderId); self }
-    pub fn action(mut self, action: SpeculationAction) -> Self { self.action = Some(action); self }
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
     pub fn formSubmission(mut self, formSubmission: bool) -> Self { self.formSubmission = Some(formSubmission); self }
     pub fn targetHint(mut self, targetHint: SpeculationTargetHint) -> Self { self.targetHint = Some(targetHint); self }
     pub fn build(self) -> PreloadingAttemptKey<'a> {
         PreloadingAttemptKey {
-            loaderId: self.loaderId.unwrap_or_default(),
-            action: self.action.unwrap_or_default(),
-            url: self.url.unwrap_or_default(),
+            loaderId: self.loaderId,
+            action: self.action,
+            url: self.url,
             formSubmission: self.formSubmission,
             targetHint: self.targetHint,
         }
@@ -233,28 +239,31 @@ pub struct PreloadingAttemptSource<'a> {
 }
 
 impl<'a> PreloadingAttemptSource<'a> {
-    pub fn builder() -> PreloadingAttemptSourceBuilder<'a> { PreloadingAttemptSourceBuilder::default() }
+    pub fn builder(key: PreloadingAttemptKey<'a>, ruleSetIds: Vec<RuleSetId<'a>>, nodeIds: Vec<crate::dom::BackendNodeId>) -> PreloadingAttemptSourceBuilder<'a> {
+        PreloadingAttemptSourceBuilder {
+            key: key,
+            ruleSetIds: ruleSetIds,
+            nodeIds: nodeIds,
+        }
+    }
     pub fn key(&self) -> &PreloadingAttemptKey<'a> { &self.key }
     pub fn ruleSetIds(&self) -> &[RuleSetId<'a>] { &self.ruleSetIds }
     pub fn nodeIds(&self) -> &[crate::dom::BackendNodeId] { &self.nodeIds }
 }
 
-#[derive(Default)]
+
 pub struct PreloadingAttemptSourceBuilder<'a> {
-    key: Option<PreloadingAttemptKey<'a>>,
-    ruleSetIds: Option<Vec<RuleSetId<'a>>>,
-    nodeIds: Option<Vec<crate::dom::BackendNodeId>>,
+    key: PreloadingAttemptKey<'a>,
+    ruleSetIds: Vec<RuleSetId<'a>>,
+    nodeIds: Vec<crate::dom::BackendNodeId>,
 }
 
 impl<'a> PreloadingAttemptSourceBuilder<'a> {
-    pub fn key(mut self, key: PreloadingAttemptKey<'a>) -> Self { self.key = Some(key); self }
-    pub fn ruleSetIds(mut self, ruleSetIds: Vec<RuleSetId<'a>>) -> Self { self.ruleSetIds = Some(ruleSetIds); self }
-    pub fn nodeIds(mut self, nodeIds: Vec<crate::dom::BackendNodeId>) -> Self { self.nodeIds = Some(nodeIds); self }
     pub fn build(self) -> PreloadingAttemptSource<'a> {
         PreloadingAttemptSource {
-            key: self.key.unwrap_or_default(),
-            ruleSetIds: self.ruleSetIds.unwrap_or_default(),
-            nodeIds: self.nodeIds.unwrap_or_default(),
+            key: self.key,
+            ruleSetIds: self.ruleSetIds,
+            nodeIds: self.nodeIds,
         }
     }
 }
@@ -535,26 +544,31 @@ pub struct PrerenderMismatchedHeaders<'a> {
 }
 
 impl<'a> PrerenderMismatchedHeaders<'a> {
-    pub fn builder() -> PrerenderMismatchedHeadersBuilder<'a> { PrerenderMismatchedHeadersBuilder::default() }
+    pub fn builder(headerName: impl Into<Cow<'a, str>>) -> PrerenderMismatchedHeadersBuilder<'a> {
+        PrerenderMismatchedHeadersBuilder {
+            headerName: headerName.into(),
+            initialValue: None,
+            activationValue: None,
+        }
+    }
     pub fn headerName(&self) -> &str { self.headerName.as_ref() }
     pub fn initialValue(&self) -> Option<&str> { self.initialValue.as_deref() }
     pub fn activationValue(&self) -> Option<&str> { self.activationValue.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct PrerenderMismatchedHeadersBuilder<'a> {
-    headerName: Option<Cow<'a, str>>,
+    headerName: Cow<'a, str>,
     initialValue: Option<Cow<'a, str>>,
     activationValue: Option<Cow<'a, str>>,
 }
 
 impl<'a> PrerenderMismatchedHeadersBuilder<'a> {
-    pub fn headerName(mut self, headerName: impl Into<Cow<'a, str>>) -> Self { self.headerName = Some(headerName.into()); self }
     pub fn initialValue(mut self, initialValue: impl Into<Cow<'a, str>>) -> Self { self.initialValue = Some(initialValue.into()); self }
     pub fn activationValue(mut self, activationValue: impl Into<Cow<'a, str>>) -> Self { self.activationValue = Some(activationValue.into()); self }
     pub fn build(self) -> PrerenderMismatchedHeaders<'a> {
         PrerenderMismatchedHeaders {
-            headerName: self.headerName.unwrap_or_default(),
+            headerName: self.headerName,
             initialValue: self.initialValue,
             activationValue: self.activationValue,
         }
@@ -563,21 +577,6 @@ impl<'a> PrerenderMismatchedHeadersBuilder<'a> {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct EnableParams {}
-
-impl EnableParams {
-    pub fn builder() -> EnableParamsBuilder {
-        EnableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct EnableParamsBuilder {}
-
-impl EnableParamsBuilder {
-    pub fn build(self) -> EnableParams {
-        EnableParams {}
-    }
-}
 
 impl EnableParams { pub const METHOD: &'static str = "Preload.enable"; }
 
@@ -588,21 +587,6 @@ impl<'a> crate::CdpCommand<'a> for EnableParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct DisableParams {}
-
-impl DisableParams {
-    pub fn builder() -> DisableParamsBuilder {
-        DisableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct DisableParamsBuilder {}
-
-impl DisableParamsBuilder {
-    pub fn build(self) -> DisableParams {
-        DisableParams {}
-    }
-}
 
 impl DisableParams { pub const METHOD: &'static str = "Preload.disable"; }
 

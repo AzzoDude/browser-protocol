@@ -1,8 +1,8 @@
 use browser_protocol::{browser, page};
 
 #[test]
-fn test_get_version_builder() {
-    let params = browser::GetVersionParams::builder().build();
+fn test_get_version_default() {
+    let params = browser::GetVersionParams::default();
     assert_eq!(browser::GetVersionParams::METHOD, "Browser.getVersion");
     
     let serialized = serde_json::to_string(&params).unwrap();
@@ -11,8 +11,7 @@ fn test_get_version_builder() {
 
 #[test]
 fn test_navigate_builder() {
-    let params = page::NavigateParams::builder()
-        .url("https://google.com")
+    let params = page::NavigateParams::builder("https://google.com")
         .transitionType(page::TransitionType::Typed)
         .build();
         
@@ -21,7 +20,6 @@ fn test_navigate_builder() {
     assert_eq!(params.frameId(), None);
     
     let serialized = serde_json::to_string(&params).unwrap();
-    println!("Serialized JSON: {}", serialized);
     assert!(serialized.contains(r#""url":"https://google.com""#));
     assert!(serialized.contains(r#""transitionType":"typed""#));
     assert!(!serialized.contains("frameId"));

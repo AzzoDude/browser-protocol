@@ -19,29 +19,33 @@ pub struct Sink<'a> {
 }
 
 impl<'a> Sink<'a> {
-    pub fn builder() -> SinkBuilder<'a> { SinkBuilder::default() }
+    pub fn builder(name: impl Into<Cow<'a, str>>, id: impl Into<Cow<'a, str>>) -> SinkBuilder<'a> {
+        SinkBuilder {
+            name: name.into(),
+            id: id.into(),
+            session: None,
+        }
+    }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn id(&self) -> &str { self.id.as_ref() }
     pub fn session(&self) -> Option<&str> { self.session.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct SinkBuilder<'a> {
-    name: Option<Cow<'a, str>>,
-    id: Option<Cow<'a, str>>,
+    name: Cow<'a, str>,
+    id: Cow<'a, str>,
     session: Option<Cow<'a, str>>,
 }
 
 impl<'a> SinkBuilder<'a> {
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    pub fn id(mut self, id: impl Into<Cow<'a, str>>) -> Self { self.id = Some(id.into()); self }
     /// Text describing the current session. Present only if there is an active
     /// session on the sink.
     pub fn session(mut self, session: impl Into<Cow<'a, str>>) -> Self { self.session = Some(session.into()); self }
     pub fn build(self) -> Sink<'a> {
         Sink {
-            name: self.name.unwrap_or_default(),
-            id: self.id.unwrap_or_default(),
+            name: self.name,
+            id: self.id,
             session: self.session,
         }
     }
@@ -61,7 +65,11 @@ pub struct EnableParams<'a> {
 }
 
 impl<'a> EnableParams<'a> {
-    pub fn builder() -> EnableParamsBuilder<'a> { EnableParamsBuilder::default() }
+    pub fn builder() -> EnableParamsBuilder<'a> {
+        EnableParamsBuilder {
+            presentationUrl: None,
+        }
+    }
     pub fn presentationUrl(&self) -> Option<&str> { self.presentationUrl.as_deref() }
 }
 
@@ -89,21 +97,6 @@ impl<'a> crate::CdpCommand<'a> for EnableParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct DisableParams {}
 
-impl DisableParams {
-    pub fn builder() -> DisableParamsBuilder {
-        DisableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct DisableParamsBuilder {}
-
-impl DisableParamsBuilder {
-    pub fn build(self) -> DisableParams {
-        DisableParams {}
-    }
-}
-
 impl DisableParams { pub const METHOD: &'static str = "Cast.disable"; }
 
 impl<'a> crate::CdpCommand<'a> for DisableParams {
@@ -121,20 +114,23 @@ pub struct SetSinkToUseParams<'a> {
 }
 
 impl<'a> SetSinkToUseParams<'a> {
-    pub fn builder() -> SetSinkToUseParamsBuilder<'a> { SetSinkToUseParamsBuilder::default() }
+    pub fn builder(sinkName: impl Into<Cow<'a, str>>) -> SetSinkToUseParamsBuilder<'a> {
+        SetSinkToUseParamsBuilder {
+            sinkName: sinkName.into(),
+        }
+    }
     pub fn sinkName(&self) -> &str { self.sinkName.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetSinkToUseParamsBuilder<'a> {
-    sinkName: Option<Cow<'a, str>>,
+    sinkName: Cow<'a, str>,
 }
 
 impl<'a> SetSinkToUseParamsBuilder<'a> {
-    pub fn sinkName(mut self, sinkName: impl Into<Cow<'a, str>>) -> Self { self.sinkName = Some(sinkName.into()); self }
     pub fn build(self) -> SetSinkToUseParams<'a> {
         SetSinkToUseParams {
-            sinkName: self.sinkName.unwrap_or_default(),
+            sinkName: self.sinkName,
         }
     }
 }
@@ -155,20 +151,23 @@ pub struct StartDesktopMirroringParams<'a> {
 }
 
 impl<'a> StartDesktopMirroringParams<'a> {
-    pub fn builder() -> StartDesktopMirroringParamsBuilder<'a> { StartDesktopMirroringParamsBuilder::default() }
+    pub fn builder(sinkName: impl Into<Cow<'a, str>>) -> StartDesktopMirroringParamsBuilder<'a> {
+        StartDesktopMirroringParamsBuilder {
+            sinkName: sinkName.into(),
+        }
+    }
     pub fn sinkName(&self) -> &str { self.sinkName.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct StartDesktopMirroringParamsBuilder<'a> {
-    sinkName: Option<Cow<'a, str>>,
+    sinkName: Cow<'a, str>,
 }
 
 impl<'a> StartDesktopMirroringParamsBuilder<'a> {
-    pub fn sinkName(mut self, sinkName: impl Into<Cow<'a, str>>) -> Self { self.sinkName = Some(sinkName.into()); self }
     pub fn build(self) -> StartDesktopMirroringParams<'a> {
         StartDesktopMirroringParams {
-            sinkName: self.sinkName.unwrap_or_default(),
+            sinkName: self.sinkName,
         }
     }
 }
@@ -189,20 +188,23 @@ pub struct StartTabMirroringParams<'a> {
 }
 
 impl<'a> StartTabMirroringParams<'a> {
-    pub fn builder() -> StartTabMirroringParamsBuilder<'a> { StartTabMirroringParamsBuilder::default() }
+    pub fn builder(sinkName: impl Into<Cow<'a, str>>) -> StartTabMirroringParamsBuilder<'a> {
+        StartTabMirroringParamsBuilder {
+            sinkName: sinkName.into(),
+        }
+    }
     pub fn sinkName(&self) -> &str { self.sinkName.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct StartTabMirroringParamsBuilder<'a> {
-    sinkName: Option<Cow<'a, str>>,
+    sinkName: Cow<'a, str>,
 }
 
 impl<'a> StartTabMirroringParamsBuilder<'a> {
-    pub fn sinkName(mut self, sinkName: impl Into<Cow<'a, str>>) -> Self { self.sinkName = Some(sinkName.into()); self }
     pub fn build(self) -> StartTabMirroringParams<'a> {
         StartTabMirroringParams {
-            sinkName: self.sinkName.unwrap_or_default(),
+            sinkName: self.sinkName,
         }
     }
 }
@@ -223,20 +225,23 @@ pub struct StopCastingParams<'a> {
 }
 
 impl<'a> StopCastingParams<'a> {
-    pub fn builder() -> StopCastingParamsBuilder<'a> { StopCastingParamsBuilder::default() }
+    pub fn builder(sinkName: impl Into<Cow<'a, str>>) -> StopCastingParamsBuilder<'a> {
+        StopCastingParamsBuilder {
+            sinkName: sinkName.into(),
+        }
+    }
     pub fn sinkName(&self) -> &str { self.sinkName.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct StopCastingParamsBuilder<'a> {
-    sinkName: Option<Cow<'a, str>>,
+    sinkName: Cow<'a, str>,
 }
 
 impl<'a> StopCastingParamsBuilder<'a> {
-    pub fn sinkName(mut self, sinkName: impl Into<Cow<'a, str>>) -> Self { self.sinkName = Some(sinkName.into()); self }
     pub fn build(self) -> StopCastingParams<'a> {
         StopCastingParams {
-            sinkName: self.sinkName.unwrap_or_default(),
+            sinkName: self.sinkName,
         }
     }
 }

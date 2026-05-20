@@ -9,10 +9,12 @@ A high-performance, fully type-safe Rust client for the **Chrome DevTools Protoc
 ## 🚀 Features
 
 - **Full Coverage**: Includes types, commands, and events for all CDP domains.
-- **Type Safety**: Leverage Rust's type system to avoid runtime protocol errors.
-- **Async Ready**: Designed to work seamlessly with `tokio` and `serde`.
-- **Zero Warnings**: The crate and its documentation are built to be perfectly clean.
-- **Documentation**: All protocol descriptions are included as Rustdoc comments.
+- **Fluent Builders**: Build commands easily with ergonomic builder APIs.
+- **Required-Argument Safety**: Required parameters are enforced directly in the `.builder(...)` constructor, ensuring compile-time protocol compliance.
+- **Zero-Allocation**: Leverages `Cow<'a, str>` for string properties to avoid heap allocation overhead.
+- **Encapsulated & Safe**: Struct fields are private, exposing read-only access through compact getter methods.
+- **Clean Serialization**: Automatically omits optional `None` fields from serialized payloads to reduce network bandwidth.
+- **Zero Warnings**: Crate is compiled warning-free with inline Rustdoc comments from official schemas.
 
 ## 📦 Installation
 
@@ -20,25 +22,42 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-browser-protocol = { version = "0.1.1", features = ["full"] }
+browser-protocol = { version = "0.1.2", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 ```
 
 ## 🛠 Usage Example
 
+### 1. Constructing commands with parameters (e.g. `Page.navigate`)
+Required fields are passed directly to `builder(...)`, while optional fields are chained:
+
 ```rust
-use browser-protocol::dom::GetDocumentParams;
-use browser-protocol::page::NavigateParams;
+use browser_protocol::page::{NavigateParams, TransitionType};
 
 fn main() {
-    // Example: Create a navigation command
-    let nav = NavigateParams {
-        url: "https://www.rust-lang.org".to_string(),
-        ..Default::default()
-    };
+    // url is required, so it is passed directly. transitionType is optional.
+    let nav = NavigateParams::builder("https://www.rust-lang.org")
+        .transitionType(TransitionType::Typed)
+        .build();
     
-    println!("Request: {:?}", serde_json::to_string(&nav).unwrap());
+    // Controlled read-only getter access
+    println!("Navigating to: {}", nav.url());
+    
+    // Serialized payload skips unset options (like referrer policy, frameId, etc.)
+    println!("Payload: {}", serde_json::to_string(&nav).unwrap());
+}
+```
+
+### 2. Constructing commands with no parameters (e.g. `Browser.getVersion`)
+No builder boilerplate is generated or needed; just use `default()`:
+
+```rust
+use browser_protocol::browser::GetVersionParams;
+
+fn main() {
+    let params = GetVersionParams::default();
+    println!("Payload: {}", serde_json::to_string(&params).unwrap());
 }
 ```
 

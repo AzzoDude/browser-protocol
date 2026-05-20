@@ -233,7 +233,31 @@ pub struct ResourceTiming {
 }
 
 impl ResourceTiming {
-    pub fn builder() -> ResourceTimingBuilder { ResourceTimingBuilder::default() }
+    pub fn builder(requestTime: f64, proxyStart: f64, proxyEnd: f64, dnsStart: f64, dnsEnd: f64, connectStart: f64, connectEnd: f64, sslStart: f64, sslEnd: f64, workerStart: f64, workerReady: f64, workerFetchStart: f64, workerRespondWithSettled: f64, sendStart: f64, sendEnd: f64, pushStart: f64, pushEnd: f64, receiveHeadersStart: f64, receiveHeadersEnd: f64) -> ResourceTimingBuilder {
+        ResourceTimingBuilder {
+            requestTime: requestTime,
+            proxyStart: proxyStart,
+            proxyEnd: proxyEnd,
+            dnsStart: dnsStart,
+            dnsEnd: dnsEnd,
+            connectStart: connectStart,
+            connectEnd: connectEnd,
+            sslStart: sslStart,
+            sslEnd: sslEnd,
+            workerStart: workerStart,
+            workerReady: workerReady,
+            workerFetchStart: workerFetchStart,
+            workerRespondWithSettled: workerRespondWithSettled,
+            workerRouterEvaluationStart: None,
+            workerCacheLookupStart: None,
+            sendStart: sendStart,
+            sendEnd: sendEnd,
+            pushStart: pushStart,
+            pushEnd: pushEnd,
+            receiveHeadersStart: receiveHeadersStart,
+            receiveHeadersEnd: receiveHeadersEnd,
+        }
+    }
     pub fn requestTime(&self) -> f64 { self.requestTime }
     pub fn proxyStart(&self) -> f64 { self.proxyStart }
     pub fn proxyEnd(&self) -> f64 { self.proxyEnd }
@@ -257,98 +281,59 @@ impl ResourceTiming {
     pub fn receiveHeadersEnd(&self) -> f64 { self.receiveHeadersEnd }
 }
 
-#[derive(Default)]
+
 pub struct ResourceTimingBuilder {
-    requestTime: Option<f64>,
-    proxyStart: Option<f64>,
-    proxyEnd: Option<f64>,
-    dnsStart: Option<f64>,
-    dnsEnd: Option<f64>,
-    connectStart: Option<f64>,
-    connectEnd: Option<f64>,
-    sslStart: Option<f64>,
-    sslEnd: Option<f64>,
-    workerStart: Option<f64>,
-    workerReady: Option<f64>,
-    workerFetchStart: Option<f64>,
-    workerRespondWithSettled: Option<f64>,
+    requestTime: f64,
+    proxyStart: f64,
+    proxyEnd: f64,
+    dnsStart: f64,
+    dnsEnd: f64,
+    connectStart: f64,
+    connectEnd: f64,
+    sslStart: f64,
+    sslEnd: f64,
+    workerStart: f64,
+    workerReady: f64,
+    workerFetchStart: f64,
+    workerRespondWithSettled: f64,
     workerRouterEvaluationStart: Option<f64>,
     workerCacheLookupStart: Option<f64>,
-    sendStart: Option<f64>,
-    sendEnd: Option<f64>,
-    pushStart: Option<f64>,
-    pushEnd: Option<f64>,
-    receiveHeadersStart: Option<f64>,
-    receiveHeadersEnd: Option<f64>,
+    sendStart: f64,
+    sendEnd: f64,
+    pushStart: f64,
+    pushEnd: f64,
+    receiveHeadersStart: f64,
+    receiveHeadersEnd: f64,
 }
 
 impl ResourceTimingBuilder {
-    /// Timing's requestTime is a baseline in seconds, while the other numbers are ticks in
-    /// milliseconds relatively to this requestTime.
-    pub fn requestTime(mut self, requestTime: f64) -> Self { self.requestTime = Some(requestTime); self }
-    /// Started resolving proxy.
-    pub fn proxyStart(mut self, proxyStart: f64) -> Self { self.proxyStart = Some(proxyStart); self }
-    /// Finished resolving proxy.
-    pub fn proxyEnd(mut self, proxyEnd: f64) -> Self { self.proxyEnd = Some(proxyEnd); self }
-    /// Started DNS address resolve.
-    pub fn dnsStart(mut self, dnsStart: f64) -> Self { self.dnsStart = Some(dnsStart); self }
-    /// Finished DNS address resolve.
-    pub fn dnsEnd(mut self, dnsEnd: f64) -> Self { self.dnsEnd = Some(dnsEnd); self }
-    /// Started connecting to the remote host.
-    pub fn connectStart(mut self, connectStart: f64) -> Self { self.connectStart = Some(connectStart); self }
-    /// Connected to the remote host.
-    pub fn connectEnd(mut self, connectEnd: f64) -> Self { self.connectEnd = Some(connectEnd); self }
-    /// Started SSL handshake.
-    pub fn sslStart(mut self, sslStart: f64) -> Self { self.sslStart = Some(sslStart); self }
-    /// Finished SSL handshake.
-    pub fn sslEnd(mut self, sslEnd: f64) -> Self { self.sslEnd = Some(sslEnd); self }
-    /// Started running ServiceWorker.
-    pub fn workerStart(mut self, workerStart: f64) -> Self { self.workerStart = Some(workerStart); self }
-    /// Finished Starting ServiceWorker.
-    pub fn workerReady(mut self, workerReady: f64) -> Self { self.workerReady = Some(workerReady); self }
-    /// Started fetch event.
-    pub fn workerFetchStart(mut self, workerFetchStart: f64) -> Self { self.workerFetchStart = Some(workerFetchStart); self }
-    /// Settled fetch event respondWith promise.
-    pub fn workerRespondWithSettled(mut self, workerRespondWithSettled: f64) -> Self { self.workerRespondWithSettled = Some(workerRespondWithSettled); self }
     /// Started ServiceWorker static routing source evaluation.
     pub fn workerRouterEvaluationStart(mut self, workerRouterEvaluationStart: f64) -> Self { self.workerRouterEvaluationStart = Some(workerRouterEvaluationStart); self }
     /// Started cache lookup when the source was evaluated to 'cache'.
     pub fn workerCacheLookupStart(mut self, workerCacheLookupStart: f64) -> Self { self.workerCacheLookupStart = Some(workerCacheLookupStart); self }
-    /// Started sending request.
-    pub fn sendStart(mut self, sendStart: f64) -> Self { self.sendStart = Some(sendStart); self }
-    /// Finished sending request.
-    pub fn sendEnd(mut self, sendEnd: f64) -> Self { self.sendEnd = Some(sendEnd); self }
-    /// Time the server started pushing request.
-    pub fn pushStart(mut self, pushStart: f64) -> Self { self.pushStart = Some(pushStart); self }
-    /// Time the server finished pushing request.
-    pub fn pushEnd(mut self, pushEnd: f64) -> Self { self.pushEnd = Some(pushEnd); self }
-    /// Started receiving response headers.
-    pub fn receiveHeadersStart(mut self, receiveHeadersStart: f64) -> Self { self.receiveHeadersStart = Some(receiveHeadersStart); self }
-    /// Finished receiving response headers.
-    pub fn receiveHeadersEnd(mut self, receiveHeadersEnd: f64) -> Self { self.receiveHeadersEnd = Some(receiveHeadersEnd); self }
     pub fn build(self) -> ResourceTiming {
         ResourceTiming {
-            requestTime: self.requestTime.unwrap_or_default(),
-            proxyStart: self.proxyStart.unwrap_or_default(),
-            proxyEnd: self.proxyEnd.unwrap_or_default(),
-            dnsStart: self.dnsStart.unwrap_or_default(),
-            dnsEnd: self.dnsEnd.unwrap_or_default(),
-            connectStart: self.connectStart.unwrap_or_default(),
-            connectEnd: self.connectEnd.unwrap_or_default(),
-            sslStart: self.sslStart.unwrap_or_default(),
-            sslEnd: self.sslEnd.unwrap_or_default(),
-            workerStart: self.workerStart.unwrap_or_default(),
-            workerReady: self.workerReady.unwrap_or_default(),
-            workerFetchStart: self.workerFetchStart.unwrap_or_default(),
-            workerRespondWithSettled: self.workerRespondWithSettled.unwrap_or_default(),
+            requestTime: self.requestTime,
+            proxyStart: self.proxyStart,
+            proxyEnd: self.proxyEnd,
+            dnsStart: self.dnsStart,
+            dnsEnd: self.dnsEnd,
+            connectStart: self.connectStart,
+            connectEnd: self.connectEnd,
+            sslStart: self.sslStart,
+            sslEnd: self.sslEnd,
+            workerStart: self.workerStart,
+            workerReady: self.workerReady,
+            workerFetchStart: self.workerFetchStart,
+            workerRespondWithSettled: self.workerRespondWithSettled,
             workerRouterEvaluationStart: self.workerRouterEvaluationStart,
             workerCacheLookupStart: self.workerCacheLookupStart,
-            sendStart: self.sendStart.unwrap_or_default(),
-            sendEnd: self.sendEnd.unwrap_or_default(),
-            pushStart: self.pushStart.unwrap_or_default(),
-            pushEnd: self.pushEnd.unwrap_or_default(),
-            receiveHeadersStart: self.receiveHeadersStart.unwrap_or_default(),
-            receiveHeadersEnd: self.receiveHeadersEnd.unwrap_or_default(),
+            sendStart: self.sendStart,
+            sendEnd: self.sendEnd,
+            pushStart: self.pushStart,
+            pushEnd: self.pushEnd,
+            receiveHeadersStart: self.receiveHeadersStart,
+            receiveHeadersEnd: self.receiveHeadersEnd,
         }
     }
 }
@@ -397,7 +382,11 @@ pub struct PostDataEntry<'a> {
 }
 
 impl<'a> PostDataEntry<'a> {
-    pub fn builder() -> PostDataEntryBuilder<'a> { PostDataEntryBuilder::default() }
+    pub fn builder() -> PostDataEntryBuilder<'a> {
+        PostDataEntryBuilder {
+            bytes: None,
+        }
+    }
     pub fn bytes(&self) -> Option<&str> { self.bytes.as_deref() }
 }
 
@@ -463,7 +452,24 @@ pub struct Request<'a> {
 }
 
 impl<'a> Request<'a> {
-    pub fn builder() -> RequestBuilder<'a> { RequestBuilder::default() }
+    pub fn builder(url: impl Into<Cow<'a, str>>, method: impl Into<Cow<'a, str>>, headers: Headers, initialPriority: ResourcePriority, referrerPolicy: impl Into<Cow<'a, str>>) -> RequestBuilder<'a> {
+        RequestBuilder {
+            url: url.into(),
+            urlFragment: None,
+            method: method.into(),
+            headers: headers,
+            postData: None,
+            hasPostData: None,
+            postDataEntries: None,
+            mixedContentType: None,
+            initialPriority: initialPriority,
+            referrerPolicy: referrerPolicy.into(),
+            isLinkPreload: None,
+            trustTokenParams: None,
+            isSameSite: None,
+            isAdRelated: None,
+        }
+    }
     pub fn url(&self) -> &str { self.url.as_ref() }
     pub fn urlFragment(&self) -> Option<&str> { self.urlFragment.as_deref() }
     pub fn method(&self) -> &str { self.method.as_ref() }
@@ -480,18 +486,18 @@ impl<'a> Request<'a> {
     pub fn isAdRelated(&self) -> Option<bool> { self.isAdRelated }
 }
 
-#[derive(Default)]
+
 pub struct RequestBuilder<'a> {
-    url: Option<Cow<'a, str>>,
+    url: Cow<'a, str>,
     urlFragment: Option<Cow<'a, str>>,
-    method: Option<Cow<'a, str>>,
-    headers: Option<Headers>,
+    method: Cow<'a, str>,
+    headers: Headers,
     postData: Option<Cow<'a, str>>,
     hasPostData: Option<bool>,
     postDataEntries: Option<Vec<PostDataEntry<'a>>>,
     mixedContentType: Option<crate::security::MixedContentType>,
-    initialPriority: Option<ResourcePriority>,
-    referrerPolicy: Option<Cow<'a, str>>,
+    initialPriority: ResourcePriority,
+    referrerPolicy: Cow<'a, str>,
     isLinkPreload: Option<bool>,
     trustTokenParams: Option<TrustTokenParams<'a>>,
     isSameSite: Option<bool>,
@@ -499,14 +505,8 @@ pub struct RequestBuilder<'a> {
 }
 
 impl<'a> RequestBuilder<'a> {
-    /// Request URL (without fragment).
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
     /// Fragment of the requested URL starting with hash, if present.
     pub fn urlFragment(mut self, urlFragment: impl Into<Cow<'a, str>>) -> Self { self.urlFragment = Some(urlFragment.into()); self }
-    /// HTTP request method.
-    pub fn method(mut self, method: impl Into<Cow<'a, str>>) -> Self { self.method = Some(method.into()); self }
-    /// HTTP request headers.
-    pub fn headers(mut self, headers: Headers) -> Self { self.headers = Some(headers); self }
     /// HTTP POST request data.
     /// Use postDataEntries instead.
     pub fn postData(mut self, postData: impl Into<Cow<'a, str>>) -> Self { self.postData = Some(postData.into()); self }
@@ -516,10 +516,6 @@ impl<'a> RequestBuilder<'a> {
     pub fn postDataEntries(mut self, postDataEntries: Vec<PostDataEntry<'a>>) -> Self { self.postDataEntries = Some(postDataEntries); self }
     /// The mixed content type of the request.
     pub fn mixedContentType(mut self, mixedContentType: crate::security::MixedContentType) -> Self { self.mixedContentType = Some(mixedContentType); self }
-    /// Priority of the resource request at the time request is sent.
-    pub fn initialPriority(mut self, initialPriority: ResourcePriority) -> Self { self.initialPriority = Some(initialPriority); self }
-    /// The referrer policy of the request, as defined in https://www.w3.org/TR/referrer-policy/
-    pub fn referrerPolicy(mut self, referrerPolicy: impl Into<Cow<'a, str>>) -> Self { self.referrerPolicy = Some(referrerPolicy.into()); self }
     /// Whether is loaded via link preload.
     pub fn isLinkPreload(mut self, isLinkPreload: bool) -> Self { self.isLinkPreload = Some(isLinkPreload); self }
     /// Set for requests when the TrustToken API is used. Contains the parameters
@@ -532,16 +528,16 @@ impl<'a> RequestBuilder<'a> {
     pub fn isAdRelated(mut self, isAdRelated: bool) -> Self { self.isAdRelated = Some(isAdRelated); self }
     pub fn build(self) -> Request<'a> {
         Request {
-            url: self.url.unwrap_or_default(),
+            url: self.url,
             urlFragment: self.urlFragment,
-            method: self.method.unwrap_or_default(),
-            headers: self.headers.unwrap_or_default(),
+            method: self.method,
+            headers: self.headers,
             postData: self.postData,
             hasPostData: self.hasPostData,
             postDataEntries: self.postDataEntries,
             mixedContentType: self.mixedContentType,
-            initialPriority: self.initialPriority.unwrap_or_default(),
-            referrerPolicy: self.referrerPolicy.unwrap_or_default(),
+            initialPriority: self.initialPriority,
+            referrerPolicy: self.referrerPolicy,
             isLinkPreload: self.isLinkPreload,
             trustTokenParams: self.trustTokenParams,
             isSameSite: self.isSameSite,
@@ -575,7 +571,18 @@ pub struct SignedCertificateTimestamp<'a> {
 }
 
 impl<'a> SignedCertificateTimestamp<'a> {
-    pub fn builder() -> SignedCertificateTimestampBuilder<'a> { SignedCertificateTimestampBuilder::default() }
+    pub fn builder(status: impl Into<Cow<'a, str>>, origin: impl Into<Cow<'a, str>>, logDescription: impl Into<Cow<'a, str>>, logId: impl Into<Cow<'a, str>>, timestamp: f64, hashAlgorithm: impl Into<Cow<'a, str>>, signatureAlgorithm: impl Into<Cow<'a, str>>, signatureData: impl Into<Cow<'a, str>>) -> SignedCertificateTimestampBuilder<'a> {
+        SignedCertificateTimestampBuilder {
+            status: status.into(),
+            origin: origin.into(),
+            logDescription: logDescription.into(),
+            logId: logId.into(),
+            timestamp: timestamp,
+            hashAlgorithm: hashAlgorithm.into(),
+            signatureAlgorithm: signatureAlgorithm.into(),
+            signatureData: signatureData.into(),
+        }
+    }
     pub fn status(&self) -> &str { self.status.as_ref() }
     pub fn origin(&self) -> &str { self.origin.as_ref() }
     pub fn logDescription(&self) -> &str { self.logDescription.as_ref() }
@@ -586,46 +593,29 @@ impl<'a> SignedCertificateTimestamp<'a> {
     pub fn signatureData(&self) -> &str { self.signatureData.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SignedCertificateTimestampBuilder<'a> {
-    status: Option<Cow<'a, str>>,
-    origin: Option<Cow<'a, str>>,
-    logDescription: Option<Cow<'a, str>>,
-    logId: Option<Cow<'a, str>>,
-    timestamp: Option<f64>,
-    hashAlgorithm: Option<Cow<'a, str>>,
-    signatureAlgorithm: Option<Cow<'a, str>>,
-    signatureData: Option<Cow<'a, str>>,
+    status: Cow<'a, str>,
+    origin: Cow<'a, str>,
+    logDescription: Cow<'a, str>,
+    logId: Cow<'a, str>,
+    timestamp: f64,
+    hashAlgorithm: Cow<'a, str>,
+    signatureAlgorithm: Cow<'a, str>,
+    signatureData: Cow<'a, str>,
 }
 
 impl<'a> SignedCertificateTimestampBuilder<'a> {
-    /// Validation status.
-    pub fn status(mut self, status: impl Into<Cow<'a, str>>) -> Self { self.status = Some(status.into()); self }
-    /// Origin.
-    pub fn origin(mut self, origin: impl Into<Cow<'a, str>>) -> Self { self.origin = Some(origin.into()); self }
-    /// Log name / description.
-    pub fn logDescription(mut self, logDescription: impl Into<Cow<'a, str>>) -> Self { self.logDescription = Some(logDescription.into()); self }
-    /// Log ID.
-    pub fn logId(mut self, logId: impl Into<Cow<'a, str>>) -> Self { self.logId = Some(logId.into()); self }
-    /// Issuance date. Unlike TimeSinceEpoch, this contains the number of
-    /// milliseconds since January 1, 1970, UTC, not the number of seconds.
-    pub fn timestamp(mut self, timestamp: f64) -> Self { self.timestamp = Some(timestamp); self }
-    /// Hash algorithm.
-    pub fn hashAlgorithm(mut self, hashAlgorithm: impl Into<Cow<'a, str>>) -> Self { self.hashAlgorithm = Some(hashAlgorithm.into()); self }
-    /// Signature algorithm.
-    pub fn signatureAlgorithm(mut self, signatureAlgorithm: impl Into<Cow<'a, str>>) -> Self { self.signatureAlgorithm = Some(signatureAlgorithm.into()); self }
-    /// Signature data.
-    pub fn signatureData(mut self, signatureData: impl Into<Cow<'a, str>>) -> Self { self.signatureData = Some(signatureData.into()); self }
     pub fn build(self) -> SignedCertificateTimestamp<'a> {
         SignedCertificateTimestamp {
-            status: self.status.unwrap_or_default(),
-            origin: self.origin.unwrap_or_default(),
-            logDescription: self.logDescription.unwrap_or_default(),
-            logId: self.logId.unwrap_or_default(),
-            timestamp: self.timestamp.unwrap_or_default(),
-            hashAlgorithm: self.hashAlgorithm.unwrap_or_default(),
-            signatureAlgorithm: self.signatureAlgorithm.unwrap_or_default(),
-            signatureData: self.signatureData.unwrap_or_default(),
+            status: self.status,
+            origin: self.origin,
+            logDescription: self.logDescription,
+            logId: self.logId,
+            timestamp: self.timestamp,
+            hashAlgorithm: self.hashAlgorithm,
+            signatureAlgorithm: self.signatureAlgorithm,
+            signatureData: self.signatureData,
         }
     }
 }
@@ -673,7 +663,25 @@ pub struct SecurityDetails<'a> {
 }
 
 impl<'a> SecurityDetails<'a> {
-    pub fn builder() -> SecurityDetailsBuilder<'a> { SecurityDetailsBuilder::default() }
+    pub fn builder(protocol: impl Into<Cow<'a, str>>, keyExchange: impl Into<Cow<'a, str>>, cipher: impl Into<Cow<'a, str>>, certificateId: crate::security::CertificateId, subjectName: impl Into<Cow<'a, str>>, sanList: Vec<Cow<'a, str>>, issuer: impl Into<Cow<'a, str>>, validFrom: TimeSinceEpoch, validTo: TimeSinceEpoch, signedCertificateTimestampList: Vec<SignedCertificateTimestamp<'a>>, certificateTransparencyCompliance: CertificateTransparencyCompliance, encryptedClientHello: bool) -> SecurityDetailsBuilder<'a> {
+        SecurityDetailsBuilder {
+            protocol: protocol.into(),
+            keyExchange: keyExchange.into(),
+            keyExchangeGroup: None,
+            cipher: cipher.into(),
+            mac: None,
+            certificateId: certificateId,
+            subjectName: subjectName.into(),
+            sanList: sanList,
+            issuer: issuer.into(),
+            validFrom: validFrom,
+            validTo: validTo,
+            signedCertificateTimestampList: signedCertificateTimestampList,
+            certificateTransparencyCompliance: certificateTransparencyCompliance,
+            serverSignatureAlgorithm: None,
+            encryptedClientHello: encryptedClientHello,
+        }
+    }
     pub fn protocol(&self) -> &str { self.protocol.as_ref() }
     pub fn keyExchange(&self) -> &str { self.keyExchange.as_ref() }
     pub fn keyExchangeGroup(&self) -> Option<&str> { self.keyExchangeGroup.as_deref() }
@@ -691,75 +699,51 @@ impl<'a> SecurityDetails<'a> {
     pub fn encryptedClientHello(&self) -> bool { self.encryptedClientHello }
 }
 
-#[derive(Default)]
+
 pub struct SecurityDetailsBuilder<'a> {
-    protocol: Option<Cow<'a, str>>,
-    keyExchange: Option<Cow<'a, str>>,
+    protocol: Cow<'a, str>,
+    keyExchange: Cow<'a, str>,
     keyExchangeGroup: Option<Cow<'a, str>>,
-    cipher: Option<Cow<'a, str>>,
+    cipher: Cow<'a, str>,
     mac: Option<Cow<'a, str>>,
-    certificateId: Option<crate::security::CertificateId>,
-    subjectName: Option<Cow<'a, str>>,
-    sanList: Option<Vec<Cow<'a, str>>>,
-    issuer: Option<Cow<'a, str>>,
-    validFrom: Option<TimeSinceEpoch>,
-    validTo: Option<TimeSinceEpoch>,
-    signedCertificateTimestampList: Option<Vec<SignedCertificateTimestamp<'a>>>,
-    certificateTransparencyCompliance: Option<CertificateTransparencyCompliance>,
+    certificateId: crate::security::CertificateId,
+    subjectName: Cow<'a, str>,
+    sanList: Vec<Cow<'a, str>>,
+    issuer: Cow<'a, str>,
+    validFrom: TimeSinceEpoch,
+    validTo: TimeSinceEpoch,
+    signedCertificateTimestampList: Vec<SignedCertificateTimestamp<'a>>,
+    certificateTransparencyCompliance: CertificateTransparencyCompliance,
     serverSignatureAlgorithm: Option<i64>,
-    encryptedClientHello: Option<bool>,
+    encryptedClientHello: bool,
 }
 
 impl<'a> SecurityDetailsBuilder<'a> {
-    /// Protocol name (e.g. "TLS 1.2" or "QUIC").
-    pub fn protocol(mut self, protocol: impl Into<Cow<'a, str>>) -> Self { self.protocol = Some(protocol.into()); self }
-    /// Key Exchange used by the connection, or the empty string if not applicable.
-    pub fn keyExchange(mut self, keyExchange: impl Into<Cow<'a, str>>) -> Self { self.keyExchange = Some(keyExchange.into()); self }
     /// (EC)DH group used by the connection, if applicable.
     pub fn keyExchangeGroup(mut self, keyExchangeGroup: impl Into<Cow<'a, str>>) -> Self { self.keyExchangeGroup = Some(keyExchangeGroup.into()); self }
-    /// Cipher name.
-    pub fn cipher(mut self, cipher: impl Into<Cow<'a, str>>) -> Self { self.cipher = Some(cipher.into()); self }
     /// TLS MAC. Note that AEAD ciphers do not have separate MACs.
     pub fn mac(mut self, mac: impl Into<Cow<'a, str>>) -> Self { self.mac = Some(mac.into()); self }
-    /// Certificate ID value.
-    pub fn certificateId(mut self, certificateId: crate::security::CertificateId) -> Self { self.certificateId = Some(certificateId); self }
-    /// Certificate subject name.
-    pub fn subjectName(mut self, subjectName: impl Into<Cow<'a, str>>) -> Self { self.subjectName = Some(subjectName.into()); self }
-    /// Subject Alternative Name (SAN) DNS names and IP addresses.
-    pub fn sanList(mut self, sanList: Vec<Cow<'a, str>>) -> Self { self.sanList = Some(sanList); self }
-    /// Name of the issuing CA.
-    pub fn issuer(mut self, issuer: impl Into<Cow<'a, str>>) -> Self { self.issuer = Some(issuer.into()); self }
-    /// Certificate valid from date.
-    pub fn validFrom(mut self, validFrom: TimeSinceEpoch) -> Self { self.validFrom = Some(validFrom); self }
-    /// Certificate valid to (expiration) date
-    pub fn validTo(mut self, validTo: TimeSinceEpoch) -> Self { self.validTo = Some(validTo); self }
-    /// List of signed certificate timestamps (SCTs).
-    pub fn signedCertificateTimestampList(mut self, signedCertificateTimestampList: Vec<SignedCertificateTimestamp<'a>>) -> Self { self.signedCertificateTimestampList = Some(signedCertificateTimestampList); self }
-    /// Whether the request complied with Certificate Transparency policy
-    pub fn certificateTransparencyCompliance(mut self, certificateTransparencyCompliance: CertificateTransparencyCompliance) -> Self { self.certificateTransparencyCompliance = Some(certificateTransparencyCompliance); self }
     /// The signature algorithm used by the server in the TLS server signature,
     /// represented as a TLS SignatureScheme code point. Omitted if not
     /// applicable or not known.
     pub fn serverSignatureAlgorithm(mut self, serverSignatureAlgorithm: i64) -> Self { self.serverSignatureAlgorithm = Some(serverSignatureAlgorithm); self }
-    /// Whether the connection used Encrypted ClientHello
-    pub fn encryptedClientHello(mut self, encryptedClientHello: bool) -> Self { self.encryptedClientHello = Some(encryptedClientHello); self }
     pub fn build(self) -> SecurityDetails<'a> {
         SecurityDetails {
-            protocol: self.protocol.unwrap_or_default(),
-            keyExchange: self.keyExchange.unwrap_or_default(),
+            protocol: self.protocol,
+            keyExchange: self.keyExchange,
             keyExchangeGroup: self.keyExchangeGroup,
-            cipher: self.cipher.unwrap_or_default(),
+            cipher: self.cipher,
             mac: self.mac,
-            certificateId: self.certificateId.unwrap_or_default(),
-            subjectName: self.subjectName.unwrap_or_default(),
-            sanList: self.sanList.unwrap_or_default(),
-            issuer: self.issuer.unwrap_or_default(),
-            validFrom: self.validFrom.unwrap_or_default(),
-            validTo: self.validTo.unwrap_or_default(),
-            signedCertificateTimestampList: self.signedCertificateTimestampList.unwrap_or_default(),
-            certificateTransparencyCompliance: self.certificateTransparencyCompliance.unwrap_or_default(),
+            certificateId: self.certificateId,
+            subjectName: self.subjectName,
+            sanList: self.sanList,
+            issuer: self.issuer,
+            validFrom: self.validFrom,
+            validTo: self.validTo,
+            signedCertificateTimestampList: self.signedCertificateTimestampList,
+            certificateTransparencyCompliance: self.certificateTransparencyCompliance,
             serverSignatureAlgorithm: self.serverSignatureAlgorithm,
-            encryptedClientHello: self.encryptedClientHello.unwrap_or_default(),
+            encryptedClientHello: self.encryptedClientHello,
         }
     }
 }
@@ -888,24 +872,27 @@ pub struct CorsErrorStatus<'a> {
 }
 
 impl<'a> CorsErrorStatus<'a> {
-    pub fn builder() -> CorsErrorStatusBuilder<'a> { CorsErrorStatusBuilder::default() }
+    pub fn builder(corsError: CorsError, failedParameter: impl Into<Cow<'a, str>>) -> CorsErrorStatusBuilder<'a> {
+        CorsErrorStatusBuilder {
+            corsError: corsError,
+            failedParameter: failedParameter.into(),
+        }
+    }
     pub fn corsError(&self) -> &CorsError { &self.corsError }
     pub fn failedParameter(&self) -> &str { self.failedParameter.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct CorsErrorStatusBuilder<'a> {
-    corsError: Option<CorsError>,
-    failedParameter: Option<Cow<'a, str>>,
+    corsError: CorsError,
+    failedParameter: Cow<'a, str>,
 }
 
 impl<'a> CorsErrorStatusBuilder<'a> {
-    pub fn corsError(mut self, corsError: CorsError) -> Self { self.corsError = Some(corsError); self }
-    pub fn failedParameter(mut self, failedParameter: impl Into<Cow<'a, str>>) -> Self { self.failedParameter = Some(failedParameter.into()); self }
     pub fn build(self) -> CorsErrorStatus<'a> {
         CorsErrorStatus {
-            corsError: self.corsError.unwrap_or_default(),
-            failedParameter: self.failedParameter.unwrap_or_default(),
+            corsError: self.corsError,
+            failedParameter: self.failedParameter,
         }
     }
 }
@@ -943,31 +930,33 @@ pub struct TrustTokenParams<'a> {
 }
 
 impl<'a> TrustTokenParams<'a> {
-    pub fn builder() -> TrustTokenParamsBuilder<'a> { TrustTokenParamsBuilder::default() }
+    pub fn builder(operation: TrustTokenOperationType, refreshPolicy: impl Into<Cow<'a, str>>) -> TrustTokenParamsBuilder<'a> {
+        TrustTokenParamsBuilder {
+            operation: operation,
+            refreshPolicy: refreshPolicy.into(),
+            issuers: None,
+        }
+    }
     pub fn operation(&self) -> &TrustTokenOperationType { &self.operation }
     pub fn refreshPolicy(&self) -> &str { self.refreshPolicy.as_ref() }
     pub fn issuers(&self) -> Option<&[Cow<'a, str>]> { self.issuers.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct TrustTokenParamsBuilder<'a> {
-    operation: Option<TrustTokenOperationType>,
-    refreshPolicy: Option<Cow<'a, str>>,
+    operation: TrustTokenOperationType,
+    refreshPolicy: Cow<'a, str>,
     issuers: Option<Vec<Cow<'a, str>>>,
 }
 
 impl<'a> TrustTokenParamsBuilder<'a> {
-    pub fn operation(mut self, operation: TrustTokenOperationType) -> Self { self.operation = Some(operation); self }
-    /// Only set for "token-redemption" operation and determine whether
-    /// to request a fresh SRR or use a still valid cached SRR.
-    pub fn refreshPolicy(mut self, refreshPolicy: impl Into<Cow<'a, str>>) -> Self { self.refreshPolicy = Some(refreshPolicy.into()); self }
     /// Origins of issuers from whom to request tokens or redemption
     /// records.
     pub fn issuers(mut self, issuers: Vec<Cow<'a, str>>) -> Self { self.issuers = Some(issuers); self }
     pub fn build(self) -> TrustTokenParams<'a> {
         TrustTokenParams {
-            operation: self.operation.unwrap_or_default(),
-            refreshPolicy: self.refreshPolicy.unwrap_or_default(),
+            operation: self.operation,
+            refreshPolicy: self.refreshPolicy,
             issuers: self.issuers,
         }
     }
@@ -1043,7 +1032,13 @@ pub struct ServiceWorkerRouterInfo {
 }
 
 impl ServiceWorkerRouterInfo {
-    pub fn builder() -> ServiceWorkerRouterInfoBuilder { ServiceWorkerRouterInfoBuilder::default() }
+    pub fn builder() -> ServiceWorkerRouterInfoBuilder {
+        ServiceWorkerRouterInfoBuilder {
+            ruleIdMatched: None,
+            matchedSourceType: None,
+            actualSourceType: None,
+        }
+    }
     pub fn ruleIdMatched(&self) -> Option<u64> { self.ruleIdMatched }
     pub fn matchedSourceType(&self) -> Option<&ServiceWorkerRouterSource> { self.matchedSourceType.as_ref() }
     pub fn actualSourceType(&self) -> Option<&ServiceWorkerRouterSource> { self.actualSourceType.as_ref() }
@@ -1156,7 +1151,37 @@ pub struct Response<'a> {
 }
 
 impl<'a> Response<'a> {
-    pub fn builder() -> ResponseBuilder<'a> { ResponseBuilder::default() }
+    pub fn builder(url: impl Into<Cow<'a, str>>, status: i64, statusText: impl Into<Cow<'a, str>>, headers: Headers, mimeType: impl Into<Cow<'a, str>>, charset: impl Into<Cow<'a, str>>, connectionReused: bool, connectionId: f64, encodedDataLength: f64, securityState: crate::security::SecurityState) -> ResponseBuilder<'a> {
+        ResponseBuilder {
+            url: url.into(),
+            status: status,
+            statusText: statusText.into(),
+            headers: headers,
+            headersText: None,
+            mimeType: mimeType.into(),
+            charset: charset.into(),
+            requestHeaders: None,
+            requestHeadersText: None,
+            connectionReused: connectionReused,
+            connectionId: connectionId,
+            remoteIPAddress: None,
+            remotePort: None,
+            fromDiskCache: None,
+            fromServiceWorker: None,
+            fromPrefetchCache: None,
+            fromEarlyHints: None,
+            serviceWorkerRouterInfo: None,
+            encodedDataLength: encodedDataLength,
+            timing: None,
+            serviceWorkerResponseSource: None,
+            responseTime: None,
+            cacheStorageCacheName: None,
+            protocol: None,
+            alternateProtocolUsage: None,
+            securityState: securityState,
+            securityDetails: None,
+        }
+    }
     pub fn url(&self) -> &str { self.url.as_ref() }
     pub fn status(&self) -> i64 { self.status }
     pub fn statusText(&self) -> &str { self.statusText.as_ref() }
@@ -1186,19 +1211,19 @@ impl<'a> Response<'a> {
     pub fn securityDetails(&self) -> Option<&SecurityDetails<'a>> { self.securityDetails.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct ResponseBuilder<'a> {
-    url: Option<Cow<'a, str>>,
-    status: Option<i64>,
-    statusText: Option<Cow<'a, str>>,
-    headers: Option<Headers>,
+    url: Cow<'a, str>,
+    status: i64,
+    statusText: Cow<'a, str>,
+    headers: Headers,
     headersText: Option<Cow<'a, str>>,
-    mimeType: Option<Cow<'a, str>>,
-    charset: Option<Cow<'a, str>>,
+    mimeType: Cow<'a, str>,
+    charset: Cow<'a, str>,
     requestHeaders: Option<Headers>,
     requestHeadersText: Option<Cow<'a, str>>,
-    connectionReused: Option<bool>,
-    connectionId: Option<f64>,
+    connectionReused: bool,
+    connectionId: f64,
     remoteIPAddress: Option<Cow<'a, str>>,
     remotePort: Option<i64>,
     fromDiskCache: Option<bool>,
@@ -1206,40 +1231,24 @@ pub struct ResponseBuilder<'a> {
     fromPrefetchCache: Option<bool>,
     fromEarlyHints: Option<bool>,
     serviceWorkerRouterInfo: Option<ServiceWorkerRouterInfo>,
-    encodedDataLength: Option<f64>,
+    encodedDataLength: f64,
     timing: Option<ResourceTiming>,
     serviceWorkerResponseSource: Option<ServiceWorkerResponseSource>,
     responseTime: Option<TimeSinceEpoch>,
     cacheStorageCacheName: Option<Cow<'a, str>>,
     protocol: Option<Cow<'a, str>>,
     alternateProtocolUsage: Option<AlternateProtocolUsage>,
-    securityState: Option<crate::security::SecurityState>,
+    securityState: crate::security::SecurityState,
     securityDetails: Option<SecurityDetails<'a>>,
 }
 
 impl<'a> ResponseBuilder<'a> {
-    /// Response URL. This URL can be different from CachedResource.url in case of redirect.
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
-    /// HTTP response status code.
-    pub fn status(mut self, status: i64) -> Self { self.status = Some(status); self }
-    /// HTTP response status text.
-    pub fn statusText(mut self, statusText: impl Into<Cow<'a, str>>) -> Self { self.statusText = Some(statusText.into()); self }
-    /// HTTP response headers.
-    pub fn headers(mut self, headers: Headers) -> Self { self.headers = Some(headers); self }
     /// HTTP response headers text. This has been replaced by the headers in Network.responseReceivedExtraInfo.
     pub fn headersText(mut self, headersText: impl Into<Cow<'a, str>>) -> Self { self.headersText = Some(headersText.into()); self }
-    /// Resource mimeType as determined by the browser.
-    pub fn mimeType(mut self, mimeType: impl Into<Cow<'a, str>>) -> Self { self.mimeType = Some(mimeType.into()); self }
-    /// Resource charset as determined by the browser (if applicable).
-    pub fn charset(mut self, charset: impl Into<Cow<'a, str>>) -> Self { self.charset = Some(charset.into()); self }
     /// Refined HTTP request headers that were actually transmitted over the network.
     pub fn requestHeaders(mut self, requestHeaders: Headers) -> Self { self.requestHeaders = Some(requestHeaders); self }
     /// HTTP request headers text. This has been replaced by the headers in Network.requestWillBeSentExtraInfo.
     pub fn requestHeadersText(mut self, requestHeadersText: impl Into<Cow<'a, str>>) -> Self { self.requestHeadersText = Some(requestHeadersText.into()); self }
-    /// Specifies whether physical connection was actually reused for this request.
-    pub fn connectionReused(mut self, connectionReused: bool) -> Self { self.connectionReused = Some(connectionReused); self }
-    /// Physical connection id that was actually used for this request.
-    pub fn connectionId(mut self, connectionId: f64) -> Self { self.connectionId = Some(connectionId); self }
     /// Remote IP address.
     pub fn remoteIPAddress(mut self, remoteIPAddress: impl Into<Cow<'a, str>>) -> Self { self.remoteIPAddress = Some(remoteIPAddress.into()); self }
     /// Remote port.
@@ -1257,8 +1266,6 @@ impl<'a> ResponseBuilder<'a> {
     /// If this field is set without 'matchedSource', no matching rule is found.
     /// Otherwise, the API is not used.
     pub fn serviceWorkerRouterInfo(mut self, serviceWorkerRouterInfo: ServiceWorkerRouterInfo) -> Self { self.serviceWorkerRouterInfo = Some(serviceWorkerRouterInfo); self }
-    /// Total number of bytes received for this request so far.
-    pub fn encodedDataLength(mut self, encodedDataLength: f64) -> Self { self.encodedDataLength = Some(encodedDataLength); self }
     /// Timing information for the given request.
     pub fn timing(mut self, timing: ResourceTiming) -> Self { self.timing = Some(timing); self }
     /// Response source of response from ServiceWorker.
@@ -1271,23 +1278,21 @@ impl<'a> ResponseBuilder<'a> {
     pub fn protocol(mut self, protocol: impl Into<Cow<'a, str>>) -> Self { self.protocol = Some(protocol.into()); self }
     /// The reason why Chrome uses a specific transport protocol for HTTP semantics.
     pub fn alternateProtocolUsage(mut self, alternateProtocolUsage: AlternateProtocolUsage) -> Self { self.alternateProtocolUsage = Some(alternateProtocolUsage); self }
-    /// Security state of the request resource.
-    pub fn securityState(mut self, securityState: crate::security::SecurityState) -> Self { self.securityState = Some(securityState); self }
     /// Security details for the request.
     pub fn securityDetails(mut self, securityDetails: SecurityDetails<'a>) -> Self { self.securityDetails = Some(securityDetails); self }
     pub fn build(self) -> Response<'a> {
         Response {
-            url: self.url.unwrap_or_default(),
-            status: self.status.unwrap_or_default(),
-            statusText: self.statusText.unwrap_or_default(),
-            headers: self.headers.unwrap_or_default(),
+            url: self.url,
+            status: self.status,
+            statusText: self.statusText,
+            headers: self.headers,
             headersText: self.headersText,
-            mimeType: self.mimeType.unwrap_or_default(),
-            charset: self.charset.unwrap_or_default(),
+            mimeType: self.mimeType,
+            charset: self.charset,
             requestHeaders: self.requestHeaders,
             requestHeadersText: self.requestHeadersText,
-            connectionReused: self.connectionReused.unwrap_or_default(),
-            connectionId: self.connectionId.unwrap_or_default(),
+            connectionReused: self.connectionReused,
+            connectionId: self.connectionId,
             remoteIPAddress: self.remoteIPAddress,
             remotePort: self.remotePort,
             fromDiskCache: self.fromDiskCache,
@@ -1295,14 +1300,14 @@ impl<'a> ResponseBuilder<'a> {
             fromPrefetchCache: self.fromPrefetchCache,
             fromEarlyHints: self.fromEarlyHints,
             serviceWorkerRouterInfo: self.serviceWorkerRouterInfo,
-            encodedDataLength: self.encodedDataLength.unwrap_or_default(),
+            encodedDataLength: self.encodedDataLength,
             timing: self.timing,
             serviceWorkerResponseSource: self.serviceWorkerResponseSource,
             responseTime: self.responseTime,
             cacheStorageCacheName: self.cacheStorageCacheName,
             protocol: self.protocol,
             alternateProtocolUsage: self.alternateProtocolUsage,
-            securityState: self.securityState.unwrap_or_default(),
+            securityState: self.securityState,
             securityDetails: self.securityDetails,
         }
     }
@@ -1318,21 +1323,23 @@ pub struct WebSocketRequest {
 }
 
 impl WebSocketRequest {
-    pub fn builder() -> WebSocketRequestBuilder { WebSocketRequestBuilder::default() }
+    pub fn builder(headers: Headers) -> WebSocketRequestBuilder {
+        WebSocketRequestBuilder {
+            headers: headers,
+        }
+    }
     pub fn headers(&self) -> &Headers { &self.headers }
 }
 
-#[derive(Default)]
+
 pub struct WebSocketRequestBuilder {
-    headers: Option<Headers>,
+    headers: Headers,
 }
 
 impl WebSocketRequestBuilder {
-    /// HTTP request headers.
-    pub fn headers(mut self, headers: Headers) -> Self { self.headers = Some(headers); self }
     pub fn build(self) -> WebSocketRequest {
         WebSocketRequest {
-            headers: self.headers.unwrap_or_default(),
+            headers: self.headers,
         }
     }
 }
@@ -1360,7 +1367,16 @@ pub struct WebSocketResponse<'a> {
 }
 
 impl<'a> WebSocketResponse<'a> {
-    pub fn builder() -> WebSocketResponseBuilder<'a> { WebSocketResponseBuilder::default() }
+    pub fn builder(status: i64, statusText: impl Into<Cow<'a, str>>, headers: Headers) -> WebSocketResponseBuilder<'a> {
+        WebSocketResponseBuilder {
+            status: status,
+            statusText: statusText.into(),
+            headers: headers,
+            headersText: None,
+            requestHeaders: None,
+            requestHeadersText: None,
+        }
+    }
     pub fn status(&self) -> i64 { self.status }
     pub fn statusText(&self) -> &str { self.statusText.as_ref() }
     pub fn headers(&self) -> &Headers { &self.headers }
@@ -1369,23 +1385,17 @@ impl<'a> WebSocketResponse<'a> {
     pub fn requestHeadersText(&self) -> Option<&str> { self.requestHeadersText.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct WebSocketResponseBuilder<'a> {
-    status: Option<i64>,
-    statusText: Option<Cow<'a, str>>,
-    headers: Option<Headers>,
+    status: i64,
+    statusText: Cow<'a, str>,
+    headers: Headers,
     headersText: Option<Cow<'a, str>>,
     requestHeaders: Option<Headers>,
     requestHeadersText: Option<Cow<'a, str>>,
 }
 
 impl<'a> WebSocketResponseBuilder<'a> {
-    /// HTTP response status code.
-    pub fn status(mut self, status: i64) -> Self { self.status = Some(status); self }
-    /// HTTP response status text.
-    pub fn statusText(mut self, statusText: impl Into<Cow<'a, str>>) -> Self { self.statusText = Some(statusText.into()); self }
-    /// HTTP response headers.
-    pub fn headers(mut self, headers: Headers) -> Self { self.headers = Some(headers); self }
     /// HTTP response headers text.
     pub fn headersText(mut self, headersText: impl Into<Cow<'a, str>>) -> Self { self.headersText = Some(headersText.into()); self }
     /// HTTP request headers.
@@ -1394,9 +1404,9 @@ impl<'a> WebSocketResponseBuilder<'a> {
     pub fn requestHeadersText(mut self, requestHeadersText: impl Into<Cow<'a, str>>) -> Self { self.requestHeadersText = Some(requestHeadersText.into()); self }
     pub fn build(self) -> WebSocketResponse<'a> {
         WebSocketResponse {
-            status: self.status.unwrap_or_default(),
-            statusText: self.statusText.unwrap_or_default(),
-            headers: self.headers.unwrap_or_default(),
+            status: self.status,
+            statusText: self.statusText,
+            headers: self.headers,
             headersText: self.headersText,
             requestHeaders: self.requestHeaders,
             requestHeadersText: self.requestHeadersText,
@@ -1420,33 +1430,31 @@ pub struct WebSocketFrame<'a> {
 }
 
 impl<'a> WebSocketFrame<'a> {
-    pub fn builder() -> WebSocketFrameBuilder<'a> { WebSocketFrameBuilder::default() }
+    pub fn builder(opcode: f64, mask: bool, payloadData: impl Into<Cow<'a, str>>) -> WebSocketFrameBuilder<'a> {
+        WebSocketFrameBuilder {
+            opcode: opcode,
+            mask: mask,
+            payloadData: payloadData.into(),
+        }
+    }
     pub fn opcode(&self) -> f64 { self.opcode }
     pub fn mask(&self) -> bool { self.mask }
     pub fn payloadData(&self) -> &str { self.payloadData.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct WebSocketFrameBuilder<'a> {
-    opcode: Option<f64>,
-    mask: Option<bool>,
-    payloadData: Option<Cow<'a, str>>,
+    opcode: f64,
+    mask: bool,
+    payloadData: Cow<'a, str>,
 }
 
 impl<'a> WebSocketFrameBuilder<'a> {
-    /// WebSocket message opcode.
-    pub fn opcode(mut self, opcode: f64) -> Self { self.opcode = Some(opcode); self }
-    /// WebSocket message mask.
-    pub fn mask(mut self, mask: bool) -> Self { self.mask = Some(mask); self }
-    /// WebSocket message payload data.
-    /// If the opcode is 1, this is a text message and payloadData is a UTF-8 string.
-    /// If the opcode isn't 1, then payloadData is a base64 encoded string representing binary data.
-    pub fn payloadData(mut self, payloadData: impl Into<Cow<'a, str>>) -> Self { self.payloadData = Some(payloadData.into()); self }
     pub fn build(self) -> WebSocketFrame<'a> {
         WebSocketFrame {
-            opcode: self.opcode.unwrap_or_default(),
-            mask: self.mask.unwrap_or_default(),
-            payloadData: self.payloadData.unwrap_or_default(),
+            opcode: self.opcode,
+            mask: self.mask,
+            payloadData: self.payloadData,
         }
     }
 }
@@ -1469,36 +1477,37 @@ pub struct CachedResource<'a> {
 }
 
 impl<'a> CachedResource<'a> {
-    pub fn builder() -> CachedResourceBuilder<'a> { CachedResourceBuilder::default() }
+    pub fn builder(url: impl Into<Cow<'a, str>>, type_: ResourceType, bodySize: f64) -> CachedResourceBuilder<'a> {
+        CachedResourceBuilder {
+            url: url.into(),
+            type_: type_,
+            response: None,
+            bodySize: bodySize,
+        }
+    }
     pub fn url(&self) -> &str { self.url.as_ref() }
     pub fn type_(&self) -> &ResourceType { &self.type_ }
     pub fn response(&self) -> Option<&Response<'a>> { self.response.as_ref() }
     pub fn bodySize(&self) -> f64 { self.bodySize }
 }
 
-#[derive(Default)]
+
 pub struct CachedResourceBuilder<'a> {
-    url: Option<Cow<'a, str>>,
-    type_: Option<ResourceType>,
+    url: Cow<'a, str>,
+    type_: ResourceType,
     response: Option<Response<'a>>,
-    bodySize: Option<f64>,
+    bodySize: f64,
 }
 
 impl<'a> CachedResourceBuilder<'a> {
-    /// Resource URL. This is the url of the original network request.
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
-    /// Type of this resource.
-    pub fn type_(mut self, type_: ResourceType) -> Self { self.type_ = Some(type_); self }
     /// Cached response data.
     pub fn response(mut self, response: Response<'a>) -> Self { self.response = Some(response); self }
-    /// Cached response body size.
-    pub fn bodySize(mut self, bodySize: f64) -> Self { self.bodySize = Some(bodySize); self }
     pub fn build(self) -> CachedResource<'a> {
         CachedResource {
-            url: self.url.unwrap_or_default(),
-            type_: self.type_.unwrap_or_default(),
+            url: self.url,
+            type_: self.type_,
             response: self.response,
-            bodySize: self.bodySize.unwrap_or_default(),
+            bodySize: self.bodySize,
         }
     }
 }
@@ -1532,7 +1541,16 @@ pub struct Initiator<'a> {
 }
 
 impl<'a> Initiator<'a> {
-    pub fn builder() -> InitiatorBuilder<'a> { InitiatorBuilder::default() }
+    pub fn builder(type_: impl Into<Cow<'a, str>>) -> InitiatorBuilder<'a> {
+        InitiatorBuilder {
+            type_: type_.into(),
+            stack: None,
+            url: None,
+            lineNumber: None,
+            columnNumber: None,
+            requestId: None,
+        }
+    }
     pub fn type_(&self) -> &str { self.type_.as_ref() }
     pub fn stack(&self) -> Option<&crate::runtime::StackTrace> { self.stack.as_ref() }
     pub fn url(&self) -> Option<&str> { self.url.as_deref() }
@@ -1541,9 +1559,9 @@ impl<'a> Initiator<'a> {
     pub fn requestId(&self) -> Option<&RequestId<'a>> { self.requestId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct InitiatorBuilder<'a> {
-    type_: Option<Cow<'a, str>>,
+    type_: Cow<'a, str>,
     stack: Option<crate::runtime::StackTrace>,
     url: Option<Cow<'a, str>>,
     lineNumber: Option<f64>,
@@ -1552,8 +1570,6 @@ pub struct InitiatorBuilder<'a> {
 }
 
 impl<'a> InitiatorBuilder<'a> {
-    /// Type of this initiator.
-    pub fn type_(mut self, type_: impl Into<Cow<'a, str>>) -> Self { self.type_ = Some(type_.into()); self }
     /// Initiator JavaScript stack trace, set for Script only.
     /// Requires the Debugger domain to be enabled.
     pub fn stack(mut self, stack: crate::runtime::StackTrace) -> Self { self.stack = Some(stack); self }
@@ -1569,7 +1585,7 @@ impl<'a> InitiatorBuilder<'a> {
     pub fn requestId(mut self, requestId: RequestId<'a>) -> Self { self.requestId = Some(requestId); self }
     pub fn build(self) -> Initiator<'a> {
         Initiator {
-            type_: self.type_.unwrap_or_default(),
+            type_: self.type_,
             stack: self.stack,
             url: self.url,
             lineNumber: self.lineNumber,
@@ -1593,27 +1609,27 @@ pub struct CookiePartitionKey<'a> {
 }
 
 impl<'a> CookiePartitionKey<'a> {
-    pub fn builder() -> CookiePartitionKeyBuilder<'a> { CookiePartitionKeyBuilder::default() }
+    pub fn builder(topLevelSite: impl Into<Cow<'a, str>>, hasCrossSiteAncestor: bool) -> CookiePartitionKeyBuilder<'a> {
+        CookiePartitionKeyBuilder {
+            topLevelSite: topLevelSite.into(),
+            hasCrossSiteAncestor: hasCrossSiteAncestor,
+        }
+    }
     pub fn topLevelSite(&self) -> &str { self.topLevelSite.as_ref() }
     pub fn hasCrossSiteAncestor(&self) -> bool { self.hasCrossSiteAncestor }
 }
 
-#[derive(Default)]
+
 pub struct CookiePartitionKeyBuilder<'a> {
-    topLevelSite: Option<Cow<'a, str>>,
-    hasCrossSiteAncestor: Option<bool>,
+    topLevelSite: Cow<'a, str>,
+    hasCrossSiteAncestor: bool,
 }
 
 impl<'a> CookiePartitionKeyBuilder<'a> {
-    /// The site of the top-level URL the browser was visiting at the start
-    /// of the request to the endpoint that set the cookie.
-    pub fn topLevelSite(mut self, topLevelSite: impl Into<Cow<'a, str>>) -> Self { self.topLevelSite = Some(topLevelSite.into()); self }
-    /// Indicates if the cookie has any ancestors that are cross-site to the topLevelSite.
-    pub fn hasCrossSiteAncestor(mut self, hasCrossSiteAncestor: bool) -> Self { self.hasCrossSiteAncestor = Some(hasCrossSiteAncestor); self }
     pub fn build(self) -> CookiePartitionKey<'a> {
         CookiePartitionKey {
-            topLevelSite: self.topLevelSite.unwrap_or_default(),
-            hasCrossSiteAncestor: self.hasCrossSiteAncestor.unwrap_or_default(),
+            topLevelSite: self.topLevelSite,
+            hasCrossSiteAncestor: self.hasCrossSiteAncestor,
         }
     }
 }
@@ -1664,7 +1680,25 @@ pub struct Cookie<'a> {
 }
 
 impl<'a> Cookie<'a> {
-    pub fn builder() -> CookieBuilder<'a> { CookieBuilder::default() }
+    pub fn builder(name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>, domain: impl Into<Cow<'a, str>>, path: impl Into<Cow<'a, str>>, expires: f64, size: u64, httpOnly: bool, secure: bool, session: bool, priority: CookiePriority, sourceScheme: CookieSourceScheme, sourcePort: i64) -> CookieBuilder<'a> {
+        CookieBuilder {
+            name: name.into(),
+            value: value.into(),
+            domain: domain.into(),
+            path: path.into(),
+            expires: expires,
+            size: size,
+            httpOnly: httpOnly,
+            secure: secure,
+            session: session,
+            sameSite: None,
+            priority: priority,
+            sourceScheme: sourceScheme,
+            sourcePort: sourcePort,
+            partitionKey: None,
+            partitionKeyOpaque: None,
+        }
+    }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn value(&self) -> &str { self.value.as_ref() }
     pub fn domain(&self) -> &str { self.domain.as_ref() }
@@ -1682,76 +1716,47 @@ impl<'a> Cookie<'a> {
     pub fn partitionKeyOpaque(&self) -> Option<bool> { self.partitionKeyOpaque }
 }
 
-#[derive(Default)]
+
 pub struct CookieBuilder<'a> {
-    name: Option<Cow<'a, str>>,
-    value: Option<Cow<'a, str>>,
-    domain: Option<Cow<'a, str>>,
-    path: Option<Cow<'a, str>>,
-    expires: Option<f64>,
-    size: Option<u64>,
-    httpOnly: Option<bool>,
-    secure: Option<bool>,
-    session: Option<bool>,
+    name: Cow<'a, str>,
+    value: Cow<'a, str>,
+    domain: Cow<'a, str>,
+    path: Cow<'a, str>,
+    expires: f64,
+    size: u64,
+    httpOnly: bool,
+    secure: bool,
+    session: bool,
     sameSite: Option<CookieSameSite>,
-    priority: Option<CookiePriority>,
-    sourceScheme: Option<CookieSourceScheme>,
-    sourcePort: Option<i64>,
+    priority: CookiePriority,
+    sourceScheme: CookieSourceScheme,
+    sourcePort: i64,
     partitionKey: Option<CookiePartitionKey<'a>>,
     partitionKeyOpaque: Option<bool>,
 }
 
 impl<'a> CookieBuilder<'a> {
-    /// Cookie name.
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    /// Cookie value.
-    pub fn value(mut self, value: impl Into<Cow<'a, str>>) -> Self { self.value = Some(value.into()); self }
-    /// Cookie domain.
-    pub fn domain(mut self, domain: impl Into<Cow<'a, str>>) -> Self { self.domain = Some(domain.into()); self }
-    /// Cookie path.
-    pub fn path(mut self, path: impl Into<Cow<'a, str>>) -> Self { self.path = Some(path.into()); self }
-    /// Cookie expiration date as the number of seconds since the UNIX epoch.
-    /// The value is set to -1 if the expiry date is not set.
-    /// The value can be null for values that cannot be represented in
-    /// JSON (±Inf).
-    pub fn expires(mut self, expires: f64) -> Self { self.expires = Some(expires); self }
-    /// Cookie size.
-    pub fn size(mut self, size: u64) -> Self { self.size = Some(size); self }
-    /// True if cookie is http-only.
-    pub fn httpOnly(mut self, httpOnly: bool) -> Self { self.httpOnly = Some(httpOnly); self }
-    /// True if cookie is secure.
-    pub fn secure(mut self, secure: bool) -> Self { self.secure = Some(secure); self }
-    /// True in case of session cookie.
-    pub fn session(mut self, session: bool) -> Self { self.session = Some(session); self }
     /// Cookie SameSite type.
     pub fn sameSite(mut self, sameSite: CookieSameSite) -> Self { self.sameSite = Some(sameSite); self }
-    /// Cookie Priority
-    pub fn priority(mut self, priority: CookiePriority) -> Self { self.priority = Some(priority); self }
-    /// Cookie source scheme type.
-    pub fn sourceScheme(mut self, sourceScheme: CookieSourceScheme) -> Self { self.sourceScheme = Some(sourceScheme); self }
-    /// Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port.
-    /// An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
-    /// This is a temporary ability and it will be removed in the future.
-    pub fn sourcePort(mut self, sourcePort: i64) -> Self { self.sourcePort = Some(sourcePort); self }
     /// Cookie partition key.
     pub fn partitionKey(mut self, partitionKey: CookiePartitionKey<'a>) -> Self { self.partitionKey = Some(partitionKey); self }
     /// True if cookie partition key is opaque.
     pub fn partitionKeyOpaque(mut self, partitionKeyOpaque: bool) -> Self { self.partitionKeyOpaque = Some(partitionKeyOpaque); self }
     pub fn build(self) -> Cookie<'a> {
         Cookie {
-            name: self.name.unwrap_or_default(),
-            value: self.value.unwrap_or_default(),
-            domain: self.domain.unwrap_or_default(),
-            path: self.path.unwrap_or_default(),
-            expires: self.expires.unwrap_or_default(),
-            size: self.size.unwrap_or_default(),
-            httpOnly: self.httpOnly.unwrap_or_default(),
-            secure: self.secure.unwrap_or_default(),
-            session: self.session.unwrap_or_default(),
+            name: self.name,
+            value: self.value,
+            domain: self.domain,
+            path: self.path,
+            expires: self.expires,
+            size: self.size,
+            httpOnly: self.httpOnly,
+            secure: self.secure,
+            session: self.session,
             sameSite: self.sameSite,
-            priority: self.priority.unwrap_or_default(),
-            sourceScheme: self.sourceScheme.unwrap_or_default(),
-            sourcePort: self.sourcePort.unwrap_or_default(),
+            priority: self.priority,
+            sourceScheme: self.sourceScheme,
+            sourcePort: self.sourcePort,
             partitionKey: self.partitionKey,
             partitionKeyOpaque: self.partitionKeyOpaque,
         }
@@ -1895,33 +1900,34 @@ pub struct BlockedSetCookieWithReason<'a> {
 }
 
 impl<'a> BlockedSetCookieWithReason<'a> {
-    pub fn builder() -> BlockedSetCookieWithReasonBuilder<'a> { BlockedSetCookieWithReasonBuilder::default() }
+    pub fn builder(blockedReasons: Vec<SetCookieBlockedReason>, cookieLine: impl Into<Cow<'a, str>>) -> BlockedSetCookieWithReasonBuilder<'a> {
+        BlockedSetCookieWithReasonBuilder {
+            blockedReasons: blockedReasons,
+            cookieLine: cookieLine.into(),
+            cookie: None,
+        }
+    }
     pub fn blockedReasons(&self) -> &[SetCookieBlockedReason] { &self.blockedReasons }
     pub fn cookieLine(&self) -> &str { self.cookieLine.as_ref() }
     pub fn cookie(&self) -> Option<&Cookie<'a>> { self.cookie.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct BlockedSetCookieWithReasonBuilder<'a> {
-    blockedReasons: Option<Vec<SetCookieBlockedReason>>,
-    cookieLine: Option<Cow<'a, str>>,
+    blockedReasons: Vec<SetCookieBlockedReason>,
+    cookieLine: Cow<'a, str>,
     cookie: Option<Cookie<'a>>,
 }
 
 impl<'a> BlockedSetCookieWithReasonBuilder<'a> {
-    /// The reason(s) this cookie was blocked.
-    pub fn blockedReasons(mut self, blockedReasons: Vec<SetCookieBlockedReason>) -> Self { self.blockedReasons = Some(blockedReasons); self }
-    /// The string representing this individual cookie as it would appear in the header.
-    /// This is not the entire "cookie" or "set-cookie" header which could have multiple cookies.
-    pub fn cookieLine(mut self, cookieLine: impl Into<Cow<'a, str>>) -> Self { self.cookieLine = Some(cookieLine.into()); self }
     /// The cookie object which represents the cookie which was not stored. It is optional because
     /// sometimes complete cookie information is not available, such as in the case of parsing
     /// errors.
     pub fn cookie(mut self, cookie: Cookie<'a>) -> Self { self.cookie = Some(cookie); self }
     pub fn build(self) -> BlockedSetCookieWithReason<'a> {
         BlockedSetCookieWithReason {
-            blockedReasons: self.blockedReasons.unwrap_or_default(),
-            cookieLine: self.cookieLine.unwrap_or_default(),
+            blockedReasons: self.blockedReasons,
+            cookieLine: self.cookieLine,
             cookie: self.cookie,
         }
     }
@@ -1942,31 +1948,31 @@ pub struct ExemptedSetCookieWithReason<'a> {
 }
 
 impl<'a> ExemptedSetCookieWithReason<'a> {
-    pub fn builder() -> ExemptedSetCookieWithReasonBuilder<'a> { ExemptedSetCookieWithReasonBuilder::default() }
+    pub fn builder(exemptionReason: CookieExemptionReason, cookieLine: impl Into<Cow<'a, str>>, cookie: Cookie<'a>) -> ExemptedSetCookieWithReasonBuilder<'a> {
+        ExemptedSetCookieWithReasonBuilder {
+            exemptionReason: exemptionReason,
+            cookieLine: cookieLine.into(),
+            cookie: cookie,
+        }
+    }
     pub fn exemptionReason(&self) -> &CookieExemptionReason { &self.exemptionReason }
     pub fn cookieLine(&self) -> &str { self.cookieLine.as_ref() }
     pub fn cookie(&self) -> &Cookie<'a> { &self.cookie }
 }
 
-#[derive(Default)]
+
 pub struct ExemptedSetCookieWithReasonBuilder<'a> {
-    exemptionReason: Option<CookieExemptionReason>,
-    cookieLine: Option<Cow<'a, str>>,
-    cookie: Option<Cookie<'a>>,
+    exemptionReason: CookieExemptionReason,
+    cookieLine: Cow<'a, str>,
+    cookie: Cookie<'a>,
 }
 
 impl<'a> ExemptedSetCookieWithReasonBuilder<'a> {
-    /// The reason the cookie was exempted.
-    pub fn exemptionReason(mut self, exemptionReason: CookieExemptionReason) -> Self { self.exemptionReason = Some(exemptionReason); self }
-    /// The string representing this individual cookie as it would appear in the header.
-    pub fn cookieLine(mut self, cookieLine: impl Into<Cow<'a, str>>) -> Self { self.cookieLine = Some(cookieLine.into()); self }
-    /// The cookie object representing the cookie.
-    pub fn cookie(mut self, cookie: Cookie<'a>) -> Self { self.cookie = Some(cookie); self }
     pub fn build(self) -> ExemptedSetCookieWithReason<'a> {
         ExemptedSetCookieWithReason {
-            exemptionReason: self.exemptionReason.unwrap_or_default(),
-            cookieLine: self.cookieLine.unwrap_or_default(),
-            cookie: self.cookie.unwrap_or_default(),
+            exemptionReason: self.exemptionReason,
+            cookieLine: self.cookieLine,
+            cookie: self.cookie,
         }
     }
 }
@@ -1988,31 +1994,33 @@ pub struct AssociatedCookie<'a> {
 }
 
 impl<'a> AssociatedCookie<'a> {
-    pub fn builder() -> AssociatedCookieBuilder<'a> { AssociatedCookieBuilder::default() }
+    pub fn builder(cookie: Cookie<'a>, blockedReasons: Vec<CookieBlockedReason>) -> AssociatedCookieBuilder<'a> {
+        AssociatedCookieBuilder {
+            cookie: cookie,
+            blockedReasons: blockedReasons,
+            exemptionReason: None,
+        }
+    }
     pub fn cookie(&self) -> &Cookie<'a> { &self.cookie }
     pub fn blockedReasons(&self) -> &[CookieBlockedReason] { &self.blockedReasons }
     pub fn exemptionReason(&self) -> Option<&CookieExemptionReason> { self.exemptionReason.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct AssociatedCookieBuilder<'a> {
-    cookie: Option<Cookie<'a>>,
-    blockedReasons: Option<Vec<CookieBlockedReason>>,
+    cookie: Cookie<'a>,
+    blockedReasons: Vec<CookieBlockedReason>,
     exemptionReason: Option<CookieExemptionReason>,
 }
 
 impl<'a> AssociatedCookieBuilder<'a> {
-    /// The cookie object representing the cookie which was not sent.
-    pub fn cookie(mut self, cookie: Cookie<'a>) -> Self { self.cookie = Some(cookie); self }
-    /// The reason(s) the cookie was blocked. If empty means the cookie is included.
-    pub fn blockedReasons(mut self, blockedReasons: Vec<CookieBlockedReason>) -> Self { self.blockedReasons = Some(blockedReasons); self }
     /// The reason the cookie should have been blocked by 3PCD but is exempted. A cookie could
     /// only have at most one exemption reason.
     pub fn exemptionReason(mut self, exemptionReason: CookieExemptionReason) -> Self { self.exemptionReason = Some(exemptionReason); self }
     pub fn build(self) -> AssociatedCookie<'a> {
         AssociatedCookie {
-            cookie: self.cookie.unwrap_or_default(),
-            blockedReasons: self.blockedReasons.unwrap_or_default(),
+            cookie: self.cookie,
+            blockedReasons: self.blockedReasons,
             exemptionReason: self.exemptionReason,
         }
     }
@@ -2066,7 +2074,23 @@ pub struct CookieParam<'a> {
 }
 
 impl<'a> CookieParam<'a> {
-    pub fn builder() -> CookieParamBuilder<'a> { CookieParamBuilder::default() }
+    pub fn builder(name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> CookieParamBuilder<'a> {
+        CookieParamBuilder {
+            name: name.into(),
+            value: value.into(),
+            url: None,
+            domain: None,
+            path: None,
+            secure: None,
+            httpOnly: None,
+            sameSite: None,
+            expires: None,
+            priority: None,
+            sourceScheme: None,
+            sourcePort: None,
+            partitionKey: None,
+        }
+    }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn value(&self) -> &str { self.value.as_ref() }
     pub fn url(&self) -> Option<&str> { self.url.as_deref() }
@@ -2082,10 +2106,10 @@ impl<'a> CookieParam<'a> {
     pub fn partitionKey(&self) -> Option<&CookiePartitionKey<'a>> { self.partitionKey.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct CookieParamBuilder<'a> {
-    name: Option<Cow<'a, str>>,
-    value: Option<Cow<'a, str>>,
+    name: Cow<'a, str>,
+    value: Cow<'a, str>,
     url: Option<Cow<'a, str>>,
     domain: Option<Cow<'a, str>>,
     path: Option<Cow<'a, str>>,
@@ -2100,10 +2124,6 @@ pub struct CookieParamBuilder<'a> {
 }
 
 impl<'a> CookieParamBuilder<'a> {
-    /// Cookie name.
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    /// Cookie value.
-    pub fn value(mut self, value: impl Into<Cow<'a, str>>) -> Self { self.value = Some(value.into()); self }
     /// The request-URI to associate with the setting of the cookie. This value can affect the
     /// default domain, path, source port, and source scheme values of the created cookie.
     pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
@@ -2131,8 +2151,8 @@ impl<'a> CookieParamBuilder<'a> {
     pub fn partitionKey(mut self, partitionKey: CookiePartitionKey<'a>) -> Self { self.partitionKey = Some(partitionKey); self }
     pub fn build(self) -> CookieParam<'a> {
         CookieParam {
-            name: self.name.unwrap_or_default(),
-            value: self.value.unwrap_or_default(),
+            name: self.name,
+            value: self.value,
             url: self.url,
             domain: self.domain,
             path: self.path,
@@ -2165,36 +2185,37 @@ pub struct AuthChallenge<'a> {
 }
 
 impl<'a> AuthChallenge<'a> {
-    pub fn builder() -> AuthChallengeBuilder<'a> { AuthChallengeBuilder::default() }
+    pub fn builder(origin: impl Into<Cow<'a, str>>, scheme: impl Into<Cow<'a, str>>, realm: impl Into<Cow<'a, str>>) -> AuthChallengeBuilder<'a> {
+        AuthChallengeBuilder {
+            source: None,
+            origin: origin.into(),
+            scheme: scheme.into(),
+            realm: realm.into(),
+        }
+    }
     pub fn source(&self) -> Option<&str> { self.source.as_deref() }
     pub fn origin(&self) -> &str { self.origin.as_ref() }
     pub fn scheme(&self) -> &str { self.scheme.as_ref() }
     pub fn realm(&self) -> &str { self.realm.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct AuthChallengeBuilder<'a> {
     source: Option<Cow<'a, str>>,
-    origin: Option<Cow<'a, str>>,
-    scheme: Option<Cow<'a, str>>,
-    realm: Option<Cow<'a, str>>,
+    origin: Cow<'a, str>,
+    scheme: Cow<'a, str>,
+    realm: Cow<'a, str>,
 }
 
 impl<'a> AuthChallengeBuilder<'a> {
     /// Source of the authentication challenge.
     pub fn source(mut self, source: impl Into<Cow<'a, str>>) -> Self { self.source = Some(source.into()); self }
-    /// Origin of the challenger.
-    pub fn origin(mut self, origin: impl Into<Cow<'a, str>>) -> Self { self.origin = Some(origin.into()); self }
-    /// The authentication scheme used, such as basic or digest
-    pub fn scheme(mut self, scheme: impl Into<Cow<'a, str>>) -> Self { self.scheme = Some(scheme.into()); self }
-    /// The realm of the challenge. May be empty.
-    pub fn realm(mut self, realm: impl Into<Cow<'a, str>>) -> Self { self.realm = Some(realm.into()); self }
     pub fn build(self) -> AuthChallenge<'a> {
         AuthChallenge {
             source: self.source,
-            origin: self.origin.unwrap_or_default(),
-            scheme: self.scheme.unwrap_or_default(),
-            realm: self.realm.unwrap_or_default(),
+            origin: self.origin,
+            scheme: self.scheme,
+            realm: self.realm,
         }
     }
 }
@@ -2219,24 +2240,26 @@ pub struct AuthChallengeResponse<'a> {
 }
 
 impl<'a> AuthChallengeResponse<'a> {
-    pub fn builder() -> AuthChallengeResponseBuilder<'a> { AuthChallengeResponseBuilder::default() }
+    pub fn builder(response: impl Into<Cow<'a, str>>) -> AuthChallengeResponseBuilder<'a> {
+        AuthChallengeResponseBuilder {
+            response: response.into(),
+            username: None,
+            password: None,
+        }
+    }
     pub fn response(&self) -> &str { self.response.as_ref() }
     pub fn username(&self) -> Option<&str> { self.username.as_deref() }
     pub fn password(&self) -> Option<&str> { self.password.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct AuthChallengeResponseBuilder<'a> {
-    response: Option<Cow<'a, str>>,
+    response: Cow<'a, str>,
     username: Option<Cow<'a, str>>,
     password: Option<Cow<'a, str>>,
 }
 
 impl<'a> AuthChallengeResponseBuilder<'a> {
-    /// The decision on what to do in response to the authorization challenge.  Default means
-    /// deferring to the default behavior of the net stack, which will likely either the Cancel
-    /// authentication or display a popup dialog box.
-    pub fn response(mut self, response: impl Into<Cow<'a, str>>) -> Self { self.response = Some(response.into()); self }
     /// The username to provide, possibly empty. Should only be set if response is
     /// ProvideCredentials.
     pub fn username(mut self, username: impl Into<Cow<'a, str>>) -> Self { self.username = Some(username.into()); self }
@@ -2245,7 +2268,7 @@ impl<'a> AuthChallengeResponseBuilder<'a> {
     pub fn password(mut self, password: impl Into<Cow<'a, str>>) -> Self { self.password = Some(password.into()); self }
     pub fn build(self) -> AuthChallengeResponse<'a> {
         AuthChallengeResponse {
-            response: self.response.unwrap_or_default(),
+            response: self.response,
             username: self.username,
             password: self.password,
         }
@@ -2282,7 +2305,13 @@ pub struct RequestPattern<'a> {
 }
 
 impl<'a> RequestPattern<'a> {
-    pub fn builder() -> RequestPatternBuilder<'a> { RequestPatternBuilder::default() }
+    pub fn builder() -> RequestPatternBuilder<'a> {
+        RequestPatternBuilder {
+            urlPattern: None,
+            resourceType: None,
+            interceptionStage: None,
+        }
+    }
     pub fn urlPattern(&self) -> Option<&str> { self.urlPattern.as_deref() }
     pub fn resourceType(&self) -> Option<&ResourceType> { self.resourceType.as_ref() }
     pub fn interceptionStage(&self) -> Option<&InterceptionStage> { self.interceptionStage.as_ref() }
@@ -2342,7 +2371,19 @@ pub struct SignedExchangeSignature<'a> {
 }
 
 impl<'a> SignedExchangeSignature<'a> {
-    pub fn builder() -> SignedExchangeSignatureBuilder<'a> { SignedExchangeSignatureBuilder::default() }
+    pub fn builder(label: impl Into<Cow<'a, str>>, signature: impl Into<Cow<'a, str>>, integrity: impl Into<Cow<'a, str>>, validityUrl: impl Into<Cow<'a, str>>, date: i64, expires: i64) -> SignedExchangeSignatureBuilder<'a> {
+        SignedExchangeSignatureBuilder {
+            label: label.into(),
+            signature: signature.into(),
+            integrity: integrity.into(),
+            certUrl: None,
+            certSha256: None,
+            validityUrl: validityUrl.into(),
+            date: date,
+            expires: expires,
+            certificates: None,
+        }
+    }
     pub fn label(&self) -> &str { self.label.as_ref() }
     pub fn signature(&self) -> &str { self.signature.as_ref() }
     pub fn integrity(&self) -> &str { self.integrity.as_ref() }
@@ -2354,48 +2395,36 @@ impl<'a> SignedExchangeSignature<'a> {
     pub fn certificates(&self) -> Option<&[Cow<'a, str>]> { self.certificates.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct SignedExchangeSignatureBuilder<'a> {
-    label: Option<Cow<'a, str>>,
-    signature: Option<Cow<'a, str>>,
-    integrity: Option<Cow<'a, str>>,
+    label: Cow<'a, str>,
+    signature: Cow<'a, str>,
+    integrity: Cow<'a, str>,
     certUrl: Option<Cow<'a, str>>,
     certSha256: Option<Cow<'a, str>>,
-    validityUrl: Option<Cow<'a, str>>,
-    date: Option<i64>,
-    expires: Option<i64>,
+    validityUrl: Cow<'a, str>,
+    date: i64,
+    expires: i64,
     certificates: Option<Vec<Cow<'a, str>>>,
 }
 
 impl<'a> SignedExchangeSignatureBuilder<'a> {
-    /// Signed exchange signature label.
-    pub fn label(mut self, label: impl Into<Cow<'a, str>>) -> Self { self.label = Some(label.into()); self }
-    /// The hex string of signed exchange signature.
-    pub fn signature(mut self, signature: impl Into<Cow<'a, str>>) -> Self { self.signature = Some(signature.into()); self }
-    /// Signed exchange signature integrity.
-    pub fn integrity(mut self, integrity: impl Into<Cow<'a, str>>) -> Self { self.integrity = Some(integrity.into()); self }
     /// Signed exchange signature cert Url.
     pub fn certUrl(mut self, certUrl: impl Into<Cow<'a, str>>) -> Self { self.certUrl = Some(certUrl.into()); self }
     /// The hex string of signed exchange signature cert sha256.
     pub fn certSha256(mut self, certSha256: impl Into<Cow<'a, str>>) -> Self { self.certSha256 = Some(certSha256.into()); self }
-    /// Signed exchange signature validity Url.
-    pub fn validityUrl(mut self, validityUrl: impl Into<Cow<'a, str>>) -> Self { self.validityUrl = Some(validityUrl.into()); self }
-    /// Signed exchange signature date.
-    pub fn date(mut self, date: i64) -> Self { self.date = Some(date); self }
-    /// Signed exchange signature expires.
-    pub fn expires(mut self, expires: i64) -> Self { self.expires = Some(expires); self }
     /// The encoded certificates.
     pub fn certificates(mut self, certificates: Vec<Cow<'a, str>>) -> Self { self.certificates = Some(certificates); self }
     pub fn build(self) -> SignedExchangeSignature<'a> {
         SignedExchangeSignature {
-            label: self.label.unwrap_or_default(),
-            signature: self.signature.unwrap_or_default(),
-            integrity: self.integrity.unwrap_or_default(),
+            label: self.label,
+            signature: self.signature,
+            integrity: self.integrity,
             certUrl: self.certUrl,
             certSha256: self.certSha256,
-            validityUrl: self.validityUrl.unwrap_or_default(),
-            date: self.date.unwrap_or_default(),
-            expires: self.expires.unwrap_or_default(),
+            validityUrl: self.validityUrl,
+            date: self.date,
+            expires: self.expires,
             certificates: self.certificates,
         }
     }
@@ -2420,7 +2449,15 @@ pub struct SignedExchangeHeader<'a> {
 }
 
 impl<'a> SignedExchangeHeader<'a> {
-    pub fn builder() -> SignedExchangeHeaderBuilder<'a> { SignedExchangeHeaderBuilder::default() }
+    pub fn builder(requestUrl: impl Into<Cow<'a, str>>, responseCode: i64, responseHeaders: Headers, signatures: Vec<SignedExchangeSignature<'a>>, headerIntegrity: impl Into<Cow<'a, str>>) -> SignedExchangeHeaderBuilder<'a> {
+        SignedExchangeHeaderBuilder {
+            requestUrl: requestUrl.into(),
+            responseCode: responseCode,
+            responseHeaders: responseHeaders,
+            signatures: signatures,
+            headerIntegrity: headerIntegrity.into(),
+        }
+    }
     pub fn requestUrl(&self) -> &str { self.requestUrl.as_ref() }
     pub fn responseCode(&self) -> i64 { self.responseCode }
     pub fn responseHeaders(&self) -> &Headers { &self.responseHeaders }
@@ -2428,33 +2465,23 @@ impl<'a> SignedExchangeHeader<'a> {
     pub fn headerIntegrity(&self) -> &str { self.headerIntegrity.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SignedExchangeHeaderBuilder<'a> {
-    requestUrl: Option<Cow<'a, str>>,
-    responseCode: Option<i64>,
-    responseHeaders: Option<Headers>,
-    signatures: Option<Vec<SignedExchangeSignature<'a>>>,
-    headerIntegrity: Option<Cow<'a, str>>,
+    requestUrl: Cow<'a, str>,
+    responseCode: i64,
+    responseHeaders: Headers,
+    signatures: Vec<SignedExchangeSignature<'a>>,
+    headerIntegrity: Cow<'a, str>,
 }
 
 impl<'a> SignedExchangeHeaderBuilder<'a> {
-    /// Signed exchange request URL.
-    pub fn requestUrl(mut self, requestUrl: impl Into<Cow<'a, str>>) -> Self { self.requestUrl = Some(requestUrl.into()); self }
-    /// Signed exchange response code.
-    pub fn responseCode(mut self, responseCode: i64) -> Self { self.responseCode = Some(responseCode); self }
-    /// Signed exchange response headers.
-    pub fn responseHeaders(mut self, responseHeaders: Headers) -> Self { self.responseHeaders = Some(responseHeaders); self }
-    /// Signed exchange response signature.
-    pub fn signatures(mut self, signatures: Vec<SignedExchangeSignature<'a>>) -> Self { self.signatures = Some(signatures); self }
-    /// Signed exchange header integrity hash in the form of 'sha256-<base64-hash-value>'.
-    pub fn headerIntegrity(mut self, headerIntegrity: impl Into<Cow<'a, str>>) -> Self { self.headerIntegrity = Some(headerIntegrity.into()); self }
     pub fn build(self) -> SignedExchangeHeader<'a> {
         SignedExchangeHeader {
-            requestUrl: self.requestUrl.unwrap_or_default(),
-            responseCode: self.responseCode.unwrap_or_default(),
-            responseHeaders: self.responseHeaders.unwrap_or_default(),
-            signatures: self.signatures.unwrap_or_default(),
-            headerIntegrity: self.headerIntegrity.unwrap_or_default(),
+            requestUrl: self.requestUrl,
+            responseCode: self.responseCode,
+            responseHeaders: self.responseHeaders,
+            signatures: self.signatures,
+            headerIntegrity: self.headerIntegrity,
         }
     }
 }
@@ -2494,29 +2521,33 @@ pub struct SignedExchangeError<'a> {
 }
 
 impl<'a> SignedExchangeError<'a> {
-    pub fn builder() -> SignedExchangeErrorBuilder<'a> { SignedExchangeErrorBuilder::default() }
+    pub fn builder(message: impl Into<Cow<'a, str>>) -> SignedExchangeErrorBuilder<'a> {
+        SignedExchangeErrorBuilder {
+            message: message.into(),
+            signatureIndex: None,
+            errorField: None,
+        }
+    }
     pub fn message(&self) -> &str { self.message.as_ref() }
     pub fn signatureIndex(&self) -> Option<u64> { self.signatureIndex }
     pub fn errorField(&self) -> Option<&SignedExchangeErrorField> { self.errorField.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SignedExchangeErrorBuilder<'a> {
-    message: Option<Cow<'a, str>>,
+    message: Cow<'a, str>,
     signatureIndex: Option<u64>,
     errorField: Option<SignedExchangeErrorField>,
 }
 
 impl<'a> SignedExchangeErrorBuilder<'a> {
-    /// Error message.
-    pub fn message(mut self, message: impl Into<Cow<'a, str>>) -> Self { self.message = Some(message.into()); self }
     /// The index of the signature which caused the error.
     pub fn signatureIndex(mut self, signatureIndex: u64) -> Self { self.signatureIndex = Some(signatureIndex); self }
     /// The field which caused the error.
     pub fn errorField(mut self, errorField: SignedExchangeErrorField) -> Self { self.errorField = Some(errorField); self }
     pub fn build(self) -> SignedExchangeError<'a> {
         SignedExchangeError {
-            message: self.message.unwrap_or_default(),
+            message: self.message,
             signatureIndex: self.signatureIndex,
             errorField: self.errorField,
         }
@@ -2545,7 +2576,15 @@ pub struct SignedExchangeInfo<'a> {
 }
 
 impl<'a> SignedExchangeInfo<'a> {
-    pub fn builder() -> SignedExchangeInfoBuilder<'a> { SignedExchangeInfoBuilder::default() }
+    pub fn builder(outerResponse: Response<'a>, hasExtraInfo: bool) -> SignedExchangeInfoBuilder<'a> {
+        SignedExchangeInfoBuilder {
+            outerResponse: outerResponse,
+            hasExtraInfo: hasExtraInfo,
+            header: None,
+            securityDetails: None,
+            errors: None,
+        }
+    }
     pub fn outerResponse(&self) -> &Response<'a> { &self.outerResponse }
     pub fn hasExtraInfo(&self) -> bool { self.hasExtraInfo }
     pub fn header(&self) -> Option<&SignedExchangeHeader<'a>> { self.header.as_ref() }
@@ -2553,21 +2592,16 @@ impl<'a> SignedExchangeInfo<'a> {
     pub fn errors(&self) -> Option<&[SignedExchangeError<'a>]> { self.errors.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct SignedExchangeInfoBuilder<'a> {
-    outerResponse: Option<Response<'a>>,
-    hasExtraInfo: Option<bool>,
+    outerResponse: Response<'a>,
+    hasExtraInfo: bool,
     header: Option<SignedExchangeHeader<'a>>,
     securityDetails: Option<SecurityDetails<'a>>,
     errors: Option<Vec<SignedExchangeError<'a>>>,
 }
 
 impl<'a> SignedExchangeInfoBuilder<'a> {
-    /// The outer response of signed HTTP exchange which was received from network.
-    pub fn outerResponse(mut self, outerResponse: Response<'a>) -> Self { self.outerResponse = Some(outerResponse); self }
-    /// Whether network response for the signed exchange was accompanied by
-    /// extra headers.
-    pub fn hasExtraInfo(mut self, hasExtraInfo: bool) -> Self { self.hasExtraInfo = Some(hasExtraInfo); self }
     /// Information about the signed exchange header.
     pub fn header(mut self, header: SignedExchangeHeader<'a>) -> Self { self.header = Some(header); self }
     /// Security details for the signed exchange header.
@@ -2576,8 +2610,8 @@ impl<'a> SignedExchangeInfoBuilder<'a> {
     pub fn errors(mut self, errors: Vec<SignedExchangeError<'a>>) -> Self { self.errors = Some(errors); self }
     pub fn build(self) -> SignedExchangeInfo<'a> {
         SignedExchangeInfo {
-            outerResponse: self.outerResponse.unwrap_or_default(),
-            hasExtraInfo: self.hasExtraInfo.unwrap_or_default(),
+            outerResponse: self.outerResponse,
+            hasExtraInfo: self.hasExtraInfo,
             header: self.header,
             securityDetails: self.securityDetails,
             errors: self.errors,
@@ -2632,7 +2666,19 @@ pub struct NetworkConditions<'a> {
 }
 
 impl<'a> NetworkConditions<'a> {
-    pub fn builder() -> NetworkConditionsBuilder<'a> { NetworkConditionsBuilder::default() }
+    pub fn builder(urlPattern: impl Into<Cow<'a, str>>, latency: f64, downloadThroughput: f64, uploadThroughput: f64) -> NetworkConditionsBuilder<'a> {
+        NetworkConditionsBuilder {
+            urlPattern: urlPattern.into(),
+            latency: latency,
+            downloadThroughput: downloadThroughput,
+            uploadThroughput: uploadThroughput,
+            connectionType: None,
+            packetLoss: None,
+            packetQueueLength: None,
+            packetReordering: None,
+            offline: None,
+        }
+    }
     pub fn urlPattern(&self) -> &str { self.urlPattern.as_ref() }
     pub fn latency(&self) -> f64 { self.latency }
     pub fn downloadThroughput(&self) -> f64 { self.downloadThroughput }
@@ -2644,12 +2690,12 @@ impl<'a> NetworkConditions<'a> {
     pub fn offline(&self) -> Option<bool> { self.offline }
 }
 
-#[derive(Default)]
+
 pub struct NetworkConditionsBuilder<'a> {
-    urlPattern: Option<Cow<'a, str>>,
-    latency: Option<f64>,
-    downloadThroughput: Option<f64>,
-    uploadThroughput: Option<f64>,
+    urlPattern: Cow<'a, str>,
+    latency: f64,
+    downloadThroughput: f64,
+    uploadThroughput: f64,
     connectionType: Option<ConnectionType>,
     packetLoss: Option<f64>,
     packetQueueLength: Option<u64>,
@@ -2658,16 +2704,6 @@ pub struct NetworkConditionsBuilder<'a> {
 }
 
 impl<'a> NetworkConditionsBuilder<'a> {
-    /// Only matching requests will be affected by these conditions. Patterns use the URLPattern constructor string
-    /// syntax (https://urlpattern.spec.whatwg.org/) and must be absolute. If the pattern is empty, all requests are
-    /// matched (including p2p connections).
-    pub fn urlPattern(mut self, urlPattern: impl Into<Cow<'a, str>>) -> Self { self.urlPattern = Some(urlPattern.into()); self }
-    /// Minimum latency from request sent to response headers received (ms).
-    pub fn latency(mut self, latency: f64) -> Self { self.latency = Some(latency); self }
-    /// Maximal aggregated download throughput (bytes/sec). -1 disables download throttling.
-    pub fn downloadThroughput(mut self, downloadThroughput: f64) -> Self { self.downloadThroughput = Some(downloadThroughput); self }
-    /// Maximal aggregated upload throughput (bytes/sec).  -1 disables upload throttling.
-    pub fn uploadThroughput(mut self, uploadThroughput: f64) -> Self { self.uploadThroughput = Some(uploadThroughput); self }
     /// Connection type if known.
     pub fn connectionType(mut self, connectionType: ConnectionType) -> Self { self.connectionType = Some(connectionType); self }
     /// WebRTC packet loss (percent, 0-100). 0 disables packet loss emulation, 100 drops all the packets.
@@ -2680,10 +2716,10 @@ impl<'a> NetworkConditionsBuilder<'a> {
     pub fn offline(mut self, offline: bool) -> Self { self.offline = Some(offline); self }
     pub fn build(self) -> NetworkConditions<'a> {
         NetworkConditions {
-            urlPattern: self.urlPattern.unwrap_or_default(),
-            latency: self.latency.unwrap_or_default(),
-            downloadThroughput: self.downloadThroughput.unwrap_or_default(),
-            uploadThroughput: self.uploadThroughput.unwrap_or_default(),
+            urlPattern: self.urlPattern,
+            latency: self.latency,
+            downloadThroughput: self.downloadThroughput,
+            uploadThroughput: self.uploadThroughput,
             connectionType: self.connectionType,
             packetLoss: self.packetLoss,
             packetQueueLength: self.packetQueueLength,
@@ -2706,28 +2742,27 @@ pub struct BlockPattern<'a> {
 }
 
 impl<'a> BlockPattern<'a> {
-    pub fn builder() -> BlockPatternBuilder<'a> { BlockPatternBuilder::default() }
+    pub fn builder(urlPattern: impl Into<Cow<'a, str>>, block: bool) -> BlockPatternBuilder<'a> {
+        BlockPatternBuilder {
+            urlPattern: urlPattern.into(),
+            block: block,
+        }
+    }
     pub fn urlPattern(&self) -> &str { self.urlPattern.as_ref() }
     pub fn block(&self) -> bool { self.block }
 }
 
-#[derive(Default)]
+
 pub struct BlockPatternBuilder<'a> {
-    urlPattern: Option<Cow<'a, str>>,
-    block: Option<bool>,
+    urlPattern: Cow<'a, str>,
+    block: bool,
 }
 
 impl<'a> BlockPatternBuilder<'a> {
-    /// URL pattern to match. Patterns use the URLPattern constructor string syntax
-    /// (https://urlpattern.spec.whatwg.org/) and must be absolute. Example: '*://*:*/*.css'.
-    pub fn urlPattern(mut self, urlPattern: impl Into<Cow<'a, str>>) -> Self { self.urlPattern = Some(urlPattern.into()); self }
-    /// Whether or not to block the pattern. If false, a matching request will not be blocked even if it matches a later
-    /// 'BlockPattern'.
-    pub fn block(mut self, block: bool) -> Self { self.block = Some(block); self }
     pub fn build(self) -> BlockPattern<'a> {
         BlockPattern {
-            urlPattern: self.urlPattern.unwrap_or_default(),
-            block: self.block.unwrap_or_default(),
+            urlPattern: self.urlPattern,
+            block: self.block,
         }
     }
 }
@@ -2762,7 +2797,15 @@ pub struct DirectTCPSocketOptions {
 }
 
 impl DirectTCPSocketOptions {
-    pub fn builder() -> DirectTCPSocketOptionsBuilder { DirectTCPSocketOptionsBuilder::default() }
+    pub fn builder(noDelay: bool) -> DirectTCPSocketOptionsBuilder {
+        DirectTCPSocketOptionsBuilder {
+            noDelay: noDelay,
+            keepAliveDelay: None,
+            sendBufferSize: None,
+            receiveBufferSize: None,
+            dnsQueryType: None,
+        }
+    }
     pub fn noDelay(&self) -> bool { self.noDelay }
     pub fn keepAliveDelay(&self) -> Option<f64> { self.keepAliveDelay }
     pub fn sendBufferSize(&self) -> Option<f64> { self.sendBufferSize }
@@ -2770,9 +2813,9 @@ impl DirectTCPSocketOptions {
     pub fn dnsQueryType(&self) -> Option<&DirectSocketDnsQueryType> { self.dnsQueryType.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct DirectTCPSocketOptionsBuilder {
-    noDelay: Option<bool>,
+    noDelay: bool,
     keepAliveDelay: Option<f64>,
     sendBufferSize: Option<f64>,
     receiveBufferSize: Option<f64>,
@@ -2780,8 +2823,6 @@ pub struct DirectTCPSocketOptionsBuilder {
 }
 
 impl DirectTCPSocketOptionsBuilder {
-    /// TCP_NODELAY option
-    pub fn noDelay(mut self, noDelay: bool) -> Self { self.noDelay = Some(noDelay); self }
     /// Expected to be unsigned integer.
     pub fn keepAliveDelay(mut self, keepAliveDelay: f64) -> Self { self.keepAliveDelay = Some(keepAliveDelay); self }
     /// Expected to be unsigned integer.
@@ -2791,7 +2832,7 @@ impl DirectTCPSocketOptionsBuilder {
     pub fn dnsQueryType(mut self, dnsQueryType: DirectSocketDnsQueryType) -> Self { self.dnsQueryType = Some(dnsQueryType); self }
     pub fn build(self) -> DirectTCPSocketOptions {
         DirectTCPSocketOptions {
-            noDelay: self.noDelay.unwrap_or_default(),
+            noDelay: self.noDelay,
             keepAliveDelay: self.keepAliveDelay,
             sendBufferSize: self.sendBufferSize,
             receiveBufferSize: self.receiveBufferSize,
@@ -2832,7 +2873,20 @@ pub struct DirectUDPSocketOptions<'a> {
 }
 
 impl<'a> DirectUDPSocketOptions<'a> {
-    pub fn builder() -> DirectUDPSocketOptionsBuilder<'a> { DirectUDPSocketOptionsBuilder::default() }
+    pub fn builder() -> DirectUDPSocketOptionsBuilder<'a> {
+        DirectUDPSocketOptionsBuilder {
+            remoteAddr: None,
+            remotePort: None,
+            localAddr: None,
+            localPort: None,
+            dnsQueryType: None,
+            sendBufferSize: None,
+            receiveBufferSize: None,
+            multicastLoopback: None,
+            multicastTimeToLive: None,
+            multicastAllowAddressSharing: None,
+        }
+    }
     pub fn remoteAddr(&self) -> Option<&str> { self.remoteAddr.as_deref() }
     pub fn remotePort(&self) -> Option<i64> { self.remotePort }
     pub fn localAddr(&self) -> Option<&str> { self.localAddr.as_deref() }
@@ -2906,21 +2960,26 @@ pub struct DirectUDPMessage<'a> {
 }
 
 impl<'a> DirectUDPMessage<'a> {
-    pub fn builder() -> DirectUDPMessageBuilder<'a> { DirectUDPMessageBuilder::default() }
+    pub fn builder(data: impl Into<Cow<'a, str>>) -> DirectUDPMessageBuilder<'a> {
+        DirectUDPMessageBuilder {
+            data: data.into(),
+            remoteAddr: None,
+            remotePort: None,
+        }
+    }
     pub fn data(&self) -> &str { self.data.as_ref() }
     pub fn remoteAddr(&self) -> Option<&str> { self.remoteAddr.as_deref() }
     pub fn remotePort(&self) -> Option<i64> { self.remotePort }
 }
 
-#[derive(Default)]
+
 pub struct DirectUDPMessageBuilder<'a> {
-    data: Option<Cow<'a, str>>,
+    data: Cow<'a, str>,
     remoteAddr: Option<Cow<'a, str>>,
     remotePort: Option<i64>,
 }
 
 impl<'a> DirectUDPMessageBuilder<'a> {
-    pub fn data(mut self, data: impl Into<Cow<'a, str>>) -> Self { self.data = Some(data.into()); self }
     /// Null for connected mode.
     pub fn remoteAddr(mut self, remoteAddr: impl Into<Cow<'a, str>>) -> Self { self.remoteAddr = Some(remoteAddr.into()); self }
     /// Null for connected mode.
@@ -2928,7 +2987,7 @@ impl<'a> DirectUDPMessageBuilder<'a> {
     pub fn remotePort(mut self, remotePort: i64) -> Self { self.remotePort = Some(remotePort); self }
     pub fn build(self) -> DirectUDPMessage<'a> {
         DirectUDPMessage {
-            data: self.data.unwrap_or_default(),
+            data: self.data,
             remoteAddr: self.remoteAddr,
             remotePort: self.remotePort,
         }
@@ -2976,23 +3035,23 @@ pub struct ConnectTiming {
 }
 
 impl ConnectTiming {
-    pub fn builder() -> ConnectTimingBuilder { ConnectTimingBuilder::default() }
+    pub fn builder(requestTime: f64) -> ConnectTimingBuilder {
+        ConnectTimingBuilder {
+            requestTime: requestTime,
+        }
+    }
     pub fn requestTime(&self) -> f64 { self.requestTime }
 }
 
-#[derive(Default)]
+
 pub struct ConnectTimingBuilder {
-    requestTime: Option<f64>,
+    requestTime: f64,
 }
 
 impl ConnectTimingBuilder {
-    /// Timing's requestTime is a baseline in seconds, while the other numbers are ticks in
-    /// milliseconds relatively to this requestTime. Matches ResourceTiming's requestTime for
-    /// the same request (but not for redirected requests).
-    pub fn requestTime(mut self, requestTime: f64) -> Self { self.requestTime = Some(requestTime); self }
     pub fn build(self) -> ConnectTiming {
         ConnectTiming {
-            requestTime: self.requestTime.unwrap_or_default(),
+            requestTime: self.requestTime,
         }
     }
 }
@@ -3007,28 +3066,31 @@ pub struct ClientSecurityState {
 }
 
 impl ClientSecurityState {
-    pub fn builder() -> ClientSecurityStateBuilder { ClientSecurityStateBuilder::default() }
+    pub fn builder(initiatorIsSecureContext: bool, initiatorIPAddressSpace: IPAddressSpace, localNetworkAccessRequestPolicy: LocalNetworkAccessRequestPolicy) -> ClientSecurityStateBuilder {
+        ClientSecurityStateBuilder {
+            initiatorIsSecureContext: initiatorIsSecureContext,
+            initiatorIPAddressSpace: initiatorIPAddressSpace,
+            localNetworkAccessRequestPolicy: localNetworkAccessRequestPolicy,
+        }
+    }
     pub fn initiatorIsSecureContext(&self) -> bool { self.initiatorIsSecureContext }
     pub fn initiatorIPAddressSpace(&self) -> &IPAddressSpace { &self.initiatorIPAddressSpace }
     pub fn localNetworkAccessRequestPolicy(&self) -> &LocalNetworkAccessRequestPolicy { &self.localNetworkAccessRequestPolicy }
 }
 
-#[derive(Default)]
+
 pub struct ClientSecurityStateBuilder {
-    initiatorIsSecureContext: Option<bool>,
-    initiatorIPAddressSpace: Option<IPAddressSpace>,
-    localNetworkAccessRequestPolicy: Option<LocalNetworkAccessRequestPolicy>,
+    initiatorIsSecureContext: bool,
+    initiatorIPAddressSpace: IPAddressSpace,
+    localNetworkAccessRequestPolicy: LocalNetworkAccessRequestPolicy,
 }
 
 impl ClientSecurityStateBuilder {
-    pub fn initiatorIsSecureContext(mut self, initiatorIsSecureContext: bool) -> Self { self.initiatorIsSecureContext = Some(initiatorIsSecureContext); self }
-    pub fn initiatorIPAddressSpace(mut self, initiatorIPAddressSpace: IPAddressSpace) -> Self { self.initiatorIPAddressSpace = Some(initiatorIPAddressSpace); self }
-    pub fn localNetworkAccessRequestPolicy(mut self, localNetworkAccessRequestPolicy: LocalNetworkAccessRequestPolicy) -> Self { self.localNetworkAccessRequestPolicy = Some(localNetworkAccessRequestPolicy); self }
     pub fn build(self) -> ClientSecurityState {
         ClientSecurityState {
-            initiatorIsSecureContext: self.initiatorIsSecureContext.unwrap_or_default(),
-            initiatorIPAddressSpace: self.initiatorIPAddressSpace.unwrap_or_default(),
-            localNetworkAccessRequestPolicy: self.localNetworkAccessRequestPolicy.unwrap_or_default(),
+            initiatorIsSecureContext: self.initiatorIsSecureContext,
+            initiatorIPAddressSpace: self.initiatorIPAddressSpace,
+            localNetworkAccessRequestPolicy: self.localNetworkAccessRequestPolicy,
         }
     }
 }
@@ -3050,31 +3112,31 @@ pub struct AdScriptIdentifier<'a> {
 }
 
 impl<'a> AdScriptIdentifier<'a> {
-    pub fn builder() -> AdScriptIdentifierBuilder<'a> { AdScriptIdentifierBuilder::default() }
+    pub fn builder(scriptId: crate::runtime::ScriptId<'a>, debuggerId: crate::runtime::UniqueDebuggerId<'a>, name: impl Into<Cow<'a, str>>) -> AdScriptIdentifierBuilder<'a> {
+        AdScriptIdentifierBuilder {
+            scriptId: scriptId,
+            debuggerId: debuggerId,
+            name: name.into(),
+        }
+    }
     pub fn scriptId(&self) -> &crate::runtime::ScriptId<'a> { &self.scriptId }
     pub fn debuggerId(&self) -> &crate::runtime::UniqueDebuggerId<'a> { &self.debuggerId }
     pub fn name(&self) -> &str { self.name.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct AdScriptIdentifierBuilder<'a> {
-    scriptId: Option<crate::runtime::ScriptId<'a>>,
-    debuggerId: Option<crate::runtime::UniqueDebuggerId<'a>>,
-    name: Option<Cow<'a, str>>,
+    scriptId: crate::runtime::ScriptId<'a>,
+    debuggerId: crate::runtime::UniqueDebuggerId<'a>,
+    name: Cow<'a, str>,
 }
 
 impl<'a> AdScriptIdentifierBuilder<'a> {
-    /// The script's V8 identifier.
-    pub fn scriptId(mut self, scriptId: crate::runtime::ScriptId<'a>) -> Self { self.scriptId = Some(scriptId); self }
-    /// V8's debugging ID for the v8::Context.
-    pub fn debuggerId(mut self, debuggerId: crate::runtime::UniqueDebuggerId<'a>) -> Self { self.debuggerId = Some(debuggerId); self }
-    /// The script's url (or generated name based on id if inline script).
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
     pub fn build(self) -> AdScriptIdentifier<'a> {
         AdScriptIdentifier {
-            scriptId: self.scriptId.unwrap_or_default(),
-            debuggerId: self.debuggerId.unwrap_or_default(),
-            name: self.name.unwrap_or_default(),
+            scriptId: self.scriptId,
+            debuggerId: self.debuggerId,
+            name: self.name,
         }
     }
 }
@@ -3097,29 +3159,29 @@ pub struct AdAncestry<'a> {
 }
 
 impl<'a> AdAncestry<'a> {
-    pub fn builder() -> AdAncestryBuilder<'a> { AdAncestryBuilder::default() }
+    pub fn builder(ancestryChain: Vec<AdScriptIdentifier<'a>>) -> AdAncestryBuilder<'a> {
+        AdAncestryBuilder {
+            ancestryChain: ancestryChain,
+            rootScriptFilterlistRule: None,
+        }
+    }
     pub fn ancestryChain(&self) -> &[AdScriptIdentifier<'a>] { &self.ancestryChain }
     pub fn rootScriptFilterlistRule(&self) -> Option<&str> { self.rootScriptFilterlistRule.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct AdAncestryBuilder<'a> {
-    ancestryChain: Option<Vec<AdScriptIdentifier<'a>>>,
+    ancestryChain: Vec<AdScriptIdentifier<'a>>,
     rootScriptFilterlistRule: Option<Cow<'a, str>>,
 }
 
 impl<'a> AdAncestryBuilder<'a> {
-    /// A chain of 'AdScriptIdentifier's representing the ancestry of an ad
-    /// script that led to the creation of a resource or element. The chain is
-    /// ordered from the script itself (lowest level) up to its root ancestor
-    /// that was flagged by a filter list.
-    pub fn ancestryChain(mut self, ancestryChain: Vec<AdScriptIdentifier<'a>>) -> Self { self.ancestryChain = Some(ancestryChain); self }
     /// The filter list rule that caused the root (last) script in
     /// 'ancestryChain' to be tagged as an ad.
     pub fn rootScriptFilterlistRule(mut self, rootScriptFilterlistRule: impl Into<Cow<'a, str>>) -> Self { self.rootScriptFilterlistRule = Some(rootScriptFilterlistRule.into()); self }
     pub fn build(self) -> AdAncestry<'a> {
         AdAncestry {
-            ancestryChain: self.ancestryChain.unwrap_or_default(),
+            ancestryChain: self.ancestryChain,
             rootScriptFilterlistRule: self.rootScriptFilterlistRule,
         }
     }
@@ -3144,7 +3206,12 @@ pub struct AdProvenance<'a> {
 }
 
 impl<'a> AdProvenance<'a> {
-    pub fn builder() -> AdProvenanceBuilder<'a> { AdProvenanceBuilder::default() }
+    pub fn builder() -> AdProvenanceBuilder<'a> {
+        AdProvenanceBuilder {
+            filterlistRule: None,
+            adScriptAncestry: None,
+        }
+    }
     pub fn filterlistRule(&self) -> Option<&str> { self.filterlistRule.as_deref() }
     pub fn adScriptAncestry(&self) -> Option<&AdAncestry<'a>> { self.adScriptAncestry.as_ref() }
 }
@@ -3201,30 +3268,35 @@ pub struct CrossOriginOpenerPolicyStatus<'a> {
 }
 
 impl<'a> CrossOriginOpenerPolicyStatus<'a> {
-    pub fn builder() -> CrossOriginOpenerPolicyStatusBuilder<'a> { CrossOriginOpenerPolicyStatusBuilder::default() }
+    pub fn builder(value: CrossOriginOpenerPolicyValue, reportOnlyValue: CrossOriginOpenerPolicyValue) -> CrossOriginOpenerPolicyStatusBuilder<'a> {
+        CrossOriginOpenerPolicyStatusBuilder {
+            value: value,
+            reportOnlyValue: reportOnlyValue,
+            reportingEndpoint: None,
+            reportOnlyReportingEndpoint: None,
+        }
+    }
     pub fn value(&self) -> &CrossOriginOpenerPolicyValue { &self.value }
     pub fn reportOnlyValue(&self) -> &CrossOriginOpenerPolicyValue { &self.reportOnlyValue }
     pub fn reportingEndpoint(&self) -> Option<&str> { self.reportingEndpoint.as_deref() }
     pub fn reportOnlyReportingEndpoint(&self) -> Option<&str> { self.reportOnlyReportingEndpoint.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct CrossOriginOpenerPolicyStatusBuilder<'a> {
-    value: Option<CrossOriginOpenerPolicyValue>,
-    reportOnlyValue: Option<CrossOriginOpenerPolicyValue>,
+    value: CrossOriginOpenerPolicyValue,
+    reportOnlyValue: CrossOriginOpenerPolicyValue,
     reportingEndpoint: Option<Cow<'a, str>>,
     reportOnlyReportingEndpoint: Option<Cow<'a, str>>,
 }
 
 impl<'a> CrossOriginOpenerPolicyStatusBuilder<'a> {
-    pub fn value(mut self, value: CrossOriginOpenerPolicyValue) -> Self { self.value = Some(value); self }
-    pub fn reportOnlyValue(mut self, reportOnlyValue: CrossOriginOpenerPolicyValue) -> Self { self.reportOnlyValue = Some(reportOnlyValue); self }
     pub fn reportingEndpoint(mut self, reportingEndpoint: impl Into<Cow<'a, str>>) -> Self { self.reportingEndpoint = Some(reportingEndpoint.into()); self }
     pub fn reportOnlyReportingEndpoint(mut self, reportOnlyReportingEndpoint: impl Into<Cow<'a, str>>) -> Self { self.reportOnlyReportingEndpoint = Some(reportOnlyReportingEndpoint.into()); self }
     pub fn build(self) -> CrossOriginOpenerPolicyStatus<'a> {
         CrossOriginOpenerPolicyStatus {
-            value: self.value.unwrap_or_default(),
-            reportOnlyValue: self.reportOnlyValue.unwrap_or_default(),
+            value: self.value,
+            reportOnlyValue: self.reportOnlyValue,
             reportingEndpoint: self.reportingEndpoint,
             reportOnlyReportingEndpoint: self.reportOnlyReportingEndpoint,
         }
@@ -3256,30 +3328,35 @@ pub struct CrossOriginEmbedderPolicyStatus<'a> {
 }
 
 impl<'a> CrossOriginEmbedderPolicyStatus<'a> {
-    pub fn builder() -> CrossOriginEmbedderPolicyStatusBuilder<'a> { CrossOriginEmbedderPolicyStatusBuilder::default() }
+    pub fn builder(value: CrossOriginEmbedderPolicyValue, reportOnlyValue: CrossOriginEmbedderPolicyValue) -> CrossOriginEmbedderPolicyStatusBuilder<'a> {
+        CrossOriginEmbedderPolicyStatusBuilder {
+            value: value,
+            reportOnlyValue: reportOnlyValue,
+            reportingEndpoint: None,
+            reportOnlyReportingEndpoint: None,
+        }
+    }
     pub fn value(&self) -> &CrossOriginEmbedderPolicyValue { &self.value }
     pub fn reportOnlyValue(&self) -> &CrossOriginEmbedderPolicyValue { &self.reportOnlyValue }
     pub fn reportingEndpoint(&self) -> Option<&str> { self.reportingEndpoint.as_deref() }
     pub fn reportOnlyReportingEndpoint(&self) -> Option<&str> { self.reportOnlyReportingEndpoint.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct CrossOriginEmbedderPolicyStatusBuilder<'a> {
-    value: Option<CrossOriginEmbedderPolicyValue>,
-    reportOnlyValue: Option<CrossOriginEmbedderPolicyValue>,
+    value: CrossOriginEmbedderPolicyValue,
+    reportOnlyValue: CrossOriginEmbedderPolicyValue,
     reportingEndpoint: Option<Cow<'a, str>>,
     reportOnlyReportingEndpoint: Option<Cow<'a, str>>,
 }
 
 impl<'a> CrossOriginEmbedderPolicyStatusBuilder<'a> {
-    pub fn value(mut self, value: CrossOriginEmbedderPolicyValue) -> Self { self.value = Some(value); self }
-    pub fn reportOnlyValue(mut self, reportOnlyValue: CrossOriginEmbedderPolicyValue) -> Self { self.reportOnlyValue = Some(reportOnlyValue); self }
     pub fn reportingEndpoint(mut self, reportingEndpoint: impl Into<Cow<'a, str>>) -> Self { self.reportingEndpoint = Some(reportingEndpoint.into()); self }
     pub fn reportOnlyReportingEndpoint(mut self, reportOnlyReportingEndpoint: impl Into<Cow<'a, str>>) -> Self { self.reportOnlyReportingEndpoint = Some(reportOnlyReportingEndpoint.into()); self }
     pub fn build(self) -> CrossOriginEmbedderPolicyStatus<'a> {
         CrossOriginEmbedderPolicyStatus {
-            value: self.value.unwrap_or_default(),
-            reportOnlyValue: self.reportOnlyValue.unwrap_or_default(),
+            value: self.value,
+            reportOnlyValue: self.reportOnlyValue,
             reportingEndpoint: self.reportingEndpoint,
             reportOnlyReportingEndpoint: self.reportOnlyReportingEndpoint,
         }
@@ -3306,28 +3383,31 @@ pub struct ContentSecurityPolicyStatus<'a> {
 }
 
 impl<'a> ContentSecurityPolicyStatus<'a> {
-    pub fn builder() -> ContentSecurityPolicyStatusBuilder<'a> { ContentSecurityPolicyStatusBuilder::default() }
+    pub fn builder(effectiveDirectives: impl Into<Cow<'a, str>>, isEnforced: bool, source: ContentSecurityPolicySource) -> ContentSecurityPolicyStatusBuilder<'a> {
+        ContentSecurityPolicyStatusBuilder {
+            effectiveDirectives: effectiveDirectives.into(),
+            isEnforced: isEnforced,
+            source: source,
+        }
+    }
     pub fn effectiveDirectives(&self) -> &str { self.effectiveDirectives.as_ref() }
     pub fn isEnforced(&self) -> bool { self.isEnforced }
     pub fn source(&self) -> &ContentSecurityPolicySource { &self.source }
 }
 
-#[derive(Default)]
+
 pub struct ContentSecurityPolicyStatusBuilder<'a> {
-    effectiveDirectives: Option<Cow<'a, str>>,
-    isEnforced: Option<bool>,
-    source: Option<ContentSecurityPolicySource>,
+    effectiveDirectives: Cow<'a, str>,
+    isEnforced: bool,
+    source: ContentSecurityPolicySource,
 }
 
 impl<'a> ContentSecurityPolicyStatusBuilder<'a> {
-    pub fn effectiveDirectives(mut self, effectiveDirectives: impl Into<Cow<'a, str>>) -> Self { self.effectiveDirectives = Some(effectiveDirectives.into()); self }
-    pub fn isEnforced(mut self, isEnforced: bool) -> Self { self.isEnforced = Some(isEnforced); self }
-    pub fn source(mut self, source: ContentSecurityPolicySource) -> Self { self.source = Some(source); self }
     pub fn build(self) -> ContentSecurityPolicyStatus<'a> {
         ContentSecurityPolicyStatus {
-            effectiveDirectives: self.effectiveDirectives.unwrap_or_default(),
-            isEnforced: self.isEnforced.unwrap_or_default(),
-            source: self.source.unwrap_or_default(),
+            effectiveDirectives: self.effectiveDirectives,
+            isEnforced: self.isEnforced,
+            source: self.source,
         }
     }
 }
@@ -3345,7 +3425,13 @@ pub struct SecurityIsolationStatus<'a> {
 }
 
 impl<'a> SecurityIsolationStatus<'a> {
-    pub fn builder() -> SecurityIsolationStatusBuilder<'a> { SecurityIsolationStatusBuilder::default() }
+    pub fn builder() -> SecurityIsolationStatusBuilder<'a> {
+        SecurityIsolationStatusBuilder {
+            coop: None,
+            coep: None,
+            csp: None,
+        }
+    }
     pub fn coop(&self) -> Option<&CrossOriginOpenerPolicyStatus<'a>> { self.coop.as_ref() }
     pub fn coep(&self) -> Option<&CrossOriginEmbedderPolicyStatus<'a>> { self.coep.as_ref() }
     pub fn csp(&self) -> Option<&[ContentSecurityPolicyStatus<'a>]> { self.csp.as_deref() }
@@ -3413,7 +3499,19 @@ pub struct ReportingApiReport<'a> {
 }
 
 impl<'a> ReportingApiReport<'a> {
-    pub fn builder() -> ReportingApiReportBuilder<'a> { ReportingApiReportBuilder::default() }
+    pub fn builder(id: ReportId<'a>, initiatorUrl: impl Into<Cow<'a, str>>, destination: impl Into<Cow<'a, str>>, type_: impl Into<Cow<'a, str>>, timestamp: crate::network::TimeSinceEpoch, depth: i64, completedAttempts: i64, body: serde_json::Map<String, JsonValue>, status: ReportStatus) -> ReportingApiReportBuilder<'a> {
+        ReportingApiReportBuilder {
+            id: id,
+            initiatorUrl: initiatorUrl.into(),
+            destination: destination.into(),
+            type_: type_.into(),
+            timestamp: timestamp,
+            depth: depth,
+            completedAttempts: completedAttempts,
+            body: body,
+            status: status,
+        }
+    }
     pub fn id(&self) -> &ReportId<'a> { &self.id }
     pub fn initiatorUrl(&self) -> &str { self.initiatorUrl.as_ref() }
     pub fn destination(&self) -> &str { self.destination.as_ref() }
@@ -3425,46 +3523,31 @@ impl<'a> ReportingApiReport<'a> {
     pub fn status(&self) -> &ReportStatus { &self.status }
 }
 
-#[derive(Default)]
+
 pub struct ReportingApiReportBuilder<'a> {
-    id: Option<ReportId<'a>>,
-    initiatorUrl: Option<Cow<'a, str>>,
-    destination: Option<Cow<'a, str>>,
-    type_: Option<Cow<'a, str>>,
-    timestamp: Option<crate::network::TimeSinceEpoch>,
-    depth: Option<i64>,
-    completedAttempts: Option<i64>,
-    body: Option<serde_json::Map<String, JsonValue>>,
-    status: Option<ReportStatus>,
+    id: ReportId<'a>,
+    initiatorUrl: Cow<'a, str>,
+    destination: Cow<'a, str>,
+    type_: Cow<'a, str>,
+    timestamp: crate::network::TimeSinceEpoch,
+    depth: i64,
+    completedAttempts: i64,
+    body: serde_json::Map<String, JsonValue>,
+    status: ReportStatus,
 }
 
 impl<'a> ReportingApiReportBuilder<'a> {
-    pub fn id(mut self, id: ReportId<'a>) -> Self { self.id = Some(id); self }
-    /// The URL of the document that triggered the report.
-    pub fn initiatorUrl(mut self, initiatorUrl: impl Into<Cow<'a, str>>) -> Self { self.initiatorUrl = Some(initiatorUrl.into()); self }
-    /// The name of the endpoint group that should be used to deliver the report.
-    pub fn destination(mut self, destination: impl Into<Cow<'a, str>>) -> Self { self.destination = Some(destination.into()); self }
-    /// The type of the report (specifies the set of data that is contained in the report body).
-    pub fn type_(mut self, type_: impl Into<Cow<'a, str>>) -> Self { self.type_ = Some(type_.into()); self }
-    /// When the report was generated.
-    pub fn timestamp(mut self, timestamp: crate::network::TimeSinceEpoch) -> Self { self.timestamp = Some(timestamp); self }
-    /// How many uploads deep the related request was.
-    pub fn depth(mut self, depth: i64) -> Self { self.depth = Some(depth); self }
-    /// The number of delivery attempts made so far, not including an active attempt.
-    pub fn completedAttempts(mut self, completedAttempts: i64) -> Self { self.completedAttempts = Some(completedAttempts); self }
-    pub fn body(mut self, body: serde_json::Map<String, JsonValue>) -> Self { self.body = Some(body); self }
-    pub fn status(mut self, status: ReportStatus) -> Self { self.status = Some(status); self }
     pub fn build(self) -> ReportingApiReport<'a> {
         ReportingApiReport {
-            id: self.id.unwrap_or_default(),
-            initiatorUrl: self.initiatorUrl.unwrap_or_default(),
-            destination: self.destination.unwrap_or_default(),
-            type_: self.type_.unwrap_or_default(),
-            timestamp: self.timestamp.unwrap_or_default(),
-            depth: self.depth.unwrap_or_default(),
-            completedAttempts: self.completedAttempts.unwrap_or_default(),
-            body: self.body.unwrap_or_default(),
-            status: self.status.unwrap_or_default(),
+            id: self.id,
+            initiatorUrl: self.initiatorUrl,
+            destination: self.destination,
+            type_: self.type_,
+            timestamp: self.timestamp,
+            depth: self.depth,
+            completedAttempts: self.completedAttempts,
+            body: self.body,
+            status: self.status,
         }
     }
 }
@@ -3480,26 +3563,27 @@ pub struct ReportingApiEndpoint<'a> {
 }
 
 impl<'a> ReportingApiEndpoint<'a> {
-    pub fn builder() -> ReportingApiEndpointBuilder<'a> { ReportingApiEndpointBuilder::default() }
+    pub fn builder(url: impl Into<Cow<'a, str>>, groupName: impl Into<Cow<'a, str>>) -> ReportingApiEndpointBuilder<'a> {
+        ReportingApiEndpointBuilder {
+            url: url.into(),
+            groupName: groupName.into(),
+        }
+    }
     pub fn url(&self) -> &str { self.url.as_ref() }
     pub fn groupName(&self) -> &str { self.groupName.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct ReportingApiEndpointBuilder<'a> {
-    url: Option<Cow<'a, str>>,
-    groupName: Option<Cow<'a, str>>,
+    url: Cow<'a, str>,
+    groupName: Cow<'a, str>,
 }
 
 impl<'a> ReportingApiEndpointBuilder<'a> {
-    /// The URL of the endpoint to which reports may be delivered.
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
-    /// Name of the endpoint group.
-    pub fn groupName(mut self, groupName: impl Into<Cow<'a, str>>) -> Self { self.groupName = Some(groupName.into()); self }
     pub fn build(self) -> ReportingApiEndpoint<'a> {
         ReportingApiEndpoint {
-            url: self.url.unwrap_or_default(),
-            groupName: self.groupName.unwrap_or_default(),
+            url: self.url,
+            groupName: self.groupName,
         }
     }
 }
@@ -3516,26 +3600,27 @@ pub struct DeviceBoundSessionKey<'a> {
 }
 
 impl<'a> DeviceBoundSessionKey<'a> {
-    pub fn builder() -> DeviceBoundSessionKeyBuilder<'a> { DeviceBoundSessionKeyBuilder::default() }
+    pub fn builder(site: impl Into<Cow<'a, str>>, id: impl Into<Cow<'a, str>>) -> DeviceBoundSessionKeyBuilder<'a> {
+        DeviceBoundSessionKeyBuilder {
+            site: site.into(),
+            id: id.into(),
+        }
+    }
     pub fn site(&self) -> &str { self.site.as_ref() }
     pub fn id(&self) -> &str { self.id.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct DeviceBoundSessionKeyBuilder<'a> {
-    site: Option<Cow<'a, str>>,
-    id: Option<Cow<'a, str>>,
+    site: Cow<'a, str>,
+    id: Cow<'a, str>,
 }
 
 impl<'a> DeviceBoundSessionKeyBuilder<'a> {
-    /// The site the session is set up for.
-    pub fn site(mut self, site: impl Into<Cow<'a, str>>) -> Self { self.site = Some(site.into()); self }
-    /// The id of the session.
-    pub fn id(mut self, id: impl Into<Cow<'a, str>>) -> Self { self.id = Some(id.into()); self }
     pub fn build(self) -> DeviceBoundSessionKey<'a> {
         DeviceBoundSessionKey {
-            site: self.site.unwrap_or_default(),
-            id: self.id.unwrap_or_default(),
+            site: self.site,
+            id: self.id,
         }
     }
 }
@@ -3552,26 +3637,27 @@ pub struct DeviceBoundSessionWithUsage<'a> {
 }
 
 impl<'a> DeviceBoundSessionWithUsage<'a> {
-    pub fn builder() -> DeviceBoundSessionWithUsageBuilder<'a> { DeviceBoundSessionWithUsageBuilder::default() }
+    pub fn builder(sessionKey: DeviceBoundSessionKey<'a>, usage: impl Into<Cow<'a, str>>) -> DeviceBoundSessionWithUsageBuilder<'a> {
+        DeviceBoundSessionWithUsageBuilder {
+            sessionKey: sessionKey,
+            usage: usage.into(),
+        }
+    }
     pub fn sessionKey(&self) -> &DeviceBoundSessionKey<'a> { &self.sessionKey }
     pub fn usage(&self) -> &str { self.usage.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct DeviceBoundSessionWithUsageBuilder<'a> {
-    sessionKey: Option<DeviceBoundSessionKey<'a>>,
-    usage: Option<Cow<'a, str>>,
+    sessionKey: DeviceBoundSessionKey<'a>,
+    usage: Cow<'a, str>,
 }
 
 impl<'a> DeviceBoundSessionWithUsageBuilder<'a> {
-    /// The key for the session.
-    pub fn sessionKey(mut self, sessionKey: DeviceBoundSessionKey<'a>) -> Self { self.sessionKey = Some(sessionKey); self }
-    /// How the session was used (or not used).
-    pub fn usage(mut self, usage: impl Into<Cow<'a, str>>) -> Self { self.usage = Some(usage.into()); self }
     pub fn build(self) -> DeviceBoundSessionWithUsage<'a> {
         DeviceBoundSessionWithUsage {
-            sessionKey: self.sessionKey.unwrap_or_default(),
-            usage: self.usage.unwrap_or_default(),
+            sessionKey: self.sessionKey,
+            usage: self.usage,
         }
     }
 }
@@ -3597,7 +3683,16 @@ pub struct DeviceBoundSessionCookieCraving<'a> {
 }
 
 impl<'a> DeviceBoundSessionCookieCraving<'a> {
-    pub fn builder() -> DeviceBoundSessionCookieCravingBuilder<'a> { DeviceBoundSessionCookieCravingBuilder::default() }
+    pub fn builder(name: impl Into<Cow<'a, str>>, domain: impl Into<Cow<'a, str>>, path: impl Into<Cow<'a, str>>, secure: bool, httpOnly: bool) -> DeviceBoundSessionCookieCravingBuilder<'a> {
+        DeviceBoundSessionCookieCravingBuilder {
+            name: name.into(),
+            domain: domain.into(),
+            path: path.into(),
+            secure: secure,
+            httpOnly: httpOnly,
+            sameSite: None,
+        }
+    }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn domain(&self) -> &str { self.domain.as_ref() }
     pub fn path(&self) -> &str { self.path.as_ref() }
@@ -3606,36 +3701,26 @@ impl<'a> DeviceBoundSessionCookieCraving<'a> {
     pub fn sameSite(&self) -> Option<&CookieSameSite> { self.sameSite.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct DeviceBoundSessionCookieCravingBuilder<'a> {
-    name: Option<Cow<'a, str>>,
-    domain: Option<Cow<'a, str>>,
-    path: Option<Cow<'a, str>>,
-    secure: Option<bool>,
-    httpOnly: Option<bool>,
+    name: Cow<'a, str>,
+    domain: Cow<'a, str>,
+    path: Cow<'a, str>,
+    secure: bool,
+    httpOnly: bool,
     sameSite: Option<CookieSameSite>,
 }
 
 impl<'a> DeviceBoundSessionCookieCravingBuilder<'a> {
-    /// The name of the craving.
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    /// The domain of the craving.
-    pub fn domain(mut self, domain: impl Into<Cow<'a, str>>) -> Self { self.domain = Some(domain.into()); self }
-    /// The path of the craving.
-    pub fn path(mut self, path: impl Into<Cow<'a, str>>) -> Self { self.path = Some(path.into()); self }
-    /// The 'Secure' attribute of the craving attributes.
-    pub fn secure(mut self, secure: bool) -> Self { self.secure = Some(secure); self }
-    /// The 'HttpOnly' attribute of the craving attributes.
-    pub fn httpOnly(mut self, httpOnly: bool) -> Self { self.httpOnly = Some(httpOnly); self }
     /// The 'SameSite' attribute of the craving attributes.
     pub fn sameSite(mut self, sameSite: CookieSameSite) -> Self { self.sameSite = Some(sameSite); self }
     pub fn build(self) -> DeviceBoundSessionCookieCraving<'a> {
         DeviceBoundSessionCookieCraving {
-            name: self.name.unwrap_or_default(),
-            domain: self.domain.unwrap_or_default(),
-            path: self.path.unwrap_or_default(),
-            secure: self.secure.unwrap_or_default(),
-            httpOnly: self.httpOnly.unwrap_or_default(),
+            name: self.name,
+            domain: self.domain,
+            path: self.path,
+            secure: self.secure,
+            httpOnly: self.httpOnly,
             sameSite: self.sameSite,
         }
     }
@@ -3655,31 +3740,31 @@ pub struct DeviceBoundSessionUrlRule<'a> {
 }
 
 impl<'a> DeviceBoundSessionUrlRule<'a> {
-    pub fn builder() -> DeviceBoundSessionUrlRuleBuilder<'a> { DeviceBoundSessionUrlRuleBuilder::default() }
+    pub fn builder(ruleType: impl Into<Cow<'a, str>>, hostPattern: impl Into<Cow<'a, str>>, pathPrefix: impl Into<Cow<'a, str>>) -> DeviceBoundSessionUrlRuleBuilder<'a> {
+        DeviceBoundSessionUrlRuleBuilder {
+            ruleType: ruleType.into(),
+            hostPattern: hostPattern.into(),
+            pathPrefix: pathPrefix.into(),
+        }
+    }
     pub fn ruleType(&self) -> &str { self.ruleType.as_ref() }
     pub fn hostPattern(&self) -> &str { self.hostPattern.as_ref() }
     pub fn pathPrefix(&self) -> &str { self.pathPrefix.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct DeviceBoundSessionUrlRuleBuilder<'a> {
-    ruleType: Option<Cow<'a, str>>,
-    hostPattern: Option<Cow<'a, str>>,
-    pathPrefix: Option<Cow<'a, str>>,
+    ruleType: Cow<'a, str>,
+    hostPattern: Cow<'a, str>,
+    pathPrefix: Cow<'a, str>,
 }
 
 impl<'a> DeviceBoundSessionUrlRuleBuilder<'a> {
-    /// See comments on 'net::device_bound_sessions::SessionInclusionRules::UrlRule::rule_type'.
-    pub fn ruleType(mut self, ruleType: impl Into<Cow<'a, str>>) -> Self { self.ruleType = Some(ruleType.into()); self }
-    /// See comments on 'net::device_bound_sessions::SessionInclusionRules::UrlRule::host_pattern'.
-    pub fn hostPattern(mut self, hostPattern: impl Into<Cow<'a, str>>) -> Self { self.hostPattern = Some(hostPattern.into()); self }
-    /// See comments on 'net::device_bound_sessions::SessionInclusionRules::UrlRule::path_prefix'.
-    pub fn pathPrefix(mut self, pathPrefix: impl Into<Cow<'a, str>>) -> Self { self.pathPrefix = Some(pathPrefix.into()); self }
     pub fn build(self) -> DeviceBoundSessionUrlRule<'a> {
         DeviceBoundSessionUrlRule {
-            ruleType: self.ruleType.unwrap_or_default(),
-            hostPattern: self.hostPattern.unwrap_or_default(),
-            pathPrefix: self.pathPrefix.unwrap_or_default(),
+            ruleType: self.ruleType,
+            hostPattern: self.hostPattern,
+            pathPrefix: self.pathPrefix,
         }
     }
 }
@@ -3700,33 +3785,31 @@ pub struct DeviceBoundSessionInclusionRules<'a> {
 }
 
 impl<'a> DeviceBoundSessionInclusionRules<'a> {
-    pub fn builder() -> DeviceBoundSessionInclusionRulesBuilder<'a> { DeviceBoundSessionInclusionRulesBuilder::default() }
+    pub fn builder(origin: impl Into<Cow<'a, str>>, includeSite: bool, urlRules: Vec<DeviceBoundSessionUrlRule<'a>>) -> DeviceBoundSessionInclusionRulesBuilder<'a> {
+        DeviceBoundSessionInclusionRulesBuilder {
+            origin: origin.into(),
+            includeSite: includeSite,
+            urlRules: urlRules,
+        }
+    }
     pub fn origin(&self) -> &str { self.origin.as_ref() }
     pub fn includeSite(&self) -> bool { self.includeSite }
     pub fn urlRules(&self) -> &[DeviceBoundSessionUrlRule<'a>] { &self.urlRules }
 }
 
-#[derive(Default)]
+
 pub struct DeviceBoundSessionInclusionRulesBuilder<'a> {
-    origin: Option<Cow<'a, str>>,
-    includeSite: Option<bool>,
-    urlRules: Option<Vec<DeviceBoundSessionUrlRule<'a>>>,
+    origin: Cow<'a, str>,
+    includeSite: bool,
+    urlRules: Vec<DeviceBoundSessionUrlRule<'a>>,
 }
 
 impl<'a> DeviceBoundSessionInclusionRulesBuilder<'a> {
-    /// See comments on 'net::device_bound_sessions::SessionInclusionRules::origin_'.
-    pub fn origin(mut self, origin: impl Into<Cow<'a, str>>) -> Self { self.origin = Some(origin.into()); self }
-    /// Whether the whole site is included. See comments on
-    /// 'net::device_bound_sessions::SessionInclusionRules::include_site_' for more
-    /// details; this boolean is true if that value is populated.
-    pub fn includeSite(mut self, includeSite: bool) -> Self { self.includeSite = Some(includeSite); self }
-    /// See comments on 'net::device_bound_sessions::SessionInclusionRules::url_rules_'.
-    pub fn urlRules(mut self, urlRules: Vec<DeviceBoundSessionUrlRule<'a>>) -> Self { self.urlRules = Some(urlRules); self }
     pub fn build(self) -> DeviceBoundSessionInclusionRules<'a> {
         DeviceBoundSessionInclusionRules {
-            origin: self.origin.unwrap_or_default(),
-            includeSite: self.includeSite.unwrap_or_default(),
-            urlRules: self.urlRules.unwrap_or_default(),
+            origin: self.origin,
+            includeSite: self.includeSite,
+            urlRules: self.urlRules,
         }
     }
 }
@@ -3754,7 +3837,17 @@ pub struct DeviceBoundSession<'a> {
 }
 
 impl<'a> DeviceBoundSession<'a> {
-    pub fn builder() -> DeviceBoundSessionBuilder<'a> { DeviceBoundSessionBuilder::default() }
+    pub fn builder(key: DeviceBoundSessionKey<'a>, refreshUrl: impl Into<Cow<'a, str>>, inclusionRules: DeviceBoundSessionInclusionRules<'a>, cookieCravings: Vec<DeviceBoundSessionCookieCraving<'a>>, expiryDate: crate::network::TimeSinceEpoch, allowedRefreshInitiators: Vec<Cow<'a, str>>) -> DeviceBoundSessionBuilder<'a> {
+        DeviceBoundSessionBuilder {
+            key: key,
+            refreshUrl: refreshUrl.into(),
+            inclusionRules: inclusionRules,
+            cookieCravings: cookieCravings,
+            expiryDate: expiryDate,
+            cachedChallenge: None,
+            allowedRefreshInitiators: allowedRefreshInitiators,
+        }
+    }
     pub fn key(&self) -> &DeviceBoundSessionKey<'a> { &self.key }
     pub fn refreshUrl(&self) -> &str { self.refreshUrl.as_ref() }
     pub fn inclusionRules(&self) -> &DeviceBoundSessionInclusionRules<'a> { &self.inclusionRules }
@@ -3764,41 +3857,29 @@ impl<'a> DeviceBoundSession<'a> {
     pub fn allowedRefreshInitiators(&self) -> &[Cow<'a, str>] { &self.allowedRefreshInitiators }
 }
 
-#[derive(Default)]
+
 pub struct DeviceBoundSessionBuilder<'a> {
-    key: Option<DeviceBoundSessionKey<'a>>,
-    refreshUrl: Option<Cow<'a, str>>,
-    inclusionRules: Option<DeviceBoundSessionInclusionRules<'a>>,
-    cookieCravings: Option<Vec<DeviceBoundSessionCookieCraving<'a>>>,
-    expiryDate: Option<crate::network::TimeSinceEpoch>,
+    key: DeviceBoundSessionKey<'a>,
+    refreshUrl: Cow<'a, str>,
+    inclusionRules: DeviceBoundSessionInclusionRules<'a>,
+    cookieCravings: Vec<DeviceBoundSessionCookieCraving<'a>>,
+    expiryDate: crate::network::TimeSinceEpoch,
     cachedChallenge: Option<Cow<'a, str>>,
-    allowedRefreshInitiators: Option<Vec<Cow<'a, str>>>,
+    allowedRefreshInitiators: Vec<Cow<'a, str>>,
 }
 
 impl<'a> DeviceBoundSessionBuilder<'a> {
-    /// The site and session ID of the session.
-    pub fn key(mut self, key: DeviceBoundSessionKey<'a>) -> Self { self.key = Some(key); self }
-    /// See comments on 'net::device_bound_sessions::Session::refresh_url_'.
-    pub fn refreshUrl(mut self, refreshUrl: impl Into<Cow<'a, str>>) -> Self { self.refreshUrl = Some(refreshUrl.into()); self }
-    /// See comments on 'net::device_bound_sessions::Session::inclusion_rules_'.
-    pub fn inclusionRules(mut self, inclusionRules: DeviceBoundSessionInclusionRules<'a>) -> Self { self.inclusionRules = Some(inclusionRules); self }
-    /// See comments on 'net::device_bound_sessions::Session::cookie_cravings_'.
-    pub fn cookieCravings(mut self, cookieCravings: Vec<DeviceBoundSessionCookieCraving<'a>>) -> Self { self.cookieCravings = Some(cookieCravings); self }
-    /// See comments on 'net::device_bound_sessions::Session::expiry_date_'.
-    pub fn expiryDate(mut self, expiryDate: crate::network::TimeSinceEpoch) -> Self { self.expiryDate = Some(expiryDate); self }
     /// See comments on 'net::device_bound_sessions::Session::cached_challenge__'.
     pub fn cachedChallenge(mut self, cachedChallenge: impl Into<Cow<'a, str>>) -> Self { self.cachedChallenge = Some(cachedChallenge.into()); self }
-    /// See comments on 'net::device_bound_sessions::Session::allowed_refresh_initiators_'.
-    pub fn allowedRefreshInitiators(mut self, allowedRefreshInitiators: Vec<Cow<'a, str>>) -> Self { self.allowedRefreshInitiators = Some(allowedRefreshInitiators); self }
     pub fn build(self) -> DeviceBoundSession<'a> {
         DeviceBoundSession {
-            key: self.key.unwrap_or_default(),
-            refreshUrl: self.refreshUrl.unwrap_or_default(),
-            inclusionRules: self.inclusionRules.unwrap_or_default(),
-            cookieCravings: self.cookieCravings.unwrap_or_default(),
-            expiryDate: self.expiryDate.unwrap_or_default(),
+            key: self.key,
+            refreshUrl: self.refreshUrl,
+            inclusionRules: self.inclusionRules,
+            cookieCravings: self.cookieCravings,
+            expiryDate: self.expiryDate,
             cachedChallenge: self.cachedChallenge,
-            allowedRefreshInitiators: self.allowedRefreshInitiators.unwrap_or_default(),
+            allowedRefreshInitiators: self.allowedRefreshInitiators,
         }
     }
 }
@@ -3971,24 +4052,29 @@ pub struct DeviceBoundSessionFailedRequest<'a> {
 }
 
 impl<'a> DeviceBoundSessionFailedRequest<'a> {
-    pub fn builder() -> DeviceBoundSessionFailedRequestBuilder<'a> { DeviceBoundSessionFailedRequestBuilder::default() }
+    pub fn builder(requestUrl: impl Into<Cow<'a, str>>) -> DeviceBoundSessionFailedRequestBuilder<'a> {
+        DeviceBoundSessionFailedRequestBuilder {
+            requestUrl: requestUrl.into(),
+            netError: None,
+            responseError: None,
+            responseErrorBody: None,
+        }
+    }
     pub fn requestUrl(&self) -> &str { self.requestUrl.as_ref() }
     pub fn netError(&self) -> Option<&str> { self.netError.as_deref() }
     pub fn responseError(&self) -> Option<i64> { self.responseError }
     pub fn responseErrorBody(&self) -> Option<&str> { self.responseErrorBody.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct DeviceBoundSessionFailedRequestBuilder<'a> {
-    requestUrl: Option<Cow<'a, str>>,
+    requestUrl: Cow<'a, str>,
     netError: Option<Cow<'a, str>>,
     responseError: Option<i64>,
     responseErrorBody: Option<Cow<'a, str>>,
 }
 
 impl<'a> DeviceBoundSessionFailedRequestBuilder<'a> {
-    /// The failed request URL.
-    pub fn requestUrl(mut self, requestUrl: impl Into<Cow<'a, str>>) -> Self { self.requestUrl = Some(requestUrl.into()); self }
     /// The net error of the response if it was not OK.
     pub fn netError(mut self, netError: impl Into<Cow<'a, str>>) -> Self { self.netError = Some(netError.into()); self }
     /// The response code if the net error was OK and the response code was not
@@ -3999,7 +4085,7 @@ impl<'a> DeviceBoundSessionFailedRequestBuilder<'a> {
     pub fn responseErrorBody(mut self, responseErrorBody: impl Into<Cow<'a, str>>) -> Self { self.responseErrorBody = Some(responseErrorBody.into()); self }
     pub fn build(self) -> DeviceBoundSessionFailedRequest<'a> {
         DeviceBoundSessionFailedRequest {
-            requestUrl: self.requestUrl.unwrap_or_default(),
+            requestUrl: self.requestUrl,
             netError: self.netError,
             responseError: self.responseError,
             responseErrorBody: self.responseErrorBody,
@@ -4025,22 +4111,26 @@ pub struct CreationEventDetails<'a> {
 }
 
 impl<'a> CreationEventDetails<'a> {
-    pub fn builder() -> CreationEventDetailsBuilder<'a> { CreationEventDetailsBuilder::default() }
+    pub fn builder(fetchResult: DeviceBoundSessionFetchResult) -> CreationEventDetailsBuilder<'a> {
+        CreationEventDetailsBuilder {
+            fetchResult: fetchResult,
+            newSession: None,
+            failedRequest: None,
+        }
+    }
     pub fn fetchResult(&self) -> &DeviceBoundSessionFetchResult { &self.fetchResult }
     pub fn newSession(&self) -> Option<&DeviceBoundSession<'a>> { self.newSession.as_ref() }
     pub fn failedRequest(&self) -> Option<&DeviceBoundSessionFailedRequest<'a>> { self.failedRequest.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct CreationEventDetailsBuilder<'a> {
-    fetchResult: Option<DeviceBoundSessionFetchResult>,
+    fetchResult: DeviceBoundSessionFetchResult,
     newSession: Option<DeviceBoundSession<'a>>,
     failedRequest: Option<DeviceBoundSessionFailedRequest<'a>>,
 }
 
 impl<'a> CreationEventDetailsBuilder<'a> {
-    /// The result of the fetch attempt.
-    pub fn fetchResult(mut self, fetchResult: DeviceBoundSessionFetchResult) -> Self { self.fetchResult = Some(fetchResult); self }
     /// The session if there was a newly created session. This is populated for
     /// all successful creation events.
     pub fn newSession(mut self, newSession: DeviceBoundSession<'a>) -> Self { self.newSession = Some(newSession); self }
@@ -4049,7 +4139,7 @@ impl<'a> CreationEventDetailsBuilder<'a> {
     pub fn failedRequest(mut self, failedRequest: DeviceBoundSessionFailedRequest<'a>) -> Self { self.failedRequest = Some(failedRequest); self }
     pub fn build(self) -> CreationEventDetails<'a> {
         CreationEventDetails {
-            fetchResult: self.fetchResult.unwrap_or_default(),
+            fetchResult: self.fetchResult,
             newSession: self.newSession,
             failedRequest: self.failedRequest,
         }
@@ -4079,7 +4169,15 @@ pub struct RefreshEventDetails<'a> {
 }
 
 impl<'a> RefreshEventDetails<'a> {
-    pub fn builder() -> RefreshEventDetailsBuilder<'a> { RefreshEventDetailsBuilder::default() }
+    pub fn builder(refreshResult: impl Into<Cow<'a, str>>, wasFullyProactiveRefresh: bool) -> RefreshEventDetailsBuilder<'a> {
+        RefreshEventDetailsBuilder {
+            refreshResult: refreshResult.into(),
+            fetchResult: None,
+            newSession: None,
+            wasFullyProactiveRefresh: wasFullyProactiveRefresh,
+            failedRequest: None,
+        }
+    }
     pub fn refreshResult(&self) -> &str { self.refreshResult.as_ref() }
     pub fn fetchResult(&self) -> Option<&DeviceBoundSessionFetchResult> { self.fetchResult.as_ref() }
     pub fn newSession(&self) -> Option<&DeviceBoundSession<'a>> { self.newSession.as_ref() }
@@ -4087,34 +4185,30 @@ impl<'a> RefreshEventDetails<'a> {
     pub fn failedRequest(&self) -> Option<&DeviceBoundSessionFailedRequest<'a>> { self.failedRequest.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct RefreshEventDetailsBuilder<'a> {
-    refreshResult: Option<Cow<'a, str>>,
+    refreshResult: Cow<'a, str>,
     fetchResult: Option<DeviceBoundSessionFetchResult>,
     newSession: Option<DeviceBoundSession<'a>>,
-    wasFullyProactiveRefresh: Option<bool>,
+    wasFullyProactiveRefresh: bool,
     failedRequest: Option<DeviceBoundSessionFailedRequest<'a>>,
 }
 
 impl<'a> RefreshEventDetailsBuilder<'a> {
-    /// The result of a refresh.
-    pub fn refreshResult(mut self, refreshResult: impl Into<Cow<'a, str>>) -> Self { self.refreshResult = Some(refreshResult.into()); self }
     /// If there was a fetch attempt, the result of that.
     pub fn fetchResult(mut self, fetchResult: DeviceBoundSessionFetchResult) -> Self { self.fetchResult = Some(fetchResult); self }
     /// The session display if there was a newly created session. This is populated
     /// for any refresh event that modifies the session config.
     pub fn newSession(mut self, newSession: DeviceBoundSession<'a>) -> Self { self.newSession = Some(newSession); self }
-    /// See comments on 'net::device_bound_sessions::RefreshEventResult::was_fully_proactive_refresh'.
-    pub fn wasFullyProactiveRefresh(mut self, wasFullyProactiveRefresh: bool) -> Self { self.wasFullyProactiveRefresh = Some(wasFullyProactiveRefresh); self }
     /// Details about a failed device bound session network request if there was
     /// one.
     pub fn failedRequest(mut self, failedRequest: DeviceBoundSessionFailedRequest<'a>) -> Self { self.failedRequest = Some(failedRequest); self }
     pub fn build(self) -> RefreshEventDetails<'a> {
         RefreshEventDetails {
-            refreshResult: self.refreshResult.unwrap_or_default(),
+            refreshResult: self.refreshResult,
             fetchResult: self.fetchResult,
             newSession: self.newSession,
-            wasFullyProactiveRefresh: self.wasFullyProactiveRefresh.unwrap_or_default(),
+            wasFullyProactiveRefresh: self.wasFullyProactiveRefresh,
             failedRequest: self.failedRequest,
         }
     }
@@ -4130,21 +4224,23 @@ pub struct TerminationEventDetails<'a> {
 }
 
 impl<'a> TerminationEventDetails<'a> {
-    pub fn builder() -> TerminationEventDetailsBuilder<'a> { TerminationEventDetailsBuilder::default() }
+    pub fn builder(deletionReason: impl Into<Cow<'a, str>>) -> TerminationEventDetailsBuilder<'a> {
+        TerminationEventDetailsBuilder {
+            deletionReason: deletionReason.into(),
+        }
+    }
     pub fn deletionReason(&self) -> &str { self.deletionReason.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct TerminationEventDetailsBuilder<'a> {
-    deletionReason: Option<Cow<'a, str>>,
+    deletionReason: Cow<'a, str>,
 }
 
 impl<'a> TerminationEventDetailsBuilder<'a> {
-    /// The reason for a session being deleted.
-    pub fn deletionReason(mut self, deletionReason: impl Into<Cow<'a, str>>) -> Self { self.deletionReason = Some(deletionReason.into()); self }
     pub fn build(self) -> TerminationEventDetails<'a> {
         TerminationEventDetails {
-            deletionReason: self.deletionReason.unwrap_or_default(),
+            deletionReason: self.deletionReason,
         }
     }
 }
@@ -4161,26 +4257,27 @@ pub struct ChallengeEventDetails<'a> {
 }
 
 impl<'a> ChallengeEventDetails<'a> {
-    pub fn builder() -> ChallengeEventDetailsBuilder<'a> { ChallengeEventDetailsBuilder::default() }
+    pub fn builder(challengeResult: impl Into<Cow<'a, str>>, challenge: impl Into<Cow<'a, str>>) -> ChallengeEventDetailsBuilder<'a> {
+        ChallengeEventDetailsBuilder {
+            challengeResult: challengeResult.into(),
+            challenge: challenge.into(),
+        }
+    }
     pub fn challengeResult(&self) -> &str { self.challengeResult.as_ref() }
     pub fn challenge(&self) -> &str { self.challenge.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct ChallengeEventDetailsBuilder<'a> {
-    challengeResult: Option<Cow<'a, str>>,
-    challenge: Option<Cow<'a, str>>,
+    challengeResult: Cow<'a, str>,
+    challenge: Cow<'a, str>,
 }
 
 impl<'a> ChallengeEventDetailsBuilder<'a> {
-    /// The result of a challenge.
-    pub fn challengeResult(mut self, challengeResult: impl Into<Cow<'a, str>>) -> Self { self.challengeResult = Some(challengeResult.into()); self }
-    /// The challenge set.
-    pub fn challenge(mut self, challenge: impl Into<Cow<'a, str>>) -> Self { self.challenge = Some(challenge.into()); self }
     pub fn build(self) -> ChallengeEventDetails<'a> {
         ChallengeEventDetails {
-            challengeResult: self.challengeResult.unwrap_or_default(),
-            challenge: self.challenge.unwrap_or_default(),
+            challengeResult: self.challengeResult,
+            challenge: self.challenge,
         }
     }
 }
@@ -4207,7 +4304,16 @@ pub struct LoadNetworkResourcePageResult<'a> {
 }
 
 impl<'a> LoadNetworkResourcePageResult<'a> {
-    pub fn builder() -> LoadNetworkResourcePageResultBuilder<'a> { LoadNetworkResourcePageResultBuilder::default() }
+    pub fn builder(success: bool) -> LoadNetworkResourcePageResultBuilder<'a> {
+        LoadNetworkResourcePageResultBuilder {
+            success: success,
+            netError: None,
+            netErrorName: None,
+            httpStatusCode: None,
+            stream: None,
+            headers: None,
+        }
+    }
     pub fn success(&self) -> bool { self.success }
     pub fn netError(&self) -> Option<f64> { self.netError }
     pub fn netErrorName(&self) -> Option<&str> { self.netErrorName.as_deref() }
@@ -4216,9 +4322,9 @@ impl<'a> LoadNetworkResourcePageResult<'a> {
     pub fn headers(&self) -> Option<&crate::network::Headers> { self.headers.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct LoadNetworkResourcePageResultBuilder<'a> {
-    success: Option<bool>,
+    success: bool,
     netError: Option<f64>,
     netErrorName: Option<Cow<'a, str>>,
     httpStatusCode: Option<f64>,
@@ -4227,7 +4333,6 @@ pub struct LoadNetworkResourcePageResultBuilder<'a> {
 }
 
 impl<'a> LoadNetworkResourcePageResultBuilder<'a> {
-    pub fn success(mut self, success: bool) -> Self { self.success = Some(success); self }
     /// Optional values used for error reporting.
     pub fn netError(mut self, netError: f64) -> Self { self.netError = Some(netError); self }
     pub fn netErrorName(mut self, netErrorName: impl Into<Cow<'a, str>>) -> Self { self.netErrorName = Some(netErrorName.into()); self }
@@ -4238,7 +4343,7 @@ impl<'a> LoadNetworkResourcePageResultBuilder<'a> {
     pub fn headers(mut self, headers: crate::network::Headers) -> Self { self.headers = Some(headers); self }
     pub fn build(self) -> LoadNetworkResourcePageResult<'a> {
         LoadNetworkResourcePageResult {
-            success: self.success.unwrap_or_default(),
+            success: self.success,
             netError: self.netError,
             netErrorName: self.netErrorName,
             httpStatusCode: self.httpStatusCode,
@@ -4259,24 +4364,27 @@ pub struct LoadNetworkResourceOptions {
 }
 
 impl LoadNetworkResourceOptions {
-    pub fn builder() -> LoadNetworkResourceOptionsBuilder { LoadNetworkResourceOptionsBuilder::default() }
+    pub fn builder(disableCache: bool, includeCredentials: bool) -> LoadNetworkResourceOptionsBuilder {
+        LoadNetworkResourceOptionsBuilder {
+            disableCache: disableCache,
+            includeCredentials: includeCredentials,
+        }
+    }
     pub fn disableCache(&self) -> bool { self.disableCache }
     pub fn includeCredentials(&self) -> bool { self.includeCredentials }
 }
 
-#[derive(Default)]
+
 pub struct LoadNetworkResourceOptionsBuilder {
-    disableCache: Option<bool>,
-    includeCredentials: Option<bool>,
+    disableCache: bool,
+    includeCredentials: bool,
 }
 
 impl LoadNetworkResourceOptionsBuilder {
-    pub fn disableCache(mut self, disableCache: bool) -> Self { self.disableCache = Some(disableCache); self }
-    pub fn includeCredentials(mut self, includeCredentials: bool) -> Self { self.includeCredentials = Some(includeCredentials); self }
     pub fn build(self) -> LoadNetworkResourceOptions {
         LoadNetworkResourceOptions {
-            disableCache: self.disableCache.unwrap_or_default(),
-            includeCredentials: self.includeCredentials.unwrap_or_default(),
+            disableCache: self.disableCache,
+            includeCredentials: self.includeCredentials,
         }
     }
 }
@@ -4291,21 +4399,23 @@ pub struct SetAcceptedEncodingsParams {
 }
 
 impl SetAcceptedEncodingsParams {
-    pub fn builder() -> SetAcceptedEncodingsParamsBuilder { SetAcceptedEncodingsParamsBuilder::default() }
+    pub fn builder(encodings: Vec<ContentEncoding>) -> SetAcceptedEncodingsParamsBuilder {
+        SetAcceptedEncodingsParamsBuilder {
+            encodings: encodings,
+        }
+    }
     pub fn encodings(&self) -> &[ContentEncoding] { &self.encodings }
 }
 
-#[derive(Default)]
+
 pub struct SetAcceptedEncodingsParamsBuilder {
-    encodings: Option<Vec<ContentEncoding>>,
+    encodings: Vec<ContentEncoding>,
 }
 
 impl SetAcceptedEncodingsParamsBuilder {
-    /// List of accepted content encodings.
-    pub fn encodings(mut self, encodings: Vec<ContentEncoding>) -> Self { self.encodings = Some(encodings); self }
     pub fn build(self) -> SetAcceptedEncodingsParams {
         SetAcceptedEncodingsParams {
-            encodings: self.encodings.unwrap_or_default(),
+            encodings: self.encodings,
         }
     }
 }
@@ -4319,21 +4429,6 @@ impl<'a> crate::CdpCommand<'a> for SetAcceptedEncodingsParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ClearAcceptedEncodingsOverrideParams {}
-
-impl ClearAcceptedEncodingsOverrideParams {
-    pub fn builder() -> ClearAcceptedEncodingsOverrideParamsBuilder {
-        ClearAcceptedEncodingsOverrideParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct ClearAcceptedEncodingsOverrideParamsBuilder {}
-
-impl ClearAcceptedEncodingsOverrideParamsBuilder {
-    pub fn build(self) -> ClearAcceptedEncodingsOverrideParams {
-        ClearAcceptedEncodingsOverrideParams {}
-    }
-}
 
 impl ClearAcceptedEncodingsOverrideParams { pub const METHOD: &'static str = "Network.clearAcceptedEncodingsOverride"; }
 
@@ -4352,42 +4447,29 @@ pub struct CanClearBrowserCacheReturns {
 }
 
 impl CanClearBrowserCacheReturns {
-    pub fn builder() -> CanClearBrowserCacheReturnsBuilder { CanClearBrowserCacheReturnsBuilder::default() }
+    pub fn builder(result: bool) -> CanClearBrowserCacheReturnsBuilder {
+        CanClearBrowserCacheReturnsBuilder {
+            result: result,
+        }
+    }
     pub fn result(&self) -> bool { self.result }
 }
 
-#[derive(Default)]
+
 pub struct CanClearBrowserCacheReturnsBuilder {
-    result: Option<bool>,
+    result: bool,
 }
 
 impl CanClearBrowserCacheReturnsBuilder {
-    /// True if browser cache can be cleared.
-    pub fn result(mut self, result: bool) -> Self { self.result = Some(result); self }
     pub fn build(self) -> CanClearBrowserCacheReturns {
         CanClearBrowserCacheReturns {
-            result: self.result.unwrap_or_default(),
+            result: self.result,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct CanClearBrowserCacheParams {}
-
-impl CanClearBrowserCacheParams {
-    pub fn builder() -> CanClearBrowserCacheParamsBuilder {
-        CanClearBrowserCacheParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct CanClearBrowserCacheParamsBuilder {}
-
-impl CanClearBrowserCacheParamsBuilder {
-    pub fn build(self) -> CanClearBrowserCacheParams {
-        CanClearBrowserCacheParams {}
-    }
-}
 
 impl CanClearBrowserCacheParams { pub const METHOD: &'static str = "Network.canClearBrowserCache"; }
 
@@ -4406,42 +4488,29 @@ pub struct CanClearBrowserCookiesReturns {
 }
 
 impl CanClearBrowserCookiesReturns {
-    pub fn builder() -> CanClearBrowserCookiesReturnsBuilder { CanClearBrowserCookiesReturnsBuilder::default() }
+    pub fn builder(result: bool) -> CanClearBrowserCookiesReturnsBuilder {
+        CanClearBrowserCookiesReturnsBuilder {
+            result: result,
+        }
+    }
     pub fn result(&self) -> bool { self.result }
 }
 
-#[derive(Default)]
+
 pub struct CanClearBrowserCookiesReturnsBuilder {
-    result: Option<bool>,
+    result: bool,
 }
 
 impl CanClearBrowserCookiesReturnsBuilder {
-    /// True if browser cookies can be cleared.
-    pub fn result(mut self, result: bool) -> Self { self.result = Some(result); self }
     pub fn build(self) -> CanClearBrowserCookiesReturns {
         CanClearBrowserCookiesReturns {
-            result: self.result.unwrap_or_default(),
+            result: self.result,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct CanClearBrowserCookiesParams {}
-
-impl CanClearBrowserCookiesParams {
-    pub fn builder() -> CanClearBrowserCookiesParamsBuilder {
-        CanClearBrowserCookiesParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct CanClearBrowserCookiesParamsBuilder {}
-
-impl CanClearBrowserCookiesParamsBuilder {
-    pub fn build(self) -> CanClearBrowserCookiesParams {
-        CanClearBrowserCookiesParams {}
-    }
-}
 
 impl CanClearBrowserCookiesParams { pub const METHOD: &'static str = "Network.canClearBrowserCookies"; }
 
@@ -4460,42 +4529,29 @@ pub struct CanEmulateNetworkConditionsReturns {
 }
 
 impl CanEmulateNetworkConditionsReturns {
-    pub fn builder() -> CanEmulateNetworkConditionsReturnsBuilder { CanEmulateNetworkConditionsReturnsBuilder::default() }
+    pub fn builder(result: bool) -> CanEmulateNetworkConditionsReturnsBuilder {
+        CanEmulateNetworkConditionsReturnsBuilder {
+            result: result,
+        }
+    }
     pub fn result(&self) -> bool { self.result }
 }
 
-#[derive(Default)]
+
 pub struct CanEmulateNetworkConditionsReturnsBuilder {
-    result: Option<bool>,
+    result: bool,
 }
 
 impl CanEmulateNetworkConditionsReturnsBuilder {
-    /// True if emulation of network conditions is supported.
-    pub fn result(mut self, result: bool) -> Self { self.result = Some(result); self }
     pub fn build(self) -> CanEmulateNetworkConditionsReturns {
         CanEmulateNetworkConditionsReturns {
-            result: self.result.unwrap_or_default(),
+            result: self.result,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct CanEmulateNetworkConditionsParams {}
-
-impl CanEmulateNetworkConditionsParams {
-    pub fn builder() -> CanEmulateNetworkConditionsParamsBuilder {
-        CanEmulateNetworkConditionsParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct CanEmulateNetworkConditionsParamsBuilder {}
-
-impl CanEmulateNetworkConditionsParamsBuilder {
-    pub fn build(self) -> CanEmulateNetworkConditionsParams {
-        CanEmulateNetworkConditionsParams {}
-    }
-}
 
 impl CanEmulateNetworkConditionsParams { pub const METHOD: &'static str = "Network.canEmulateNetworkConditions"; }
 
@@ -4507,21 +4563,6 @@ impl<'a> crate::CdpCommand<'a> for CanEmulateNetworkConditionsParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ClearBrowserCacheParams {}
 
-impl ClearBrowserCacheParams {
-    pub fn builder() -> ClearBrowserCacheParamsBuilder {
-        ClearBrowserCacheParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct ClearBrowserCacheParamsBuilder {}
-
-impl ClearBrowserCacheParamsBuilder {
-    pub fn build(self) -> ClearBrowserCacheParams {
-        ClearBrowserCacheParams {}
-    }
-}
-
 impl ClearBrowserCacheParams { pub const METHOD: &'static str = "Network.clearBrowserCache"; }
 
 impl<'a> crate::CdpCommand<'a> for ClearBrowserCacheParams {
@@ -4531,21 +4572,6 @@ impl<'a> crate::CdpCommand<'a> for ClearBrowserCacheParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ClearBrowserCookiesParams {}
-
-impl ClearBrowserCookiesParams {
-    pub fn builder() -> ClearBrowserCookiesParamsBuilder {
-        ClearBrowserCookiesParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct ClearBrowserCookiesParamsBuilder {}
-
-impl ClearBrowserCookiesParamsBuilder {
-    pub fn build(self) -> ClearBrowserCookiesParams {
-        ClearBrowserCookiesParams {}
-    }
-}
 
 impl ClearBrowserCookiesParams { pub const METHOD: &'static str = "Network.clearBrowserCookies"; }
 
@@ -4594,7 +4620,18 @@ pub struct ContinueInterceptedRequestParams<'a> {
 }
 
 impl<'a> ContinueInterceptedRequestParams<'a> {
-    pub fn builder() -> ContinueInterceptedRequestParamsBuilder<'a> { ContinueInterceptedRequestParamsBuilder::default() }
+    pub fn builder(interceptionId: InterceptionId<'a>) -> ContinueInterceptedRequestParamsBuilder<'a> {
+        ContinueInterceptedRequestParamsBuilder {
+            interceptionId: interceptionId,
+            errorReason: None,
+            rawResponse: None,
+            url: None,
+            method: None,
+            postData: None,
+            headers: None,
+            authChallengeResponse: None,
+        }
+    }
     pub fn interceptionId(&self) -> &InterceptionId<'a> { &self.interceptionId }
     pub fn errorReason(&self) -> Option<&ErrorReason> { self.errorReason.as_ref() }
     pub fn rawResponse(&self) -> Option<&str> { self.rawResponse.as_deref() }
@@ -4605,9 +4642,9 @@ impl<'a> ContinueInterceptedRequestParams<'a> {
     pub fn authChallengeResponse(&self) -> Option<&AuthChallengeResponse<'a>> { self.authChallengeResponse.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct ContinueInterceptedRequestParamsBuilder<'a> {
-    interceptionId: Option<InterceptionId<'a>>,
+    interceptionId: InterceptionId<'a>,
     errorReason: Option<ErrorReason>,
     rawResponse: Option<Cow<'a, str>>,
     url: Option<Cow<'a, str>>,
@@ -4618,7 +4655,6 @@ pub struct ContinueInterceptedRequestParamsBuilder<'a> {
 }
 
 impl<'a> ContinueInterceptedRequestParamsBuilder<'a> {
-    pub fn interceptionId(mut self, interceptionId: InterceptionId<'a>) -> Self { self.interceptionId = Some(interceptionId); self }
     /// If set this causes the request to fail with the given reason. Passing 'Aborted' for requests
     /// marked with 'isNavigationRequest' also cancels the navigation. Must not be set in response
     /// to an authChallenge.
@@ -4641,7 +4677,7 @@ impl<'a> ContinueInterceptedRequestParamsBuilder<'a> {
     pub fn authChallengeResponse(mut self, authChallengeResponse: AuthChallengeResponse<'a>) -> Self { self.authChallengeResponse = Some(authChallengeResponse); self }
     pub fn build(self) -> ContinueInterceptedRequestParams<'a> {
         ContinueInterceptedRequestParams {
-            interceptionId: self.interceptionId.unwrap_or_default(),
+            interceptionId: self.interceptionId,
             errorReason: self.errorReason,
             rawResponse: self.rawResponse,
             url: self.url,
@@ -4684,7 +4720,15 @@ pub struct DeleteCookiesParams<'a> {
 }
 
 impl<'a> DeleteCookiesParams<'a> {
-    pub fn builder() -> DeleteCookiesParamsBuilder<'a> { DeleteCookiesParamsBuilder::default() }
+    pub fn builder(name: impl Into<Cow<'a, str>>) -> DeleteCookiesParamsBuilder<'a> {
+        DeleteCookiesParamsBuilder {
+            name: name.into(),
+            url: None,
+            domain: None,
+            path: None,
+            partitionKey: None,
+        }
+    }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn url(&self) -> Option<&str> { self.url.as_deref() }
     pub fn domain(&self) -> Option<&str> { self.domain.as_deref() }
@@ -4692,9 +4736,9 @@ impl<'a> DeleteCookiesParams<'a> {
     pub fn partitionKey(&self) -> Option<&CookiePartitionKey<'a>> { self.partitionKey.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct DeleteCookiesParamsBuilder<'a> {
-    name: Option<Cow<'a, str>>,
+    name: Cow<'a, str>,
     url: Option<Cow<'a, str>>,
     domain: Option<Cow<'a, str>>,
     path: Option<Cow<'a, str>>,
@@ -4702,8 +4746,6 @@ pub struct DeleteCookiesParamsBuilder<'a> {
 }
 
 impl<'a> DeleteCookiesParamsBuilder<'a> {
-    /// Name of the cookies to remove.
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
     /// If specified, deletes all the cookies with the given name where domain and path match
     /// provided URL.
     pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
@@ -4716,7 +4758,7 @@ impl<'a> DeleteCookiesParamsBuilder<'a> {
     pub fn partitionKey(mut self, partitionKey: CookiePartitionKey<'a>) -> Self { self.partitionKey = Some(partitionKey); self }
     pub fn build(self) -> DeleteCookiesParams<'a> {
         DeleteCookiesParams {
-            name: self.name.unwrap_or_default(),
+            name: self.name,
             url: self.url,
             domain: self.domain,
             path: self.path,
@@ -4734,21 +4776,6 @@ impl<'a> crate::CdpCommand<'a> for DeleteCookiesParams<'a> {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct DisableParams {}
-
-impl DisableParams {
-    pub fn builder() -> DisableParamsBuilder {
-        DisableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct DisableParamsBuilder {}
-
-impl DisableParamsBuilder {
-    pub fn build(self) -> DisableParams {
-        DisableParams {}
-    }
-}
 
 impl DisableParams { pub const METHOD: &'static str = "Network.disable"; }
 
@@ -4786,7 +4813,18 @@ pub struct EmulateNetworkConditionsParams {
 }
 
 impl EmulateNetworkConditionsParams {
-    pub fn builder() -> EmulateNetworkConditionsParamsBuilder { EmulateNetworkConditionsParamsBuilder::default() }
+    pub fn builder(offline: bool, latency: f64, downloadThroughput: f64, uploadThroughput: f64) -> EmulateNetworkConditionsParamsBuilder {
+        EmulateNetworkConditionsParamsBuilder {
+            offline: offline,
+            latency: latency,
+            downloadThroughput: downloadThroughput,
+            uploadThroughput: uploadThroughput,
+            connectionType: None,
+            packetLoss: None,
+            packetQueueLength: None,
+            packetReordering: None,
+        }
+    }
     pub fn offline(&self) -> bool { self.offline }
     pub fn latency(&self) -> f64 { self.latency }
     pub fn downloadThroughput(&self) -> f64 { self.downloadThroughput }
@@ -4797,12 +4835,12 @@ impl EmulateNetworkConditionsParams {
     pub fn packetReordering(&self) -> Option<bool> { self.packetReordering }
 }
 
-#[derive(Default)]
+
 pub struct EmulateNetworkConditionsParamsBuilder {
-    offline: Option<bool>,
-    latency: Option<f64>,
-    downloadThroughput: Option<f64>,
-    uploadThroughput: Option<f64>,
+    offline: bool,
+    latency: f64,
+    downloadThroughput: f64,
+    uploadThroughput: f64,
     connectionType: Option<ConnectionType>,
     packetLoss: Option<f64>,
     packetQueueLength: Option<u64>,
@@ -4810,14 +4848,6 @@ pub struct EmulateNetworkConditionsParamsBuilder {
 }
 
 impl EmulateNetworkConditionsParamsBuilder {
-    /// True to emulate internet disconnection.
-    pub fn offline(mut self, offline: bool) -> Self { self.offline = Some(offline); self }
-    /// Minimum latency from request sent to response headers received (ms).
-    pub fn latency(mut self, latency: f64) -> Self { self.latency = Some(latency); self }
-    /// Maximal aggregated download throughput (bytes/sec). -1 disables download throttling.
-    pub fn downloadThroughput(mut self, downloadThroughput: f64) -> Self { self.downloadThroughput = Some(downloadThroughput); self }
-    /// Maximal aggregated upload throughput (bytes/sec).  -1 disables upload throttling.
-    pub fn uploadThroughput(mut self, uploadThroughput: f64) -> Self { self.uploadThroughput = Some(uploadThroughput); self }
     /// Connection type if known.
     pub fn connectionType(mut self, connectionType: ConnectionType) -> Self { self.connectionType = Some(connectionType); self }
     /// WebRTC packet loss (percent, 0-100). 0 disables packet loss emulation, 100 drops all the packets.
@@ -4828,10 +4858,10 @@ impl EmulateNetworkConditionsParamsBuilder {
     pub fn packetReordering(mut self, packetReordering: bool) -> Self { self.packetReordering = Some(packetReordering); self }
     pub fn build(self) -> EmulateNetworkConditionsParams {
         EmulateNetworkConditionsParams {
-            offline: self.offline.unwrap_or_default(),
-            latency: self.latency.unwrap_or_default(),
-            downloadThroughput: self.downloadThroughput.unwrap_or_default(),
-            uploadThroughput: self.uploadThroughput.unwrap_or_default(),
+            offline: self.offline,
+            latency: self.latency,
+            downloadThroughput: self.downloadThroughput,
+            uploadThroughput: self.uploadThroughput,
             connectionType: self.connectionType,
             packetLoss: self.packetLoss,
             packetQueueLength: self.packetQueueLength,
@@ -4868,17 +4898,23 @@ pub struct EmulateNetworkConditionsByRuleParams<'a> {
 }
 
 impl<'a> EmulateNetworkConditionsByRuleParams<'a> {
-    pub fn builder() -> EmulateNetworkConditionsByRuleParamsBuilder<'a> { EmulateNetworkConditionsByRuleParamsBuilder::default() }
+    pub fn builder(matchedNetworkConditions: Vec<NetworkConditions<'a>>) -> EmulateNetworkConditionsByRuleParamsBuilder<'a> {
+        EmulateNetworkConditionsByRuleParamsBuilder {
+            offline: None,
+            emulateOfflineServiceWorker: None,
+            matchedNetworkConditions: matchedNetworkConditions,
+        }
+    }
     pub fn offline(&self) -> Option<bool> { self.offline }
     pub fn emulateOfflineServiceWorker(&self) -> Option<bool> { self.emulateOfflineServiceWorker }
     pub fn matchedNetworkConditions(&self) -> &[NetworkConditions<'a>] { &self.matchedNetworkConditions }
 }
 
-#[derive(Default)]
+
 pub struct EmulateNetworkConditionsByRuleParamsBuilder<'a> {
     offline: Option<bool>,
     emulateOfflineServiceWorker: Option<bool>,
-    matchedNetworkConditions: Option<Vec<NetworkConditions<'a>>>,
+    matchedNetworkConditions: Vec<NetworkConditions<'a>>,
 }
 
 impl<'a> EmulateNetworkConditionsByRuleParamsBuilder<'a> {
@@ -4887,15 +4923,11 @@ impl<'a> EmulateNetworkConditionsByRuleParamsBuilder<'a> {
     pub fn offline(mut self, offline: bool) -> Self { self.offline = Some(offline); self }
     /// True to emulate offline service worker.
     pub fn emulateOfflineServiceWorker(mut self, emulateOfflineServiceWorker: bool) -> Self { self.emulateOfflineServiceWorker = Some(emulateOfflineServiceWorker); self }
-    /// Configure conditions for matching requests. If multiple entries match a request, the first entry wins.  Global
-    /// conditions can be configured by leaving the urlPattern for the conditions empty. These global conditions are
-    /// also applied for throttling of p2p connections.
-    pub fn matchedNetworkConditions(mut self, matchedNetworkConditions: Vec<NetworkConditions<'a>>) -> Self { self.matchedNetworkConditions = Some(matchedNetworkConditions); self }
     pub fn build(self) -> EmulateNetworkConditionsByRuleParams<'a> {
         EmulateNetworkConditionsByRuleParams {
             offline: self.offline,
             emulateOfflineServiceWorker: self.emulateOfflineServiceWorker,
-            matchedNetworkConditions: self.matchedNetworkConditions.unwrap_or_default(),
+            matchedNetworkConditions: self.matchedNetworkConditions,
         }
     }
 }
@@ -4913,22 +4945,23 @@ pub struct EmulateNetworkConditionsByRuleReturns<'a> {
 }
 
 impl<'a> EmulateNetworkConditionsByRuleReturns<'a> {
-    pub fn builder() -> EmulateNetworkConditionsByRuleReturnsBuilder<'a> { EmulateNetworkConditionsByRuleReturnsBuilder::default() }
+    pub fn builder(ruleIds: Vec<Cow<'a, str>>) -> EmulateNetworkConditionsByRuleReturnsBuilder<'a> {
+        EmulateNetworkConditionsByRuleReturnsBuilder {
+            ruleIds: ruleIds,
+        }
+    }
     pub fn ruleIds(&self) -> &[Cow<'a, str>] { &self.ruleIds }
 }
 
-#[derive(Default)]
+
 pub struct EmulateNetworkConditionsByRuleReturnsBuilder<'a> {
-    ruleIds: Option<Vec<Cow<'a, str>>>,
+    ruleIds: Vec<Cow<'a, str>>,
 }
 
 impl<'a> EmulateNetworkConditionsByRuleReturnsBuilder<'a> {
-    /// An id for each entry in matchedNetworkConditions. The id will be included in the requestWillBeSentExtraInfo for
-    /// requests affected by a rule.
-    pub fn ruleIds(mut self, ruleIds: Vec<Cow<'a, str>>) -> Self { self.ruleIds = Some(ruleIds); self }
     pub fn build(self) -> EmulateNetworkConditionsByRuleReturns<'a> {
         EmulateNetworkConditionsByRuleReturns {
-            ruleIds: self.ruleIds.unwrap_or_default(),
+            ruleIds: self.ruleIds,
         }
     }
 }
@@ -4959,7 +4992,15 @@ pub struct OverrideNetworkStateParams {
 }
 
 impl OverrideNetworkStateParams {
-    pub fn builder() -> OverrideNetworkStateParamsBuilder { OverrideNetworkStateParamsBuilder::default() }
+    pub fn builder(offline: bool, latency: f64, downloadThroughput: f64, uploadThroughput: f64) -> OverrideNetworkStateParamsBuilder {
+        OverrideNetworkStateParamsBuilder {
+            offline: offline,
+            latency: latency,
+            downloadThroughput: downloadThroughput,
+            uploadThroughput: uploadThroughput,
+            connectionType: None,
+        }
+    }
     pub fn offline(&self) -> bool { self.offline }
     pub fn latency(&self) -> f64 { self.latency }
     pub fn downloadThroughput(&self) -> f64 { self.downloadThroughput }
@@ -4967,32 +5008,24 @@ impl OverrideNetworkStateParams {
     pub fn connectionType(&self) -> Option<&ConnectionType> { self.connectionType.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct OverrideNetworkStateParamsBuilder {
-    offline: Option<bool>,
-    latency: Option<f64>,
-    downloadThroughput: Option<f64>,
-    uploadThroughput: Option<f64>,
+    offline: bool,
+    latency: f64,
+    downloadThroughput: f64,
+    uploadThroughput: f64,
     connectionType: Option<ConnectionType>,
 }
 
 impl OverrideNetworkStateParamsBuilder {
-    /// True to emulate internet disconnection.
-    pub fn offline(mut self, offline: bool) -> Self { self.offline = Some(offline); self }
-    /// Minimum latency from request sent to response headers received (ms).
-    pub fn latency(mut self, latency: f64) -> Self { self.latency = Some(latency); self }
-    /// Maximal aggregated download throughput (bytes/sec). -1 disables download throttling.
-    pub fn downloadThroughput(mut self, downloadThroughput: f64) -> Self { self.downloadThroughput = Some(downloadThroughput); self }
-    /// Maximal aggregated upload throughput (bytes/sec).  -1 disables upload throttling.
-    pub fn uploadThroughput(mut self, uploadThroughput: f64) -> Self { self.uploadThroughput = Some(uploadThroughput); self }
     /// Connection type if known.
     pub fn connectionType(mut self, connectionType: ConnectionType) -> Self { self.connectionType = Some(connectionType); self }
     pub fn build(self) -> OverrideNetworkStateParams {
         OverrideNetworkStateParams {
-            offline: self.offline.unwrap_or_default(),
-            latency: self.latency.unwrap_or_default(),
-            downloadThroughput: self.downloadThroughput.unwrap_or_default(),
-            uploadThroughput: self.uploadThroughput.unwrap_or_default(),
+            offline: self.offline,
+            latency: self.latency,
+            downloadThroughput: self.downloadThroughput,
+            uploadThroughput: self.uploadThroughput,
             connectionType: self.connectionType,
         }
     }
@@ -5034,7 +5067,15 @@ pub struct EnableParams {
 }
 
 impl EnableParams {
-    pub fn builder() -> EnableParamsBuilder { EnableParamsBuilder::default() }
+    pub fn builder() -> EnableParamsBuilder {
+        EnableParamsBuilder {
+            maxTotalBufferSize: None,
+            maxResourceBufferSize: None,
+            maxPostDataSize: None,
+            reportDirectSocketTraffic: None,
+            enableDurableMessages: None,
+        }
+    }
     pub fn maxTotalBufferSize(&self) -> Option<u64> { self.maxTotalBufferSize }
     pub fn maxResourceBufferSize(&self) -> Option<u64> { self.maxResourceBufferSize }
     pub fn maxPostDataSize(&self) -> Option<u64> { self.maxPostDataSize }
@@ -5102,7 +5143,12 @@ pub struct ConfigureDurableMessagesParams {
 }
 
 impl ConfigureDurableMessagesParams {
-    pub fn builder() -> ConfigureDurableMessagesParamsBuilder { ConfigureDurableMessagesParamsBuilder::default() }
+    pub fn builder() -> ConfigureDurableMessagesParamsBuilder {
+        ConfigureDurableMessagesParamsBuilder {
+            maxTotalBufferSize: None,
+            maxResourceBufferSize: None,
+        }
+    }
     pub fn maxTotalBufferSize(&self) -> Option<u64> { self.maxTotalBufferSize }
     pub fn maxResourceBufferSize(&self) -> Option<u64> { self.maxResourceBufferSize }
 }
@@ -5145,42 +5191,29 @@ pub struct GetAllCookiesReturns<'a> {
 }
 
 impl<'a> GetAllCookiesReturns<'a> {
-    pub fn builder() -> GetAllCookiesReturnsBuilder<'a> { GetAllCookiesReturnsBuilder::default() }
+    pub fn builder(cookies: Vec<Cookie<'a>>) -> GetAllCookiesReturnsBuilder<'a> {
+        GetAllCookiesReturnsBuilder {
+            cookies: cookies,
+        }
+    }
     pub fn cookies(&self) -> &[Cookie<'a>] { &self.cookies }
 }
 
-#[derive(Default)]
+
 pub struct GetAllCookiesReturnsBuilder<'a> {
-    cookies: Option<Vec<Cookie<'a>>>,
+    cookies: Vec<Cookie<'a>>,
 }
 
 impl<'a> GetAllCookiesReturnsBuilder<'a> {
-    /// Array of cookie objects.
-    pub fn cookies(mut self, cookies: Vec<Cookie<'a>>) -> Self { self.cookies = Some(cookies); self }
     pub fn build(self) -> GetAllCookiesReturns<'a> {
         GetAllCookiesReturns {
-            cookies: self.cookies.unwrap_or_default(),
+            cookies: self.cookies,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetAllCookiesParams {}
-
-impl GetAllCookiesParams {
-    pub fn builder() -> GetAllCookiesParamsBuilder {
-        GetAllCookiesParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetAllCookiesParamsBuilder {}
-
-impl GetAllCookiesParamsBuilder {
-    pub fn build(self) -> GetAllCookiesParams {
-        GetAllCookiesParams {}
-    }
-}
 
 impl GetAllCookiesParams { pub const METHOD: &'static str = "Network.getAllCookies"; }
 
@@ -5199,21 +5232,23 @@ pub struct GetCertificateParams<'a> {
 }
 
 impl<'a> GetCertificateParams<'a> {
-    pub fn builder() -> GetCertificateParamsBuilder<'a> { GetCertificateParamsBuilder::default() }
+    pub fn builder(origin: impl Into<Cow<'a, str>>) -> GetCertificateParamsBuilder<'a> {
+        GetCertificateParamsBuilder {
+            origin: origin.into(),
+        }
+    }
     pub fn origin(&self) -> &str { self.origin.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct GetCertificateParamsBuilder<'a> {
-    origin: Option<Cow<'a, str>>,
+    origin: Cow<'a, str>,
 }
 
 impl<'a> GetCertificateParamsBuilder<'a> {
-    /// Origin to get certificate for.
-    pub fn origin(mut self, origin: impl Into<Cow<'a, str>>) -> Self { self.origin = Some(origin.into()); self }
     pub fn build(self) -> GetCertificateParams<'a> {
         GetCertificateParams {
-            origin: self.origin.unwrap_or_default(),
+            origin: self.origin,
         }
     }
 }
@@ -5227,20 +5262,23 @@ pub struct GetCertificateReturns<'a> {
 }
 
 impl<'a> GetCertificateReturns<'a> {
-    pub fn builder() -> GetCertificateReturnsBuilder<'a> { GetCertificateReturnsBuilder::default() }
+    pub fn builder(tableNames: Vec<Cow<'a, str>>) -> GetCertificateReturnsBuilder<'a> {
+        GetCertificateReturnsBuilder {
+            tableNames: tableNames,
+        }
+    }
     pub fn tableNames(&self) -> &[Cow<'a, str>] { &self.tableNames }
 }
 
-#[derive(Default)]
+
 pub struct GetCertificateReturnsBuilder<'a> {
-    tableNames: Option<Vec<Cow<'a, str>>>,
+    tableNames: Vec<Cow<'a, str>>,
 }
 
 impl<'a> GetCertificateReturnsBuilder<'a> {
-    pub fn tableNames(mut self, tableNames: Vec<Cow<'a, str>>) -> Self { self.tableNames = Some(tableNames); self }
     pub fn build(self) -> GetCertificateReturns<'a> {
         GetCertificateReturns {
-            tableNames: self.tableNames.unwrap_or_default(),
+            tableNames: self.tableNames,
         }
     }
 }
@@ -5266,7 +5304,11 @@ pub struct GetCookiesParams<'a> {
 }
 
 impl<'a> GetCookiesParams<'a> {
-    pub fn builder() -> GetCookiesParamsBuilder<'a> { GetCookiesParamsBuilder::default() }
+    pub fn builder() -> GetCookiesParamsBuilder<'a> {
+        GetCookiesParamsBuilder {
+            urls: None,
+        }
+    }
     pub fn urls(&self) -> Option<&[Cow<'a, str>]> { self.urls.as_deref() }
 }
 
@@ -5298,21 +5340,23 @@ pub struct GetCookiesReturns<'a> {
 }
 
 impl<'a> GetCookiesReturns<'a> {
-    pub fn builder() -> GetCookiesReturnsBuilder<'a> { GetCookiesReturnsBuilder::default() }
+    pub fn builder(cookies: Vec<Cookie<'a>>) -> GetCookiesReturnsBuilder<'a> {
+        GetCookiesReturnsBuilder {
+            cookies: cookies,
+        }
+    }
     pub fn cookies(&self) -> &[Cookie<'a>] { &self.cookies }
 }
 
-#[derive(Default)]
+
 pub struct GetCookiesReturnsBuilder<'a> {
-    cookies: Option<Vec<Cookie<'a>>>,
+    cookies: Vec<Cookie<'a>>,
 }
 
 impl<'a> GetCookiesReturnsBuilder<'a> {
-    /// Array of cookie objects.
-    pub fn cookies(mut self, cookies: Vec<Cookie<'a>>) -> Self { self.cookies = Some(cookies); self }
     pub fn build(self) -> GetCookiesReturns<'a> {
         GetCookiesReturns {
-            cookies: self.cookies.unwrap_or_default(),
+            cookies: self.cookies,
         }
     }
 }
@@ -5334,21 +5378,23 @@ pub struct GetResponseBodyParams<'a> {
 }
 
 impl<'a> GetResponseBodyParams<'a> {
-    pub fn builder() -> GetResponseBodyParamsBuilder<'a> { GetResponseBodyParamsBuilder::default() }
+    pub fn builder(requestId: RequestId<'a>) -> GetResponseBodyParamsBuilder<'a> {
+        GetResponseBodyParamsBuilder {
+            requestId: requestId,
+        }
+    }
     pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
 }
 
-#[derive(Default)]
+
 pub struct GetResponseBodyParamsBuilder<'a> {
-    requestId: Option<RequestId<'a>>,
+    requestId: RequestId<'a>,
 }
 
 impl<'a> GetResponseBodyParamsBuilder<'a> {
-    /// Identifier of the network request to get content for.
-    pub fn requestId(mut self, requestId: RequestId<'a>) -> Self { self.requestId = Some(requestId); self }
     pub fn build(self) -> GetResponseBodyParams<'a> {
         GetResponseBodyParams {
-            requestId: self.requestId.unwrap_or_default(),
+            requestId: self.requestId,
         }
     }
 }
@@ -5365,26 +5411,27 @@ pub struct GetResponseBodyReturns<'a> {
 }
 
 impl<'a> GetResponseBodyReturns<'a> {
-    pub fn builder() -> GetResponseBodyReturnsBuilder<'a> { GetResponseBodyReturnsBuilder::default() }
+    pub fn builder(body: impl Into<Cow<'a, str>>, base64Encoded: bool) -> GetResponseBodyReturnsBuilder<'a> {
+        GetResponseBodyReturnsBuilder {
+            body: body.into(),
+            base64Encoded: base64Encoded,
+        }
+    }
     pub fn body(&self) -> &str { self.body.as_ref() }
     pub fn base64Encoded(&self) -> bool { self.base64Encoded }
 }
 
-#[derive(Default)]
+
 pub struct GetResponseBodyReturnsBuilder<'a> {
-    body: Option<Cow<'a, str>>,
-    base64Encoded: Option<bool>,
+    body: Cow<'a, str>,
+    base64Encoded: bool,
 }
 
 impl<'a> GetResponseBodyReturnsBuilder<'a> {
-    /// Response body.
-    pub fn body(mut self, body: impl Into<Cow<'a, str>>) -> Self { self.body = Some(body.into()); self }
-    /// True, if content was sent as base64.
-    pub fn base64Encoded(mut self, base64Encoded: bool) -> Self { self.base64Encoded = Some(base64Encoded); self }
     pub fn build(self) -> GetResponseBodyReturns<'a> {
         GetResponseBodyReturns {
-            body: self.body.unwrap_or_default(),
-            base64Encoded: self.base64Encoded.unwrap_or_default(),
+            body: self.body,
+            base64Encoded: self.base64Encoded,
         }
     }
 }
@@ -5406,21 +5453,23 @@ pub struct GetRequestPostDataParams<'a> {
 }
 
 impl<'a> GetRequestPostDataParams<'a> {
-    pub fn builder() -> GetRequestPostDataParamsBuilder<'a> { GetRequestPostDataParamsBuilder::default() }
+    pub fn builder(requestId: RequestId<'a>) -> GetRequestPostDataParamsBuilder<'a> {
+        GetRequestPostDataParamsBuilder {
+            requestId: requestId,
+        }
+    }
     pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
 }
 
-#[derive(Default)]
+
 pub struct GetRequestPostDataParamsBuilder<'a> {
-    requestId: Option<RequestId<'a>>,
+    requestId: RequestId<'a>,
 }
 
 impl<'a> GetRequestPostDataParamsBuilder<'a> {
-    /// Identifier of the network request to get content for.
-    pub fn requestId(mut self, requestId: RequestId<'a>) -> Self { self.requestId = Some(requestId); self }
     pub fn build(self) -> GetRequestPostDataParams<'a> {
         GetRequestPostDataParams {
-            requestId: self.requestId.unwrap_or_default(),
+            requestId: self.requestId,
         }
     }
 }
@@ -5437,26 +5486,27 @@ pub struct GetRequestPostDataReturns<'a> {
 }
 
 impl<'a> GetRequestPostDataReturns<'a> {
-    pub fn builder() -> GetRequestPostDataReturnsBuilder<'a> { GetRequestPostDataReturnsBuilder::default() }
+    pub fn builder(postData: impl Into<Cow<'a, str>>, base64Encoded: bool) -> GetRequestPostDataReturnsBuilder<'a> {
+        GetRequestPostDataReturnsBuilder {
+            postData: postData.into(),
+            base64Encoded: base64Encoded,
+        }
+    }
     pub fn postData(&self) -> &str { self.postData.as_ref() }
     pub fn base64Encoded(&self) -> bool { self.base64Encoded }
 }
 
-#[derive(Default)]
+
 pub struct GetRequestPostDataReturnsBuilder<'a> {
-    postData: Option<Cow<'a, str>>,
-    base64Encoded: Option<bool>,
+    postData: Cow<'a, str>,
+    base64Encoded: bool,
 }
 
 impl<'a> GetRequestPostDataReturnsBuilder<'a> {
-    /// Request body string, omitting files from multipart requests
-    pub fn postData(mut self, postData: impl Into<Cow<'a, str>>) -> Self { self.postData = Some(postData.into()); self }
-    /// True, if content was sent as base64.
-    pub fn base64Encoded(mut self, base64Encoded: bool) -> Self { self.base64Encoded = Some(base64Encoded); self }
     pub fn build(self) -> GetRequestPostDataReturns<'a> {
         GetRequestPostDataReturns {
-            postData: self.postData.unwrap_or_default(),
-            base64Encoded: self.base64Encoded.unwrap_or_default(),
+            postData: self.postData,
+            base64Encoded: self.base64Encoded,
         }
     }
 }
@@ -5478,21 +5528,23 @@ pub struct GetResponseBodyForInterceptionParams<'a> {
 }
 
 impl<'a> GetResponseBodyForInterceptionParams<'a> {
-    pub fn builder() -> GetResponseBodyForInterceptionParamsBuilder<'a> { GetResponseBodyForInterceptionParamsBuilder::default() }
+    pub fn builder(interceptionId: InterceptionId<'a>) -> GetResponseBodyForInterceptionParamsBuilder<'a> {
+        GetResponseBodyForInterceptionParamsBuilder {
+            interceptionId: interceptionId,
+        }
+    }
     pub fn interceptionId(&self) -> &InterceptionId<'a> { &self.interceptionId }
 }
 
-#[derive(Default)]
+
 pub struct GetResponseBodyForInterceptionParamsBuilder<'a> {
-    interceptionId: Option<InterceptionId<'a>>,
+    interceptionId: InterceptionId<'a>,
 }
 
 impl<'a> GetResponseBodyForInterceptionParamsBuilder<'a> {
-    /// Identifier for the intercepted request to get body for.
-    pub fn interceptionId(mut self, interceptionId: InterceptionId<'a>) -> Self { self.interceptionId = Some(interceptionId); self }
     pub fn build(self) -> GetResponseBodyForInterceptionParams<'a> {
         GetResponseBodyForInterceptionParams {
-            interceptionId: self.interceptionId.unwrap_or_default(),
+            interceptionId: self.interceptionId,
         }
     }
 }
@@ -5509,26 +5561,27 @@ pub struct GetResponseBodyForInterceptionReturns<'a> {
 }
 
 impl<'a> GetResponseBodyForInterceptionReturns<'a> {
-    pub fn builder() -> GetResponseBodyForInterceptionReturnsBuilder<'a> { GetResponseBodyForInterceptionReturnsBuilder::default() }
+    pub fn builder(body: impl Into<Cow<'a, str>>, base64Encoded: bool) -> GetResponseBodyForInterceptionReturnsBuilder<'a> {
+        GetResponseBodyForInterceptionReturnsBuilder {
+            body: body.into(),
+            base64Encoded: base64Encoded,
+        }
+    }
     pub fn body(&self) -> &str { self.body.as_ref() }
     pub fn base64Encoded(&self) -> bool { self.base64Encoded }
 }
 
-#[derive(Default)]
+
 pub struct GetResponseBodyForInterceptionReturnsBuilder<'a> {
-    body: Option<Cow<'a, str>>,
-    base64Encoded: Option<bool>,
+    body: Cow<'a, str>,
+    base64Encoded: bool,
 }
 
 impl<'a> GetResponseBodyForInterceptionReturnsBuilder<'a> {
-    /// Response body.
-    pub fn body(mut self, body: impl Into<Cow<'a, str>>) -> Self { self.body = Some(body.into()); self }
-    /// True, if content was sent as base64.
-    pub fn base64Encoded(mut self, base64Encoded: bool) -> Self { self.base64Encoded = Some(base64Encoded); self }
     pub fn build(self) -> GetResponseBodyForInterceptionReturns<'a> {
         GetResponseBodyForInterceptionReturns {
-            body: self.body.unwrap_or_default(),
-            base64Encoded: self.base64Encoded.unwrap_or_default(),
+            body: self.body,
+            base64Encoded: self.base64Encoded,
         }
     }
 }
@@ -5552,20 +5605,23 @@ pub struct TakeResponseBodyForInterceptionAsStreamParams<'a> {
 }
 
 impl<'a> TakeResponseBodyForInterceptionAsStreamParams<'a> {
-    pub fn builder() -> TakeResponseBodyForInterceptionAsStreamParamsBuilder<'a> { TakeResponseBodyForInterceptionAsStreamParamsBuilder::default() }
+    pub fn builder(interceptionId: InterceptionId<'a>) -> TakeResponseBodyForInterceptionAsStreamParamsBuilder<'a> {
+        TakeResponseBodyForInterceptionAsStreamParamsBuilder {
+            interceptionId: interceptionId,
+        }
+    }
     pub fn interceptionId(&self) -> &InterceptionId<'a> { &self.interceptionId }
 }
 
-#[derive(Default)]
+
 pub struct TakeResponseBodyForInterceptionAsStreamParamsBuilder<'a> {
-    interceptionId: Option<InterceptionId<'a>>,
+    interceptionId: InterceptionId<'a>,
 }
 
 impl<'a> TakeResponseBodyForInterceptionAsStreamParamsBuilder<'a> {
-    pub fn interceptionId(mut self, interceptionId: InterceptionId<'a>) -> Self { self.interceptionId = Some(interceptionId); self }
     pub fn build(self) -> TakeResponseBodyForInterceptionAsStreamParams<'a> {
         TakeResponseBodyForInterceptionAsStreamParams {
-            interceptionId: self.interceptionId.unwrap_or_default(),
+            interceptionId: self.interceptionId,
         }
     }
 }
@@ -5582,20 +5638,23 @@ pub struct TakeResponseBodyForInterceptionAsStreamReturns<'a> {
 }
 
 impl<'a> TakeResponseBodyForInterceptionAsStreamReturns<'a> {
-    pub fn builder() -> TakeResponseBodyForInterceptionAsStreamReturnsBuilder<'a> { TakeResponseBodyForInterceptionAsStreamReturnsBuilder::default() }
+    pub fn builder(stream: crate::io::StreamHandle<'a>) -> TakeResponseBodyForInterceptionAsStreamReturnsBuilder<'a> {
+        TakeResponseBodyForInterceptionAsStreamReturnsBuilder {
+            stream: stream,
+        }
+    }
     pub fn stream(&self) -> &crate::io::StreamHandle<'a> { &self.stream }
 }
 
-#[derive(Default)]
+
 pub struct TakeResponseBodyForInterceptionAsStreamReturnsBuilder<'a> {
-    stream: Option<crate::io::StreamHandle<'a>>,
+    stream: crate::io::StreamHandle<'a>,
 }
 
 impl<'a> TakeResponseBodyForInterceptionAsStreamReturnsBuilder<'a> {
-    pub fn stream(mut self, stream: crate::io::StreamHandle<'a>) -> Self { self.stream = Some(stream); self }
     pub fn build(self) -> TakeResponseBodyForInterceptionAsStreamReturns<'a> {
         TakeResponseBodyForInterceptionAsStreamReturns {
-            stream: self.stream.unwrap_or_default(),
+            stream: self.stream,
         }
     }
 }
@@ -5619,21 +5678,23 @@ pub struct ReplayXHRParams<'a> {
 }
 
 impl<'a> ReplayXHRParams<'a> {
-    pub fn builder() -> ReplayXHRParamsBuilder<'a> { ReplayXHRParamsBuilder::default() }
+    pub fn builder(requestId: RequestId<'a>) -> ReplayXHRParamsBuilder<'a> {
+        ReplayXHRParamsBuilder {
+            requestId: requestId,
+        }
+    }
     pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
 }
 
-#[derive(Default)]
+
 pub struct ReplayXHRParamsBuilder<'a> {
-    requestId: Option<RequestId<'a>>,
+    requestId: RequestId<'a>,
 }
 
 impl<'a> ReplayXHRParamsBuilder<'a> {
-    /// Identifier of XHR to replay.
-    pub fn requestId(mut self, requestId: RequestId<'a>) -> Self { self.requestId = Some(requestId); self }
     pub fn build(self) -> ReplayXHRParams<'a> {
         ReplayXHRParams {
-            requestId: self.requestId.unwrap_or_default(),
+            requestId: self.requestId,
         }
     }
 }
@@ -5663,34 +5724,37 @@ pub struct SearchInResponseBodyParams<'a> {
 }
 
 impl<'a> SearchInResponseBodyParams<'a> {
-    pub fn builder() -> SearchInResponseBodyParamsBuilder<'a> { SearchInResponseBodyParamsBuilder::default() }
+    pub fn builder(requestId: RequestId<'a>, query: impl Into<Cow<'a, str>>) -> SearchInResponseBodyParamsBuilder<'a> {
+        SearchInResponseBodyParamsBuilder {
+            requestId: requestId,
+            query: query.into(),
+            caseSensitive: None,
+            isRegex: None,
+        }
+    }
     pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
     pub fn query(&self) -> &str { self.query.as_ref() }
     pub fn caseSensitive(&self) -> Option<bool> { self.caseSensitive }
     pub fn isRegex(&self) -> Option<bool> { self.isRegex }
 }
 
-#[derive(Default)]
+
 pub struct SearchInResponseBodyParamsBuilder<'a> {
-    requestId: Option<RequestId<'a>>,
-    query: Option<Cow<'a, str>>,
+    requestId: RequestId<'a>,
+    query: Cow<'a, str>,
     caseSensitive: Option<bool>,
     isRegex: Option<bool>,
 }
 
 impl<'a> SearchInResponseBodyParamsBuilder<'a> {
-    /// Identifier of the network response to search.
-    pub fn requestId(mut self, requestId: RequestId<'a>) -> Self { self.requestId = Some(requestId); self }
-    /// String to search for.
-    pub fn query(mut self, query: impl Into<Cow<'a, str>>) -> Self { self.query = Some(query.into()); self }
     /// If true, search is case sensitive.
     pub fn caseSensitive(mut self, caseSensitive: bool) -> Self { self.caseSensitive = Some(caseSensitive); self }
     /// If true, treats string parameter as regex.
     pub fn isRegex(mut self, isRegex: bool) -> Self { self.isRegex = Some(isRegex); self }
     pub fn build(self) -> SearchInResponseBodyParams<'a> {
         SearchInResponseBodyParams {
-            requestId: self.requestId.unwrap_or_default(),
-            query: self.query.unwrap_or_default(),
+            requestId: self.requestId,
+            query: self.query,
             caseSensitive: self.caseSensitive,
             isRegex: self.isRegex,
         }
@@ -5707,21 +5771,23 @@ pub struct SearchInResponseBodyReturns {
 }
 
 impl SearchInResponseBodyReturns {
-    pub fn builder() -> SearchInResponseBodyReturnsBuilder { SearchInResponseBodyReturnsBuilder::default() }
+    pub fn builder(result: Vec<crate::debugger::SearchMatch>) -> SearchInResponseBodyReturnsBuilder {
+        SearchInResponseBodyReturnsBuilder {
+            result: result,
+        }
+    }
     pub fn result(&self) -> &[crate::debugger::SearchMatch] { &self.result }
 }
 
-#[derive(Default)]
+
 pub struct SearchInResponseBodyReturnsBuilder {
-    result: Option<Vec<crate::debugger::SearchMatch>>,
+    result: Vec<crate::debugger::SearchMatch>,
 }
 
 impl SearchInResponseBodyReturnsBuilder {
-    /// List of search matches.
-    pub fn result(mut self, result: Vec<crate::debugger::SearchMatch>) -> Self { self.result = Some(result); self }
     pub fn build(self) -> SearchInResponseBodyReturns {
         SearchInResponseBodyReturns {
-            result: self.result.unwrap_or_default(),
+            result: self.result,
         }
     }
 }
@@ -5748,7 +5814,12 @@ pub struct SetBlockedURLsParams<'a> {
 }
 
 impl<'a> SetBlockedURLsParams<'a> {
-    pub fn builder() -> SetBlockedURLsParamsBuilder<'a> { SetBlockedURLsParamsBuilder::default() }
+    pub fn builder() -> SetBlockedURLsParamsBuilder<'a> {
+        SetBlockedURLsParamsBuilder {
+            urlPatterns: None,
+            urls: None,
+        }
+    }
     pub fn urlPatterns(&self) -> Option<&[BlockPattern<'a>]> { self.urlPatterns.as_deref() }
     pub fn urls(&self) -> Option<&[Cow<'a, str>]> { self.urls.as_deref() }
 }
@@ -5790,21 +5861,23 @@ pub struct SetBypassServiceWorkerParams {
 }
 
 impl SetBypassServiceWorkerParams {
-    pub fn builder() -> SetBypassServiceWorkerParamsBuilder { SetBypassServiceWorkerParamsBuilder::default() }
+    pub fn builder(bypass: bool) -> SetBypassServiceWorkerParamsBuilder {
+        SetBypassServiceWorkerParamsBuilder {
+            bypass: bypass,
+        }
+    }
     pub fn bypass(&self) -> bool { self.bypass }
 }
 
-#[derive(Default)]
+
 pub struct SetBypassServiceWorkerParamsBuilder {
-    bypass: Option<bool>,
+    bypass: bool,
 }
 
 impl SetBypassServiceWorkerParamsBuilder {
-    /// Bypass service worker and load from network.
-    pub fn bypass(mut self, bypass: bool) -> Self { self.bypass = Some(bypass); self }
     pub fn build(self) -> SetBypassServiceWorkerParams {
         SetBypassServiceWorkerParams {
-            bypass: self.bypass.unwrap_or_default(),
+            bypass: self.bypass,
         }
     }
 }
@@ -5826,21 +5899,23 @@ pub struct SetCacheDisabledParams {
 }
 
 impl SetCacheDisabledParams {
-    pub fn builder() -> SetCacheDisabledParamsBuilder { SetCacheDisabledParamsBuilder::default() }
+    pub fn builder(cacheDisabled: bool) -> SetCacheDisabledParamsBuilder {
+        SetCacheDisabledParamsBuilder {
+            cacheDisabled: cacheDisabled,
+        }
+    }
     pub fn cacheDisabled(&self) -> bool { self.cacheDisabled }
 }
 
-#[derive(Default)]
+
 pub struct SetCacheDisabledParamsBuilder {
-    cacheDisabled: Option<bool>,
+    cacheDisabled: bool,
 }
 
 impl SetCacheDisabledParamsBuilder {
-    /// Cache disabled state.
-    pub fn cacheDisabled(mut self, cacheDisabled: bool) -> Self { self.cacheDisabled = Some(cacheDisabled); self }
     pub fn build(self) -> SetCacheDisabledParams {
         SetCacheDisabledParams {
-            cacheDisabled: self.cacheDisabled.unwrap_or_default(),
+            cacheDisabled: self.cacheDisabled,
         }
     }
 }
@@ -5900,7 +5975,23 @@ pub struct SetCookieParams<'a> {
 }
 
 impl<'a> SetCookieParams<'a> {
-    pub fn builder() -> SetCookieParamsBuilder<'a> { SetCookieParamsBuilder::default() }
+    pub fn builder(name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> SetCookieParamsBuilder<'a> {
+        SetCookieParamsBuilder {
+            name: name.into(),
+            value: value.into(),
+            url: None,
+            domain: None,
+            path: None,
+            secure: None,
+            httpOnly: None,
+            sameSite: None,
+            expires: None,
+            priority: None,
+            sourceScheme: None,
+            sourcePort: None,
+            partitionKey: None,
+        }
+    }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn value(&self) -> &str { self.value.as_ref() }
     pub fn url(&self) -> Option<&str> { self.url.as_deref() }
@@ -5916,10 +6007,10 @@ impl<'a> SetCookieParams<'a> {
     pub fn partitionKey(&self) -> Option<&CookiePartitionKey<'a>> { self.partitionKey.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetCookieParamsBuilder<'a> {
-    name: Option<Cow<'a, str>>,
-    value: Option<Cow<'a, str>>,
+    name: Cow<'a, str>,
+    value: Cow<'a, str>,
     url: Option<Cow<'a, str>>,
     domain: Option<Cow<'a, str>>,
     path: Option<Cow<'a, str>>,
@@ -5934,10 +6025,6 @@ pub struct SetCookieParamsBuilder<'a> {
 }
 
 impl<'a> SetCookieParamsBuilder<'a> {
-    /// Cookie name.
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    /// Cookie value.
-    pub fn value(mut self, value: impl Into<Cow<'a, str>>) -> Self { self.value = Some(value.into()); self }
     /// The request-URI to associate with the setting of the cookie. This value can affect the
     /// default domain, path, source port, and source scheme values of the created cookie.
     pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
@@ -5965,8 +6052,8 @@ impl<'a> SetCookieParamsBuilder<'a> {
     pub fn partitionKey(mut self, partitionKey: CookiePartitionKey<'a>) -> Self { self.partitionKey = Some(partitionKey); self }
     pub fn build(self) -> SetCookieParams<'a> {
         SetCookieParams {
-            name: self.name.unwrap_or_default(),
-            value: self.value.unwrap_or_default(),
+            name: self.name,
+            value: self.value,
             url: self.url,
             domain: self.domain,
             path: self.path,
@@ -5992,21 +6079,23 @@ pub struct SetCookieReturns {
 }
 
 impl SetCookieReturns {
-    pub fn builder() -> SetCookieReturnsBuilder { SetCookieReturnsBuilder::default() }
+    pub fn builder(success: bool) -> SetCookieReturnsBuilder {
+        SetCookieReturnsBuilder {
+            success: success,
+        }
+    }
     pub fn success(&self) -> bool { self.success }
 }
 
-#[derive(Default)]
+
 pub struct SetCookieReturnsBuilder {
-    success: Option<bool>,
+    success: bool,
 }
 
 impl SetCookieReturnsBuilder {
-    /// Always set to true. If an error occurs, the response indicates protocol error.
-    pub fn success(mut self, success: bool) -> Self { self.success = Some(success); self }
     pub fn build(self) -> SetCookieReturns {
         SetCookieReturns {
-            success: self.success.unwrap_or_default(),
+            success: self.success,
         }
     }
 }
@@ -6028,21 +6117,23 @@ pub struct SetCookiesParams<'a> {
 }
 
 impl<'a> SetCookiesParams<'a> {
-    pub fn builder() -> SetCookiesParamsBuilder<'a> { SetCookiesParamsBuilder::default() }
+    pub fn builder(cookies: Vec<CookieParam<'a>>) -> SetCookiesParamsBuilder<'a> {
+        SetCookiesParamsBuilder {
+            cookies: cookies,
+        }
+    }
     pub fn cookies(&self) -> &[CookieParam<'a>] { &self.cookies }
 }
 
-#[derive(Default)]
+
 pub struct SetCookiesParamsBuilder<'a> {
-    cookies: Option<Vec<CookieParam<'a>>>,
+    cookies: Vec<CookieParam<'a>>,
 }
 
 impl<'a> SetCookiesParamsBuilder<'a> {
-    /// Cookies to be set.
-    pub fn cookies(mut self, cookies: Vec<CookieParam<'a>>) -> Self { self.cookies = Some(cookies); self }
     pub fn build(self) -> SetCookiesParams<'a> {
         SetCookiesParams {
-            cookies: self.cookies.unwrap_or_default(),
+            cookies: self.cookies,
         }
     }
 }
@@ -6064,21 +6155,23 @@ pub struct SetExtraHTTPHeadersParams {
 }
 
 impl SetExtraHTTPHeadersParams {
-    pub fn builder() -> SetExtraHTTPHeadersParamsBuilder { SetExtraHTTPHeadersParamsBuilder::default() }
+    pub fn builder(headers: Headers) -> SetExtraHTTPHeadersParamsBuilder {
+        SetExtraHTTPHeadersParamsBuilder {
+            headers: headers,
+        }
+    }
     pub fn headers(&self) -> &Headers { &self.headers }
 }
 
-#[derive(Default)]
+
 pub struct SetExtraHTTPHeadersParamsBuilder {
-    headers: Option<Headers>,
+    headers: Headers,
 }
 
 impl SetExtraHTTPHeadersParamsBuilder {
-    /// Map with extra HTTP headers.
-    pub fn headers(mut self, headers: Headers) -> Self { self.headers = Some(headers); self }
     pub fn build(self) -> SetExtraHTTPHeadersParams {
         SetExtraHTTPHeadersParams {
-            headers: self.headers.unwrap_or_default(),
+            headers: self.headers,
         }
     }
 }
@@ -6100,21 +6193,23 @@ pub struct SetAttachDebugStackParams {
 }
 
 impl SetAttachDebugStackParams {
-    pub fn builder() -> SetAttachDebugStackParamsBuilder { SetAttachDebugStackParamsBuilder::default() }
+    pub fn builder(enabled: bool) -> SetAttachDebugStackParamsBuilder {
+        SetAttachDebugStackParamsBuilder {
+            enabled: enabled,
+        }
+    }
     pub fn enabled(&self) -> bool { self.enabled }
 }
 
-#[derive(Default)]
+
 pub struct SetAttachDebugStackParamsBuilder {
-    enabled: Option<bool>,
+    enabled: bool,
 }
 
 impl SetAttachDebugStackParamsBuilder {
-    /// Whether to attach a page script stack for debugging purpose.
-    pub fn enabled(mut self, enabled: bool) -> Self { self.enabled = Some(enabled); self }
     pub fn build(self) -> SetAttachDebugStackParams {
         SetAttachDebugStackParams {
-            enabled: self.enabled.unwrap_or_default(),
+            enabled: self.enabled,
         }
     }
 }
@@ -6138,22 +6233,23 @@ pub struct SetRequestInterceptionParams<'a> {
 }
 
 impl<'a> SetRequestInterceptionParams<'a> {
-    pub fn builder() -> SetRequestInterceptionParamsBuilder<'a> { SetRequestInterceptionParamsBuilder::default() }
+    pub fn builder(patterns: Vec<RequestPattern<'a>>) -> SetRequestInterceptionParamsBuilder<'a> {
+        SetRequestInterceptionParamsBuilder {
+            patterns: patterns,
+        }
+    }
     pub fn patterns(&self) -> &[RequestPattern<'a>] { &self.patterns }
 }
 
-#[derive(Default)]
+
 pub struct SetRequestInterceptionParamsBuilder<'a> {
-    patterns: Option<Vec<RequestPattern<'a>>>,
+    patterns: Vec<RequestPattern<'a>>,
 }
 
 impl<'a> SetRequestInterceptionParamsBuilder<'a> {
-    /// Requests matching any of these patterns will be forwarded and wait for the corresponding
-    /// continueInterceptedRequest call.
-    pub fn patterns(mut self, patterns: Vec<RequestPattern<'a>>) -> Self { self.patterns = Some(patterns); self }
     pub fn build(self) -> SetRequestInterceptionParams<'a> {
         SetRequestInterceptionParams {
-            patterns: self.patterns.unwrap_or_default(),
+            patterns: self.patterns,
         }
     }
 }
@@ -6184,24 +6280,29 @@ pub struct SetUserAgentOverrideParams<'a> {
 }
 
 impl<'a> SetUserAgentOverrideParams<'a> {
-    pub fn builder() -> SetUserAgentOverrideParamsBuilder<'a> { SetUserAgentOverrideParamsBuilder::default() }
+    pub fn builder(userAgent: impl Into<Cow<'a, str>>) -> SetUserAgentOverrideParamsBuilder<'a> {
+        SetUserAgentOverrideParamsBuilder {
+            userAgent: userAgent.into(),
+            acceptLanguage: None,
+            platform: None,
+            userAgentMetadata: None,
+        }
+    }
     pub fn userAgent(&self) -> &str { self.userAgent.as_ref() }
     pub fn acceptLanguage(&self) -> Option<&str> { self.acceptLanguage.as_deref() }
     pub fn platform(&self) -> Option<&str> { self.platform.as_deref() }
     pub fn userAgentMetadata(&self) -> Option<&crate::emulation::UserAgentMetadata<'a>> { self.userAgentMetadata.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetUserAgentOverrideParamsBuilder<'a> {
-    userAgent: Option<Cow<'a, str>>,
+    userAgent: Cow<'a, str>,
     acceptLanguage: Option<Cow<'a, str>>,
     platform: Option<Cow<'a, str>>,
     userAgentMetadata: Option<crate::emulation::UserAgentMetadata<'a>>,
 }
 
 impl<'a> SetUserAgentOverrideParamsBuilder<'a> {
-    /// User agent to use.
-    pub fn userAgent(mut self, userAgent: impl Into<Cow<'a, str>>) -> Self { self.userAgent = Some(userAgent.into()); self }
     /// Browser language to emulate.
     pub fn acceptLanguage(mut self, acceptLanguage: impl Into<Cow<'a, str>>) -> Self { self.acceptLanguage = Some(acceptLanguage.into()); self }
     /// The platform navigator.platform should return.
@@ -6210,7 +6311,7 @@ impl<'a> SetUserAgentOverrideParamsBuilder<'a> {
     pub fn userAgentMetadata(mut self, userAgentMetadata: crate::emulation::UserAgentMetadata<'a>) -> Self { self.userAgentMetadata = Some(userAgentMetadata); self }
     pub fn build(self) -> SetUserAgentOverrideParams<'a> {
         SetUserAgentOverrideParams {
-            userAgent: self.userAgent.unwrap_or_default(),
+            userAgent: self.userAgent,
             acceptLanguage: self.acceptLanguage,
             platform: self.platform,
             userAgentMetadata: self.userAgentMetadata,
@@ -6236,21 +6337,23 @@ pub struct StreamResourceContentParams<'a> {
 }
 
 impl<'a> StreamResourceContentParams<'a> {
-    pub fn builder() -> StreamResourceContentParamsBuilder<'a> { StreamResourceContentParamsBuilder::default() }
+    pub fn builder(requestId: RequestId<'a>) -> StreamResourceContentParamsBuilder<'a> {
+        StreamResourceContentParamsBuilder {
+            requestId: requestId,
+        }
+    }
     pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
 }
 
-#[derive(Default)]
+
 pub struct StreamResourceContentParamsBuilder<'a> {
-    requestId: Option<RequestId<'a>>,
+    requestId: RequestId<'a>,
 }
 
 impl<'a> StreamResourceContentParamsBuilder<'a> {
-    /// Identifier of the request to stream.
-    pub fn requestId(mut self, requestId: RequestId<'a>) -> Self { self.requestId = Some(requestId); self }
     pub fn build(self) -> StreamResourceContentParams<'a> {
         StreamResourceContentParams {
-            requestId: self.requestId.unwrap_or_default(),
+            requestId: self.requestId,
         }
     }
 }
@@ -6266,21 +6369,23 @@ pub struct StreamResourceContentReturns<'a> {
 }
 
 impl<'a> StreamResourceContentReturns<'a> {
-    pub fn builder() -> StreamResourceContentReturnsBuilder<'a> { StreamResourceContentReturnsBuilder::default() }
+    pub fn builder(bufferedData: impl Into<Cow<'a, str>>) -> StreamResourceContentReturnsBuilder<'a> {
+        StreamResourceContentReturnsBuilder {
+            bufferedData: bufferedData.into(),
+        }
+    }
     pub fn bufferedData(&self) -> &str { self.bufferedData.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct StreamResourceContentReturnsBuilder<'a> {
-    bufferedData: Option<Cow<'a, str>>,
+    bufferedData: Cow<'a, str>,
 }
 
 impl<'a> StreamResourceContentReturnsBuilder<'a> {
-    /// Data that has been buffered until streaming is enabled. (Encoded as a base64 string when passed over JSON)
-    pub fn bufferedData(mut self, bufferedData: impl Into<Cow<'a, str>>) -> Self { self.bufferedData = Some(bufferedData.into()); self }
     pub fn build(self) -> StreamResourceContentReturns<'a> {
         StreamResourceContentReturns {
-            bufferedData: self.bufferedData.unwrap_or_default(),
+            bufferedData: self.bufferedData,
         }
     }
 }
@@ -6303,7 +6408,11 @@ pub struct GetSecurityIsolationStatusParams<'a> {
 }
 
 impl<'a> GetSecurityIsolationStatusParams<'a> {
-    pub fn builder() -> GetSecurityIsolationStatusParamsBuilder<'a> { GetSecurityIsolationStatusParamsBuilder::default() }
+    pub fn builder() -> GetSecurityIsolationStatusParamsBuilder<'a> {
+        GetSecurityIsolationStatusParamsBuilder {
+            frameId: None,
+        }
+    }
     pub fn frameId(&self) -> Option<&crate::page::FrameId<'a>> { self.frameId.as_ref() }
 }
 
@@ -6331,20 +6440,23 @@ pub struct GetSecurityIsolationStatusReturns<'a> {
 }
 
 impl<'a> GetSecurityIsolationStatusReturns<'a> {
-    pub fn builder() -> GetSecurityIsolationStatusReturnsBuilder<'a> { GetSecurityIsolationStatusReturnsBuilder::default() }
+    pub fn builder(status: SecurityIsolationStatus<'a>) -> GetSecurityIsolationStatusReturnsBuilder<'a> {
+        GetSecurityIsolationStatusReturnsBuilder {
+            status: status,
+        }
+    }
     pub fn status(&self) -> &SecurityIsolationStatus<'a> { &self.status }
 }
 
-#[derive(Default)]
+
 pub struct GetSecurityIsolationStatusReturnsBuilder<'a> {
-    status: Option<SecurityIsolationStatus<'a>>,
+    status: SecurityIsolationStatus<'a>,
 }
 
 impl<'a> GetSecurityIsolationStatusReturnsBuilder<'a> {
-    pub fn status(mut self, status: SecurityIsolationStatus<'a>) -> Self { self.status = Some(status); self }
     pub fn build(self) -> GetSecurityIsolationStatusReturns<'a> {
         GetSecurityIsolationStatusReturns {
-            status: self.status.unwrap_or_default(),
+            status: self.status,
         }
     }
 }
@@ -6367,21 +6479,23 @@ pub struct EnableReportingApiParams {
 }
 
 impl EnableReportingApiParams {
-    pub fn builder() -> EnableReportingApiParamsBuilder { EnableReportingApiParamsBuilder::default() }
+    pub fn builder(enable: bool) -> EnableReportingApiParamsBuilder {
+        EnableReportingApiParamsBuilder {
+            enable: enable,
+        }
+    }
     pub fn enable(&self) -> bool { self.enable }
 }
 
-#[derive(Default)]
+
 pub struct EnableReportingApiParamsBuilder {
-    enable: Option<bool>,
+    enable: bool,
 }
 
 impl EnableReportingApiParamsBuilder {
-    /// Whether to enable or disable events for the Reporting API
-    pub fn enable(mut self, enable: bool) -> Self { self.enable = Some(enable); self }
     pub fn build(self) -> EnableReportingApiParams {
         EnableReportingApiParams {
-            enable: self.enable.unwrap_or_default(),
+            enable: self.enable,
         }
     }
 }
@@ -6403,21 +6517,23 @@ pub struct EnableDeviceBoundSessionsParams {
 }
 
 impl EnableDeviceBoundSessionsParams {
-    pub fn builder() -> EnableDeviceBoundSessionsParamsBuilder { EnableDeviceBoundSessionsParamsBuilder::default() }
+    pub fn builder(enable: bool) -> EnableDeviceBoundSessionsParamsBuilder {
+        EnableDeviceBoundSessionsParamsBuilder {
+            enable: enable,
+        }
+    }
     pub fn enable(&self) -> bool { self.enable }
 }
 
-#[derive(Default)]
+
 pub struct EnableDeviceBoundSessionsParamsBuilder {
-    enable: Option<bool>,
+    enable: bool,
 }
 
 impl EnableDeviceBoundSessionsParamsBuilder {
-    /// Whether to enable or disable events.
-    pub fn enable(mut self, enable: bool) -> Self { self.enable = Some(enable); self }
     pub fn build(self) -> EnableDeviceBoundSessionsParams {
         EnableDeviceBoundSessionsParams {
-            enable: self.enable.unwrap_or_default(),
+            enable: self.enable,
         }
     }
 }
@@ -6438,20 +6554,23 @@ pub struct DeleteDeviceBoundSessionParams<'a> {
 }
 
 impl<'a> DeleteDeviceBoundSessionParams<'a> {
-    pub fn builder() -> DeleteDeviceBoundSessionParamsBuilder<'a> { DeleteDeviceBoundSessionParamsBuilder::default() }
+    pub fn builder(key: DeviceBoundSessionKey<'a>) -> DeleteDeviceBoundSessionParamsBuilder<'a> {
+        DeleteDeviceBoundSessionParamsBuilder {
+            key: key,
+        }
+    }
     pub fn key(&self) -> &DeviceBoundSessionKey<'a> { &self.key }
 }
 
-#[derive(Default)]
+
 pub struct DeleteDeviceBoundSessionParamsBuilder<'a> {
-    key: Option<DeviceBoundSessionKey<'a>>,
+    key: DeviceBoundSessionKey<'a>,
 }
 
 impl<'a> DeleteDeviceBoundSessionParamsBuilder<'a> {
-    pub fn key(mut self, key: DeviceBoundSessionKey<'a>) -> Self { self.key = Some(key); self }
     pub fn build(self) -> DeleteDeviceBoundSessionParams<'a> {
         DeleteDeviceBoundSessionParams {
-            key: self.key.unwrap_or_default(),
+            key: self.key,
         }
     }
 }
@@ -6473,21 +6592,23 @@ pub struct FetchSchemefulSiteParams<'a> {
 }
 
 impl<'a> FetchSchemefulSiteParams<'a> {
-    pub fn builder() -> FetchSchemefulSiteParamsBuilder<'a> { FetchSchemefulSiteParamsBuilder::default() }
+    pub fn builder(origin: impl Into<Cow<'a, str>>) -> FetchSchemefulSiteParamsBuilder<'a> {
+        FetchSchemefulSiteParamsBuilder {
+            origin: origin.into(),
+        }
+    }
     pub fn origin(&self) -> &str { self.origin.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct FetchSchemefulSiteParamsBuilder<'a> {
-    origin: Option<Cow<'a, str>>,
+    origin: Cow<'a, str>,
 }
 
 impl<'a> FetchSchemefulSiteParamsBuilder<'a> {
-    /// The URL origin.
-    pub fn origin(mut self, origin: impl Into<Cow<'a, str>>) -> Self { self.origin = Some(origin.into()); self }
     pub fn build(self) -> FetchSchemefulSiteParams<'a> {
         FetchSchemefulSiteParams {
-            origin: self.origin.unwrap_or_default(),
+            origin: self.origin,
         }
     }
 }
@@ -6502,21 +6623,23 @@ pub struct FetchSchemefulSiteReturns<'a> {
 }
 
 impl<'a> FetchSchemefulSiteReturns<'a> {
-    pub fn builder() -> FetchSchemefulSiteReturnsBuilder<'a> { FetchSchemefulSiteReturnsBuilder::default() }
+    pub fn builder(schemefulSite: impl Into<Cow<'a, str>>) -> FetchSchemefulSiteReturnsBuilder<'a> {
+        FetchSchemefulSiteReturnsBuilder {
+            schemefulSite: schemefulSite.into(),
+        }
+    }
     pub fn schemefulSite(&self) -> &str { self.schemefulSite.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct FetchSchemefulSiteReturnsBuilder<'a> {
-    schemefulSite: Option<Cow<'a, str>>,
+    schemefulSite: Cow<'a, str>,
 }
 
 impl<'a> FetchSchemefulSiteReturnsBuilder<'a> {
-    /// The corresponding schemeful site.
-    pub fn schemefulSite(mut self, schemefulSite: impl Into<Cow<'a, str>>) -> Self { self.schemefulSite = Some(schemefulSite.into()); self }
     pub fn build(self) -> FetchSchemefulSiteReturns<'a> {
         FetchSchemefulSiteReturns {
-            schemefulSite: self.schemefulSite.unwrap_or_default(),
+            schemefulSite: self.schemefulSite,
         }
     }
 }
@@ -6544,32 +6667,34 @@ pub struct LoadNetworkResourceParams<'a> {
 }
 
 impl<'a> LoadNetworkResourceParams<'a> {
-    pub fn builder() -> LoadNetworkResourceParamsBuilder<'a> { LoadNetworkResourceParamsBuilder::default() }
+    pub fn builder(url: impl Into<Cow<'a, str>>, options: LoadNetworkResourceOptions) -> LoadNetworkResourceParamsBuilder<'a> {
+        LoadNetworkResourceParamsBuilder {
+            frameId: None,
+            url: url.into(),
+            options: options,
+        }
+    }
     pub fn frameId(&self) -> Option<&crate::page::FrameId<'a>> { self.frameId.as_ref() }
     pub fn url(&self) -> &str { self.url.as_ref() }
     pub fn options(&self) -> &LoadNetworkResourceOptions { &self.options }
 }
 
-#[derive(Default)]
+
 pub struct LoadNetworkResourceParamsBuilder<'a> {
     frameId: Option<crate::page::FrameId<'a>>,
-    url: Option<Cow<'a, str>>,
-    options: Option<LoadNetworkResourceOptions>,
+    url: Cow<'a, str>,
+    options: LoadNetworkResourceOptions,
 }
 
 impl<'a> LoadNetworkResourceParamsBuilder<'a> {
     /// Frame id to get the resource for. Mandatory for frame targets, and
     /// should be omitted for worker targets.
     pub fn frameId(mut self, frameId: crate::page::FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
-    /// URL of the resource to get content for.
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
-    /// Options for the request.
-    pub fn options(mut self, options: LoadNetworkResourceOptions) -> Self { self.options = Some(options); self }
     pub fn build(self) -> LoadNetworkResourceParams<'a> {
         LoadNetworkResourceParams {
             frameId: self.frameId,
-            url: self.url.unwrap_or_default(),
-            options: self.options.unwrap_or_default(),
+            url: self.url,
+            options: self.options,
         }
     }
 }
@@ -6583,20 +6708,23 @@ pub struct LoadNetworkResourceReturns<'a> {
 }
 
 impl<'a> LoadNetworkResourceReturns<'a> {
-    pub fn builder() -> LoadNetworkResourceReturnsBuilder<'a> { LoadNetworkResourceReturnsBuilder::default() }
+    pub fn builder(resource: LoadNetworkResourcePageResult<'a>) -> LoadNetworkResourceReturnsBuilder<'a> {
+        LoadNetworkResourceReturnsBuilder {
+            resource: resource,
+        }
+    }
     pub fn resource(&self) -> &LoadNetworkResourcePageResult<'a> { &self.resource }
 }
 
-#[derive(Default)]
+
 pub struct LoadNetworkResourceReturnsBuilder<'a> {
-    resource: Option<LoadNetworkResourcePageResult<'a>>,
+    resource: LoadNetworkResourcePageResult<'a>,
 }
 
 impl<'a> LoadNetworkResourceReturnsBuilder<'a> {
-    pub fn resource(mut self, resource: LoadNetworkResourcePageResult<'a>) -> Self { self.resource = Some(resource); self }
     pub fn build(self) -> LoadNetworkResourceReturns<'a> {
         LoadNetworkResourceReturns {
-            resource: self.resource.unwrap_or_default(),
+            resource: self.resource,
         }
     }
 }
@@ -6619,21 +6747,23 @@ pub struct SetCookieControlsParams {
 }
 
 impl SetCookieControlsParams {
-    pub fn builder() -> SetCookieControlsParamsBuilder { SetCookieControlsParamsBuilder::default() }
+    pub fn builder(enableThirdPartyCookieRestriction: bool) -> SetCookieControlsParamsBuilder {
+        SetCookieControlsParamsBuilder {
+            enableThirdPartyCookieRestriction: enableThirdPartyCookieRestriction,
+        }
+    }
     pub fn enableThirdPartyCookieRestriction(&self) -> bool { self.enableThirdPartyCookieRestriction }
 }
 
-#[derive(Default)]
+
 pub struct SetCookieControlsParamsBuilder {
-    enableThirdPartyCookieRestriction: Option<bool>,
+    enableThirdPartyCookieRestriction: bool,
 }
 
 impl SetCookieControlsParamsBuilder {
-    /// Whether 3pc restriction is enabled.
-    pub fn enableThirdPartyCookieRestriction(mut self, enableThirdPartyCookieRestriction: bool) -> Self { self.enableThirdPartyCookieRestriction = Some(enableThirdPartyCookieRestriction); self }
     pub fn build(self) -> SetCookieControlsParams {
         SetCookieControlsParams {
-            enableThirdPartyCookieRestriction: self.enableThirdPartyCookieRestriction.unwrap_or_default(),
+            enableThirdPartyCookieRestriction: self.enableThirdPartyCookieRestriction,
         }
     }
 }

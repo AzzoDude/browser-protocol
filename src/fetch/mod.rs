@@ -41,7 +41,13 @@ pub struct RequestPattern<'a> {
 }
 
 impl<'a> RequestPattern<'a> {
-    pub fn builder() -> RequestPatternBuilder<'a> { RequestPatternBuilder::default() }
+    pub fn builder() -> RequestPatternBuilder<'a> {
+        RequestPatternBuilder {
+            urlPattern: None,
+            resourceType: None,
+            requestStage: None,
+        }
+    }
     pub fn urlPattern(&self) -> Option<&str> { self.urlPattern.as_deref() }
     pub fn resourceType(&self) -> Option<&crate::network::ResourceType> { self.resourceType.as_ref() }
     pub fn requestStage(&self) -> Option<&RequestStage> { self.requestStage.as_ref() }
@@ -81,24 +87,27 @@ pub struct HeaderEntry<'a> {
 }
 
 impl<'a> HeaderEntry<'a> {
-    pub fn builder() -> HeaderEntryBuilder<'a> { HeaderEntryBuilder::default() }
+    pub fn builder(name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> HeaderEntryBuilder<'a> {
+        HeaderEntryBuilder {
+            name: name.into(),
+            value: value.into(),
+        }
+    }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn value(&self) -> &str { self.value.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct HeaderEntryBuilder<'a> {
-    name: Option<Cow<'a, str>>,
-    value: Option<Cow<'a, str>>,
+    name: Cow<'a, str>,
+    value: Cow<'a, str>,
 }
 
 impl<'a> HeaderEntryBuilder<'a> {
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    pub fn value(mut self, value: impl Into<Cow<'a, str>>) -> Self { self.value = Some(value.into()); self }
     pub fn build(self) -> HeaderEntry<'a> {
         HeaderEntry {
-            name: self.name.unwrap_or_default(),
-            value: self.value.unwrap_or_default(),
+            name: self.name,
+            value: self.value,
         }
     }
 }
@@ -120,36 +129,37 @@ pub struct AuthChallenge<'a> {
 }
 
 impl<'a> AuthChallenge<'a> {
-    pub fn builder() -> AuthChallengeBuilder<'a> { AuthChallengeBuilder::default() }
+    pub fn builder(origin: impl Into<Cow<'a, str>>, scheme: impl Into<Cow<'a, str>>, realm: impl Into<Cow<'a, str>>) -> AuthChallengeBuilder<'a> {
+        AuthChallengeBuilder {
+            source: None,
+            origin: origin.into(),
+            scheme: scheme.into(),
+            realm: realm.into(),
+        }
+    }
     pub fn source(&self) -> Option<&str> { self.source.as_deref() }
     pub fn origin(&self) -> &str { self.origin.as_ref() }
     pub fn scheme(&self) -> &str { self.scheme.as_ref() }
     pub fn realm(&self) -> &str { self.realm.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct AuthChallengeBuilder<'a> {
     source: Option<Cow<'a, str>>,
-    origin: Option<Cow<'a, str>>,
-    scheme: Option<Cow<'a, str>>,
-    realm: Option<Cow<'a, str>>,
+    origin: Cow<'a, str>,
+    scheme: Cow<'a, str>,
+    realm: Cow<'a, str>,
 }
 
 impl<'a> AuthChallengeBuilder<'a> {
     /// Source of the authentication challenge.
     pub fn source(mut self, source: impl Into<Cow<'a, str>>) -> Self { self.source = Some(source.into()); self }
-    /// Origin of the challenger.
-    pub fn origin(mut self, origin: impl Into<Cow<'a, str>>) -> Self { self.origin = Some(origin.into()); self }
-    /// The authentication scheme used, such as basic or digest
-    pub fn scheme(mut self, scheme: impl Into<Cow<'a, str>>) -> Self { self.scheme = Some(scheme.into()); self }
-    /// The realm of the challenge. May be empty.
-    pub fn realm(mut self, realm: impl Into<Cow<'a, str>>) -> Self { self.realm = Some(realm.into()); self }
     pub fn build(self) -> AuthChallenge<'a> {
         AuthChallenge {
             source: self.source,
-            origin: self.origin.unwrap_or_default(),
-            scheme: self.scheme.unwrap_or_default(),
-            realm: self.realm.unwrap_or_default(),
+            origin: self.origin,
+            scheme: self.scheme,
+            realm: self.realm,
         }
     }
 }
@@ -174,24 +184,26 @@ pub struct AuthChallengeResponse<'a> {
 }
 
 impl<'a> AuthChallengeResponse<'a> {
-    pub fn builder() -> AuthChallengeResponseBuilder<'a> { AuthChallengeResponseBuilder::default() }
+    pub fn builder(response: impl Into<Cow<'a, str>>) -> AuthChallengeResponseBuilder<'a> {
+        AuthChallengeResponseBuilder {
+            response: response.into(),
+            username: None,
+            password: None,
+        }
+    }
     pub fn response(&self) -> &str { self.response.as_ref() }
     pub fn username(&self) -> Option<&str> { self.username.as_deref() }
     pub fn password(&self) -> Option<&str> { self.password.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct AuthChallengeResponseBuilder<'a> {
-    response: Option<Cow<'a, str>>,
+    response: Cow<'a, str>,
     username: Option<Cow<'a, str>>,
     password: Option<Cow<'a, str>>,
 }
 
 impl<'a> AuthChallengeResponseBuilder<'a> {
-    /// The decision on what to do in response to the authorization challenge.  Default means
-    /// deferring to the default behavior of the net stack, which will likely either the Cancel
-    /// authentication or display a popup dialog box.
-    pub fn response(mut self, response: impl Into<Cow<'a, str>>) -> Self { self.response = Some(response.into()); self }
     /// The username to provide, possibly empty. Should only be set if response is
     /// ProvideCredentials.
     pub fn username(mut self, username: impl Into<Cow<'a, str>>) -> Self { self.username = Some(username.into()); self }
@@ -200,7 +212,7 @@ impl<'a> AuthChallengeResponseBuilder<'a> {
     pub fn password(mut self, password: impl Into<Cow<'a, str>>) -> Self { self.password = Some(password.into()); self }
     pub fn build(self) -> AuthChallengeResponse<'a> {
         AuthChallengeResponse {
-            response: self.response.unwrap_or_default(),
+            response: self.response,
             username: self.username,
             password: self.password,
         }
@@ -209,21 +221,6 @@ impl<'a> AuthChallengeResponseBuilder<'a> {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct DisableParams {}
-
-impl DisableParams {
-    pub fn builder() -> DisableParamsBuilder {
-        DisableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct DisableParamsBuilder {}
-
-impl DisableParamsBuilder {
-    pub fn build(self) -> DisableParams {
-        DisableParams {}
-    }
-}
 
 impl DisableParams { pub const METHOD: &'static str = "Fetch.disable"; }
 
@@ -250,7 +247,12 @@ pub struct EnableParams<'a> {
 }
 
 impl<'a> EnableParams<'a> {
-    pub fn builder() -> EnableParamsBuilder<'a> { EnableParamsBuilder::default() }
+    pub fn builder() -> EnableParamsBuilder<'a> {
+        EnableParamsBuilder {
+            patterns: None,
+            handleAuthRequests: None,
+        }
+    }
     pub fn patterns(&self) -> Option<&[RequestPattern<'a>]> { self.patterns.as_deref() }
     pub fn handleAuthRequests(&self) -> Option<bool> { self.handleAuthRequests }
 }
@@ -296,26 +298,27 @@ pub struct FailRequestParams<'a> {
 }
 
 impl<'a> FailRequestParams<'a> {
-    pub fn builder() -> FailRequestParamsBuilder<'a> { FailRequestParamsBuilder::default() }
+    pub fn builder(requestId: RequestId<'a>, errorReason: crate::network::ErrorReason) -> FailRequestParamsBuilder<'a> {
+        FailRequestParamsBuilder {
+            requestId: requestId,
+            errorReason: errorReason,
+        }
+    }
     pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
     pub fn errorReason(&self) -> &crate::network::ErrorReason { &self.errorReason }
 }
 
-#[derive(Default)]
+
 pub struct FailRequestParamsBuilder<'a> {
-    requestId: Option<RequestId<'a>>,
-    errorReason: Option<crate::network::ErrorReason>,
+    requestId: RequestId<'a>,
+    errorReason: crate::network::ErrorReason,
 }
 
 impl<'a> FailRequestParamsBuilder<'a> {
-    /// An id the client received in requestPaused event.
-    pub fn requestId(mut self, requestId: RequestId<'a>) -> Self { self.requestId = Some(requestId); self }
-    /// Causes the request to fail with the given reason.
-    pub fn errorReason(mut self, errorReason: crate::network::ErrorReason) -> Self { self.errorReason = Some(errorReason); self }
     pub fn build(self) -> FailRequestParams<'a> {
         FailRequestParams {
-            requestId: self.requestId.unwrap_or_default(),
-            errorReason: self.errorReason.unwrap_or_default(),
+            requestId: self.requestId,
+            errorReason: self.errorReason,
         }
     }
 }
@@ -357,7 +360,16 @@ pub struct FulfillRequestParams<'a> {
 }
 
 impl<'a> FulfillRequestParams<'a> {
-    pub fn builder() -> FulfillRequestParamsBuilder<'a> { FulfillRequestParamsBuilder::default() }
+    pub fn builder(requestId: RequestId<'a>, responseCode: i64) -> FulfillRequestParamsBuilder<'a> {
+        FulfillRequestParamsBuilder {
+            requestId: requestId,
+            responseCode: responseCode,
+            responseHeaders: None,
+            binaryResponseHeaders: None,
+            body: None,
+            responsePhrase: None,
+        }
+    }
     pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
     pub fn responseCode(&self) -> i64 { self.responseCode }
     pub fn responseHeaders(&self) -> Option<&[HeaderEntry<'a>]> { self.responseHeaders.as_deref() }
@@ -366,10 +378,10 @@ impl<'a> FulfillRequestParams<'a> {
     pub fn responsePhrase(&self) -> Option<&str> { self.responsePhrase.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct FulfillRequestParamsBuilder<'a> {
-    requestId: Option<RequestId<'a>>,
-    responseCode: Option<i64>,
+    requestId: RequestId<'a>,
+    responseCode: i64,
     responseHeaders: Option<Vec<HeaderEntry<'a>>>,
     binaryResponseHeaders: Option<Cow<'a, str>>,
     body: Option<Cow<'a, str>>,
@@ -377,10 +389,6 @@ pub struct FulfillRequestParamsBuilder<'a> {
 }
 
 impl<'a> FulfillRequestParamsBuilder<'a> {
-    /// An id the client received in requestPaused event.
-    pub fn requestId(mut self, requestId: RequestId<'a>) -> Self { self.requestId = Some(requestId); self }
-    /// An HTTP response code.
-    pub fn responseCode(mut self, responseCode: i64) -> Self { self.responseCode = Some(responseCode); self }
     /// Response headers.
     pub fn responseHeaders(mut self, responseHeaders: Vec<HeaderEntry<'a>>) -> Self { self.responseHeaders = Some(responseHeaders); self }
     /// Alternative way of specifying response headers as a \0-separated
@@ -397,8 +405,8 @@ impl<'a> FulfillRequestParamsBuilder<'a> {
     pub fn responsePhrase(mut self, responsePhrase: impl Into<Cow<'a, str>>) -> Self { self.responsePhrase = Some(responsePhrase.into()); self }
     pub fn build(self) -> FulfillRequestParams<'a> {
         FulfillRequestParams {
-            requestId: self.requestId.unwrap_or_default(),
-            responseCode: self.responseCode.unwrap_or_default(),
+            requestId: self.requestId,
+            responseCode: self.responseCode,
             responseHeaders: self.responseHeaders,
             binaryResponseHeaders: self.binaryResponseHeaders,
             body: self.body,
@@ -441,7 +449,16 @@ pub struct ContinueRequestParams<'a> {
 }
 
 impl<'a> ContinueRequestParams<'a> {
-    pub fn builder() -> ContinueRequestParamsBuilder<'a> { ContinueRequestParamsBuilder::default() }
+    pub fn builder(requestId: RequestId<'a>) -> ContinueRequestParamsBuilder<'a> {
+        ContinueRequestParamsBuilder {
+            requestId: requestId,
+            url: None,
+            method: None,
+            postData: None,
+            headers: None,
+            interceptResponse: None,
+        }
+    }
     pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
     pub fn url(&self) -> Option<&str> { self.url.as_deref() }
     pub fn method(&self) -> Option<&str> { self.method.as_deref() }
@@ -450,9 +467,9 @@ impl<'a> ContinueRequestParams<'a> {
     pub fn interceptResponse(&self) -> Option<bool> { self.interceptResponse }
 }
 
-#[derive(Default)]
+
 pub struct ContinueRequestParamsBuilder<'a> {
-    requestId: Option<RequestId<'a>>,
+    requestId: RequestId<'a>,
     url: Option<Cow<'a, str>>,
     method: Option<Cow<'a, str>>,
     postData: Option<Cow<'a, str>>,
@@ -461,8 +478,6 @@ pub struct ContinueRequestParamsBuilder<'a> {
 }
 
 impl<'a> ContinueRequestParamsBuilder<'a> {
-    /// An id the client received in requestPaused event.
-    pub fn requestId(mut self, requestId: RequestId<'a>) -> Self { self.requestId = Some(requestId); self }
     /// If set, the request url will be modified in a way that's not observable by page.
     pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
     /// If set, the request method is overridden.
@@ -477,7 +492,7 @@ impl<'a> ContinueRequestParamsBuilder<'a> {
     pub fn interceptResponse(mut self, interceptResponse: bool) -> Self { self.interceptResponse = Some(interceptResponse); self }
     pub fn build(self) -> ContinueRequestParams<'a> {
         ContinueRequestParams {
-            requestId: self.requestId.unwrap_or_default(),
+            requestId: self.requestId,
             url: self.url,
             method: self.method,
             postData: self.postData,
@@ -506,26 +521,27 @@ pub struct ContinueWithAuthParams<'a> {
 }
 
 impl<'a> ContinueWithAuthParams<'a> {
-    pub fn builder() -> ContinueWithAuthParamsBuilder<'a> { ContinueWithAuthParamsBuilder::default() }
+    pub fn builder(requestId: RequestId<'a>, authChallengeResponse: AuthChallengeResponse<'a>) -> ContinueWithAuthParamsBuilder<'a> {
+        ContinueWithAuthParamsBuilder {
+            requestId: requestId,
+            authChallengeResponse: authChallengeResponse,
+        }
+    }
     pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
     pub fn authChallengeResponse(&self) -> &AuthChallengeResponse<'a> { &self.authChallengeResponse }
 }
 
-#[derive(Default)]
+
 pub struct ContinueWithAuthParamsBuilder<'a> {
-    requestId: Option<RequestId<'a>>,
-    authChallengeResponse: Option<AuthChallengeResponse<'a>>,
+    requestId: RequestId<'a>,
+    authChallengeResponse: AuthChallengeResponse<'a>,
 }
 
 impl<'a> ContinueWithAuthParamsBuilder<'a> {
-    /// An id the client received in authRequired event.
-    pub fn requestId(mut self, requestId: RequestId<'a>) -> Self { self.requestId = Some(requestId); self }
-    /// Response to  with an authChallenge.
-    pub fn authChallengeResponse(mut self, authChallengeResponse: AuthChallengeResponse<'a>) -> Self { self.authChallengeResponse = Some(authChallengeResponse); self }
     pub fn build(self) -> ContinueWithAuthParams<'a> {
         ContinueWithAuthParams {
-            requestId: self.requestId.unwrap_or_default(),
-            authChallengeResponse: self.authChallengeResponse.unwrap_or_default(),
+            requestId: self.requestId,
+            authChallengeResponse: self.authChallengeResponse,
         }
     }
 }
@@ -565,7 +581,15 @@ pub struct ContinueResponseParams<'a> {
 }
 
 impl<'a> ContinueResponseParams<'a> {
-    pub fn builder() -> ContinueResponseParamsBuilder<'a> { ContinueResponseParamsBuilder::default() }
+    pub fn builder(requestId: RequestId<'a>) -> ContinueResponseParamsBuilder<'a> {
+        ContinueResponseParamsBuilder {
+            requestId: requestId,
+            responseCode: None,
+            responsePhrase: None,
+            responseHeaders: None,
+            binaryResponseHeaders: None,
+        }
+    }
     pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
     pub fn responseCode(&self) -> Option<i64> { self.responseCode }
     pub fn responsePhrase(&self) -> Option<&str> { self.responsePhrase.as_deref() }
@@ -573,9 +597,9 @@ impl<'a> ContinueResponseParams<'a> {
     pub fn binaryResponseHeaders(&self) -> Option<&str> { self.binaryResponseHeaders.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct ContinueResponseParamsBuilder<'a> {
-    requestId: Option<RequestId<'a>>,
+    requestId: RequestId<'a>,
     responseCode: Option<i64>,
     responsePhrase: Option<Cow<'a, str>>,
     responseHeaders: Option<Vec<HeaderEntry<'a>>>,
@@ -583,8 +607,6 @@ pub struct ContinueResponseParamsBuilder<'a> {
 }
 
 impl<'a> ContinueResponseParamsBuilder<'a> {
-    /// An id the client received in requestPaused event.
-    pub fn requestId(mut self, requestId: RequestId<'a>) -> Self { self.requestId = Some(requestId); self }
     /// An HTTP response code. If absent, original response code will be used.
     pub fn responseCode(mut self, responseCode: i64) -> Self { self.responseCode = Some(responseCode); self }
     /// A textual representation of responseCode.
@@ -599,7 +621,7 @@ impl<'a> ContinueResponseParamsBuilder<'a> {
     pub fn binaryResponseHeaders(mut self, binaryResponseHeaders: impl Into<Cow<'a, str>>) -> Self { self.binaryResponseHeaders = Some(binaryResponseHeaders.into()); self }
     pub fn build(self) -> ContinueResponseParams<'a> {
         ContinueResponseParams {
-            requestId: self.requestId.unwrap_or_default(),
+            requestId: self.requestId,
             responseCode: self.responseCode,
             responsePhrase: self.responsePhrase,
             responseHeaders: self.responseHeaders,
@@ -634,21 +656,23 @@ pub struct GetResponseBodyParams<'a> {
 }
 
 impl<'a> GetResponseBodyParams<'a> {
-    pub fn builder() -> GetResponseBodyParamsBuilder<'a> { GetResponseBodyParamsBuilder::default() }
+    pub fn builder(requestId: RequestId<'a>) -> GetResponseBodyParamsBuilder<'a> {
+        GetResponseBodyParamsBuilder {
+            requestId: requestId,
+        }
+    }
     pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
 }
 
-#[derive(Default)]
+
 pub struct GetResponseBodyParamsBuilder<'a> {
-    requestId: Option<RequestId<'a>>,
+    requestId: RequestId<'a>,
 }
 
 impl<'a> GetResponseBodyParamsBuilder<'a> {
-    /// Identifier for the intercepted request to get body for.
-    pub fn requestId(mut self, requestId: RequestId<'a>) -> Self { self.requestId = Some(requestId); self }
     pub fn build(self) -> GetResponseBodyParams<'a> {
         GetResponseBodyParams {
-            requestId: self.requestId.unwrap_or_default(),
+            requestId: self.requestId,
         }
     }
 }
@@ -674,26 +698,27 @@ pub struct GetResponseBodyReturns<'a> {
 }
 
 impl<'a> GetResponseBodyReturns<'a> {
-    pub fn builder() -> GetResponseBodyReturnsBuilder<'a> { GetResponseBodyReturnsBuilder::default() }
+    pub fn builder(body: impl Into<Cow<'a, str>>, base64Encoded: bool) -> GetResponseBodyReturnsBuilder<'a> {
+        GetResponseBodyReturnsBuilder {
+            body: body.into(),
+            base64Encoded: base64Encoded,
+        }
+    }
     pub fn body(&self) -> &str { self.body.as_ref() }
     pub fn base64Encoded(&self) -> bool { self.base64Encoded }
 }
 
-#[derive(Default)]
+
 pub struct GetResponseBodyReturnsBuilder<'a> {
-    body: Option<Cow<'a, str>>,
-    base64Encoded: Option<bool>,
+    body: Cow<'a, str>,
+    base64Encoded: bool,
 }
 
 impl<'a> GetResponseBodyReturnsBuilder<'a> {
-    /// Response body.
-    pub fn body(mut self, body: impl Into<Cow<'a, str>>) -> Self { self.body = Some(body.into()); self }
-    /// True, if content was sent as base64.
-    pub fn base64Encoded(mut self, base64Encoded: bool) -> Self { self.base64Encoded = Some(base64Encoded); self }
     pub fn build(self) -> GetResponseBodyReturns<'a> {
         GetResponseBodyReturns {
-            body: self.body.unwrap_or_default(),
-            base64Encoded: self.base64Encoded.unwrap_or_default(),
+            body: self.body,
+            base64Encoded: self.base64Encoded,
         }
     }
 }
@@ -723,20 +748,23 @@ pub struct TakeResponseBodyAsStreamParams<'a> {
 }
 
 impl<'a> TakeResponseBodyAsStreamParams<'a> {
-    pub fn builder() -> TakeResponseBodyAsStreamParamsBuilder<'a> { TakeResponseBodyAsStreamParamsBuilder::default() }
+    pub fn builder(requestId: RequestId<'a>) -> TakeResponseBodyAsStreamParamsBuilder<'a> {
+        TakeResponseBodyAsStreamParamsBuilder {
+            requestId: requestId,
+        }
+    }
     pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
 }
 
-#[derive(Default)]
+
 pub struct TakeResponseBodyAsStreamParamsBuilder<'a> {
-    requestId: Option<RequestId<'a>>,
+    requestId: RequestId<'a>,
 }
 
 impl<'a> TakeResponseBodyAsStreamParamsBuilder<'a> {
-    pub fn requestId(mut self, requestId: RequestId<'a>) -> Self { self.requestId = Some(requestId); self }
     pub fn build(self) -> TakeResponseBodyAsStreamParams<'a> {
         TakeResponseBodyAsStreamParams {
-            requestId: self.requestId.unwrap_or_default(),
+            requestId: self.requestId,
         }
     }
 }
@@ -759,20 +787,23 @@ pub struct TakeResponseBodyAsStreamReturns<'a> {
 }
 
 impl<'a> TakeResponseBodyAsStreamReturns<'a> {
-    pub fn builder() -> TakeResponseBodyAsStreamReturnsBuilder<'a> { TakeResponseBodyAsStreamReturnsBuilder::default() }
+    pub fn builder(stream: crate::io::StreamHandle<'a>) -> TakeResponseBodyAsStreamReturnsBuilder<'a> {
+        TakeResponseBodyAsStreamReturnsBuilder {
+            stream: stream,
+        }
+    }
     pub fn stream(&self) -> &crate::io::StreamHandle<'a> { &self.stream }
 }
 
-#[derive(Default)]
+
 pub struct TakeResponseBodyAsStreamReturnsBuilder<'a> {
-    stream: Option<crate::io::StreamHandle<'a>>,
+    stream: crate::io::StreamHandle<'a>,
 }
 
 impl<'a> TakeResponseBodyAsStreamReturnsBuilder<'a> {
-    pub fn stream(mut self, stream: crate::io::StreamHandle<'a>) -> Self { self.stream = Some(stream); self }
     pub fn build(self) -> TakeResponseBodyAsStreamReturns<'a> {
         TakeResponseBodyAsStreamReturns {
-            stream: self.stream.unwrap_or_default(),
+            stream: self.stream,
         }
     }
 }

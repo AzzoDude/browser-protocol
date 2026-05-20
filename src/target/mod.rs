@@ -45,7 +45,21 @@ pub struct TargetInfo<'a> {
 }
 
 impl<'a> TargetInfo<'a> {
-    pub fn builder() -> TargetInfoBuilder<'a> { TargetInfoBuilder::default() }
+    pub fn builder(targetId: TargetID<'a>, type_: impl Into<Cow<'a, str>>, title: impl Into<Cow<'a, str>>, url: impl Into<Cow<'a, str>>, attached: bool, canAccessOpener: bool) -> TargetInfoBuilder<'a> {
+        TargetInfoBuilder {
+            targetId: targetId,
+            type_: type_.into(),
+            title: title.into(),
+            url: url.into(),
+            attached: attached,
+            openerId: None,
+            canAccessOpener: canAccessOpener,
+            openerFrameId: None,
+            parentFrameId: None,
+            browserContextId: None,
+            subtype: None,
+        }
+    }
     pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }
     pub fn type_(&self) -> &str { self.type_.as_ref() }
     pub fn title(&self) -> &str { self.title.as_ref() }
@@ -59,15 +73,15 @@ impl<'a> TargetInfo<'a> {
     pub fn subtype(&self) -> Option<&str> { self.subtype.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct TargetInfoBuilder<'a> {
-    targetId: Option<TargetID<'a>>,
-    type_: Option<Cow<'a, str>>,
-    title: Option<Cow<'a, str>>,
-    url: Option<Cow<'a, str>>,
-    attached: Option<bool>,
+    targetId: TargetID<'a>,
+    type_: Cow<'a, str>,
+    title: Cow<'a, str>,
+    url: Cow<'a, str>,
+    attached: bool,
     openerId: Option<TargetID<'a>>,
-    canAccessOpener: Option<bool>,
+    canAccessOpener: bool,
     openerFrameId: Option<crate::page::FrameId<'a>>,
     parentFrameId: Option<crate::page::FrameId<'a>>,
     browserContextId: Option<crate::browser::BrowserContextID<'a>>,
@@ -75,17 +89,8 @@ pub struct TargetInfoBuilder<'a> {
 }
 
 impl<'a> TargetInfoBuilder<'a> {
-    pub fn targetId(mut self, targetId: TargetID<'a>) -> Self { self.targetId = Some(targetId); self }
-    /// List of types: https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/devtools_agent_host_impl.cc?ss=chromium&q=f:devtools%20-f:out%20%22::kTypeTab%5B%5D%22
-    pub fn type_(mut self, type_: impl Into<Cow<'a, str>>) -> Self { self.type_ = Some(type_.into()); self }
-    pub fn title(mut self, title: impl Into<Cow<'a, str>>) -> Self { self.title = Some(title.into()); self }
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
-    /// Whether the target has an attached client.
-    pub fn attached(mut self, attached: bool) -> Self { self.attached = Some(attached); self }
     /// Opener target Id
     pub fn openerId(mut self, openerId: TargetID<'a>) -> Self { self.openerId = Some(openerId); self }
-    /// Whether the target has access to the originating window.
-    pub fn canAccessOpener(mut self, canAccessOpener: bool) -> Self { self.canAccessOpener = Some(canAccessOpener); self }
     /// Frame id of originating window (is only set if target has an opener).
     pub fn openerFrameId(mut self, openerFrameId: crate::page::FrameId<'a>) -> Self { self.openerFrameId = Some(openerFrameId); self }
     /// Id of the parent frame, present for "iframe" and "worker" targets. For nested workers,
@@ -97,13 +102,13 @@ impl<'a> TargetInfoBuilder<'a> {
     pub fn subtype(mut self, subtype: impl Into<Cow<'a, str>>) -> Self { self.subtype = Some(subtype.into()); self }
     pub fn build(self) -> TargetInfo<'a> {
         TargetInfo {
-            targetId: self.targetId.unwrap_or_default(),
-            type_: self.type_.unwrap_or_default(),
-            title: self.title.unwrap_or_default(),
-            url: self.url.unwrap_or_default(),
-            attached: self.attached.unwrap_or_default(),
+            targetId: self.targetId,
+            type_: self.type_,
+            title: self.title,
+            url: self.url,
+            attached: self.attached,
             openerId: self.openerId,
-            canAccessOpener: self.canAccessOpener.unwrap_or_default(),
+            canAccessOpener: self.canAccessOpener,
             openerFrameId: self.openerFrameId,
             parentFrameId: self.parentFrameId,
             browserContextId: self.browserContextId,
@@ -126,7 +131,12 @@ pub struct FilterEntry<'a> {
 }
 
 impl<'a> FilterEntry<'a> {
-    pub fn builder() -> FilterEntryBuilder<'a> { FilterEntryBuilder::default() }
+    pub fn builder() -> FilterEntryBuilder<'a> {
+        FilterEntryBuilder {
+            exclude: None,
+            type_: None,
+        }
+    }
     pub fn exclude(&self) -> Option<bool> { self.exclude }
     pub fn type_(&self) -> Option<&str> { self.type_.as_deref() }
 }
@@ -168,24 +178,27 @@ pub struct RemoteLocation<'a> {
 }
 
 impl<'a> RemoteLocation<'a> {
-    pub fn builder() -> RemoteLocationBuilder<'a> { RemoteLocationBuilder::default() }
+    pub fn builder(host: impl Into<Cow<'a, str>>, port: i64) -> RemoteLocationBuilder<'a> {
+        RemoteLocationBuilder {
+            host: host.into(),
+            port: port,
+        }
+    }
     pub fn host(&self) -> &str { self.host.as_ref() }
     pub fn port(&self) -> i64 { self.port }
 }
 
-#[derive(Default)]
+
 pub struct RemoteLocationBuilder<'a> {
-    host: Option<Cow<'a, str>>,
-    port: Option<i64>,
+    host: Cow<'a, str>,
+    port: i64,
 }
 
 impl<'a> RemoteLocationBuilder<'a> {
-    pub fn host(mut self, host: impl Into<Cow<'a, str>>) -> Self { self.host = Some(host.into()); self }
-    pub fn port(mut self, port: i64) -> Self { self.port = Some(port); self }
     pub fn build(self) -> RemoteLocation<'a> {
         RemoteLocation {
-            host: self.host.unwrap_or_default(),
-            port: self.port.unwrap_or_default(),
+            host: self.host,
+            port: self.port,
         }
     }
 }
@@ -214,20 +227,23 @@ pub struct ActivateTargetParams<'a> {
 }
 
 impl<'a> ActivateTargetParams<'a> {
-    pub fn builder() -> ActivateTargetParamsBuilder<'a> { ActivateTargetParamsBuilder::default() }
+    pub fn builder(targetId: TargetID<'a>) -> ActivateTargetParamsBuilder<'a> {
+        ActivateTargetParamsBuilder {
+            targetId: targetId,
+        }
+    }
     pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }
 }
 
-#[derive(Default)]
+
 pub struct ActivateTargetParamsBuilder<'a> {
-    targetId: Option<TargetID<'a>>,
+    targetId: TargetID<'a>,
 }
 
 impl<'a> ActivateTargetParamsBuilder<'a> {
-    pub fn targetId(mut self, targetId: TargetID<'a>) -> Self { self.targetId = Some(targetId); self }
     pub fn build(self) -> ActivateTargetParams<'a> {
         ActivateTargetParams {
-            targetId: self.targetId.unwrap_or_default(),
+            targetId: self.targetId,
         }
     }
 }
@@ -253,26 +269,30 @@ pub struct AttachToTargetParams<'a> {
 }
 
 impl<'a> AttachToTargetParams<'a> {
-    pub fn builder() -> AttachToTargetParamsBuilder<'a> { AttachToTargetParamsBuilder::default() }
+    pub fn builder(targetId: TargetID<'a>) -> AttachToTargetParamsBuilder<'a> {
+        AttachToTargetParamsBuilder {
+            targetId: targetId,
+            flatten: None,
+        }
+    }
     pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }
     pub fn flatten(&self) -> Option<bool> { self.flatten }
 }
 
-#[derive(Default)]
+
 pub struct AttachToTargetParamsBuilder<'a> {
-    targetId: Option<TargetID<'a>>,
+    targetId: TargetID<'a>,
     flatten: Option<bool>,
 }
 
 impl<'a> AttachToTargetParamsBuilder<'a> {
-    pub fn targetId(mut self, targetId: TargetID<'a>) -> Self { self.targetId = Some(targetId); self }
     /// Enables "flat" access to the session via specifying sessionId attribute in the commands.
     /// We plan to make this the default, deprecate non-flattened mode,
     /// and eventually retire it. See crbug.com/991325.
     pub fn flatten(mut self, flatten: bool) -> Self { self.flatten = Some(flatten); self }
     pub fn build(self) -> AttachToTargetParams<'a> {
         AttachToTargetParams {
-            targetId: self.targetId.unwrap_or_default(),
+            targetId: self.targetId,
             flatten: self.flatten,
         }
     }
@@ -288,21 +308,23 @@ pub struct AttachToTargetReturns<'a> {
 }
 
 impl<'a> AttachToTargetReturns<'a> {
-    pub fn builder() -> AttachToTargetReturnsBuilder<'a> { AttachToTargetReturnsBuilder::default() }
+    pub fn builder(sessionId: SessionID<'a>) -> AttachToTargetReturnsBuilder<'a> {
+        AttachToTargetReturnsBuilder {
+            sessionId: sessionId,
+        }
+    }
     pub fn sessionId(&self) -> &SessionID<'a> { &self.sessionId }
 }
 
-#[derive(Default)]
+
 pub struct AttachToTargetReturnsBuilder<'a> {
-    sessionId: Option<SessionID<'a>>,
+    sessionId: SessionID<'a>,
 }
 
 impl<'a> AttachToTargetReturnsBuilder<'a> {
-    /// Id assigned to the session.
-    pub fn sessionId(mut self, sessionId: SessionID<'a>) -> Self { self.sessionId = Some(sessionId); self }
     pub fn build(self) -> AttachToTargetReturns<'a> {
         AttachToTargetReturns {
-            sessionId: self.sessionId.unwrap_or_default(),
+            sessionId: self.sessionId,
         }
     }
 }
@@ -324,42 +346,29 @@ pub struct AttachToBrowserTargetReturns<'a> {
 }
 
 impl<'a> AttachToBrowserTargetReturns<'a> {
-    pub fn builder() -> AttachToBrowserTargetReturnsBuilder<'a> { AttachToBrowserTargetReturnsBuilder::default() }
+    pub fn builder(sessionId: SessionID<'a>) -> AttachToBrowserTargetReturnsBuilder<'a> {
+        AttachToBrowserTargetReturnsBuilder {
+            sessionId: sessionId,
+        }
+    }
     pub fn sessionId(&self) -> &SessionID<'a> { &self.sessionId }
 }
 
-#[derive(Default)]
+
 pub struct AttachToBrowserTargetReturnsBuilder<'a> {
-    sessionId: Option<SessionID<'a>>,
+    sessionId: SessionID<'a>,
 }
 
 impl<'a> AttachToBrowserTargetReturnsBuilder<'a> {
-    /// Id assigned to the session.
-    pub fn sessionId(mut self, sessionId: SessionID<'a>) -> Self { self.sessionId = Some(sessionId); self }
     pub fn build(self) -> AttachToBrowserTargetReturns<'a> {
         AttachToBrowserTargetReturns {
-            sessionId: self.sessionId.unwrap_or_default(),
+            sessionId: self.sessionId,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct AttachToBrowserTargetParams {}
-
-impl AttachToBrowserTargetParams {
-    pub fn builder() -> AttachToBrowserTargetParamsBuilder {
-        AttachToBrowserTargetParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct AttachToBrowserTargetParamsBuilder {}
-
-impl AttachToBrowserTargetParamsBuilder {
-    pub fn build(self) -> AttachToBrowserTargetParams {
-        AttachToBrowserTargetParams {}
-    }
-}
 
 impl AttachToBrowserTargetParams { pub const METHOD: &'static str = "Target.attachToBrowserTarget"; }
 
@@ -377,20 +386,23 @@ pub struct CloseTargetParams<'a> {
 }
 
 impl<'a> CloseTargetParams<'a> {
-    pub fn builder() -> CloseTargetParamsBuilder<'a> { CloseTargetParamsBuilder::default() }
+    pub fn builder(targetId: TargetID<'a>) -> CloseTargetParamsBuilder<'a> {
+        CloseTargetParamsBuilder {
+            targetId: targetId,
+        }
+    }
     pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }
 }
 
-#[derive(Default)]
+
 pub struct CloseTargetParamsBuilder<'a> {
-    targetId: Option<TargetID<'a>>,
+    targetId: TargetID<'a>,
 }
 
 impl<'a> CloseTargetParamsBuilder<'a> {
-    pub fn targetId(mut self, targetId: TargetID<'a>) -> Self { self.targetId = Some(targetId); self }
     pub fn build(self) -> CloseTargetParams<'a> {
         CloseTargetParams {
-            targetId: self.targetId.unwrap_or_default(),
+            targetId: self.targetId,
         }
     }
 }
@@ -405,21 +417,23 @@ pub struct CloseTargetReturns {
 }
 
 impl CloseTargetReturns {
-    pub fn builder() -> CloseTargetReturnsBuilder { CloseTargetReturnsBuilder::default() }
+    pub fn builder(success: bool) -> CloseTargetReturnsBuilder {
+        CloseTargetReturnsBuilder {
+            success: success,
+        }
+    }
     pub fn success(&self) -> bool { self.success }
 }
 
-#[derive(Default)]
+
 pub struct CloseTargetReturnsBuilder {
-    success: Option<bool>,
+    success: bool,
 }
 
 impl CloseTargetReturnsBuilder {
-    /// Always set to true. If an error occurs, the response indicates protocol error.
-    pub fn success(mut self, success: bool) -> Self { self.success = Some(success); self }
     pub fn build(self) -> CloseTargetReturns {
         CloseTargetReturns {
-            success: self.success.unwrap_or_default(),
+            success: self.success,
         }
     }
 }
@@ -453,28 +467,33 @@ pub struct ExposeDevToolsProtocolParams<'a> {
 }
 
 impl<'a> ExposeDevToolsProtocolParams<'a> {
-    pub fn builder() -> ExposeDevToolsProtocolParamsBuilder<'a> { ExposeDevToolsProtocolParamsBuilder::default() }
+    pub fn builder(targetId: TargetID<'a>) -> ExposeDevToolsProtocolParamsBuilder<'a> {
+        ExposeDevToolsProtocolParamsBuilder {
+            targetId: targetId,
+            bindingName: None,
+            inheritPermissions: None,
+        }
+    }
     pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }
     pub fn bindingName(&self) -> Option<&str> { self.bindingName.as_deref() }
     pub fn inheritPermissions(&self) -> Option<bool> { self.inheritPermissions }
 }
 
-#[derive(Default)]
+
 pub struct ExposeDevToolsProtocolParamsBuilder<'a> {
-    targetId: Option<TargetID<'a>>,
+    targetId: TargetID<'a>,
     bindingName: Option<Cow<'a, str>>,
     inheritPermissions: Option<bool>,
 }
 
 impl<'a> ExposeDevToolsProtocolParamsBuilder<'a> {
-    pub fn targetId(mut self, targetId: TargetID<'a>) -> Self { self.targetId = Some(targetId); self }
     /// Binding name, 'cdp' if not specified.
     pub fn bindingName(mut self, bindingName: impl Into<Cow<'a, str>>) -> Self { self.bindingName = Some(bindingName.into()); self }
     /// If true, inherits the current root session's permissions (default: false).
     pub fn inheritPermissions(mut self, inheritPermissions: bool) -> Self { self.inheritPermissions = Some(inheritPermissions); self }
     pub fn build(self) -> ExposeDevToolsProtocolParams<'a> {
         ExposeDevToolsProtocolParams {
-            targetId: self.targetId.unwrap_or_default(),
+            targetId: self.targetId,
             bindingName: self.bindingName,
             inheritPermissions: self.inheritPermissions,
         }
@@ -510,7 +529,14 @@ pub struct CreateBrowserContextParams<'a> {
 }
 
 impl<'a> CreateBrowserContextParams<'a> {
-    pub fn builder() -> CreateBrowserContextParamsBuilder<'a> { CreateBrowserContextParamsBuilder::default() }
+    pub fn builder() -> CreateBrowserContextParamsBuilder<'a> {
+        CreateBrowserContextParamsBuilder {
+            disposeOnDetach: None,
+            proxyServer: None,
+            proxyBypassList: None,
+            originsWithUniversalNetworkAccess: None,
+        }
+    }
     pub fn disposeOnDetach(&self) -> Option<bool> { self.disposeOnDetach }
     pub fn proxyServer(&self) -> Option<&str> { self.proxyServer.as_deref() }
     pub fn proxyBypassList(&self) -> Option<&str> { self.proxyBypassList.as_deref() }
@@ -556,21 +582,23 @@ pub struct CreateBrowserContextReturns<'a> {
 }
 
 impl<'a> CreateBrowserContextReturns<'a> {
-    pub fn builder() -> CreateBrowserContextReturnsBuilder<'a> { CreateBrowserContextReturnsBuilder::default() }
+    pub fn builder(browserContextId: crate::browser::BrowserContextID<'a>) -> CreateBrowserContextReturnsBuilder<'a> {
+        CreateBrowserContextReturnsBuilder {
+            browserContextId: browserContextId,
+        }
+    }
     pub fn browserContextId(&self) -> &crate::browser::BrowserContextID<'a> { &self.browserContextId }
 }
 
-#[derive(Default)]
+
 pub struct CreateBrowserContextReturnsBuilder<'a> {
-    browserContextId: Option<crate::browser::BrowserContextID<'a>>,
+    browserContextId: crate::browser::BrowserContextID<'a>,
 }
 
 impl<'a> CreateBrowserContextReturnsBuilder<'a> {
-    /// The id of the context created.
-    pub fn browserContextId(mut self, browserContextId: crate::browser::BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
     pub fn build(self) -> CreateBrowserContextReturns<'a> {
         CreateBrowserContextReturns {
-            browserContextId: self.browserContextId.unwrap_or_default(),
+            browserContextId: self.browserContextId,
         }
     }
 }
@@ -595,25 +623,28 @@ pub struct GetBrowserContextsReturns<'a> {
 }
 
 impl<'a> GetBrowserContextsReturns<'a> {
-    pub fn builder() -> GetBrowserContextsReturnsBuilder<'a> { GetBrowserContextsReturnsBuilder::default() }
+    pub fn builder(browserContextIds: Vec<crate::browser::BrowserContextID<'a>>) -> GetBrowserContextsReturnsBuilder<'a> {
+        GetBrowserContextsReturnsBuilder {
+            browserContextIds: browserContextIds,
+            defaultBrowserContextId: None,
+        }
+    }
     pub fn browserContextIds(&self) -> &[crate::browser::BrowserContextID<'a>] { &self.browserContextIds }
     pub fn defaultBrowserContextId(&self) -> Option<&crate::browser::BrowserContextID<'a>> { self.defaultBrowserContextId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct GetBrowserContextsReturnsBuilder<'a> {
-    browserContextIds: Option<Vec<crate::browser::BrowserContextID<'a>>>,
+    browserContextIds: Vec<crate::browser::BrowserContextID<'a>>,
     defaultBrowserContextId: Option<crate::browser::BrowserContextID<'a>>,
 }
 
 impl<'a> GetBrowserContextsReturnsBuilder<'a> {
-    /// An array of browser context ids.
-    pub fn browserContextIds(mut self, browserContextIds: Vec<crate::browser::BrowserContextID<'a>>) -> Self { self.browserContextIds = Some(browserContextIds); self }
     /// The id of the default browser context if available.
     pub fn defaultBrowserContextId(mut self, defaultBrowserContextId: crate::browser::BrowserContextID<'a>) -> Self { self.defaultBrowserContextId = Some(defaultBrowserContextId); self }
     pub fn build(self) -> GetBrowserContextsReturns<'a> {
         GetBrowserContextsReturns {
-            browserContextIds: self.browserContextIds.unwrap_or_default(),
+            browserContextIds: self.browserContextIds,
             defaultBrowserContextId: self.defaultBrowserContextId,
         }
     }
@@ -621,21 +652,6 @@ impl<'a> GetBrowserContextsReturnsBuilder<'a> {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetBrowserContextsParams {}
-
-impl GetBrowserContextsParams {
-    pub fn builder() -> GetBrowserContextsParamsBuilder {
-        GetBrowserContextsParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetBrowserContextsParamsBuilder {}
-
-impl GetBrowserContextsParamsBuilder {
-    pub fn build(self) -> GetBrowserContextsParams {
-        GetBrowserContextsParams {}
-    }
-}
 
 impl GetBrowserContextsParams { pub const METHOD: &'static str = "Target.getBrowserContexts"; }
 
@@ -701,7 +717,23 @@ pub struct CreateTargetParams<'a> {
 }
 
 impl<'a> CreateTargetParams<'a> {
-    pub fn builder() -> CreateTargetParamsBuilder<'a> { CreateTargetParamsBuilder::default() }
+    pub fn builder(url: impl Into<Cow<'a, str>>) -> CreateTargetParamsBuilder<'a> {
+        CreateTargetParamsBuilder {
+            url: url.into(),
+            left: None,
+            top: None,
+            width: None,
+            height: None,
+            windowState: None,
+            browserContextId: None,
+            enableBeginFrameControl: None,
+            newWindow: None,
+            background: None,
+            forTab: None,
+            hidden: None,
+            focus: None,
+        }
+    }
     pub fn url(&self) -> &str { self.url.as_ref() }
     pub fn left(&self) -> Option<i64> { self.left }
     pub fn top(&self) -> Option<i64> { self.top }
@@ -717,9 +749,9 @@ impl<'a> CreateTargetParams<'a> {
     pub fn focus(&self) -> Option<bool> { self.focus }
 }
 
-#[derive(Default)]
+
 pub struct CreateTargetParamsBuilder<'a> {
-    url: Option<Cow<'a, str>>,
+    url: Cow<'a, str>,
     left: Option<i64>,
     top: Option<i64>,
     width: Option<u64>,
@@ -735,8 +767,6 @@ pub struct CreateTargetParamsBuilder<'a> {
 }
 
 impl<'a> CreateTargetParamsBuilder<'a> {
-    /// The initial URL the page will be navigated to. An empty string indicates about:blank.
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
     /// Frame left origin in DIP (requires newWindow to be true or headless shell).
     pub fn left(mut self, left: i64) -> Self { self.left = Some(left); self }
     /// Frame top origin in DIP (requires newWindow to be true or headless shell).
@@ -774,7 +804,7 @@ impl<'a> CreateTargetParamsBuilder<'a> {
     pub fn focus(mut self, focus: bool) -> Self { self.focus = Some(focus); self }
     pub fn build(self) -> CreateTargetParams<'a> {
         CreateTargetParams {
-            url: self.url.unwrap_or_default(),
+            url: self.url,
             left: self.left,
             top: self.top,
             width: self.width,
@@ -801,21 +831,23 @@ pub struct CreateTargetReturns<'a> {
 }
 
 impl<'a> CreateTargetReturns<'a> {
-    pub fn builder() -> CreateTargetReturnsBuilder<'a> { CreateTargetReturnsBuilder::default() }
+    pub fn builder(targetId: TargetID<'a>) -> CreateTargetReturnsBuilder<'a> {
+        CreateTargetReturnsBuilder {
+            targetId: targetId,
+        }
+    }
     pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }
 }
 
-#[derive(Default)]
+
 pub struct CreateTargetReturnsBuilder<'a> {
-    targetId: Option<TargetID<'a>>,
+    targetId: TargetID<'a>,
 }
 
 impl<'a> CreateTargetReturnsBuilder<'a> {
-    /// The id of the page opened.
-    pub fn targetId(mut self, targetId: TargetID<'a>) -> Self { self.targetId = Some(targetId); self }
     pub fn build(self) -> CreateTargetReturns<'a> {
         CreateTargetReturns {
-            targetId: self.targetId.unwrap_or_default(),
+            targetId: self.targetId,
         }
     }
 }
@@ -841,7 +873,12 @@ pub struct DetachFromTargetParams<'a> {
 }
 
 impl<'a> DetachFromTargetParams<'a> {
-    pub fn builder() -> DetachFromTargetParamsBuilder<'a> { DetachFromTargetParamsBuilder::default() }
+    pub fn builder() -> DetachFromTargetParamsBuilder<'a> {
+        DetachFromTargetParamsBuilder {
+            sessionId: None,
+            targetId: None,
+        }
+    }
     pub fn sessionId(&self) -> Option<&SessionID<'a>> { self.sessionId.as_ref() }
     pub fn targetId(&self) -> Option<&TargetID<'a>> { self.targetId.as_ref() }
 }
@@ -882,20 +919,23 @@ pub struct DisposeBrowserContextParams<'a> {
 }
 
 impl<'a> DisposeBrowserContextParams<'a> {
-    pub fn builder() -> DisposeBrowserContextParamsBuilder<'a> { DisposeBrowserContextParamsBuilder::default() }
+    pub fn builder(browserContextId: crate::browser::BrowserContextID<'a>) -> DisposeBrowserContextParamsBuilder<'a> {
+        DisposeBrowserContextParamsBuilder {
+            browserContextId: browserContextId,
+        }
+    }
     pub fn browserContextId(&self) -> &crate::browser::BrowserContextID<'a> { &self.browserContextId }
 }
 
-#[derive(Default)]
+
 pub struct DisposeBrowserContextParamsBuilder<'a> {
-    browserContextId: Option<crate::browser::BrowserContextID<'a>>,
+    browserContextId: crate::browser::BrowserContextID<'a>,
 }
 
 impl<'a> DisposeBrowserContextParamsBuilder<'a> {
-    pub fn browserContextId(mut self, browserContextId: crate::browser::BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
     pub fn build(self) -> DisposeBrowserContextParams<'a> {
         DisposeBrowserContextParams {
-            browserContextId: self.browserContextId.unwrap_or_default(),
+            browserContextId: self.browserContextId,
         }
     }
 }
@@ -917,7 +957,11 @@ pub struct GetTargetInfoParams<'a> {
 }
 
 impl<'a> GetTargetInfoParams<'a> {
-    pub fn builder() -> GetTargetInfoParamsBuilder<'a> { GetTargetInfoParamsBuilder::default() }
+    pub fn builder() -> GetTargetInfoParamsBuilder<'a> {
+        GetTargetInfoParamsBuilder {
+            targetId: None,
+        }
+    }
     pub fn targetId(&self) -> Option<&TargetID<'a>> { self.targetId.as_ref() }
 }
 
@@ -944,20 +988,23 @@ pub struct GetTargetInfoReturns<'a> {
 }
 
 impl<'a> GetTargetInfoReturns<'a> {
-    pub fn builder() -> GetTargetInfoReturnsBuilder<'a> { GetTargetInfoReturnsBuilder::default() }
+    pub fn builder(targetInfo: TargetInfo<'a>) -> GetTargetInfoReturnsBuilder<'a> {
+        GetTargetInfoReturnsBuilder {
+            targetInfo: targetInfo,
+        }
+    }
     pub fn targetInfo(&self) -> &TargetInfo<'a> { &self.targetInfo }
 }
 
-#[derive(Default)]
+
 pub struct GetTargetInfoReturnsBuilder<'a> {
-    targetInfo: Option<TargetInfo<'a>>,
+    targetInfo: TargetInfo<'a>,
 }
 
 impl<'a> GetTargetInfoReturnsBuilder<'a> {
-    pub fn targetInfo(mut self, targetInfo: TargetInfo<'a>) -> Self { self.targetInfo = Some(targetInfo); self }
     pub fn build(self) -> GetTargetInfoReturns<'a> {
         GetTargetInfoReturns {
-            targetInfo: self.targetInfo.unwrap_or_default(),
+            targetInfo: self.targetInfo,
         }
     }
 }
@@ -982,7 +1029,11 @@ pub struct GetTargetsParams<'a> {
 }
 
 impl<'a> GetTargetsParams<'a> {
-    pub fn builder() -> GetTargetsParamsBuilder<'a> { GetTargetsParamsBuilder::default() }
+    pub fn builder() -> GetTargetsParamsBuilder<'a> {
+        GetTargetsParamsBuilder {
+            filter: None,
+        }
+    }
     pub fn filter(&self) -> Option<&TargetFilter<'a>> { self.filter.as_ref() }
 }
 
@@ -1013,21 +1064,23 @@ pub struct GetTargetsReturns<'a> {
 }
 
 impl<'a> GetTargetsReturns<'a> {
-    pub fn builder() -> GetTargetsReturnsBuilder<'a> { GetTargetsReturnsBuilder::default() }
+    pub fn builder(targetInfos: Vec<TargetInfo<'a>>) -> GetTargetsReturnsBuilder<'a> {
+        GetTargetsReturnsBuilder {
+            targetInfos: targetInfos,
+        }
+    }
     pub fn targetInfos(&self) -> &[TargetInfo<'a>] { &self.targetInfos }
 }
 
-#[derive(Default)]
+
 pub struct GetTargetsReturnsBuilder<'a> {
-    targetInfos: Option<Vec<TargetInfo<'a>>>,
+    targetInfos: Vec<TargetInfo<'a>>,
 }
 
 impl<'a> GetTargetsReturnsBuilder<'a> {
-    /// The list of targets.
-    pub fn targetInfos(mut self, targetInfos: Vec<TargetInfo<'a>>) -> Self { self.targetInfos = Some(targetInfos); self }
     pub fn build(self) -> GetTargetsReturns<'a> {
         GetTargetsReturns {
-            targetInfos: self.targetInfos.unwrap_or_default(),
+            targetInfos: self.targetInfos,
         }
     }
 }
@@ -1056,28 +1109,33 @@ pub struct SendMessageToTargetParams<'a> {
 }
 
 impl<'a> SendMessageToTargetParams<'a> {
-    pub fn builder() -> SendMessageToTargetParamsBuilder<'a> { SendMessageToTargetParamsBuilder::default() }
+    pub fn builder(message: impl Into<Cow<'a, str>>) -> SendMessageToTargetParamsBuilder<'a> {
+        SendMessageToTargetParamsBuilder {
+            message: message.into(),
+            sessionId: None,
+            targetId: None,
+        }
+    }
     pub fn message(&self) -> &str { self.message.as_ref() }
     pub fn sessionId(&self) -> Option<&SessionID<'a>> { self.sessionId.as_ref() }
     pub fn targetId(&self) -> Option<&TargetID<'a>> { self.targetId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SendMessageToTargetParamsBuilder<'a> {
-    message: Option<Cow<'a, str>>,
+    message: Cow<'a, str>,
     sessionId: Option<SessionID<'a>>,
     targetId: Option<TargetID<'a>>,
 }
 
 impl<'a> SendMessageToTargetParamsBuilder<'a> {
-    pub fn message(mut self, message: impl Into<Cow<'a, str>>) -> Self { self.message = Some(message.into()); self }
     /// Identifier of the session.
     pub fn sessionId(mut self, sessionId: SessionID<'a>) -> Self { self.sessionId = Some(sessionId); self }
     /// Deprecated.
     pub fn targetId(mut self, targetId: TargetID<'a>) -> Self { self.targetId = Some(targetId); self }
     pub fn build(self) -> SendMessageToTargetParams<'a> {
         SendMessageToTargetParams {
-            message: self.message.unwrap_or_default(),
+            message: self.message,
             sessionId: self.sessionId,
             targetId: self.targetId,
         }
@@ -1119,27 +1177,29 @@ pub struct SetAutoAttachParams<'a> {
 }
 
 impl<'a> SetAutoAttachParams<'a> {
-    pub fn builder() -> SetAutoAttachParamsBuilder<'a> { SetAutoAttachParamsBuilder::default() }
+    pub fn builder(autoAttach: bool, waitForDebuggerOnStart: bool) -> SetAutoAttachParamsBuilder<'a> {
+        SetAutoAttachParamsBuilder {
+            autoAttach: autoAttach,
+            waitForDebuggerOnStart: waitForDebuggerOnStart,
+            flatten: None,
+            filter: None,
+        }
+    }
     pub fn autoAttach(&self) -> bool { self.autoAttach }
     pub fn waitForDebuggerOnStart(&self) -> bool { self.waitForDebuggerOnStart }
     pub fn flatten(&self) -> Option<bool> { self.flatten }
     pub fn filter(&self) -> Option<&TargetFilter<'a>> { self.filter.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetAutoAttachParamsBuilder<'a> {
-    autoAttach: Option<bool>,
-    waitForDebuggerOnStart: Option<bool>,
+    autoAttach: bool,
+    waitForDebuggerOnStart: bool,
     flatten: Option<bool>,
     filter: Option<TargetFilter<'a>>,
 }
 
 impl<'a> SetAutoAttachParamsBuilder<'a> {
-    /// Whether to auto-attach to related targets.
-    pub fn autoAttach(mut self, autoAttach: bool) -> Self { self.autoAttach = Some(autoAttach); self }
-    /// Whether to pause new targets when attaching to them. Use 'Runtime.runIfWaitingForDebugger'
-    /// to run paused targets.
-    pub fn waitForDebuggerOnStart(mut self, waitForDebuggerOnStart: bool) -> Self { self.waitForDebuggerOnStart = Some(waitForDebuggerOnStart); self }
     /// Enables "flat" access to the session via specifying sessionId attribute in the commands.
     /// We plan to make this the default, deprecate non-flattened mode,
     /// and eventually retire it. See crbug.com/991325.
@@ -1148,8 +1208,8 @@ impl<'a> SetAutoAttachParamsBuilder<'a> {
     pub fn filter(mut self, filter: TargetFilter<'a>) -> Self { self.filter = Some(filter); self }
     pub fn build(self) -> SetAutoAttachParams<'a> {
         SetAutoAttachParams {
-            autoAttach: self.autoAttach.unwrap_or_default(),
-            waitForDebuggerOnStart: self.waitForDebuggerOnStart.unwrap_or_default(),
+            autoAttach: self.autoAttach,
+            waitForDebuggerOnStart: self.waitForDebuggerOnStart,
             flatten: self.flatten,
             filter: self.filter,
         }
@@ -1182,30 +1242,32 @@ pub struct AutoAttachRelatedParams<'a> {
 }
 
 impl<'a> AutoAttachRelatedParams<'a> {
-    pub fn builder() -> AutoAttachRelatedParamsBuilder<'a> { AutoAttachRelatedParamsBuilder::default() }
+    pub fn builder(targetId: TargetID<'a>, waitForDebuggerOnStart: bool) -> AutoAttachRelatedParamsBuilder<'a> {
+        AutoAttachRelatedParamsBuilder {
+            targetId: targetId,
+            waitForDebuggerOnStart: waitForDebuggerOnStart,
+            filter: None,
+        }
+    }
     pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }
     pub fn waitForDebuggerOnStart(&self) -> bool { self.waitForDebuggerOnStart }
     pub fn filter(&self) -> Option<&TargetFilter<'a>> { self.filter.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct AutoAttachRelatedParamsBuilder<'a> {
-    targetId: Option<TargetID<'a>>,
-    waitForDebuggerOnStart: Option<bool>,
+    targetId: TargetID<'a>,
+    waitForDebuggerOnStart: bool,
     filter: Option<TargetFilter<'a>>,
 }
 
 impl<'a> AutoAttachRelatedParamsBuilder<'a> {
-    pub fn targetId(mut self, targetId: TargetID<'a>) -> Self { self.targetId = Some(targetId); self }
-    /// Whether to pause new targets when attaching to them. Use 'Runtime.runIfWaitingForDebugger'
-    /// to run paused targets.
-    pub fn waitForDebuggerOnStart(mut self, waitForDebuggerOnStart: bool) -> Self { self.waitForDebuggerOnStart = Some(waitForDebuggerOnStart); self }
     /// Only targets matching filter will be attached.
     pub fn filter(mut self, filter: TargetFilter<'a>) -> Self { self.filter = Some(filter); self }
     pub fn build(self) -> AutoAttachRelatedParams<'a> {
         AutoAttachRelatedParams {
-            targetId: self.targetId.unwrap_or_default(),
-            waitForDebuggerOnStart: self.waitForDebuggerOnStart.unwrap_or_default(),
+            targetId: self.targetId,
+            waitForDebuggerOnStart: self.waitForDebuggerOnStart,
             filter: self.filter,
         }
     }
@@ -1233,26 +1295,29 @@ pub struct SetDiscoverTargetsParams<'a> {
 }
 
 impl<'a> SetDiscoverTargetsParams<'a> {
-    pub fn builder() -> SetDiscoverTargetsParamsBuilder<'a> { SetDiscoverTargetsParamsBuilder::default() }
+    pub fn builder(discover: bool) -> SetDiscoverTargetsParamsBuilder<'a> {
+        SetDiscoverTargetsParamsBuilder {
+            discover: discover,
+            filter: None,
+        }
+    }
     pub fn discover(&self) -> bool { self.discover }
     pub fn filter(&self) -> Option<&TargetFilter<'a>> { self.filter.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetDiscoverTargetsParamsBuilder<'a> {
-    discover: Option<bool>,
+    discover: bool,
     filter: Option<TargetFilter<'a>>,
 }
 
 impl<'a> SetDiscoverTargetsParamsBuilder<'a> {
-    /// Whether to discover available targets.
-    pub fn discover(mut self, discover: bool) -> Self { self.discover = Some(discover); self }
     /// Only targets matching filter will be attached. If 'discover' is false,
     /// 'filter' must be omitted or empty.
     pub fn filter(mut self, filter: TargetFilter<'a>) -> Self { self.filter = Some(filter); self }
     pub fn build(self) -> SetDiscoverTargetsParams<'a> {
         SetDiscoverTargetsParams {
-            discover: self.discover.unwrap_or_default(),
+            discover: self.discover,
             filter: self.filter,
         }
     }
@@ -1276,21 +1341,23 @@ pub struct SetRemoteLocationsParams<'a> {
 }
 
 impl<'a> SetRemoteLocationsParams<'a> {
-    pub fn builder() -> SetRemoteLocationsParamsBuilder<'a> { SetRemoteLocationsParamsBuilder::default() }
+    pub fn builder(locations: Vec<RemoteLocation<'a>>) -> SetRemoteLocationsParamsBuilder<'a> {
+        SetRemoteLocationsParamsBuilder {
+            locations: locations,
+        }
+    }
     pub fn locations(&self) -> &[RemoteLocation<'a>] { &self.locations }
 }
 
-#[derive(Default)]
+
 pub struct SetRemoteLocationsParamsBuilder<'a> {
-    locations: Option<Vec<RemoteLocation<'a>>>,
+    locations: Vec<RemoteLocation<'a>>,
 }
 
 impl<'a> SetRemoteLocationsParamsBuilder<'a> {
-    /// List of remote locations.
-    pub fn locations(mut self, locations: Vec<RemoteLocation<'a>>) -> Self { self.locations = Some(locations); self }
     pub fn build(self) -> SetRemoteLocationsParams<'a> {
         SetRemoteLocationsParams {
-            locations: self.locations.unwrap_or_default(),
+            locations: self.locations,
         }
     }
 }
@@ -1313,21 +1380,23 @@ pub struct GetDevToolsTargetParams<'a> {
 }
 
 impl<'a> GetDevToolsTargetParams<'a> {
-    pub fn builder() -> GetDevToolsTargetParamsBuilder<'a> { GetDevToolsTargetParamsBuilder::default() }
+    pub fn builder(targetId: TargetID<'a>) -> GetDevToolsTargetParamsBuilder<'a> {
+        GetDevToolsTargetParamsBuilder {
+            targetId: targetId,
+        }
+    }
     pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }
 }
 
-#[derive(Default)]
+
 pub struct GetDevToolsTargetParamsBuilder<'a> {
-    targetId: Option<TargetID<'a>>,
+    targetId: TargetID<'a>,
 }
 
 impl<'a> GetDevToolsTargetParamsBuilder<'a> {
-    /// Page or tab target ID.
-    pub fn targetId(mut self, targetId: TargetID<'a>) -> Self { self.targetId = Some(targetId); self }
     pub fn build(self) -> GetDevToolsTargetParams<'a> {
         GetDevToolsTargetParams {
-            targetId: self.targetId.unwrap_or_default(),
+            targetId: self.targetId,
         }
     }
 }
@@ -1344,7 +1413,11 @@ pub struct GetDevToolsTargetReturns<'a> {
 }
 
 impl<'a> GetDevToolsTargetReturns<'a> {
-    pub fn builder() -> GetDevToolsTargetReturnsBuilder<'a> { GetDevToolsTargetReturnsBuilder::default() }
+    pub fn builder() -> GetDevToolsTargetReturnsBuilder<'a> {
+        GetDevToolsTargetReturnsBuilder {
+            targetId: None,
+        }
+    }
     pub fn targetId(&self) -> Option<&TargetID<'a>> { self.targetId.as_ref() }
 }
 
@@ -1385,27 +1458,30 @@ pub struct OpenDevToolsParams<'a> {
 }
 
 impl<'a> OpenDevToolsParams<'a> {
-    pub fn builder() -> OpenDevToolsParamsBuilder<'a> { OpenDevToolsParamsBuilder::default() }
+    pub fn builder(targetId: TargetID<'a>) -> OpenDevToolsParamsBuilder<'a> {
+        OpenDevToolsParamsBuilder {
+            targetId: targetId,
+            panelId: None,
+        }
+    }
     pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }
     pub fn panelId(&self) -> Option<&str> { self.panelId.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct OpenDevToolsParamsBuilder<'a> {
-    targetId: Option<TargetID<'a>>,
+    targetId: TargetID<'a>,
     panelId: Option<Cow<'a, str>>,
 }
 
 impl<'a> OpenDevToolsParamsBuilder<'a> {
-    /// This can be the page or tab target ID.
-    pub fn targetId(mut self, targetId: TargetID<'a>) -> Self { self.targetId = Some(targetId); self }
     /// The id of the panel we want DevTools to open initially. Currently
     /// supported panels are elements, console, network, sources, resources
     /// and performance.
     pub fn panelId(mut self, panelId: impl Into<Cow<'a, str>>) -> Self { self.panelId = Some(panelId.into()); self }
     pub fn build(self) -> OpenDevToolsParams<'a> {
         OpenDevToolsParams {
-            targetId: self.targetId.unwrap_or_default(),
+            targetId: self.targetId,
             panelId: self.panelId,
         }
     }
@@ -1421,21 +1497,23 @@ pub struct OpenDevToolsReturns<'a> {
 }
 
 impl<'a> OpenDevToolsReturns<'a> {
-    pub fn builder() -> OpenDevToolsReturnsBuilder<'a> { OpenDevToolsReturnsBuilder::default() }
+    pub fn builder(targetId: TargetID<'a>) -> OpenDevToolsReturnsBuilder<'a> {
+        OpenDevToolsReturnsBuilder {
+            targetId: targetId,
+        }
+    }
     pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }
 }
 
-#[derive(Default)]
+
 pub struct OpenDevToolsReturnsBuilder<'a> {
-    targetId: Option<TargetID<'a>>,
+    targetId: TargetID<'a>,
 }
 
 impl<'a> OpenDevToolsReturnsBuilder<'a> {
-    /// The targetId of DevTools page target.
-    pub fn targetId(mut self, targetId: TargetID<'a>) -> Self { self.targetId = Some(targetId); self }
     pub fn build(self) -> OpenDevToolsReturns<'a> {
         OpenDevToolsReturns {
-            targetId: self.targetId.unwrap_or_default(),
+            targetId: self.targetId,
         }
     }
 }

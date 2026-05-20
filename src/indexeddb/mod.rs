@@ -17,32 +17,31 @@ pub struct DatabaseWithObjectStores<'a> {
 }
 
 impl<'a> DatabaseWithObjectStores<'a> {
-    pub fn builder() -> DatabaseWithObjectStoresBuilder<'a> { DatabaseWithObjectStoresBuilder::default() }
+    pub fn builder(name: impl Into<Cow<'a, str>>, version: f64, objectStores: Vec<ObjectStore<'a>>) -> DatabaseWithObjectStoresBuilder<'a> {
+        DatabaseWithObjectStoresBuilder {
+            name: name.into(),
+            version: version,
+            objectStores: objectStores,
+        }
+    }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn version(&self) -> f64 { self.version }
     pub fn objectStores(&self) -> &[ObjectStore<'a>] { &self.objectStores }
 }
 
-#[derive(Default)]
+
 pub struct DatabaseWithObjectStoresBuilder<'a> {
-    name: Option<Cow<'a, str>>,
-    version: Option<f64>,
-    objectStores: Option<Vec<ObjectStore<'a>>>,
+    name: Cow<'a, str>,
+    version: f64,
+    objectStores: Vec<ObjectStore<'a>>,
 }
 
 impl<'a> DatabaseWithObjectStoresBuilder<'a> {
-    /// Database name.
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    /// Database version (type is not 'integer', as the standard
-    /// requires the version number to be 'unsigned long long')
-    pub fn version(mut self, version: f64) -> Self { self.version = Some(version); self }
-    /// Object stores in this database.
-    pub fn objectStores(mut self, objectStores: Vec<ObjectStore<'a>>) -> Self { self.objectStores = Some(objectStores); self }
     pub fn build(self) -> DatabaseWithObjectStores<'a> {
         DatabaseWithObjectStores {
-            name: self.name.unwrap_or_default(),
-            version: self.version.unwrap_or_default(),
-            objectStores: self.objectStores.unwrap_or_default(),
+            name: self.name,
+            version: self.version,
+            objectStores: self.objectStores,
         }
     }
 }
@@ -63,36 +62,35 @@ pub struct ObjectStore<'a> {
 }
 
 impl<'a> ObjectStore<'a> {
-    pub fn builder() -> ObjectStoreBuilder<'a> { ObjectStoreBuilder::default() }
+    pub fn builder(name: impl Into<Cow<'a, str>>, keyPath: KeyPath<'a>, autoIncrement: bool, indexes: Vec<ObjectStoreIndex<'a>>) -> ObjectStoreBuilder<'a> {
+        ObjectStoreBuilder {
+            name: name.into(),
+            keyPath: keyPath,
+            autoIncrement: autoIncrement,
+            indexes: indexes,
+        }
+    }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn keyPath(&self) -> &KeyPath<'a> { &self.keyPath }
     pub fn autoIncrement(&self) -> bool { self.autoIncrement }
     pub fn indexes(&self) -> &[ObjectStoreIndex<'a>] { &self.indexes }
 }
 
-#[derive(Default)]
+
 pub struct ObjectStoreBuilder<'a> {
-    name: Option<Cow<'a, str>>,
-    keyPath: Option<KeyPath<'a>>,
-    autoIncrement: Option<bool>,
-    indexes: Option<Vec<ObjectStoreIndex<'a>>>,
+    name: Cow<'a, str>,
+    keyPath: KeyPath<'a>,
+    autoIncrement: bool,
+    indexes: Vec<ObjectStoreIndex<'a>>,
 }
 
 impl<'a> ObjectStoreBuilder<'a> {
-    /// Object store name.
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    /// Object store key path.
-    pub fn keyPath(mut self, keyPath: KeyPath<'a>) -> Self { self.keyPath = Some(keyPath); self }
-    /// If true, object store has auto increment flag set.
-    pub fn autoIncrement(mut self, autoIncrement: bool) -> Self { self.autoIncrement = Some(autoIncrement); self }
-    /// Indexes in this object store.
-    pub fn indexes(mut self, indexes: Vec<ObjectStoreIndex<'a>>) -> Self { self.indexes = Some(indexes); self }
     pub fn build(self) -> ObjectStore<'a> {
         ObjectStore {
-            name: self.name.unwrap_or_default(),
-            keyPath: self.keyPath.unwrap_or_default(),
-            autoIncrement: self.autoIncrement.unwrap_or_default(),
-            indexes: self.indexes.unwrap_or_default(),
+            name: self.name,
+            keyPath: self.keyPath,
+            autoIncrement: self.autoIncrement,
+            indexes: self.indexes,
         }
     }
 }
@@ -113,36 +111,35 @@ pub struct ObjectStoreIndex<'a> {
 }
 
 impl<'a> ObjectStoreIndex<'a> {
-    pub fn builder() -> ObjectStoreIndexBuilder<'a> { ObjectStoreIndexBuilder::default() }
+    pub fn builder(name: impl Into<Cow<'a, str>>, keyPath: KeyPath<'a>, unique: bool, multiEntry: bool) -> ObjectStoreIndexBuilder<'a> {
+        ObjectStoreIndexBuilder {
+            name: name.into(),
+            keyPath: keyPath,
+            unique: unique,
+            multiEntry: multiEntry,
+        }
+    }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn keyPath(&self) -> &KeyPath<'a> { &self.keyPath }
     pub fn unique(&self) -> bool { self.unique }
     pub fn multiEntry(&self) -> bool { self.multiEntry }
 }
 
-#[derive(Default)]
+
 pub struct ObjectStoreIndexBuilder<'a> {
-    name: Option<Cow<'a, str>>,
-    keyPath: Option<KeyPath<'a>>,
-    unique: Option<bool>,
-    multiEntry: Option<bool>,
+    name: Cow<'a, str>,
+    keyPath: KeyPath<'a>,
+    unique: bool,
+    multiEntry: bool,
 }
 
 impl<'a> ObjectStoreIndexBuilder<'a> {
-    /// Index name.
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    /// Index key path.
-    pub fn keyPath(mut self, keyPath: KeyPath<'a>) -> Self { self.keyPath = Some(keyPath); self }
-    /// If true, index is unique.
-    pub fn unique(mut self, unique: bool) -> Self { self.unique = Some(unique); self }
-    /// If true, index allows multiple entries for a key.
-    pub fn multiEntry(mut self, multiEntry: bool) -> Self { self.multiEntry = Some(multiEntry); self }
     pub fn build(self) -> ObjectStoreIndex<'a> {
         ObjectStoreIndex {
-            name: self.name.unwrap_or_default(),
-            keyPath: self.keyPath.unwrap_or_default(),
-            unique: self.unique.unwrap_or_default(),
-            multiEntry: self.multiEntry.unwrap_or_default(),
+            name: self.name,
+            keyPath: self.keyPath,
+            unique: self.unique,
+            multiEntry: self.multiEntry,
         }
     }
 }
@@ -170,7 +167,15 @@ pub struct Key<'a> {
 }
 
 impl<'a> Key<'a> {
-    pub fn builder() -> KeyBuilder<'a> { KeyBuilder::default() }
+    pub fn builder(type_: impl Into<Cow<'a, str>>) -> KeyBuilder<'a> {
+        KeyBuilder {
+            type_: type_.into(),
+            number: None,
+            string: None,
+            date: None,
+            array: None,
+        }
+    }
     pub fn type_(&self) -> &str { self.type_.as_ref() }
     pub fn number(&self) -> Option<f64> { self.number }
     pub fn string(&self) -> Option<&str> { self.string.as_deref() }
@@ -178,9 +183,9 @@ impl<'a> Key<'a> {
     pub fn array(&self) -> Option<&[Box<Key<'a>>]> { self.array.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct KeyBuilder<'a> {
-    type_: Option<Cow<'a, str>>,
+    type_: Cow<'a, str>,
     number: Option<f64>,
     string: Option<Cow<'a, str>>,
     date: Option<f64>,
@@ -188,8 +193,6 @@ pub struct KeyBuilder<'a> {
 }
 
 impl<'a> KeyBuilder<'a> {
-    /// Key type.
-    pub fn type_(mut self, type_: impl Into<Cow<'a, str>>) -> Self { self.type_ = Some(type_.into()); self }
     /// Number value.
     pub fn number(mut self, number: f64) -> Self { self.number = Some(number); self }
     /// String value.
@@ -200,7 +203,7 @@ impl<'a> KeyBuilder<'a> {
     pub fn array(mut self, array: Vec<Box<Key<'a>>>) -> Self { self.array = Some(array); self }
     pub fn build(self) -> Key<'a> {
         Key {
-            type_: self.type_.unwrap_or_default(),
+            type_: self.type_,
             number: self.number,
             string: self.string,
             date: self.date,
@@ -227,19 +230,26 @@ pub struct KeyRange<'a> {
 }
 
 impl<'a> KeyRange<'a> {
-    pub fn builder() -> KeyRangeBuilder<'a> { KeyRangeBuilder::default() }
+    pub fn builder(lowerOpen: bool, upperOpen: bool) -> KeyRangeBuilder<'a> {
+        KeyRangeBuilder {
+            lower: None,
+            upper: None,
+            lowerOpen: lowerOpen,
+            upperOpen: upperOpen,
+        }
+    }
     pub fn lower(&self) -> Option<&Key<'a>> { self.lower.as_ref() }
     pub fn upper(&self) -> Option<&Key<'a>> { self.upper.as_ref() }
     pub fn lowerOpen(&self) -> bool { self.lowerOpen }
     pub fn upperOpen(&self) -> bool { self.upperOpen }
 }
 
-#[derive(Default)]
+
 pub struct KeyRangeBuilder<'a> {
     lower: Option<Key<'a>>,
     upper: Option<Key<'a>>,
-    lowerOpen: Option<bool>,
-    upperOpen: Option<bool>,
+    lowerOpen: bool,
+    upperOpen: bool,
 }
 
 impl<'a> KeyRangeBuilder<'a> {
@@ -247,16 +257,12 @@ impl<'a> KeyRangeBuilder<'a> {
     pub fn lower(mut self, lower: Key<'a>) -> Self { self.lower = Some(lower); self }
     /// Upper bound.
     pub fn upper(mut self, upper: Key<'a>) -> Self { self.upper = Some(upper); self }
-    /// If true lower bound is open.
-    pub fn lowerOpen(mut self, lowerOpen: bool) -> Self { self.lowerOpen = Some(lowerOpen); self }
-    /// If true upper bound is open.
-    pub fn upperOpen(mut self, upperOpen: bool) -> Self { self.upperOpen = Some(upperOpen); self }
     pub fn build(self) -> KeyRange<'a> {
         KeyRange {
             lower: self.lower,
             upper: self.upper,
-            lowerOpen: self.lowerOpen.unwrap_or_default(),
-            upperOpen: self.upperOpen.unwrap_or_default(),
+            lowerOpen: self.lowerOpen,
+            upperOpen: self.upperOpen,
         }
     }
 }
@@ -275,31 +281,31 @@ pub struct DataEntry {
 }
 
 impl DataEntry {
-    pub fn builder() -> DataEntryBuilder { DataEntryBuilder::default() }
+    pub fn builder(key: crate::runtime::RemoteObject, primaryKey: crate::runtime::RemoteObject, value: crate::runtime::RemoteObject) -> DataEntryBuilder {
+        DataEntryBuilder {
+            key: key,
+            primaryKey: primaryKey,
+            value: value,
+        }
+    }
     pub fn key(&self) -> &crate::runtime::RemoteObject { &self.key }
     pub fn primaryKey(&self) -> &crate::runtime::RemoteObject { &self.primaryKey }
     pub fn value(&self) -> &crate::runtime::RemoteObject { &self.value }
 }
 
-#[derive(Default)]
+
 pub struct DataEntryBuilder {
-    key: Option<crate::runtime::RemoteObject>,
-    primaryKey: Option<crate::runtime::RemoteObject>,
-    value: Option<crate::runtime::RemoteObject>,
+    key: crate::runtime::RemoteObject,
+    primaryKey: crate::runtime::RemoteObject,
+    value: crate::runtime::RemoteObject,
 }
 
 impl DataEntryBuilder {
-    /// Key object.
-    pub fn key(mut self, key: crate::runtime::RemoteObject) -> Self { self.key = Some(key); self }
-    /// Primary key object.
-    pub fn primaryKey(mut self, primaryKey: crate::runtime::RemoteObject) -> Self { self.primaryKey = Some(primaryKey); self }
-    /// Value object.
-    pub fn value(mut self, value: crate::runtime::RemoteObject) -> Self { self.value = Some(value); self }
     pub fn build(self) -> DataEntry {
         DataEntry {
-            key: self.key.unwrap_or_default(),
-            primaryKey: self.primaryKey.unwrap_or_default(),
-            value: self.value.unwrap_or_default(),
+            key: self.key,
+            primaryKey: self.primaryKey,
+            value: self.value,
         }
     }
 }
@@ -321,29 +327,33 @@ pub struct KeyPath<'a> {
 }
 
 impl<'a> KeyPath<'a> {
-    pub fn builder() -> KeyPathBuilder<'a> { KeyPathBuilder::default() }
+    pub fn builder(type_: impl Into<Cow<'a, str>>) -> KeyPathBuilder<'a> {
+        KeyPathBuilder {
+            type_: type_.into(),
+            string: None,
+            array: None,
+        }
+    }
     pub fn type_(&self) -> &str { self.type_.as_ref() }
     pub fn string(&self) -> Option<&str> { self.string.as_deref() }
     pub fn array(&self) -> Option<&[Cow<'a, str>]> { self.array.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct KeyPathBuilder<'a> {
-    type_: Option<Cow<'a, str>>,
+    type_: Cow<'a, str>,
     string: Option<Cow<'a, str>>,
     array: Option<Vec<Cow<'a, str>>>,
 }
 
 impl<'a> KeyPathBuilder<'a> {
-    /// Key path type.
-    pub fn type_(mut self, type_: impl Into<Cow<'a, str>>) -> Self { self.type_ = Some(type_.into()); self }
     /// String value.
     pub fn string(mut self, string: impl Into<Cow<'a, str>>) -> Self { self.string = Some(string.into()); self }
     /// Array value.
     pub fn array(mut self, array: Vec<Cow<'a, str>>) -> Self { self.array = Some(array); self }
     pub fn build(self) -> KeyPath<'a> {
         KeyPath {
-            type_: self.type_.unwrap_or_default(),
+            type_: self.type_,
             string: self.string,
             array: self.array,
         }
@@ -372,7 +382,15 @@ pub struct ClearObjectStoreParams<'a> {
 }
 
 impl<'a> ClearObjectStoreParams<'a> {
-    pub fn builder() -> ClearObjectStoreParamsBuilder<'a> { ClearObjectStoreParamsBuilder::default() }
+    pub fn builder(databaseName: impl Into<Cow<'a, str>>, objectStoreName: impl Into<Cow<'a, str>>) -> ClearObjectStoreParamsBuilder<'a> {
+        ClearObjectStoreParamsBuilder {
+            securityOrigin: None,
+            storageKey: None,
+            storageBucket: None,
+            databaseName: databaseName.into(),
+            objectStoreName: objectStoreName.into(),
+        }
+    }
     pub fn securityOrigin(&self) -> Option<&str> { self.securityOrigin.as_deref() }
     pub fn storageKey(&self) -> Option<&str> { self.storageKey.as_deref() }
     pub fn storageBucket(&self) -> Option<&crate::storage::StorageBucket<'a>> { self.storageBucket.as_ref() }
@@ -380,13 +398,13 @@ impl<'a> ClearObjectStoreParams<'a> {
     pub fn objectStoreName(&self) -> &str { self.objectStoreName.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct ClearObjectStoreParamsBuilder<'a> {
     securityOrigin: Option<Cow<'a, str>>,
     storageKey: Option<Cow<'a, str>>,
     storageBucket: Option<crate::storage::StorageBucket<'a>>,
-    databaseName: Option<Cow<'a, str>>,
-    objectStoreName: Option<Cow<'a, str>>,
+    databaseName: Cow<'a, str>,
+    objectStoreName: Cow<'a, str>,
 }
 
 impl<'a> ClearObjectStoreParamsBuilder<'a> {
@@ -397,17 +415,13 @@ impl<'a> ClearObjectStoreParamsBuilder<'a> {
     pub fn storageKey(mut self, storageKey: impl Into<Cow<'a, str>>) -> Self { self.storageKey = Some(storageKey.into()); self }
     /// Storage bucket. If not specified, it uses the default bucket.
     pub fn storageBucket(mut self, storageBucket: crate::storage::StorageBucket<'a>) -> Self { self.storageBucket = Some(storageBucket); self }
-    /// Database name.
-    pub fn databaseName(mut self, databaseName: impl Into<Cow<'a, str>>) -> Self { self.databaseName = Some(databaseName.into()); self }
-    /// Object store name.
-    pub fn objectStoreName(mut self, objectStoreName: impl Into<Cow<'a, str>>) -> Self { self.objectStoreName = Some(objectStoreName.into()); self }
     pub fn build(self) -> ClearObjectStoreParams<'a> {
         ClearObjectStoreParams {
             securityOrigin: self.securityOrigin,
             storageKey: self.storageKey,
             storageBucket: self.storageBucket,
-            databaseName: self.databaseName.unwrap_or_default(),
-            objectStoreName: self.objectStoreName.unwrap_or_default(),
+            databaseName: self.databaseName,
+            objectStoreName: self.objectStoreName,
         }
     }
 }
@@ -439,19 +453,26 @@ pub struct DeleteDatabaseParams<'a> {
 }
 
 impl<'a> DeleteDatabaseParams<'a> {
-    pub fn builder() -> DeleteDatabaseParamsBuilder<'a> { DeleteDatabaseParamsBuilder::default() }
+    pub fn builder(databaseName: impl Into<Cow<'a, str>>) -> DeleteDatabaseParamsBuilder<'a> {
+        DeleteDatabaseParamsBuilder {
+            securityOrigin: None,
+            storageKey: None,
+            storageBucket: None,
+            databaseName: databaseName.into(),
+        }
+    }
     pub fn securityOrigin(&self) -> Option<&str> { self.securityOrigin.as_deref() }
     pub fn storageKey(&self) -> Option<&str> { self.storageKey.as_deref() }
     pub fn storageBucket(&self) -> Option<&crate::storage::StorageBucket<'a>> { self.storageBucket.as_ref() }
     pub fn databaseName(&self) -> &str { self.databaseName.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct DeleteDatabaseParamsBuilder<'a> {
     securityOrigin: Option<Cow<'a, str>>,
     storageKey: Option<Cow<'a, str>>,
     storageBucket: Option<crate::storage::StorageBucket<'a>>,
-    databaseName: Option<Cow<'a, str>>,
+    databaseName: Cow<'a, str>,
 }
 
 impl<'a> DeleteDatabaseParamsBuilder<'a> {
@@ -462,14 +483,12 @@ impl<'a> DeleteDatabaseParamsBuilder<'a> {
     pub fn storageKey(mut self, storageKey: impl Into<Cow<'a, str>>) -> Self { self.storageKey = Some(storageKey.into()); self }
     /// Storage bucket. If not specified, it uses the default bucket.
     pub fn storageBucket(mut self, storageBucket: crate::storage::StorageBucket<'a>) -> Self { self.storageBucket = Some(storageBucket); self }
-    /// Database name.
-    pub fn databaseName(mut self, databaseName: impl Into<Cow<'a, str>>) -> Self { self.databaseName = Some(databaseName.into()); self }
     pub fn build(self) -> DeleteDatabaseParams<'a> {
         DeleteDatabaseParams {
             securityOrigin: self.securityOrigin,
             storageKey: self.storageKey,
             storageBucket: self.storageBucket,
-            databaseName: self.databaseName.unwrap_or_default(),
+            databaseName: self.databaseName,
         }
     }
 }
@@ -503,7 +522,16 @@ pub struct DeleteObjectStoreEntriesParams<'a> {
 }
 
 impl<'a> DeleteObjectStoreEntriesParams<'a> {
-    pub fn builder() -> DeleteObjectStoreEntriesParamsBuilder<'a> { DeleteObjectStoreEntriesParamsBuilder::default() }
+    pub fn builder(databaseName: impl Into<Cow<'a, str>>, objectStoreName: impl Into<Cow<'a, str>>, keyRange: KeyRange<'a>) -> DeleteObjectStoreEntriesParamsBuilder<'a> {
+        DeleteObjectStoreEntriesParamsBuilder {
+            securityOrigin: None,
+            storageKey: None,
+            storageBucket: None,
+            databaseName: databaseName.into(),
+            objectStoreName: objectStoreName.into(),
+            keyRange: keyRange,
+        }
+    }
     pub fn securityOrigin(&self) -> Option<&str> { self.securityOrigin.as_deref() }
     pub fn storageKey(&self) -> Option<&str> { self.storageKey.as_deref() }
     pub fn storageBucket(&self) -> Option<&crate::storage::StorageBucket<'a>> { self.storageBucket.as_ref() }
@@ -512,14 +540,14 @@ impl<'a> DeleteObjectStoreEntriesParams<'a> {
     pub fn keyRange(&self) -> &KeyRange<'a> { &self.keyRange }
 }
 
-#[derive(Default)]
+
 pub struct DeleteObjectStoreEntriesParamsBuilder<'a> {
     securityOrigin: Option<Cow<'a, str>>,
     storageKey: Option<Cow<'a, str>>,
     storageBucket: Option<crate::storage::StorageBucket<'a>>,
-    databaseName: Option<Cow<'a, str>>,
-    objectStoreName: Option<Cow<'a, str>>,
-    keyRange: Option<KeyRange<'a>>,
+    databaseName: Cow<'a, str>,
+    objectStoreName: Cow<'a, str>,
+    keyRange: KeyRange<'a>,
 }
 
 impl<'a> DeleteObjectStoreEntriesParamsBuilder<'a> {
@@ -530,18 +558,14 @@ impl<'a> DeleteObjectStoreEntriesParamsBuilder<'a> {
     pub fn storageKey(mut self, storageKey: impl Into<Cow<'a, str>>) -> Self { self.storageKey = Some(storageKey.into()); self }
     /// Storage bucket. If not specified, it uses the default bucket.
     pub fn storageBucket(mut self, storageBucket: crate::storage::StorageBucket<'a>) -> Self { self.storageBucket = Some(storageBucket); self }
-    pub fn databaseName(mut self, databaseName: impl Into<Cow<'a, str>>) -> Self { self.databaseName = Some(databaseName.into()); self }
-    pub fn objectStoreName(mut self, objectStoreName: impl Into<Cow<'a, str>>) -> Self { self.objectStoreName = Some(objectStoreName.into()); self }
-    /// Range of entry keys to delete
-    pub fn keyRange(mut self, keyRange: KeyRange<'a>) -> Self { self.keyRange = Some(keyRange); self }
     pub fn build(self) -> DeleteObjectStoreEntriesParams<'a> {
         DeleteObjectStoreEntriesParams {
             securityOrigin: self.securityOrigin,
             storageKey: self.storageKey,
             storageBucket: self.storageBucket,
-            databaseName: self.databaseName.unwrap_or_default(),
-            objectStoreName: self.objectStoreName.unwrap_or_default(),
-            keyRange: self.keyRange.unwrap_or_default(),
+            databaseName: self.databaseName,
+            objectStoreName: self.objectStoreName,
+            keyRange: self.keyRange,
         }
     }
 }
@@ -556,21 +580,6 @@ impl<'a> crate::CdpCommand<'a> for DeleteObjectStoreEntriesParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct DisableParams {}
 
-impl DisableParams {
-    pub fn builder() -> DisableParamsBuilder {
-        DisableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct DisableParamsBuilder {}
-
-impl DisableParamsBuilder {
-    pub fn build(self) -> DisableParams {
-        DisableParams {}
-    }
-}
-
 impl DisableParams { pub const METHOD: &'static str = "IndexedDB.disable"; }
 
 impl<'a> crate::CdpCommand<'a> for DisableParams {
@@ -580,21 +589,6 @@ impl<'a> crate::CdpCommand<'a> for DisableParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct EnableParams {}
-
-impl EnableParams {
-    pub fn builder() -> EnableParamsBuilder {
-        EnableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct EnableParamsBuilder {}
-
-impl EnableParamsBuilder {
-    pub fn build(self) -> EnableParams {
-        EnableParams {}
-    }
-}
 
 impl EnableParams { pub const METHOD: &'static str = "IndexedDB.enable"; }
 
@@ -635,7 +629,19 @@ pub struct RequestDataParams<'a> {
 }
 
 impl<'a> RequestDataParams<'a> {
-    pub fn builder() -> RequestDataParamsBuilder<'a> { RequestDataParamsBuilder::default() }
+    pub fn builder(databaseName: impl Into<Cow<'a, str>>, objectStoreName: impl Into<Cow<'a, str>>, skipCount: u64, pageSize: u64) -> RequestDataParamsBuilder<'a> {
+        RequestDataParamsBuilder {
+            securityOrigin: None,
+            storageKey: None,
+            storageBucket: None,
+            databaseName: databaseName.into(),
+            objectStoreName: objectStoreName.into(),
+            indexName: None,
+            skipCount: skipCount,
+            pageSize: pageSize,
+            keyRange: None,
+        }
+    }
     pub fn securityOrigin(&self) -> Option<&str> { self.securityOrigin.as_deref() }
     pub fn storageKey(&self) -> Option<&str> { self.storageKey.as_deref() }
     pub fn storageBucket(&self) -> Option<&crate::storage::StorageBucket<'a>> { self.storageBucket.as_ref() }
@@ -647,16 +653,16 @@ impl<'a> RequestDataParams<'a> {
     pub fn keyRange(&self) -> Option<&KeyRange<'a>> { self.keyRange.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct RequestDataParamsBuilder<'a> {
     securityOrigin: Option<Cow<'a, str>>,
     storageKey: Option<Cow<'a, str>>,
     storageBucket: Option<crate::storage::StorageBucket<'a>>,
-    databaseName: Option<Cow<'a, str>>,
-    objectStoreName: Option<Cow<'a, str>>,
+    databaseName: Cow<'a, str>,
+    objectStoreName: Cow<'a, str>,
     indexName: Option<Cow<'a, str>>,
-    skipCount: Option<u64>,
-    pageSize: Option<u64>,
+    skipCount: u64,
+    pageSize: u64,
     keyRange: Option<KeyRange<'a>>,
 }
 
@@ -668,16 +674,8 @@ impl<'a> RequestDataParamsBuilder<'a> {
     pub fn storageKey(mut self, storageKey: impl Into<Cow<'a, str>>) -> Self { self.storageKey = Some(storageKey.into()); self }
     /// Storage bucket. If not specified, it uses the default bucket.
     pub fn storageBucket(mut self, storageBucket: crate::storage::StorageBucket<'a>) -> Self { self.storageBucket = Some(storageBucket); self }
-    /// Database name.
-    pub fn databaseName(mut self, databaseName: impl Into<Cow<'a, str>>) -> Self { self.databaseName = Some(databaseName.into()); self }
-    /// Object store name.
-    pub fn objectStoreName(mut self, objectStoreName: impl Into<Cow<'a, str>>) -> Self { self.objectStoreName = Some(objectStoreName.into()); self }
     /// Index name. If not specified, it performs an object store data request.
     pub fn indexName(mut self, indexName: impl Into<Cow<'a, str>>) -> Self { self.indexName = Some(indexName.into()); self }
-    /// Number of records to skip.
-    pub fn skipCount(mut self, skipCount: u64) -> Self { self.skipCount = Some(skipCount); self }
-    /// Number of records to fetch.
-    pub fn pageSize(mut self, pageSize: u64) -> Self { self.pageSize = Some(pageSize); self }
     /// Key range.
     pub fn keyRange(mut self, keyRange: KeyRange<'a>) -> Self { self.keyRange = Some(keyRange); self }
     pub fn build(self) -> RequestDataParams<'a> {
@@ -685,11 +683,11 @@ impl<'a> RequestDataParamsBuilder<'a> {
             securityOrigin: self.securityOrigin,
             storageKey: self.storageKey,
             storageBucket: self.storageBucket,
-            databaseName: self.databaseName.unwrap_or_default(),
-            objectStoreName: self.objectStoreName.unwrap_or_default(),
+            databaseName: self.databaseName,
+            objectStoreName: self.objectStoreName,
             indexName: self.indexName,
-            skipCount: self.skipCount.unwrap_or_default(),
-            pageSize: self.pageSize.unwrap_or_default(),
+            skipCount: self.skipCount,
+            pageSize: self.pageSize,
             keyRange: self.keyRange,
         }
     }
@@ -707,26 +705,27 @@ pub struct RequestDataReturns {
 }
 
 impl RequestDataReturns {
-    pub fn builder() -> RequestDataReturnsBuilder { RequestDataReturnsBuilder::default() }
+    pub fn builder(objectStoreDataEntries: Vec<DataEntry>, hasMore: bool) -> RequestDataReturnsBuilder {
+        RequestDataReturnsBuilder {
+            objectStoreDataEntries: objectStoreDataEntries,
+            hasMore: hasMore,
+        }
+    }
     pub fn objectStoreDataEntries(&self) -> &[DataEntry] { &self.objectStoreDataEntries }
     pub fn hasMore(&self) -> bool { self.hasMore }
 }
 
-#[derive(Default)]
+
 pub struct RequestDataReturnsBuilder {
-    objectStoreDataEntries: Option<Vec<DataEntry>>,
-    hasMore: Option<bool>,
+    objectStoreDataEntries: Vec<DataEntry>,
+    hasMore: bool,
 }
 
 impl RequestDataReturnsBuilder {
-    /// Array of object store data entries.
-    pub fn objectStoreDataEntries(mut self, objectStoreDataEntries: Vec<DataEntry>) -> Self { self.objectStoreDataEntries = Some(objectStoreDataEntries); self }
-    /// If true, there are more entries to fetch in the given range.
-    pub fn hasMore(mut self, hasMore: bool) -> Self { self.hasMore = Some(hasMore); self }
     pub fn build(self) -> RequestDataReturns {
         RequestDataReturns {
-            objectStoreDataEntries: self.objectStoreDataEntries.unwrap_or_default(),
-            hasMore: self.hasMore.unwrap_or_default(),
+            objectStoreDataEntries: self.objectStoreDataEntries,
+            hasMore: self.hasMore,
         }
     }
 }
@@ -760,7 +759,15 @@ pub struct GetMetadataParams<'a> {
 }
 
 impl<'a> GetMetadataParams<'a> {
-    pub fn builder() -> GetMetadataParamsBuilder<'a> { GetMetadataParamsBuilder::default() }
+    pub fn builder(databaseName: impl Into<Cow<'a, str>>, objectStoreName: impl Into<Cow<'a, str>>) -> GetMetadataParamsBuilder<'a> {
+        GetMetadataParamsBuilder {
+            securityOrigin: None,
+            storageKey: None,
+            storageBucket: None,
+            databaseName: databaseName.into(),
+            objectStoreName: objectStoreName.into(),
+        }
+    }
     pub fn securityOrigin(&self) -> Option<&str> { self.securityOrigin.as_deref() }
     pub fn storageKey(&self) -> Option<&str> { self.storageKey.as_deref() }
     pub fn storageBucket(&self) -> Option<&crate::storage::StorageBucket<'a>> { self.storageBucket.as_ref() }
@@ -768,13 +775,13 @@ impl<'a> GetMetadataParams<'a> {
     pub fn objectStoreName(&self) -> &str { self.objectStoreName.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct GetMetadataParamsBuilder<'a> {
     securityOrigin: Option<Cow<'a, str>>,
     storageKey: Option<Cow<'a, str>>,
     storageBucket: Option<crate::storage::StorageBucket<'a>>,
-    databaseName: Option<Cow<'a, str>>,
-    objectStoreName: Option<Cow<'a, str>>,
+    databaseName: Cow<'a, str>,
+    objectStoreName: Cow<'a, str>,
 }
 
 impl<'a> GetMetadataParamsBuilder<'a> {
@@ -785,17 +792,13 @@ impl<'a> GetMetadataParamsBuilder<'a> {
     pub fn storageKey(mut self, storageKey: impl Into<Cow<'a, str>>) -> Self { self.storageKey = Some(storageKey.into()); self }
     /// Storage bucket. If not specified, it uses the default bucket.
     pub fn storageBucket(mut self, storageBucket: crate::storage::StorageBucket<'a>) -> Self { self.storageBucket = Some(storageBucket); self }
-    /// Database name.
-    pub fn databaseName(mut self, databaseName: impl Into<Cow<'a, str>>) -> Self { self.databaseName = Some(databaseName.into()); self }
-    /// Object store name.
-    pub fn objectStoreName(mut self, objectStoreName: impl Into<Cow<'a, str>>) -> Self { self.objectStoreName = Some(objectStoreName.into()); self }
     pub fn build(self) -> GetMetadataParams<'a> {
         GetMetadataParams {
             securityOrigin: self.securityOrigin,
             storageKey: self.storageKey,
             storageBucket: self.storageBucket,
-            databaseName: self.databaseName.unwrap_or_default(),
-            objectStoreName: self.objectStoreName.unwrap_or_default(),
+            databaseName: self.databaseName,
+            objectStoreName: self.objectStoreName,
         }
     }
 }
@@ -814,28 +817,27 @@ pub struct GetMetadataReturns {
 }
 
 impl GetMetadataReturns {
-    pub fn builder() -> GetMetadataReturnsBuilder { GetMetadataReturnsBuilder::default() }
+    pub fn builder(entriesCount: f64, keyGeneratorValue: f64) -> GetMetadataReturnsBuilder {
+        GetMetadataReturnsBuilder {
+            entriesCount: entriesCount,
+            keyGeneratorValue: keyGeneratorValue,
+        }
+    }
     pub fn entriesCount(&self) -> f64 { self.entriesCount }
     pub fn keyGeneratorValue(&self) -> f64 { self.keyGeneratorValue }
 }
 
-#[derive(Default)]
+
 pub struct GetMetadataReturnsBuilder {
-    entriesCount: Option<f64>,
-    keyGeneratorValue: Option<f64>,
+    entriesCount: f64,
+    keyGeneratorValue: f64,
 }
 
 impl GetMetadataReturnsBuilder {
-    /// the entries count
-    pub fn entriesCount(mut self, entriesCount: f64) -> Self { self.entriesCount = Some(entriesCount); self }
-    /// the current value of key generator, to become the next inserted
-    /// key into the object store. Valid if objectStore.autoIncrement
-    /// is true.
-    pub fn keyGeneratorValue(mut self, keyGeneratorValue: f64) -> Self { self.keyGeneratorValue = Some(keyGeneratorValue); self }
     pub fn build(self) -> GetMetadataReturns {
         GetMetadataReturns {
-            entriesCount: self.entriesCount.unwrap_or_default(),
-            keyGeneratorValue: self.keyGeneratorValue.unwrap_or_default(),
+            entriesCount: self.entriesCount,
+            keyGeneratorValue: self.keyGeneratorValue,
         }
     }
 }
@@ -867,19 +869,26 @@ pub struct RequestDatabaseParams<'a> {
 }
 
 impl<'a> RequestDatabaseParams<'a> {
-    pub fn builder() -> RequestDatabaseParamsBuilder<'a> { RequestDatabaseParamsBuilder::default() }
+    pub fn builder(databaseName: impl Into<Cow<'a, str>>) -> RequestDatabaseParamsBuilder<'a> {
+        RequestDatabaseParamsBuilder {
+            securityOrigin: None,
+            storageKey: None,
+            storageBucket: None,
+            databaseName: databaseName.into(),
+        }
+    }
     pub fn securityOrigin(&self) -> Option<&str> { self.securityOrigin.as_deref() }
     pub fn storageKey(&self) -> Option<&str> { self.storageKey.as_deref() }
     pub fn storageBucket(&self) -> Option<&crate::storage::StorageBucket<'a>> { self.storageBucket.as_ref() }
     pub fn databaseName(&self) -> &str { self.databaseName.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct RequestDatabaseParamsBuilder<'a> {
     securityOrigin: Option<Cow<'a, str>>,
     storageKey: Option<Cow<'a, str>>,
     storageBucket: Option<crate::storage::StorageBucket<'a>>,
-    databaseName: Option<Cow<'a, str>>,
+    databaseName: Cow<'a, str>,
 }
 
 impl<'a> RequestDatabaseParamsBuilder<'a> {
@@ -890,14 +899,12 @@ impl<'a> RequestDatabaseParamsBuilder<'a> {
     pub fn storageKey(mut self, storageKey: impl Into<Cow<'a, str>>) -> Self { self.storageKey = Some(storageKey.into()); self }
     /// Storage bucket. If not specified, it uses the default bucket.
     pub fn storageBucket(mut self, storageBucket: crate::storage::StorageBucket<'a>) -> Self { self.storageBucket = Some(storageBucket); self }
-    /// Database name.
-    pub fn databaseName(mut self, databaseName: impl Into<Cow<'a, str>>) -> Self { self.databaseName = Some(databaseName.into()); self }
     pub fn build(self) -> RequestDatabaseParams<'a> {
         RequestDatabaseParams {
             securityOrigin: self.securityOrigin,
             storageKey: self.storageKey,
             storageBucket: self.storageBucket,
-            databaseName: self.databaseName.unwrap_or_default(),
+            databaseName: self.databaseName,
         }
     }
 }
@@ -912,21 +919,23 @@ pub struct RequestDatabaseReturns<'a> {
 }
 
 impl<'a> RequestDatabaseReturns<'a> {
-    pub fn builder() -> RequestDatabaseReturnsBuilder<'a> { RequestDatabaseReturnsBuilder::default() }
+    pub fn builder(databaseWithObjectStores: DatabaseWithObjectStores<'a>) -> RequestDatabaseReturnsBuilder<'a> {
+        RequestDatabaseReturnsBuilder {
+            databaseWithObjectStores: databaseWithObjectStores,
+        }
+    }
     pub fn databaseWithObjectStores(&self) -> &DatabaseWithObjectStores<'a> { &self.databaseWithObjectStores }
 }
 
-#[derive(Default)]
+
 pub struct RequestDatabaseReturnsBuilder<'a> {
-    databaseWithObjectStores: Option<DatabaseWithObjectStores<'a>>,
+    databaseWithObjectStores: DatabaseWithObjectStores<'a>,
 }
 
 impl<'a> RequestDatabaseReturnsBuilder<'a> {
-    /// Database with an array of object stores.
-    pub fn databaseWithObjectStores(mut self, databaseWithObjectStores: DatabaseWithObjectStores<'a>) -> Self { self.databaseWithObjectStores = Some(databaseWithObjectStores); self }
     pub fn build(self) -> RequestDatabaseReturns<'a> {
         RequestDatabaseReturns {
-            databaseWithObjectStores: self.databaseWithObjectStores.unwrap_or_default(),
+            databaseWithObjectStores: self.databaseWithObjectStores,
         }
     }
 }
@@ -956,7 +965,13 @@ pub struct RequestDatabaseNamesParams<'a> {
 }
 
 impl<'a> RequestDatabaseNamesParams<'a> {
-    pub fn builder() -> RequestDatabaseNamesParamsBuilder<'a> { RequestDatabaseNamesParamsBuilder::default() }
+    pub fn builder() -> RequestDatabaseNamesParamsBuilder<'a> {
+        RequestDatabaseNamesParamsBuilder {
+            securityOrigin: None,
+            storageKey: None,
+            storageBucket: None,
+        }
+    }
     pub fn securityOrigin(&self) -> Option<&str> { self.securityOrigin.as_deref() }
     pub fn storageKey(&self) -> Option<&str> { self.storageKey.as_deref() }
     pub fn storageBucket(&self) -> Option<&crate::storage::StorageBucket<'a>> { self.storageBucket.as_ref() }
@@ -996,21 +1011,23 @@ pub struct RequestDatabaseNamesReturns<'a> {
 }
 
 impl<'a> RequestDatabaseNamesReturns<'a> {
-    pub fn builder() -> RequestDatabaseNamesReturnsBuilder<'a> { RequestDatabaseNamesReturnsBuilder::default() }
+    pub fn builder(databaseNames: Vec<Cow<'a, str>>) -> RequestDatabaseNamesReturnsBuilder<'a> {
+        RequestDatabaseNamesReturnsBuilder {
+            databaseNames: databaseNames,
+        }
+    }
     pub fn databaseNames(&self) -> &[Cow<'a, str>] { &self.databaseNames }
 }
 
-#[derive(Default)]
+
 pub struct RequestDatabaseNamesReturnsBuilder<'a> {
-    databaseNames: Option<Vec<Cow<'a, str>>>,
+    databaseNames: Vec<Cow<'a, str>>,
 }
 
 impl<'a> RequestDatabaseNamesReturnsBuilder<'a> {
-    /// Database names for origin.
-    pub fn databaseNames(mut self, databaseNames: Vec<Cow<'a, str>>) -> Self { self.databaseNames = Some(databaseNames); self }
     pub fn build(self) -> RequestDatabaseNamesReturns<'a> {
         RequestDatabaseNamesReturns {
-            databaseNames: self.databaseNames.unwrap_or_default(),
+            databaseNames: self.databaseNames,
         }
     }
 }

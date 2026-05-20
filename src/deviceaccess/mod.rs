@@ -21,46 +21,33 @@ pub struct PromptDevice<'a> {
 }
 
 impl<'a> PromptDevice<'a> {
-    pub fn builder() -> PromptDeviceBuilder<'a> { PromptDeviceBuilder::default() }
+    pub fn builder(id: DeviceId<'a>, name: impl Into<Cow<'a, str>>) -> PromptDeviceBuilder<'a> {
+        PromptDeviceBuilder {
+            id: id,
+            name: name.into(),
+        }
+    }
     pub fn id(&self) -> &DeviceId<'a> { &self.id }
     pub fn name(&self) -> &str { self.name.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct PromptDeviceBuilder<'a> {
-    id: Option<DeviceId<'a>>,
-    name: Option<Cow<'a, str>>,
+    id: DeviceId<'a>,
+    name: Cow<'a, str>,
 }
 
 impl<'a> PromptDeviceBuilder<'a> {
-    pub fn id(mut self, id: DeviceId<'a>) -> Self { self.id = Some(id); self }
-    /// Display name as it appears in a device request user prompt.
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
     pub fn build(self) -> PromptDevice<'a> {
         PromptDevice {
-            id: self.id.unwrap_or_default(),
-            name: self.name.unwrap_or_default(),
+            id: self.id,
+            name: self.name,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct EnableParams {}
-
-impl EnableParams {
-    pub fn builder() -> EnableParamsBuilder {
-        EnableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct EnableParamsBuilder {}
-
-impl EnableParamsBuilder {
-    pub fn build(self) -> EnableParams {
-        EnableParams {}
-    }
-}
 
 impl EnableParams { pub const METHOD: &'static str = "DeviceAccess.enable"; }
 
@@ -71,21 +58,6 @@ impl<'a> crate::CdpCommand<'a> for EnableParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct DisableParams {}
-
-impl DisableParams {
-    pub fn builder() -> DisableParamsBuilder {
-        DisableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct DisableParamsBuilder {}
-
-impl DisableParamsBuilder {
-    pub fn build(self) -> DisableParams {
-        DisableParams {}
-    }
-}
 
 impl DisableParams { pub const METHOD: &'static str = "DeviceAccess.disable"; }
 
@@ -104,24 +76,27 @@ pub struct SelectPromptParams<'a> {
 }
 
 impl<'a> SelectPromptParams<'a> {
-    pub fn builder() -> SelectPromptParamsBuilder<'a> { SelectPromptParamsBuilder::default() }
+    pub fn builder(id: RequestId<'a>, deviceId: DeviceId<'a>) -> SelectPromptParamsBuilder<'a> {
+        SelectPromptParamsBuilder {
+            id: id,
+            deviceId: deviceId,
+        }
+    }
     pub fn id(&self) -> &RequestId<'a> { &self.id }
     pub fn deviceId(&self) -> &DeviceId<'a> { &self.deviceId }
 }
 
-#[derive(Default)]
+
 pub struct SelectPromptParamsBuilder<'a> {
-    id: Option<RequestId<'a>>,
-    deviceId: Option<DeviceId<'a>>,
+    id: RequestId<'a>,
+    deviceId: DeviceId<'a>,
 }
 
 impl<'a> SelectPromptParamsBuilder<'a> {
-    pub fn id(mut self, id: RequestId<'a>) -> Self { self.id = Some(id); self }
-    pub fn deviceId(mut self, deviceId: DeviceId<'a>) -> Self { self.deviceId = Some(deviceId); self }
     pub fn build(self) -> SelectPromptParams<'a> {
         SelectPromptParams {
-            id: self.id.unwrap_or_default(),
-            deviceId: self.deviceId.unwrap_or_default(),
+            id: self.id,
+            deviceId: self.deviceId,
         }
     }
 }
@@ -142,20 +117,23 @@ pub struct CancelPromptParams<'a> {
 }
 
 impl<'a> CancelPromptParams<'a> {
-    pub fn builder() -> CancelPromptParamsBuilder<'a> { CancelPromptParamsBuilder::default() }
+    pub fn builder(id: RequestId<'a>) -> CancelPromptParamsBuilder<'a> {
+        CancelPromptParamsBuilder {
+            id: id,
+        }
+    }
     pub fn id(&self) -> &RequestId<'a> { &self.id }
 }
 
-#[derive(Default)]
+
 pub struct CancelPromptParamsBuilder<'a> {
-    id: Option<RequestId<'a>>,
+    id: RequestId<'a>,
 }
 
 impl<'a> CancelPromptParamsBuilder<'a> {
-    pub fn id(mut self, id: RequestId<'a>) -> Self { self.id = Some(id); self }
     pub fn build(self) -> CancelPromptParams<'a> {
         CancelPromptParams {
-            id: self.id.unwrap_or_default(),
+            id: self.id,
         }
     }
 }

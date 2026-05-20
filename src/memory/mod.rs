@@ -27,31 +27,31 @@ pub struct SamplingProfileNode<'a> {
 }
 
 impl<'a> SamplingProfileNode<'a> {
-    pub fn builder() -> SamplingProfileNodeBuilder<'a> { SamplingProfileNodeBuilder::default() }
+    pub fn builder(size: f64, total: f64, stack: Vec<Cow<'a, str>>) -> SamplingProfileNodeBuilder<'a> {
+        SamplingProfileNodeBuilder {
+            size: size,
+            total: total,
+            stack: stack,
+        }
+    }
     pub fn size(&self) -> f64 { self.size }
     pub fn total(&self) -> f64 { self.total }
     pub fn stack(&self) -> &[Cow<'a, str>] { &self.stack }
 }
 
-#[derive(Default)]
+
 pub struct SamplingProfileNodeBuilder<'a> {
-    size: Option<f64>,
-    total: Option<f64>,
-    stack: Option<Vec<Cow<'a, str>>>,
+    size: f64,
+    total: f64,
+    stack: Vec<Cow<'a, str>>,
 }
 
 impl<'a> SamplingProfileNodeBuilder<'a> {
-    /// Size of the sampled allocation.
-    pub fn size(mut self, size: f64) -> Self { self.size = Some(size); self }
-    /// Total bytes attributed to this sample.
-    pub fn total(mut self, total: f64) -> Self { self.total = Some(total); self }
-    /// Execution stack at the point of allocation.
-    pub fn stack(mut self, stack: Vec<Cow<'a, str>>) -> Self { self.stack = Some(stack); self }
     pub fn build(self) -> SamplingProfileNode<'a> {
         SamplingProfileNode {
-            size: self.size.unwrap_or_default(),
-            total: self.total.unwrap_or_default(),
-            stack: self.stack.unwrap_or_default(),
+            size: self.size,
+            total: self.total,
+            stack: self.stack,
         }
     }
 }
@@ -66,24 +66,27 @@ pub struct SamplingProfile<'a> {
 }
 
 impl<'a> SamplingProfile<'a> {
-    pub fn builder() -> SamplingProfileBuilder<'a> { SamplingProfileBuilder::default() }
+    pub fn builder(samples: Vec<SamplingProfileNode<'a>>, modules: Vec<Module<'a>>) -> SamplingProfileBuilder<'a> {
+        SamplingProfileBuilder {
+            samples: samples,
+            modules: modules,
+        }
+    }
     pub fn samples(&self) -> &[SamplingProfileNode<'a>] { &self.samples }
     pub fn modules(&self) -> &[Module<'a>] { &self.modules }
 }
 
-#[derive(Default)]
+
 pub struct SamplingProfileBuilder<'a> {
-    samples: Option<Vec<SamplingProfileNode<'a>>>,
-    modules: Option<Vec<Module<'a>>>,
+    samples: Vec<SamplingProfileNode<'a>>,
+    modules: Vec<Module<'a>>,
 }
 
 impl<'a> SamplingProfileBuilder<'a> {
-    pub fn samples(mut self, samples: Vec<SamplingProfileNode<'a>>) -> Self { self.samples = Some(samples); self }
-    pub fn modules(mut self, modules: Vec<Module<'a>>) -> Self { self.modules = Some(modules); self }
     pub fn build(self) -> SamplingProfile<'a> {
         SamplingProfile {
-            samples: self.samples.unwrap_or_default(),
-            modules: self.modules.unwrap_or_default(),
+            samples: self.samples,
+            modules: self.modules,
         }
     }
 }
@@ -105,37 +108,35 @@ pub struct Module<'a> {
 }
 
 impl<'a> Module<'a> {
-    pub fn builder() -> ModuleBuilder<'a> { ModuleBuilder::default() }
+    pub fn builder(name: impl Into<Cow<'a, str>>, uuid: impl Into<Cow<'a, str>>, baseAddress: impl Into<Cow<'a, str>>, size: f64) -> ModuleBuilder<'a> {
+        ModuleBuilder {
+            name: name.into(),
+            uuid: uuid.into(),
+            baseAddress: baseAddress.into(),
+            size: size,
+        }
+    }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn uuid(&self) -> &str { self.uuid.as_ref() }
     pub fn baseAddress(&self) -> &str { self.baseAddress.as_ref() }
     pub fn size(&self) -> f64 { self.size }
 }
 
-#[derive(Default)]
+
 pub struct ModuleBuilder<'a> {
-    name: Option<Cow<'a, str>>,
-    uuid: Option<Cow<'a, str>>,
-    baseAddress: Option<Cow<'a, str>>,
-    size: Option<f64>,
+    name: Cow<'a, str>,
+    uuid: Cow<'a, str>,
+    baseAddress: Cow<'a, str>,
+    size: f64,
 }
 
 impl<'a> ModuleBuilder<'a> {
-    /// Name of the module.
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    /// UUID of the module.
-    pub fn uuid(mut self, uuid: impl Into<Cow<'a, str>>) -> Self { self.uuid = Some(uuid.into()); self }
-    /// Base address where the module is loaded into memory. Encoded as a decimal
-    /// or hexadecimal (0x prefixed) string.
-    pub fn baseAddress(mut self, baseAddress: impl Into<Cow<'a, str>>) -> Self { self.baseAddress = Some(baseAddress.into()); self }
-    /// Size of the module in bytes.
-    pub fn size(mut self, size: f64) -> Self { self.size = Some(size); self }
     pub fn build(self) -> Module<'a> {
         Module {
-            name: self.name.unwrap_or_default(),
-            uuid: self.uuid.unwrap_or_default(),
-            baseAddress: self.baseAddress.unwrap_or_default(),
-            size: self.size.unwrap_or_default(),
+            name: self.name,
+            uuid: self.uuid,
+            baseAddress: self.baseAddress,
+            size: self.size,
         }
     }
 }
@@ -153,27 +154,27 @@ pub struct DOMCounter<'a> {
 }
 
 impl<'a> DOMCounter<'a> {
-    pub fn builder() -> DOMCounterBuilder<'a> { DOMCounterBuilder::default() }
+    pub fn builder(name: impl Into<Cow<'a, str>>, count: u64) -> DOMCounterBuilder<'a> {
+        DOMCounterBuilder {
+            name: name.into(),
+            count: count,
+        }
+    }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn count(&self) -> u64 { self.count }
 }
 
-#[derive(Default)]
+
 pub struct DOMCounterBuilder<'a> {
-    name: Option<Cow<'a, str>>,
-    count: Option<u64>,
+    name: Cow<'a, str>,
+    count: u64,
 }
 
 impl<'a> DOMCounterBuilder<'a> {
-    /// Object name. Note: object names should be presumed volatile and clients should not expect
-    /// the returned names to be consistent across runs.
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    /// Object count.
-    pub fn count(mut self, count: u64) -> Self { self.count = Some(count); self }
     pub fn build(self) -> DOMCounter<'a> {
         DOMCounter {
-            name: self.name.unwrap_or_default(),
-            count: self.count.unwrap_or_default(),
+            name: self.name,
+            count: self.count,
         }
     }
 }
@@ -189,49 +190,37 @@ pub struct GetDOMCountersReturns {
 }
 
 impl GetDOMCountersReturns {
-    pub fn builder() -> GetDOMCountersReturnsBuilder { GetDOMCountersReturnsBuilder::default() }
+    pub fn builder(documents: i64, nodes: i64, jsEventListeners: i64) -> GetDOMCountersReturnsBuilder {
+        GetDOMCountersReturnsBuilder {
+            documents: documents,
+            nodes: nodes,
+            jsEventListeners: jsEventListeners,
+        }
+    }
     pub fn documents(&self) -> i64 { self.documents }
     pub fn nodes(&self) -> i64 { self.nodes }
     pub fn jsEventListeners(&self) -> i64 { self.jsEventListeners }
 }
 
-#[derive(Default)]
+
 pub struct GetDOMCountersReturnsBuilder {
-    documents: Option<i64>,
-    nodes: Option<i64>,
-    jsEventListeners: Option<i64>,
+    documents: i64,
+    nodes: i64,
+    jsEventListeners: i64,
 }
 
 impl GetDOMCountersReturnsBuilder {
-    pub fn documents(mut self, documents: i64) -> Self { self.documents = Some(documents); self }
-    pub fn nodes(mut self, nodes: i64) -> Self { self.nodes = Some(nodes); self }
-    pub fn jsEventListeners(mut self, jsEventListeners: i64) -> Self { self.jsEventListeners = Some(jsEventListeners); self }
     pub fn build(self) -> GetDOMCountersReturns {
         GetDOMCountersReturns {
-            documents: self.documents.unwrap_or_default(),
-            nodes: self.nodes.unwrap_or_default(),
-            jsEventListeners: self.jsEventListeners.unwrap_or_default(),
+            documents: self.documents,
+            nodes: self.nodes,
+            jsEventListeners: self.jsEventListeners,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetDOMCountersParams {}
-
-impl GetDOMCountersParams {
-    pub fn builder() -> GetDOMCountersParamsBuilder {
-        GetDOMCountersParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetDOMCountersParamsBuilder {}
-
-impl GetDOMCountersParamsBuilder {
-    pub fn build(self) -> GetDOMCountersParams {
-        GetDOMCountersParams {}
-    }
-}
 
 impl GetDOMCountersParams { pub const METHOD: &'static str = "Memory.getDOMCounters"; }
 
@@ -250,42 +239,29 @@ pub struct GetDOMCountersForLeakDetectionReturns<'a> {
 }
 
 impl<'a> GetDOMCountersForLeakDetectionReturns<'a> {
-    pub fn builder() -> GetDOMCountersForLeakDetectionReturnsBuilder<'a> { GetDOMCountersForLeakDetectionReturnsBuilder::default() }
+    pub fn builder(counters: Vec<DOMCounter<'a>>) -> GetDOMCountersForLeakDetectionReturnsBuilder<'a> {
+        GetDOMCountersForLeakDetectionReturnsBuilder {
+            counters: counters,
+        }
+    }
     pub fn counters(&self) -> &[DOMCounter<'a>] { &self.counters }
 }
 
-#[derive(Default)]
+
 pub struct GetDOMCountersForLeakDetectionReturnsBuilder<'a> {
-    counters: Option<Vec<DOMCounter<'a>>>,
+    counters: Vec<DOMCounter<'a>>,
 }
 
 impl<'a> GetDOMCountersForLeakDetectionReturnsBuilder<'a> {
-    /// DOM object counters.
-    pub fn counters(mut self, counters: Vec<DOMCounter<'a>>) -> Self { self.counters = Some(counters); self }
     pub fn build(self) -> GetDOMCountersForLeakDetectionReturns<'a> {
         GetDOMCountersForLeakDetectionReturns {
-            counters: self.counters.unwrap_or_default(),
+            counters: self.counters,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetDOMCountersForLeakDetectionParams {}
-
-impl GetDOMCountersForLeakDetectionParams {
-    pub fn builder() -> GetDOMCountersForLeakDetectionParamsBuilder {
-        GetDOMCountersForLeakDetectionParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetDOMCountersForLeakDetectionParamsBuilder {}
-
-impl GetDOMCountersForLeakDetectionParamsBuilder {
-    pub fn build(self) -> GetDOMCountersForLeakDetectionParams {
-        GetDOMCountersForLeakDetectionParams {}
-    }
-}
 
 impl GetDOMCountersForLeakDetectionParams { pub const METHOD: &'static str = "Memory.getDOMCountersForLeakDetection"; }
 
@@ -297,21 +273,6 @@ impl<'a> crate::CdpCommand<'a> for GetDOMCountersForLeakDetectionParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct PrepareForLeakDetectionParams {}
 
-impl PrepareForLeakDetectionParams {
-    pub fn builder() -> PrepareForLeakDetectionParamsBuilder {
-        PrepareForLeakDetectionParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct PrepareForLeakDetectionParamsBuilder {}
-
-impl PrepareForLeakDetectionParamsBuilder {
-    pub fn build(self) -> PrepareForLeakDetectionParams {
-        PrepareForLeakDetectionParams {}
-    }
-}
-
 impl PrepareForLeakDetectionParams { pub const METHOD: &'static str = "Memory.prepareForLeakDetection"; }
 
 impl<'a> crate::CdpCommand<'a> for PrepareForLeakDetectionParams {
@@ -321,21 +282,6 @@ impl<'a> crate::CdpCommand<'a> for PrepareForLeakDetectionParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ForciblyPurgeJavaScriptMemoryParams {}
-
-impl ForciblyPurgeJavaScriptMemoryParams {
-    pub fn builder() -> ForciblyPurgeJavaScriptMemoryParamsBuilder {
-        ForciblyPurgeJavaScriptMemoryParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct ForciblyPurgeJavaScriptMemoryParamsBuilder {}
-
-impl ForciblyPurgeJavaScriptMemoryParamsBuilder {
-    pub fn build(self) -> ForciblyPurgeJavaScriptMemoryParams {
-        ForciblyPurgeJavaScriptMemoryParams {}
-    }
-}
 
 impl ForciblyPurgeJavaScriptMemoryParams { pub const METHOD: &'static str = "Memory.forciblyPurgeJavaScriptMemory"; }
 
@@ -354,21 +300,23 @@ pub struct SetPressureNotificationsSuppressedParams {
 }
 
 impl SetPressureNotificationsSuppressedParams {
-    pub fn builder() -> SetPressureNotificationsSuppressedParamsBuilder { SetPressureNotificationsSuppressedParamsBuilder::default() }
+    pub fn builder(suppressed: bool) -> SetPressureNotificationsSuppressedParamsBuilder {
+        SetPressureNotificationsSuppressedParamsBuilder {
+            suppressed: suppressed,
+        }
+    }
     pub fn suppressed(&self) -> bool { self.suppressed }
 }
 
-#[derive(Default)]
+
 pub struct SetPressureNotificationsSuppressedParamsBuilder {
-    suppressed: Option<bool>,
+    suppressed: bool,
 }
 
 impl SetPressureNotificationsSuppressedParamsBuilder {
-    /// If true, memory pressure notifications will be suppressed.
-    pub fn suppressed(mut self, suppressed: bool) -> Self { self.suppressed = Some(suppressed); self }
     pub fn build(self) -> SetPressureNotificationsSuppressedParams {
         SetPressureNotificationsSuppressedParams {
-            suppressed: self.suppressed.unwrap_or_default(),
+            suppressed: self.suppressed,
         }
     }
 }
@@ -390,21 +338,23 @@ pub struct SimulatePressureNotificationParams {
 }
 
 impl SimulatePressureNotificationParams {
-    pub fn builder() -> SimulatePressureNotificationParamsBuilder { SimulatePressureNotificationParamsBuilder::default() }
+    pub fn builder(level: PressureLevel) -> SimulatePressureNotificationParamsBuilder {
+        SimulatePressureNotificationParamsBuilder {
+            level: level,
+        }
+    }
     pub fn level(&self) -> &PressureLevel { &self.level }
 }
 
-#[derive(Default)]
+
 pub struct SimulatePressureNotificationParamsBuilder {
-    level: Option<PressureLevel>,
+    level: PressureLevel,
 }
 
 impl SimulatePressureNotificationParamsBuilder {
-    /// Memory pressure level of the notification.
-    pub fn level(mut self, level: PressureLevel) -> Self { self.level = Some(level); self }
     pub fn build(self) -> SimulatePressureNotificationParams {
         SimulatePressureNotificationParams {
-            level: self.level.unwrap_or_default(),
+            level: self.level,
         }
     }
 }
@@ -430,7 +380,12 @@ pub struct StartSamplingParams {
 }
 
 impl StartSamplingParams {
-    pub fn builder() -> StartSamplingParamsBuilder { StartSamplingParamsBuilder::default() }
+    pub fn builder() -> StartSamplingParamsBuilder {
+        StartSamplingParamsBuilder {
+            samplingInterval: None,
+            suppressRandomness: None,
+        }
+    }
     pub fn samplingInterval(&self) -> Option<i64> { self.samplingInterval }
     pub fn suppressRandomness(&self) -> Option<bool> { self.suppressRandomness }
 }
@@ -464,21 +419,6 @@ impl<'a> crate::CdpCommand<'a> for StartSamplingParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct StopSamplingParams {}
 
-impl StopSamplingParams {
-    pub fn builder() -> StopSamplingParamsBuilder {
-        StopSamplingParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct StopSamplingParamsBuilder {}
-
-impl StopSamplingParamsBuilder {
-    pub fn build(self) -> StopSamplingParams {
-        StopSamplingParams {}
-    }
-}
-
 impl StopSamplingParams { pub const METHOD: &'static str = "Memory.stopSampling"; }
 
 impl<'a> crate::CdpCommand<'a> for StopSamplingParams {
@@ -496,41 +436,29 @@ pub struct GetAllTimeSamplingProfileReturns<'a> {
 }
 
 impl<'a> GetAllTimeSamplingProfileReturns<'a> {
-    pub fn builder() -> GetAllTimeSamplingProfileReturnsBuilder<'a> { GetAllTimeSamplingProfileReturnsBuilder::default() }
+    pub fn builder(profile: SamplingProfile<'a>) -> GetAllTimeSamplingProfileReturnsBuilder<'a> {
+        GetAllTimeSamplingProfileReturnsBuilder {
+            profile: profile,
+        }
+    }
     pub fn profile(&self) -> &SamplingProfile<'a> { &self.profile }
 }
 
-#[derive(Default)]
+
 pub struct GetAllTimeSamplingProfileReturnsBuilder<'a> {
-    profile: Option<SamplingProfile<'a>>,
+    profile: SamplingProfile<'a>,
 }
 
 impl<'a> GetAllTimeSamplingProfileReturnsBuilder<'a> {
-    pub fn profile(mut self, profile: SamplingProfile<'a>) -> Self { self.profile = Some(profile); self }
     pub fn build(self) -> GetAllTimeSamplingProfileReturns<'a> {
         GetAllTimeSamplingProfileReturns {
-            profile: self.profile.unwrap_or_default(),
+            profile: self.profile,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetAllTimeSamplingProfileParams {}
-
-impl GetAllTimeSamplingProfileParams {
-    pub fn builder() -> GetAllTimeSamplingProfileParamsBuilder {
-        GetAllTimeSamplingProfileParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetAllTimeSamplingProfileParamsBuilder {}
-
-impl GetAllTimeSamplingProfileParamsBuilder {
-    pub fn build(self) -> GetAllTimeSamplingProfileParams {
-        GetAllTimeSamplingProfileParams {}
-    }
-}
 
 impl GetAllTimeSamplingProfileParams { pub const METHOD: &'static str = "Memory.getAllTimeSamplingProfile"; }
 
@@ -549,41 +477,29 @@ pub struct GetBrowserSamplingProfileReturns<'a> {
 }
 
 impl<'a> GetBrowserSamplingProfileReturns<'a> {
-    pub fn builder() -> GetBrowserSamplingProfileReturnsBuilder<'a> { GetBrowserSamplingProfileReturnsBuilder::default() }
+    pub fn builder(profile: SamplingProfile<'a>) -> GetBrowserSamplingProfileReturnsBuilder<'a> {
+        GetBrowserSamplingProfileReturnsBuilder {
+            profile: profile,
+        }
+    }
     pub fn profile(&self) -> &SamplingProfile<'a> { &self.profile }
 }
 
-#[derive(Default)]
+
 pub struct GetBrowserSamplingProfileReturnsBuilder<'a> {
-    profile: Option<SamplingProfile<'a>>,
+    profile: SamplingProfile<'a>,
 }
 
 impl<'a> GetBrowserSamplingProfileReturnsBuilder<'a> {
-    pub fn profile(mut self, profile: SamplingProfile<'a>) -> Self { self.profile = Some(profile); self }
     pub fn build(self) -> GetBrowserSamplingProfileReturns<'a> {
         GetBrowserSamplingProfileReturns {
-            profile: self.profile.unwrap_or_default(),
+            profile: self.profile,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetBrowserSamplingProfileParams {}
-
-impl GetBrowserSamplingProfileParams {
-    pub fn builder() -> GetBrowserSamplingProfileParamsBuilder {
-        GetBrowserSamplingProfileParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetBrowserSamplingProfileParamsBuilder {}
-
-impl GetBrowserSamplingProfileParamsBuilder {
-    pub fn build(self) -> GetBrowserSamplingProfileParams {
-        GetBrowserSamplingProfileParams {}
-    }
-}
 
 impl GetBrowserSamplingProfileParams { pub const METHOD: &'static str = "Memory.getBrowserSamplingProfile"; }
 
@@ -602,41 +518,29 @@ pub struct GetSamplingProfileReturns<'a> {
 }
 
 impl<'a> GetSamplingProfileReturns<'a> {
-    pub fn builder() -> GetSamplingProfileReturnsBuilder<'a> { GetSamplingProfileReturnsBuilder::default() }
+    pub fn builder(profile: SamplingProfile<'a>) -> GetSamplingProfileReturnsBuilder<'a> {
+        GetSamplingProfileReturnsBuilder {
+            profile: profile,
+        }
+    }
     pub fn profile(&self) -> &SamplingProfile<'a> { &self.profile }
 }
 
-#[derive(Default)]
+
 pub struct GetSamplingProfileReturnsBuilder<'a> {
-    profile: Option<SamplingProfile<'a>>,
+    profile: SamplingProfile<'a>,
 }
 
 impl<'a> GetSamplingProfileReturnsBuilder<'a> {
-    pub fn profile(mut self, profile: SamplingProfile<'a>) -> Self { self.profile = Some(profile); self }
     pub fn build(self) -> GetSamplingProfileReturns<'a> {
         GetSamplingProfileReturns {
-            profile: self.profile.unwrap_or_default(),
+            profile: self.profile,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetSamplingProfileParams {}
-
-impl GetSamplingProfileParams {
-    pub fn builder() -> GetSamplingProfileParamsBuilder {
-        GetSamplingProfileParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetSamplingProfileParamsBuilder {}
-
-impl GetSamplingProfileParamsBuilder {
-    pub fn build(self) -> GetSamplingProfileParams {
-        GetSamplingProfileParams {}
-    }
-}
 
 impl GetSamplingProfileParams { pub const METHOD: &'static str = "Memory.getSamplingProfile"; }
 

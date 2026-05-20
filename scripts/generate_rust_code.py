@@ -124,21 +124,6 @@ def generate_struct_with_builder(struct_name, props, current_domain, lifetime_ke
     if not props:
         return f"""#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct {struct_name} {{}}
-
-impl {struct_name} {{
-    pub fn builder() -> {struct_name}Builder {{
-        {struct_name}Builder::default()
-    }}
-}}
-
-#[derive(Default)]
-pub struct {struct_name}Builder {{}}
-
-impl {struct_name}Builder {{
-    pub fn build(self) -> {struct_name} {{
-        {struct_name} {{}}
-    }}
-}}
 """
 
     has_lifetime = (current_domain.lower(), struct_name) in lifetime_keys
@@ -147,6 +132,8 @@ impl {struct_name}Builder {{
     
     fields_def = []
     builder_fields_def = []
+    builder_args = []
+    builder_inits = []
     setter_methods = []
     build_assignments = []
     getter_methods = []
@@ -155,11 +142,12 @@ impl {struct_name}Builder {{
         p_name = p["name"]
         rust_name = f"{p_name}_" if p_name in ["type", "override", "match", "return"] else p_name
         r_type = get_rust_type(p, current_domain, struct_name, lifetime_keys)
+        is_opt = p.get("optional", False)
         
         doc = format_rustdoc(p.get("description"), 4)
         
         serde_attrs = []
-        if "Option<" in r_type:
+        if is_opt:
             serde_attrs.append('skip_serializing_if = "Option::is_none"')
         if p_name != rust_name:
             serde_attrs.append(f'rename = "{p_name}"')
@@ -169,33 +157,40 @@ impl {struct_name}Builder {{
             serde_line = f"    #[serde({', '.join(serde_attrs)})]\n"
         
         fields_def.append(f"{doc}{serde_line}    {rust_name}: {r_type},")
-        
         getter_methods.append(generate_getter_method(rust_name, r_type))
         
-        if r_type.startswith("Option<"):
-            b_type = r_type
-        else:
-            b_type = f"Option<{r_type}>"
-        builder_fields_def.append(f"    {rust_name}: {b_type},")
-        
-        is_opt = r_type.startswith("Option<")
-        inner_type = r_type[7:-1] if is_opt else r_type
-        
-        is_string = (inner_type == "Cow<'a, str>" or inner_type == "std::borrow::Cow<'a, str>")
-        if is_string:
-            arg_type = "impl Into<Cow<'a, str>>"
-            setter_val = f"{rust_name}.into()"
-        else:
-            arg_type = inner_type
-            setter_val = rust_name
-            
-        setter_doc = format_rustdoc(p.get("description"), 4)
-        setter_methods.append(f"{setter_doc}    pub fn {rust_name}(mut self, {rust_name}: {arg_type}) -> Self {{ self.{rust_name} = Some({setter_val}); self }}")
-        
         if is_opt:
+            b_type = r_type
+            builder_fields_def.append(f"    {rust_name}: {b_type},")
+            builder_inits.append(f"            {rust_name}: None,")
+            
+            inner_type = r_type[7:-1]
+            is_string = (inner_type == "Cow<'a, str>" or inner_type == "std::borrow::Cow<'a, str>")
+            if is_string:
+                arg_type = "impl Into<Cow<'a, str>>"
+                setter_val = f"{rust_name}.into()"
+            else:
+                arg_type = inner_type
+                setter_val = rust_name
+                
+            setter_doc = format_rustdoc(p.get("description"), 4)
+            setter_methods.append(f"{setter_doc}    pub fn {rust_name}(mut self, {rust_name}: {arg_type}) -> Self {{ self.{rust_name} = Some({setter_val}); self }}")
             build_assignments.append(f"            {rust_name}: self.{rust_name},")
         else:
-            build_assignments.append(f"            {rust_name}: self.{rust_name}.unwrap_or_default(),")
+            b_type = r_type
+            builder_fields_def.append(f"    {rust_name}: {b_type},")
+            
+            is_string = (r_type == "Cow<'a, str>" or r_type == "std::borrow::Cow<'a, str>")
+            if is_string:
+                arg_type = "impl Into<Cow<'a, str>>"
+                init_val = f"{rust_name}.into()"
+            else:
+                arg_type = r_type
+                init_val = rust_name
+                
+            builder_args.append(f"{rust_name}: {arg_type}")
+            builder_inits.append(f"            {rust_name}: {init_val},")
+            build_assignments.append(f"            {rust_name}: self.{rust_name},")
             
     body = []
     
@@ -206,7 +201,13 @@ impl {struct_name}Builder {{
     body.append("}\n")
     
     impl_body = []
-    impl_body.append(f"    pub fn builder() -> {struct_name}Builder{lifetime_suffix} {{ {struct_name}Builder::default() }}")
+    builder_args_str = ", ".join(builder_args)
+    builder_inits_str = "\n".join(builder_inits)
+    impl_body.append(f"    pub fn builder({builder_args_str}) -> {struct_name}Builder{lifetime_suffix} {{")
+    impl_body.append(f"        {struct_name}Builder {{")
+    impl_body.append(builder_inits_str)
+    impl_body.append("        }")
+    impl_body.append("    }")
     
     for g in getter_methods:
         impl_body.append(g)
@@ -215,7 +216,8 @@ impl {struct_name}Builder {{
     body.append("\n".join(impl_body))
     body.append("}\n")
     
-    body.append("#[derive(Default)]")
+    builder_derive_default = "#[derive(Default)]" if not builder_args else ""
+    body.append(builder_derive_default)
     body.append(f"pub struct {struct_name}Builder{lifetime_suffix} {{")
     body.append("\n".join(builder_fields_def))
     body.append("}\n")

@@ -83,28 +83,27 @@ pub struct ManufacturerData<'a> {
 }
 
 impl<'a> ManufacturerData<'a> {
-    pub fn builder() -> ManufacturerDataBuilder<'a> { ManufacturerDataBuilder::default() }
+    pub fn builder(key: i64, data: impl Into<Cow<'a, str>>) -> ManufacturerDataBuilder<'a> {
+        ManufacturerDataBuilder {
+            key: key,
+            data: data.into(),
+        }
+    }
     pub fn key(&self) -> i64 { self.key }
     pub fn data(&self) -> &str { self.data.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct ManufacturerDataBuilder<'a> {
-    key: Option<i64>,
-    data: Option<Cow<'a, str>>,
+    key: i64,
+    data: Cow<'a, str>,
 }
 
 impl<'a> ManufacturerDataBuilder<'a> {
-    /// Company identifier
-    /// https://bitbucket.org/bluetooth-SIG/public/src/main/assigned_numbers/company_identifiers/company_identifiers.yaml
-    /// https://usb.org/developers
-    pub fn key(mut self, key: i64) -> Self { self.key = Some(key); self }
-    /// Manufacturer-specific data (Encoded as a base64 string when passed over JSON)
-    pub fn data(mut self, data: impl Into<Cow<'a, str>>) -> Self { self.data = Some(data.into()); self }
     pub fn build(self) -> ManufacturerData<'a> {
         ManufacturerData {
-            key: self.key.unwrap_or_default(),
-            data: self.data.unwrap_or_default(),
+            key: self.key,
+            data: self.data,
         }
     }
 }
@@ -131,7 +130,15 @@ pub struct ScanRecord<'a> {
 }
 
 impl<'a> ScanRecord<'a> {
-    pub fn builder() -> ScanRecordBuilder<'a> { ScanRecordBuilder::default() }
+    pub fn builder() -> ScanRecordBuilder<'a> {
+        ScanRecordBuilder {
+            name: None,
+            uuids: None,
+            appearance: None,
+            txPower: None,
+            manufacturerData: None,
+        }
+    }
     pub fn name(&self) -> Option<&str> { self.name.as_deref() }
     pub fn uuids(&self) -> Option<&[Cow<'a, str>]> { self.uuids.as_deref() }
     pub fn appearance(&self) -> Option<i64> { self.appearance }
@@ -180,28 +187,31 @@ pub struct ScanEntry<'a> {
 }
 
 impl<'a> ScanEntry<'a> {
-    pub fn builder() -> ScanEntryBuilder<'a> { ScanEntryBuilder::default() }
+    pub fn builder(deviceAddress: impl Into<Cow<'a, str>>, rssi: i64, scanRecord: ScanRecord<'a>) -> ScanEntryBuilder<'a> {
+        ScanEntryBuilder {
+            deviceAddress: deviceAddress.into(),
+            rssi: rssi,
+            scanRecord: scanRecord,
+        }
+    }
     pub fn deviceAddress(&self) -> &str { self.deviceAddress.as_ref() }
     pub fn rssi(&self) -> i64 { self.rssi }
     pub fn scanRecord(&self) -> &ScanRecord<'a> { &self.scanRecord }
 }
 
-#[derive(Default)]
+
 pub struct ScanEntryBuilder<'a> {
-    deviceAddress: Option<Cow<'a, str>>,
-    rssi: Option<i64>,
-    scanRecord: Option<ScanRecord<'a>>,
+    deviceAddress: Cow<'a, str>,
+    rssi: i64,
+    scanRecord: ScanRecord<'a>,
 }
 
 impl<'a> ScanEntryBuilder<'a> {
-    pub fn deviceAddress(mut self, deviceAddress: impl Into<Cow<'a, str>>) -> Self { self.deviceAddress = Some(deviceAddress.into()); self }
-    pub fn rssi(mut self, rssi: i64) -> Self { self.rssi = Some(rssi); self }
-    pub fn scanRecord(mut self, scanRecord: ScanRecord<'a>) -> Self { self.scanRecord = Some(scanRecord); self }
     pub fn build(self) -> ScanEntry<'a> {
         ScanEntry {
-            deviceAddress: self.deviceAddress.unwrap_or_default(),
-            rssi: self.rssi.unwrap_or_default(),
-            scanRecord: self.scanRecord.unwrap_or_default(),
+            deviceAddress: self.deviceAddress,
+            rssi: self.rssi,
+            scanRecord: self.scanRecord,
         }
     }
 }
@@ -231,7 +241,18 @@ pub struct CharacteristicProperties {
 }
 
 impl CharacteristicProperties {
-    pub fn builder() -> CharacteristicPropertiesBuilder { CharacteristicPropertiesBuilder::default() }
+    pub fn builder() -> CharacteristicPropertiesBuilder {
+        CharacteristicPropertiesBuilder {
+            broadcast: None,
+            read: None,
+            writeWithoutResponse: None,
+            write: None,
+            notify: None,
+            indicate: None,
+            authenticatedSignedWrites: None,
+            extendedProperties: None,
+        }
+    }
     pub fn broadcast(&self) -> Option<bool> { self.broadcast }
     pub fn read(&self) -> Option<bool> { self.read }
     pub fn writeWithoutResponse(&self) -> Option<bool> { self.writeWithoutResponse }
@@ -289,26 +310,27 @@ pub struct EnableParams {
 }
 
 impl EnableParams {
-    pub fn builder() -> EnableParamsBuilder { EnableParamsBuilder::default() }
+    pub fn builder(state: CentralState, leSupported: bool) -> EnableParamsBuilder {
+        EnableParamsBuilder {
+            state: state,
+            leSupported: leSupported,
+        }
+    }
     pub fn state(&self) -> &CentralState { &self.state }
     pub fn leSupported(&self) -> bool { self.leSupported }
 }
 
-#[derive(Default)]
+
 pub struct EnableParamsBuilder {
-    state: Option<CentralState>,
-    leSupported: Option<bool>,
+    state: CentralState,
+    leSupported: bool,
 }
 
 impl EnableParamsBuilder {
-    /// State of the simulated central.
-    pub fn state(mut self, state: CentralState) -> Self { self.state = Some(state); self }
-    /// If the simulated central supports low-energy.
-    pub fn leSupported(mut self, leSupported: bool) -> Self { self.leSupported = Some(leSupported); self }
     pub fn build(self) -> EnableParams {
         EnableParams {
-            state: self.state.unwrap_or_default(),
-            leSupported: self.leSupported.unwrap_or_default(),
+            state: self.state,
+            leSupported: self.leSupported,
         }
     }
 }
@@ -330,21 +352,23 @@ pub struct SetSimulatedCentralStateParams {
 }
 
 impl SetSimulatedCentralStateParams {
-    pub fn builder() -> SetSimulatedCentralStateParamsBuilder { SetSimulatedCentralStateParamsBuilder::default() }
+    pub fn builder(state: CentralState) -> SetSimulatedCentralStateParamsBuilder {
+        SetSimulatedCentralStateParamsBuilder {
+            state: state,
+        }
+    }
     pub fn state(&self) -> &CentralState { &self.state }
 }
 
-#[derive(Default)]
+
 pub struct SetSimulatedCentralStateParamsBuilder {
-    state: Option<CentralState>,
+    state: CentralState,
 }
 
 impl SetSimulatedCentralStateParamsBuilder {
-    /// State of the simulated central.
-    pub fn state(mut self, state: CentralState) -> Self { self.state = Some(state); self }
     pub fn build(self) -> SetSimulatedCentralStateParams {
         SetSimulatedCentralStateParams {
-            state: self.state.unwrap_or_default(),
+            state: self.state,
         }
     }
 }
@@ -358,21 +382,6 @@ impl<'a> crate::CdpCommand<'a> for SetSimulatedCentralStateParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct DisableParams {}
-
-impl DisableParams {
-    pub fn builder() -> DisableParamsBuilder {
-        DisableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct DisableParamsBuilder {}
-
-impl DisableParamsBuilder {
-    pub fn build(self) -> DisableParams {
-        DisableParams {}
-    }
-}
 
 impl DisableParams { pub const METHOD: &'static str = "BluetoothEmulation.disable"; }
 
@@ -394,32 +403,35 @@ pub struct SimulatePreconnectedPeripheralParams<'a> {
 }
 
 impl<'a> SimulatePreconnectedPeripheralParams<'a> {
-    pub fn builder() -> SimulatePreconnectedPeripheralParamsBuilder<'a> { SimulatePreconnectedPeripheralParamsBuilder::default() }
+    pub fn builder(address: impl Into<Cow<'a, str>>, name: impl Into<Cow<'a, str>>, manufacturerData: Vec<ManufacturerData<'a>>, knownServiceUuids: Vec<Cow<'a, str>>) -> SimulatePreconnectedPeripheralParamsBuilder<'a> {
+        SimulatePreconnectedPeripheralParamsBuilder {
+            address: address.into(),
+            name: name.into(),
+            manufacturerData: manufacturerData,
+            knownServiceUuids: knownServiceUuids,
+        }
+    }
     pub fn address(&self) -> &str { self.address.as_ref() }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn manufacturerData(&self) -> &[ManufacturerData<'a>] { &self.manufacturerData }
     pub fn knownServiceUuids(&self) -> &[Cow<'a, str>] { &self.knownServiceUuids }
 }
 
-#[derive(Default)]
+
 pub struct SimulatePreconnectedPeripheralParamsBuilder<'a> {
-    address: Option<Cow<'a, str>>,
-    name: Option<Cow<'a, str>>,
-    manufacturerData: Option<Vec<ManufacturerData<'a>>>,
-    knownServiceUuids: Option<Vec<Cow<'a, str>>>,
+    address: Cow<'a, str>,
+    name: Cow<'a, str>,
+    manufacturerData: Vec<ManufacturerData<'a>>,
+    knownServiceUuids: Vec<Cow<'a, str>>,
 }
 
 impl<'a> SimulatePreconnectedPeripheralParamsBuilder<'a> {
-    pub fn address(mut self, address: impl Into<Cow<'a, str>>) -> Self { self.address = Some(address.into()); self }
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    pub fn manufacturerData(mut self, manufacturerData: Vec<ManufacturerData<'a>>) -> Self { self.manufacturerData = Some(manufacturerData); self }
-    pub fn knownServiceUuids(mut self, knownServiceUuids: Vec<Cow<'a, str>>) -> Self { self.knownServiceUuids = Some(knownServiceUuids); self }
     pub fn build(self) -> SimulatePreconnectedPeripheralParams<'a> {
         SimulatePreconnectedPeripheralParams {
-            address: self.address.unwrap_or_default(),
-            name: self.name.unwrap_or_default(),
-            manufacturerData: self.manufacturerData.unwrap_or_default(),
-            knownServiceUuids: self.knownServiceUuids.unwrap_or_default(),
+            address: self.address,
+            name: self.name,
+            manufacturerData: self.manufacturerData,
+            knownServiceUuids: self.knownServiceUuids,
         }
     }
 }
@@ -441,20 +453,23 @@ pub struct SimulateAdvertisementParams<'a> {
 }
 
 impl<'a> SimulateAdvertisementParams<'a> {
-    pub fn builder() -> SimulateAdvertisementParamsBuilder<'a> { SimulateAdvertisementParamsBuilder::default() }
+    pub fn builder(entry: ScanEntry<'a>) -> SimulateAdvertisementParamsBuilder<'a> {
+        SimulateAdvertisementParamsBuilder {
+            entry: entry,
+        }
+    }
     pub fn entry(&self) -> &ScanEntry<'a> { &self.entry }
 }
 
-#[derive(Default)]
+
 pub struct SimulateAdvertisementParamsBuilder<'a> {
-    entry: Option<ScanEntry<'a>>,
+    entry: ScanEntry<'a>,
 }
 
 impl<'a> SimulateAdvertisementParamsBuilder<'a> {
-    pub fn entry(mut self, entry: ScanEntry<'a>) -> Self { self.entry = Some(entry); self }
     pub fn build(self) -> SimulateAdvertisementParams<'a> {
         SimulateAdvertisementParams {
-            entry: self.entry.unwrap_or_default(),
+            entry: self.entry,
         }
     }
 }
@@ -480,28 +495,31 @@ pub struct SimulateGATTOperationResponseParams<'a> {
 }
 
 impl<'a> SimulateGATTOperationResponseParams<'a> {
-    pub fn builder() -> SimulateGATTOperationResponseParamsBuilder<'a> { SimulateGATTOperationResponseParamsBuilder::default() }
+    pub fn builder(address: impl Into<Cow<'a, str>>, type_: GATTOperationType, code: i64) -> SimulateGATTOperationResponseParamsBuilder<'a> {
+        SimulateGATTOperationResponseParamsBuilder {
+            address: address.into(),
+            type_: type_,
+            code: code,
+        }
+    }
     pub fn address(&self) -> &str { self.address.as_ref() }
     pub fn type_(&self) -> &GATTOperationType { &self.type_ }
     pub fn code(&self) -> i64 { self.code }
 }
 
-#[derive(Default)]
+
 pub struct SimulateGATTOperationResponseParamsBuilder<'a> {
-    address: Option<Cow<'a, str>>,
-    type_: Option<GATTOperationType>,
-    code: Option<i64>,
+    address: Cow<'a, str>,
+    type_: GATTOperationType,
+    code: i64,
 }
 
 impl<'a> SimulateGATTOperationResponseParamsBuilder<'a> {
-    pub fn address(mut self, address: impl Into<Cow<'a, str>>) -> Self { self.address = Some(address.into()); self }
-    pub fn type_(mut self, type_: GATTOperationType) -> Self { self.type_ = Some(type_); self }
-    pub fn code(mut self, code: i64) -> Self { self.code = Some(code); self }
     pub fn build(self) -> SimulateGATTOperationResponseParams<'a> {
         SimulateGATTOperationResponseParams {
-            address: self.address.unwrap_or_default(),
-            type_: self.type_.unwrap_or_default(),
-            code: self.code.unwrap_or_default(),
+            address: self.address,
+            type_: self.type_,
+            code: self.code,
         }
     }
 }
@@ -531,31 +549,35 @@ pub struct SimulateCharacteristicOperationResponseParams<'a> {
 }
 
 impl<'a> SimulateCharacteristicOperationResponseParams<'a> {
-    pub fn builder() -> SimulateCharacteristicOperationResponseParamsBuilder<'a> { SimulateCharacteristicOperationResponseParamsBuilder::default() }
+    pub fn builder(characteristicId: impl Into<Cow<'a, str>>, type_: CharacteristicOperationType, code: i64) -> SimulateCharacteristicOperationResponseParamsBuilder<'a> {
+        SimulateCharacteristicOperationResponseParamsBuilder {
+            characteristicId: characteristicId.into(),
+            type_: type_,
+            code: code,
+            data: None,
+        }
+    }
     pub fn characteristicId(&self) -> &str { self.characteristicId.as_ref() }
     pub fn type_(&self) -> &CharacteristicOperationType { &self.type_ }
     pub fn code(&self) -> i64 { self.code }
     pub fn data(&self) -> Option<&str> { self.data.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct SimulateCharacteristicOperationResponseParamsBuilder<'a> {
-    characteristicId: Option<Cow<'a, str>>,
-    type_: Option<CharacteristicOperationType>,
-    code: Option<i64>,
+    characteristicId: Cow<'a, str>,
+    type_: CharacteristicOperationType,
+    code: i64,
     data: Option<Cow<'a, str>>,
 }
 
 impl<'a> SimulateCharacteristicOperationResponseParamsBuilder<'a> {
-    pub fn characteristicId(mut self, characteristicId: impl Into<Cow<'a, str>>) -> Self { self.characteristicId = Some(characteristicId.into()); self }
-    pub fn type_(mut self, type_: CharacteristicOperationType) -> Self { self.type_ = Some(type_); self }
-    pub fn code(mut self, code: i64) -> Self { self.code = Some(code); self }
     pub fn data(mut self, data: impl Into<Cow<'a, str>>) -> Self { self.data = Some(data.into()); self }
     pub fn build(self) -> SimulateCharacteristicOperationResponseParams<'a> {
         SimulateCharacteristicOperationResponseParams {
-            characteristicId: self.characteristicId.unwrap_or_default(),
-            type_: self.type_.unwrap_or_default(),
-            code: self.code.unwrap_or_default(),
+            characteristicId: self.characteristicId,
+            type_: self.type_,
+            code: self.code,
             data: self.data,
         }
     }
@@ -586,31 +608,35 @@ pub struct SimulateDescriptorOperationResponseParams<'a> {
 }
 
 impl<'a> SimulateDescriptorOperationResponseParams<'a> {
-    pub fn builder() -> SimulateDescriptorOperationResponseParamsBuilder<'a> { SimulateDescriptorOperationResponseParamsBuilder::default() }
+    pub fn builder(descriptorId: impl Into<Cow<'a, str>>, type_: DescriptorOperationType, code: i64) -> SimulateDescriptorOperationResponseParamsBuilder<'a> {
+        SimulateDescriptorOperationResponseParamsBuilder {
+            descriptorId: descriptorId.into(),
+            type_: type_,
+            code: code,
+            data: None,
+        }
+    }
     pub fn descriptorId(&self) -> &str { self.descriptorId.as_ref() }
     pub fn type_(&self) -> &DescriptorOperationType { &self.type_ }
     pub fn code(&self) -> i64 { self.code }
     pub fn data(&self) -> Option<&str> { self.data.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct SimulateDescriptorOperationResponseParamsBuilder<'a> {
-    descriptorId: Option<Cow<'a, str>>,
-    type_: Option<DescriptorOperationType>,
-    code: Option<i64>,
+    descriptorId: Cow<'a, str>,
+    type_: DescriptorOperationType,
+    code: i64,
     data: Option<Cow<'a, str>>,
 }
 
 impl<'a> SimulateDescriptorOperationResponseParamsBuilder<'a> {
-    pub fn descriptorId(mut self, descriptorId: impl Into<Cow<'a, str>>) -> Self { self.descriptorId = Some(descriptorId.into()); self }
-    pub fn type_(mut self, type_: DescriptorOperationType) -> Self { self.type_ = Some(type_); self }
-    pub fn code(mut self, code: i64) -> Self { self.code = Some(code); self }
     pub fn data(mut self, data: impl Into<Cow<'a, str>>) -> Self { self.data = Some(data.into()); self }
     pub fn build(self) -> SimulateDescriptorOperationResponseParams<'a> {
         SimulateDescriptorOperationResponseParams {
-            descriptorId: self.descriptorId.unwrap_or_default(),
-            type_: self.type_.unwrap_or_default(),
-            code: self.code.unwrap_or_default(),
+            descriptorId: self.descriptorId,
+            type_: self.type_,
+            code: self.code,
             data: self.data,
         }
     }
@@ -633,24 +659,27 @@ pub struct AddServiceParams<'a> {
 }
 
 impl<'a> AddServiceParams<'a> {
-    pub fn builder() -> AddServiceParamsBuilder<'a> { AddServiceParamsBuilder::default() }
+    pub fn builder(address: impl Into<Cow<'a, str>>, serviceUuid: impl Into<Cow<'a, str>>) -> AddServiceParamsBuilder<'a> {
+        AddServiceParamsBuilder {
+            address: address.into(),
+            serviceUuid: serviceUuid.into(),
+        }
+    }
     pub fn address(&self) -> &str { self.address.as_ref() }
     pub fn serviceUuid(&self) -> &str { self.serviceUuid.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct AddServiceParamsBuilder<'a> {
-    address: Option<Cow<'a, str>>,
-    serviceUuid: Option<Cow<'a, str>>,
+    address: Cow<'a, str>,
+    serviceUuid: Cow<'a, str>,
 }
 
 impl<'a> AddServiceParamsBuilder<'a> {
-    pub fn address(mut self, address: impl Into<Cow<'a, str>>) -> Self { self.address = Some(address.into()); self }
-    pub fn serviceUuid(mut self, serviceUuid: impl Into<Cow<'a, str>>) -> Self { self.serviceUuid = Some(serviceUuid.into()); self }
     pub fn build(self) -> AddServiceParams<'a> {
         AddServiceParams {
-            address: self.address.unwrap_or_default(),
-            serviceUuid: self.serviceUuid.unwrap_or_default(),
+            address: self.address,
+            serviceUuid: self.serviceUuid,
         }
     }
 }
@@ -665,21 +694,23 @@ pub struct AddServiceReturns<'a> {
 }
 
 impl<'a> AddServiceReturns<'a> {
-    pub fn builder() -> AddServiceReturnsBuilder<'a> { AddServiceReturnsBuilder::default() }
+    pub fn builder(serviceId: impl Into<Cow<'a, str>>) -> AddServiceReturnsBuilder<'a> {
+        AddServiceReturnsBuilder {
+            serviceId: serviceId.into(),
+        }
+    }
     pub fn serviceId(&self) -> &str { self.serviceId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct AddServiceReturnsBuilder<'a> {
-    serviceId: Option<Cow<'a, str>>,
+    serviceId: Cow<'a, str>,
 }
 
 impl<'a> AddServiceReturnsBuilder<'a> {
-    /// An identifier that uniquely represents this service.
-    pub fn serviceId(mut self, serviceId: impl Into<Cow<'a, str>>) -> Self { self.serviceId = Some(serviceId.into()); self }
     pub fn build(self) -> AddServiceReturns<'a> {
         AddServiceReturns {
-            serviceId: self.serviceId.unwrap_or_default(),
+            serviceId: self.serviceId,
         }
     }
 }
@@ -700,20 +731,23 @@ pub struct RemoveServiceParams<'a> {
 }
 
 impl<'a> RemoveServiceParams<'a> {
-    pub fn builder() -> RemoveServiceParamsBuilder<'a> { RemoveServiceParamsBuilder::default() }
+    pub fn builder(serviceId: impl Into<Cow<'a, str>>) -> RemoveServiceParamsBuilder<'a> {
+        RemoveServiceParamsBuilder {
+            serviceId: serviceId.into(),
+        }
+    }
     pub fn serviceId(&self) -> &str { self.serviceId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct RemoveServiceParamsBuilder<'a> {
-    serviceId: Option<Cow<'a, str>>,
+    serviceId: Cow<'a, str>,
 }
 
 impl<'a> RemoveServiceParamsBuilder<'a> {
-    pub fn serviceId(mut self, serviceId: impl Into<Cow<'a, str>>) -> Self { self.serviceId = Some(serviceId.into()); self }
     pub fn build(self) -> RemoveServiceParams<'a> {
         RemoveServiceParams {
-            serviceId: self.serviceId.unwrap_or_default(),
+            serviceId: self.serviceId,
         }
     }
 }
@@ -737,28 +771,31 @@ pub struct AddCharacteristicParams<'a> {
 }
 
 impl<'a> AddCharacteristicParams<'a> {
-    pub fn builder() -> AddCharacteristicParamsBuilder<'a> { AddCharacteristicParamsBuilder::default() }
+    pub fn builder(serviceId: impl Into<Cow<'a, str>>, characteristicUuid: impl Into<Cow<'a, str>>, properties: CharacteristicProperties) -> AddCharacteristicParamsBuilder<'a> {
+        AddCharacteristicParamsBuilder {
+            serviceId: serviceId.into(),
+            characteristicUuid: characteristicUuid.into(),
+            properties: properties,
+        }
+    }
     pub fn serviceId(&self) -> &str { self.serviceId.as_ref() }
     pub fn characteristicUuid(&self) -> &str { self.characteristicUuid.as_ref() }
     pub fn properties(&self) -> &CharacteristicProperties { &self.properties }
 }
 
-#[derive(Default)]
+
 pub struct AddCharacteristicParamsBuilder<'a> {
-    serviceId: Option<Cow<'a, str>>,
-    characteristicUuid: Option<Cow<'a, str>>,
-    properties: Option<CharacteristicProperties>,
+    serviceId: Cow<'a, str>,
+    characteristicUuid: Cow<'a, str>,
+    properties: CharacteristicProperties,
 }
 
 impl<'a> AddCharacteristicParamsBuilder<'a> {
-    pub fn serviceId(mut self, serviceId: impl Into<Cow<'a, str>>) -> Self { self.serviceId = Some(serviceId.into()); self }
-    pub fn characteristicUuid(mut self, characteristicUuid: impl Into<Cow<'a, str>>) -> Self { self.characteristicUuid = Some(characteristicUuid.into()); self }
-    pub fn properties(mut self, properties: CharacteristicProperties) -> Self { self.properties = Some(properties); self }
     pub fn build(self) -> AddCharacteristicParams<'a> {
         AddCharacteristicParams {
-            serviceId: self.serviceId.unwrap_or_default(),
-            characteristicUuid: self.characteristicUuid.unwrap_or_default(),
-            properties: self.properties.unwrap_or_default(),
+            serviceId: self.serviceId,
+            characteristicUuid: self.characteristicUuid,
+            properties: self.properties,
         }
     }
 }
@@ -774,21 +811,23 @@ pub struct AddCharacteristicReturns<'a> {
 }
 
 impl<'a> AddCharacteristicReturns<'a> {
-    pub fn builder() -> AddCharacteristicReturnsBuilder<'a> { AddCharacteristicReturnsBuilder::default() }
+    pub fn builder(characteristicId: impl Into<Cow<'a, str>>) -> AddCharacteristicReturnsBuilder<'a> {
+        AddCharacteristicReturnsBuilder {
+            characteristicId: characteristicId.into(),
+        }
+    }
     pub fn characteristicId(&self) -> &str { self.characteristicId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct AddCharacteristicReturnsBuilder<'a> {
-    characteristicId: Option<Cow<'a, str>>,
+    characteristicId: Cow<'a, str>,
 }
 
 impl<'a> AddCharacteristicReturnsBuilder<'a> {
-    /// An identifier that uniquely represents this characteristic.
-    pub fn characteristicId(mut self, characteristicId: impl Into<Cow<'a, str>>) -> Self { self.characteristicId = Some(characteristicId.into()); self }
     pub fn build(self) -> AddCharacteristicReturns<'a> {
         AddCharacteristicReturns {
-            characteristicId: self.characteristicId.unwrap_or_default(),
+            characteristicId: self.characteristicId,
         }
     }
 }
@@ -810,20 +849,23 @@ pub struct RemoveCharacteristicParams<'a> {
 }
 
 impl<'a> RemoveCharacteristicParams<'a> {
-    pub fn builder() -> RemoveCharacteristicParamsBuilder<'a> { RemoveCharacteristicParamsBuilder::default() }
+    pub fn builder(characteristicId: impl Into<Cow<'a, str>>) -> RemoveCharacteristicParamsBuilder<'a> {
+        RemoveCharacteristicParamsBuilder {
+            characteristicId: characteristicId.into(),
+        }
+    }
     pub fn characteristicId(&self) -> &str { self.characteristicId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct RemoveCharacteristicParamsBuilder<'a> {
-    characteristicId: Option<Cow<'a, str>>,
+    characteristicId: Cow<'a, str>,
 }
 
 impl<'a> RemoveCharacteristicParamsBuilder<'a> {
-    pub fn characteristicId(mut self, characteristicId: impl Into<Cow<'a, str>>) -> Self { self.characteristicId = Some(characteristicId.into()); self }
     pub fn build(self) -> RemoveCharacteristicParams<'a> {
         RemoveCharacteristicParams {
-            characteristicId: self.characteristicId.unwrap_or_default(),
+            characteristicId: self.characteristicId,
         }
     }
 }
@@ -846,24 +888,27 @@ pub struct AddDescriptorParams<'a> {
 }
 
 impl<'a> AddDescriptorParams<'a> {
-    pub fn builder() -> AddDescriptorParamsBuilder<'a> { AddDescriptorParamsBuilder::default() }
+    pub fn builder(characteristicId: impl Into<Cow<'a, str>>, descriptorUuid: impl Into<Cow<'a, str>>) -> AddDescriptorParamsBuilder<'a> {
+        AddDescriptorParamsBuilder {
+            characteristicId: characteristicId.into(),
+            descriptorUuid: descriptorUuid.into(),
+        }
+    }
     pub fn characteristicId(&self) -> &str { self.characteristicId.as_ref() }
     pub fn descriptorUuid(&self) -> &str { self.descriptorUuid.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct AddDescriptorParamsBuilder<'a> {
-    characteristicId: Option<Cow<'a, str>>,
-    descriptorUuid: Option<Cow<'a, str>>,
+    characteristicId: Cow<'a, str>,
+    descriptorUuid: Cow<'a, str>,
 }
 
 impl<'a> AddDescriptorParamsBuilder<'a> {
-    pub fn characteristicId(mut self, characteristicId: impl Into<Cow<'a, str>>) -> Self { self.characteristicId = Some(characteristicId.into()); self }
-    pub fn descriptorUuid(mut self, descriptorUuid: impl Into<Cow<'a, str>>) -> Self { self.descriptorUuid = Some(descriptorUuid.into()); self }
     pub fn build(self) -> AddDescriptorParams<'a> {
         AddDescriptorParams {
-            characteristicId: self.characteristicId.unwrap_or_default(),
-            descriptorUuid: self.descriptorUuid.unwrap_or_default(),
+            characteristicId: self.characteristicId,
+            descriptorUuid: self.descriptorUuid,
         }
     }
 }
@@ -879,21 +924,23 @@ pub struct AddDescriptorReturns<'a> {
 }
 
 impl<'a> AddDescriptorReturns<'a> {
-    pub fn builder() -> AddDescriptorReturnsBuilder<'a> { AddDescriptorReturnsBuilder::default() }
+    pub fn builder(descriptorId: impl Into<Cow<'a, str>>) -> AddDescriptorReturnsBuilder<'a> {
+        AddDescriptorReturnsBuilder {
+            descriptorId: descriptorId.into(),
+        }
+    }
     pub fn descriptorId(&self) -> &str { self.descriptorId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct AddDescriptorReturnsBuilder<'a> {
-    descriptorId: Option<Cow<'a, str>>,
+    descriptorId: Cow<'a, str>,
 }
 
 impl<'a> AddDescriptorReturnsBuilder<'a> {
-    /// An identifier that uniquely represents this descriptor.
-    pub fn descriptorId(mut self, descriptorId: impl Into<Cow<'a, str>>) -> Self { self.descriptorId = Some(descriptorId.into()); self }
     pub fn build(self) -> AddDescriptorReturns<'a> {
         AddDescriptorReturns {
-            descriptorId: self.descriptorId.unwrap_or_default(),
+            descriptorId: self.descriptorId,
         }
     }
 }
@@ -914,20 +961,23 @@ pub struct RemoveDescriptorParams<'a> {
 }
 
 impl<'a> RemoveDescriptorParams<'a> {
-    pub fn builder() -> RemoveDescriptorParamsBuilder<'a> { RemoveDescriptorParamsBuilder::default() }
+    pub fn builder(descriptorId: impl Into<Cow<'a, str>>) -> RemoveDescriptorParamsBuilder<'a> {
+        RemoveDescriptorParamsBuilder {
+            descriptorId: descriptorId.into(),
+        }
+    }
     pub fn descriptorId(&self) -> &str { self.descriptorId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct RemoveDescriptorParamsBuilder<'a> {
-    descriptorId: Option<Cow<'a, str>>,
+    descriptorId: Cow<'a, str>,
 }
 
 impl<'a> RemoveDescriptorParamsBuilder<'a> {
-    pub fn descriptorId(mut self, descriptorId: impl Into<Cow<'a, str>>) -> Self { self.descriptorId = Some(descriptorId.into()); self }
     pub fn build(self) -> RemoveDescriptorParams<'a> {
         RemoveDescriptorParams {
-            descriptorId: self.descriptorId.unwrap_or_default(),
+            descriptorId: self.descriptorId,
         }
     }
 }
@@ -948,20 +998,23 @@ pub struct SimulateGATTDisconnectionParams<'a> {
 }
 
 impl<'a> SimulateGATTDisconnectionParams<'a> {
-    pub fn builder() -> SimulateGATTDisconnectionParamsBuilder<'a> { SimulateGATTDisconnectionParamsBuilder::default() }
+    pub fn builder(address: impl Into<Cow<'a, str>>) -> SimulateGATTDisconnectionParamsBuilder<'a> {
+        SimulateGATTDisconnectionParamsBuilder {
+            address: address.into(),
+        }
+    }
     pub fn address(&self) -> &str { self.address.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SimulateGATTDisconnectionParamsBuilder<'a> {
-    address: Option<Cow<'a, str>>,
+    address: Cow<'a, str>,
 }
 
 impl<'a> SimulateGATTDisconnectionParamsBuilder<'a> {
-    pub fn address(mut self, address: impl Into<Cow<'a, str>>) -> Self { self.address = Some(address.into()); self }
     pub fn build(self) -> SimulateGATTDisconnectionParams<'a> {
         SimulateGATTDisconnectionParams {
-            address: self.address.unwrap_or_default(),
+            address: self.address,
         }
     }
 }

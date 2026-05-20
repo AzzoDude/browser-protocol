@@ -41,7 +41,21 @@ pub struct LogEntry<'a> {
 }
 
 impl<'a> LogEntry<'a> {
-    pub fn builder() -> LogEntryBuilder<'a> { LogEntryBuilder::default() }
+    pub fn builder(source: impl Into<Cow<'a, str>>, level: impl Into<Cow<'a, str>>, text: impl Into<Cow<'a, str>>, timestamp: crate::runtime::Timestamp) -> LogEntryBuilder<'a> {
+        LogEntryBuilder {
+            source: source.into(),
+            level: level.into(),
+            text: text.into(),
+            category: None,
+            timestamp: timestamp,
+            url: None,
+            lineNumber: None,
+            stackTrace: None,
+            networkRequestId: None,
+            workerId: None,
+            args: None,
+        }
+    }
     pub fn source(&self) -> &str { self.source.as_ref() }
     pub fn level(&self) -> &str { self.level.as_ref() }
     pub fn text(&self) -> &str { self.text.as_ref() }
@@ -55,13 +69,13 @@ impl<'a> LogEntry<'a> {
     pub fn args(&self) -> Option<&[crate::runtime::RemoteObject]> { self.args.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct LogEntryBuilder<'a> {
-    source: Option<Cow<'a, str>>,
-    level: Option<Cow<'a, str>>,
-    text: Option<Cow<'a, str>>,
+    source: Cow<'a, str>,
+    level: Cow<'a, str>,
+    text: Cow<'a, str>,
     category: Option<Cow<'a, str>>,
-    timestamp: Option<crate::runtime::Timestamp>,
+    timestamp: crate::runtime::Timestamp,
     url: Option<Cow<'a, str>>,
     lineNumber: Option<i64>,
     stackTrace: Option<crate::runtime::StackTrace>,
@@ -71,15 +85,7 @@ pub struct LogEntryBuilder<'a> {
 }
 
 impl<'a> LogEntryBuilder<'a> {
-    /// Log entry source.
-    pub fn source(mut self, source: impl Into<Cow<'a, str>>) -> Self { self.source = Some(source.into()); self }
-    /// Log entry severity.
-    pub fn level(mut self, level: impl Into<Cow<'a, str>>) -> Self { self.level = Some(level.into()); self }
-    /// Logged text.
-    pub fn text(mut self, text: impl Into<Cow<'a, str>>) -> Self { self.text = Some(text.into()); self }
     pub fn category(mut self, category: impl Into<Cow<'a, str>>) -> Self { self.category = Some(category.into()); self }
-    /// Timestamp when this entry was added.
-    pub fn timestamp(mut self, timestamp: crate::runtime::Timestamp) -> Self { self.timestamp = Some(timestamp); self }
     /// URL of the resource if known.
     pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
     /// Line number in the resource.
@@ -94,11 +100,11 @@ impl<'a> LogEntryBuilder<'a> {
     pub fn args(mut self, args: Vec<crate::runtime::RemoteObject>) -> Self { self.args = Some(args); self }
     pub fn build(self) -> LogEntry<'a> {
         LogEntry {
-            source: self.source.unwrap_or_default(),
-            level: self.level.unwrap_or_default(),
-            text: self.text.unwrap_or_default(),
+            source: self.source,
+            level: self.level,
+            text: self.text,
             category: self.category,
-            timestamp: self.timestamp.unwrap_or_default(),
+            timestamp: self.timestamp,
             url: self.url,
             lineNumber: self.lineNumber,
             stackTrace: self.stackTrace,
@@ -121,47 +127,33 @@ pub struct ViolationSetting<'a> {
 }
 
 impl<'a> ViolationSetting<'a> {
-    pub fn builder() -> ViolationSettingBuilder<'a> { ViolationSettingBuilder::default() }
+    pub fn builder(name: impl Into<Cow<'a, str>>, threshold: f64) -> ViolationSettingBuilder<'a> {
+        ViolationSettingBuilder {
+            name: name.into(),
+            threshold: threshold,
+        }
+    }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn threshold(&self) -> f64 { self.threshold }
 }
 
-#[derive(Default)]
+
 pub struct ViolationSettingBuilder<'a> {
-    name: Option<Cow<'a, str>>,
-    threshold: Option<f64>,
+    name: Cow<'a, str>,
+    threshold: f64,
 }
 
 impl<'a> ViolationSettingBuilder<'a> {
-    /// Violation type.
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    /// Time threshold to trigger upon.
-    pub fn threshold(mut self, threshold: f64) -> Self { self.threshold = Some(threshold); self }
     pub fn build(self) -> ViolationSetting<'a> {
         ViolationSetting {
-            name: self.name.unwrap_or_default(),
-            threshold: self.threshold.unwrap_or_default(),
+            name: self.name,
+            threshold: self.threshold,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ClearParams {}
-
-impl ClearParams {
-    pub fn builder() -> ClearParamsBuilder {
-        ClearParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct ClearParamsBuilder {}
-
-impl ClearParamsBuilder {
-    pub fn build(self) -> ClearParams {
-        ClearParams {}
-    }
-}
 
 impl ClearParams { pub const METHOD: &'static str = "Log.clear"; }
 
@@ -173,21 +165,6 @@ impl<'a> crate::CdpCommand<'a> for ClearParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct DisableParams {}
 
-impl DisableParams {
-    pub fn builder() -> DisableParamsBuilder {
-        DisableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct DisableParamsBuilder {}
-
-impl DisableParamsBuilder {
-    pub fn build(self) -> DisableParams {
-        DisableParams {}
-    }
-}
-
 impl DisableParams { pub const METHOD: &'static str = "Log.disable"; }
 
 impl<'a> crate::CdpCommand<'a> for DisableParams {
@@ -197,21 +174,6 @@ impl<'a> crate::CdpCommand<'a> for DisableParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct EnableParams {}
-
-impl EnableParams {
-    pub fn builder() -> EnableParamsBuilder {
-        EnableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct EnableParamsBuilder {}
-
-impl EnableParamsBuilder {
-    pub fn build(self) -> EnableParams {
-        EnableParams {}
-    }
-}
 
 impl EnableParams { pub const METHOD: &'static str = "Log.enable"; }
 
@@ -230,21 +192,23 @@ pub struct StartViolationsReportParams<'a> {
 }
 
 impl<'a> StartViolationsReportParams<'a> {
-    pub fn builder() -> StartViolationsReportParamsBuilder<'a> { StartViolationsReportParamsBuilder::default() }
+    pub fn builder(config: Vec<ViolationSetting<'a>>) -> StartViolationsReportParamsBuilder<'a> {
+        StartViolationsReportParamsBuilder {
+            config: config,
+        }
+    }
     pub fn config(&self) -> &[ViolationSetting<'a>] { &self.config }
 }
 
-#[derive(Default)]
+
 pub struct StartViolationsReportParamsBuilder<'a> {
-    config: Option<Vec<ViolationSetting<'a>>>,
+    config: Vec<ViolationSetting<'a>>,
 }
 
 impl<'a> StartViolationsReportParamsBuilder<'a> {
-    /// Configuration for violations.
-    pub fn config(mut self, config: Vec<ViolationSetting<'a>>) -> Self { self.config = Some(config); self }
     pub fn build(self) -> StartViolationsReportParams<'a> {
         StartViolationsReportParams {
-            config: self.config.unwrap_or_default(),
+            config: self.config,
         }
     }
 }
@@ -258,21 +222,6 @@ impl<'a> crate::CdpCommand<'a> for StartViolationsReportParams<'a> {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct StopViolationsReportParams {}
-
-impl StopViolationsReportParams {
-    pub fn builder() -> StopViolationsReportParamsBuilder {
-        StopViolationsReportParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct StopViolationsReportParamsBuilder {}
-
-impl StopViolationsReportParamsBuilder {
-    pub fn build(self) -> StopViolationsReportParams {
-        StopViolationsReportParams {}
-    }
-}
 
 impl StopViolationsReportParams { pub const METHOD: &'static str = "Log.stopViolationsReport"; }
 

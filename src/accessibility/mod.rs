@@ -128,7 +128,19 @@ pub struct AXValueSource<'a> {
 }
 
 impl<'a> AXValueSource<'a> {
-    pub fn builder() -> AXValueSourceBuilder<'a> { AXValueSourceBuilder::default() }
+    pub fn builder(type_: AXValueSourceType) -> AXValueSourceBuilder<'a> {
+        AXValueSourceBuilder {
+            type_: type_,
+            value: None,
+            attribute: None,
+            attributeValue: None,
+            superseded: None,
+            nativeSource: None,
+            nativeSourceValue: None,
+            invalid: None,
+            invalidReason: None,
+        }
+    }
     pub fn type_(&self) -> &AXValueSourceType { &self.type_ }
     pub fn value(&self) -> Option<&AXValue<'a>> { self.value.as_ref() }
     pub fn attribute(&self) -> Option<&str> { self.attribute.as_deref() }
@@ -140,9 +152,9 @@ impl<'a> AXValueSource<'a> {
     pub fn invalidReason(&self) -> Option<&str> { self.invalidReason.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct AXValueSourceBuilder<'a> {
-    type_: Option<AXValueSourceType>,
+    type_: AXValueSourceType,
     value: Option<AXValue<'a>>,
     attribute: Option<Cow<'a, str>>,
     attributeValue: Option<AXValue<'a>>,
@@ -154,8 +166,6 @@ pub struct AXValueSourceBuilder<'a> {
 }
 
 impl<'a> AXValueSourceBuilder<'a> {
-    /// What type of source this is.
-    pub fn type_(mut self, type_: AXValueSourceType) -> Self { self.type_ = Some(type_); self }
     /// The value of this property source.
     pub fn value(mut self, value: AXValue<'a>) -> Self { self.value = Some(value); self }
     /// The name of the relevant attribute, if any.
@@ -174,7 +184,7 @@ impl<'a> AXValueSourceBuilder<'a> {
     pub fn invalidReason(mut self, invalidReason: impl Into<Cow<'a, str>>) -> Self { self.invalidReason = Some(invalidReason.into()); self }
     pub fn build(self) -> AXValueSource<'a> {
         AXValueSource {
-            type_: self.type_.unwrap_or_default(),
+            type_: self.type_,
             value: self.value,
             attribute: self.attribute,
             attributeValue: self.attributeValue,
@@ -202,29 +212,33 @@ pub struct AXRelatedNode<'a> {
 }
 
 impl<'a> AXRelatedNode<'a> {
-    pub fn builder() -> AXRelatedNodeBuilder<'a> { AXRelatedNodeBuilder::default() }
+    pub fn builder(backendDOMNodeId: crate::dom::BackendNodeId) -> AXRelatedNodeBuilder<'a> {
+        AXRelatedNodeBuilder {
+            backendDOMNodeId: backendDOMNodeId,
+            idref: None,
+            text: None,
+        }
+    }
     pub fn backendDOMNodeId(&self) -> &crate::dom::BackendNodeId { &self.backendDOMNodeId }
     pub fn idref(&self) -> Option<&str> { self.idref.as_deref() }
     pub fn text(&self) -> Option<&str> { self.text.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct AXRelatedNodeBuilder<'a> {
-    backendDOMNodeId: Option<crate::dom::BackendNodeId>,
+    backendDOMNodeId: crate::dom::BackendNodeId,
     idref: Option<Cow<'a, str>>,
     text: Option<Cow<'a, str>>,
 }
 
 impl<'a> AXRelatedNodeBuilder<'a> {
-    /// The BackendNodeId of the related DOM node.
-    pub fn backendDOMNodeId(mut self, backendDOMNodeId: crate::dom::BackendNodeId) -> Self { self.backendDOMNodeId = Some(backendDOMNodeId); self }
     /// The IDRef value provided, if any.
     pub fn idref(mut self, idref: impl Into<Cow<'a, str>>) -> Self { self.idref = Some(idref.into()); self }
     /// The text alternative of this node in the current context.
     pub fn text(mut self, text: impl Into<Cow<'a, str>>) -> Self { self.text = Some(text.into()); self }
     pub fn build(self) -> AXRelatedNode<'a> {
         AXRelatedNode {
-            backendDOMNodeId: self.backendDOMNodeId.unwrap_or_default(),
+            backendDOMNodeId: self.backendDOMNodeId,
             idref: self.idref,
             text: self.text,
         }
@@ -242,26 +256,27 @@ pub struct AXProperty<'a> {
 }
 
 impl<'a> AXProperty<'a> {
-    pub fn builder() -> AXPropertyBuilder<'a> { AXPropertyBuilder::default() }
+    pub fn builder(name: AXPropertyName, value: AXValue<'a>) -> AXPropertyBuilder<'a> {
+        AXPropertyBuilder {
+            name: name,
+            value: value,
+        }
+    }
     pub fn name(&self) -> &AXPropertyName { &self.name }
     pub fn value(&self) -> &AXValue<'a> { &self.value }
 }
 
-#[derive(Default)]
+
 pub struct AXPropertyBuilder<'a> {
-    name: Option<AXPropertyName>,
-    value: Option<AXValue<'a>>,
+    name: AXPropertyName,
+    value: AXValue<'a>,
 }
 
 impl<'a> AXPropertyBuilder<'a> {
-    /// The name of this property.
-    pub fn name(mut self, name: AXPropertyName) -> Self { self.name = Some(name); self }
-    /// The value of this property.
-    pub fn value(mut self, value: AXValue<'a>) -> Self { self.value = Some(value); self }
     pub fn build(self) -> AXProperty<'a> {
         AXProperty {
-            name: self.name.unwrap_or_default(),
-            value: self.value.unwrap_or_default(),
+            name: self.name,
+            value: self.value,
         }
     }
 }
@@ -286,24 +301,29 @@ pub struct AXValue<'a> {
 }
 
 impl<'a> AXValue<'a> {
-    pub fn builder() -> AXValueBuilder<'a> { AXValueBuilder::default() }
+    pub fn builder(type_: AXValueType) -> AXValueBuilder<'a> {
+        AXValueBuilder {
+            type_: type_,
+            value: None,
+            relatedNodes: None,
+            sources: None,
+        }
+    }
     pub fn type_(&self) -> &AXValueType { &self.type_ }
     pub fn value(&self) -> Option<&JsonValue> { self.value.as_ref() }
     pub fn relatedNodes(&self) -> Option<&[AXRelatedNode<'a>]> { self.relatedNodes.as_deref() }
     pub fn sources(&self) -> Option<&[AXValueSource<'a>]> { self.sources.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct AXValueBuilder<'a> {
-    type_: Option<AXValueType>,
+    type_: AXValueType,
     value: Option<JsonValue>,
     relatedNodes: Option<Vec<AXRelatedNode<'a>>>,
     sources: Option<Vec<AXValueSource<'a>>>,
 }
 
 impl<'a> AXValueBuilder<'a> {
-    /// The type of this value.
-    pub fn type_(mut self, type_: AXValueType) -> Self { self.type_ = Some(type_); self }
     /// The computed value of this property.
     pub fn value(mut self, value: JsonValue) -> Self { self.value = Some(value); self }
     /// One or more related nodes, if applicable.
@@ -312,7 +332,7 @@ impl<'a> AXValueBuilder<'a> {
     pub fn sources(mut self, sources: Vec<AXValueSource<'a>>) -> Self { self.sources = Some(sources); self }
     pub fn build(self) -> AXValue<'a> {
         AXValue {
-            type_: self.type_.unwrap_or_default(),
+            type_: self.type_,
             value: self.value,
             relatedNodes: self.relatedNodes,
             sources: self.sources,
@@ -494,7 +514,23 @@ pub struct AXNode<'a> {
 }
 
 impl<'a> AXNode<'a> {
-    pub fn builder() -> AXNodeBuilder<'a> { AXNodeBuilder::default() }
+    pub fn builder(nodeId: AXNodeId<'a>, ignored: bool) -> AXNodeBuilder<'a> {
+        AXNodeBuilder {
+            nodeId: nodeId,
+            ignored: ignored,
+            ignoredReasons: None,
+            role: None,
+            chromeRole: None,
+            name: None,
+            description: None,
+            value: None,
+            properties: None,
+            parentId: None,
+            childIds: None,
+            backendDOMNodeId: None,
+            frameId: None,
+        }
+    }
     pub fn nodeId(&self) -> &AXNodeId<'a> { &self.nodeId }
     pub fn ignored(&self) -> bool { self.ignored }
     pub fn ignoredReasons(&self) -> Option<&[AXProperty<'a>]> { self.ignoredReasons.as_deref() }
@@ -510,10 +546,10 @@ impl<'a> AXNode<'a> {
     pub fn frameId(&self) -> Option<&crate::page::FrameId<'a>> { self.frameId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct AXNodeBuilder<'a> {
-    nodeId: Option<AXNodeId<'a>>,
-    ignored: Option<bool>,
+    nodeId: AXNodeId<'a>,
+    ignored: bool,
     ignoredReasons: Option<Vec<AXProperty<'a>>>,
     role: Option<AXValue<'a>>,
     chromeRole: Option<AXValue<'a>>,
@@ -528,10 +564,6 @@ pub struct AXNodeBuilder<'a> {
 }
 
 impl<'a> AXNodeBuilder<'a> {
-    /// Unique identifier for this node.
-    pub fn nodeId(mut self, nodeId: AXNodeId<'a>) -> Self { self.nodeId = Some(nodeId); self }
-    /// Whether this node is ignored for accessibility
-    pub fn ignored(mut self, ignored: bool) -> Self { self.ignored = Some(ignored); self }
     /// Collection of reasons why this node is hidden.
     pub fn ignoredReasons(mut self, ignoredReasons: Vec<AXProperty<'a>>) -> Self { self.ignoredReasons = Some(ignoredReasons); self }
     /// This 'Node''s role, whether explicit or implicit.
@@ -556,8 +588,8 @@ impl<'a> AXNodeBuilder<'a> {
     pub fn frameId(mut self, frameId: crate::page::FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
     pub fn build(self) -> AXNode<'a> {
         AXNode {
-            nodeId: self.nodeId.unwrap_or_default(),
-            ignored: self.ignored.unwrap_or_default(),
+            nodeId: self.nodeId,
+            ignored: self.ignored,
             ignoredReasons: self.ignoredReasons,
             role: self.role,
             chromeRole: self.chromeRole,
@@ -576,21 +608,6 @@ impl<'a> AXNodeBuilder<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct DisableParams {}
 
-impl DisableParams {
-    pub fn builder() -> DisableParamsBuilder {
-        DisableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct DisableParamsBuilder {}
-
-impl DisableParamsBuilder {
-    pub fn build(self) -> DisableParams {
-        DisableParams {}
-    }
-}
-
 impl DisableParams { pub const METHOD: &'static str = "Accessibility.disable"; }
 
 impl<'a> crate::CdpCommand<'a> for DisableParams {
@@ -600,21 +617,6 @@ impl<'a> crate::CdpCommand<'a> for DisableParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct EnableParams {}
-
-impl EnableParams {
-    pub fn builder() -> EnableParamsBuilder {
-        EnableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct EnableParamsBuilder {}
-
-impl EnableParamsBuilder {
-    pub fn build(self) -> EnableParams {
-        EnableParams {}
-    }
-}
 
 impl EnableParams { pub const METHOD: &'static str = "Accessibility.enable"; }
 
@@ -643,7 +645,14 @@ pub struct GetPartialAXTreeParams<'a> {
 }
 
 impl<'a> GetPartialAXTreeParams<'a> {
-    pub fn builder() -> GetPartialAXTreeParamsBuilder<'a> { GetPartialAXTreeParamsBuilder::default() }
+    pub fn builder() -> GetPartialAXTreeParamsBuilder<'a> {
+        GetPartialAXTreeParamsBuilder {
+            nodeId: None,
+            backendNodeId: None,
+            objectId: None,
+            fetchRelatives: None,
+        }
+    }
     pub fn nodeId(&self) -> Option<&crate::dom::NodeId> { self.nodeId.as_ref() }
     pub fn backendNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.backendNodeId.as_ref() }
     pub fn objectId(&self) -> Option<&crate::runtime::RemoteObjectId<'a>> { self.objectId.as_ref() }
@@ -688,22 +697,23 @@ pub struct GetPartialAXTreeReturns<'a> {
 }
 
 impl<'a> GetPartialAXTreeReturns<'a> {
-    pub fn builder() -> GetPartialAXTreeReturnsBuilder<'a> { GetPartialAXTreeReturnsBuilder::default() }
+    pub fn builder(nodes: Vec<AXNode<'a>>) -> GetPartialAXTreeReturnsBuilder<'a> {
+        GetPartialAXTreeReturnsBuilder {
+            nodes: nodes,
+        }
+    }
     pub fn nodes(&self) -> &[AXNode<'a>] { &self.nodes }
 }
 
-#[derive(Default)]
+
 pub struct GetPartialAXTreeReturnsBuilder<'a> {
-    nodes: Option<Vec<AXNode<'a>>>,
+    nodes: Vec<AXNode<'a>>,
 }
 
 impl<'a> GetPartialAXTreeReturnsBuilder<'a> {
-    /// The 'Accessibility.AXNode' for this DOM node, if it exists, plus its ancestors, siblings and
-    /// children, if requested.
-    pub fn nodes(mut self, nodes: Vec<AXNode<'a>>) -> Self { self.nodes = Some(nodes); self }
     pub fn build(self) -> GetPartialAXTreeReturns<'a> {
         GetPartialAXTreeReturns {
-            nodes: self.nodes.unwrap_or_default(),
+            nodes: self.nodes,
         }
     }
 }
@@ -731,7 +741,12 @@ pub struct GetFullAXTreeParams<'a> {
 }
 
 impl<'a> GetFullAXTreeParams<'a> {
-    pub fn builder() -> GetFullAXTreeParamsBuilder<'a> { GetFullAXTreeParamsBuilder::default() }
+    pub fn builder() -> GetFullAXTreeParamsBuilder<'a> {
+        GetFullAXTreeParamsBuilder {
+            depth: None,
+            frameId: None,
+        }
+    }
     pub fn depth(&self) -> Option<i64> { self.depth }
     pub fn frameId(&self) -> Option<&crate::page::FrameId<'a>> { self.frameId.as_ref() }
 }
@@ -766,20 +781,23 @@ pub struct GetFullAXTreeReturns<'a> {
 }
 
 impl<'a> GetFullAXTreeReturns<'a> {
-    pub fn builder() -> GetFullAXTreeReturnsBuilder<'a> { GetFullAXTreeReturnsBuilder::default() }
+    pub fn builder(nodes: Vec<AXNode<'a>>) -> GetFullAXTreeReturnsBuilder<'a> {
+        GetFullAXTreeReturnsBuilder {
+            nodes: nodes,
+        }
+    }
     pub fn nodes(&self) -> &[AXNode<'a>] { &self.nodes }
 }
 
-#[derive(Default)]
+
 pub struct GetFullAXTreeReturnsBuilder<'a> {
-    nodes: Option<Vec<AXNode<'a>>>,
+    nodes: Vec<AXNode<'a>>,
 }
 
 impl<'a> GetFullAXTreeReturnsBuilder<'a> {
-    pub fn nodes(mut self, nodes: Vec<AXNode<'a>>) -> Self { self.nodes = Some(nodes); self }
     pub fn build(self) -> GetFullAXTreeReturns<'a> {
         GetFullAXTreeReturns {
-            nodes: self.nodes.unwrap_or_default(),
+            nodes: self.nodes,
         }
     }
 }
@@ -804,7 +822,11 @@ pub struct GetRootAXNodeParams<'a> {
 }
 
 impl<'a> GetRootAXNodeParams<'a> {
-    pub fn builder() -> GetRootAXNodeParamsBuilder<'a> { GetRootAXNodeParamsBuilder::default() }
+    pub fn builder() -> GetRootAXNodeParamsBuilder<'a> {
+        GetRootAXNodeParamsBuilder {
+            frameId: None,
+        }
+    }
     pub fn frameId(&self) -> Option<&crate::page::FrameId<'a>> { self.frameId.as_ref() }
 }
 
@@ -834,20 +856,23 @@ pub struct GetRootAXNodeReturns<'a> {
 }
 
 impl<'a> GetRootAXNodeReturns<'a> {
-    pub fn builder() -> GetRootAXNodeReturnsBuilder<'a> { GetRootAXNodeReturnsBuilder::default() }
+    pub fn builder(node: AXNode<'a>) -> GetRootAXNodeReturnsBuilder<'a> {
+        GetRootAXNodeReturnsBuilder {
+            node: node,
+        }
+    }
     pub fn node(&self) -> &AXNode<'a> { &self.node }
 }
 
-#[derive(Default)]
+
 pub struct GetRootAXNodeReturnsBuilder<'a> {
-    node: Option<AXNode<'a>>,
+    node: AXNode<'a>,
 }
 
 impl<'a> GetRootAXNodeReturnsBuilder<'a> {
-    pub fn node(mut self, node: AXNode<'a>) -> Self { self.node = Some(node); self }
     pub fn build(self) -> GetRootAXNodeReturns<'a> {
         GetRootAXNodeReturns {
-            node: self.node.unwrap_or_default(),
+            node: self.node,
         }
     }
 }
@@ -877,7 +902,13 @@ pub struct GetAXNodeAndAncestorsParams<'a> {
 }
 
 impl<'a> GetAXNodeAndAncestorsParams<'a> {
-    pub fn builder() -> GetAXNodeAndAncestorsParamsBuilder<'a> { GetAXNodeAndAncestorsParamsBuilder::default() }
+    pub fn builder() -> GetAXNodeAndAncestorsParamsBuilder<'a> {
+        GetAXNodeAndAncestorsParamsBuilder {
+            nodeId: None,
+            backendNodeId: None,
+            objectId: None,
+        }
+    }
     pub fn nodeId(&self) -> Option<&crate::dom::NodeId> { self.nodeId.as_ref() }
     pub fn backendNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.backendNodeId.as_ref() }
     pub fn objectId(&self) -> Option<&crate::runtime::RemoteObjectId<'a>> { self.objectId.as_ref() }
@@ -916,20 +947,23 @@ pub struct GetAXNodeAndAncestorsReturns<'a> {
 }
 
 impl<'a> GetAXNodeAndAncestorsReturns<'a> {
-    pub fn builder() -> GetAXNodeAndAncestorsReturnsBuilder<'a> { GetAXNodeAndAncestorsReturnsBuilder::default() }
+    pub fn builder(nodes: Vec<AXNode<'a>>) -> GetAXNodeAndAncestorsReturnsBuilder<'a> {
+        GetAXNodeAndAncestorsReturnsBuilder {
+            nodes: nodes,
+        }
+    }
     pub fn nodes(&self) -> &[AXNode<'a>] { &self.nodes }
 }
 
-#[derive(Default)]
+
 pub struct GetAXNodeAndAncestorsReturnsBuilder<'a> {
-    nodes: Option<Vec<AXNode<'a>>>,
+    nodes: Vec<AXNode<'a>>,
 }
 
 impl<'a> GetAXNodeAndAncestorsReturnsBuilder<'a> {
-    pub fn nodes(mut self, nodes: Vec<AXNode<'a>>) -> Self { self.nodes = Some(nodes); self }
     pub fn build(self) -> GetAXNodeAndAncestorsReturns<'a> {
         GetAXNodeAndAncestorsReturns {
-            nodes: self.nodes.unwrap_or_default(),
+            nodes: self.nodes,
         }
     }
 }
@@ -955,25 +989,29 @@ pub struct GetChildAXNodesParams<'a> {
 }
 
 impl<'a> GetChildAXNodesParams<'a> {
-    pub fn builder() -> GetChildAXNodesParamsBuilder<'a> { GetChildAXNodesParamsBuilder::default() }
+    pub fn builder(id: AXNodeId<'a>) -> GetChildAXNodesParamsBuilder<'a> {
+        GetChildAXNodesParamsBuilder {
+            id: id,
+            frameId: None,
+        }
+    }
     pub fn id(&self) -> &AXNodeId<'a> { &self.id }
     pub fn frameId(&self) -> Option<&crate::page::FrameId<'a>> { self.frameId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct GetChildAXNodesParamsBuilder<'a> {
-    id: Option<AXNodeId<'a>>,
+    id: AXNodeId<'a>,
     frameId: Option<crate::page::FrameId<'a>>,
 }
 
 impl<'a> GetChildAXNodesParamsBuilder<'a> {
-    pub fn id(mut self, id: AXNodeId<'a>) -> Self { self.id = Some(id); self }
     /// The frame in whose document the node resides.
     /// If omitted, the root frame is used.
     pub fn frameId(mut self, frameId: crate::page::FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
     pub fn build(self) -> GetChildAXNodesParams<'a> {
         GetChildAXNodesParams {
-            id: self.id.unwrap_or_default(),
+            id: self.id,
             frameId: self.frameId,
         }
     }
@@ -989,20 +1027,23 @@ pub struct GetChildAXNodesReturns<'a> {
 }
 
 impl<'a> GetChildAXNodesReturns<'a> {
-    pub fn builder() -> GetChildAXNodesReturnsBuilder<'a> { GetChildAXNodesReturnsBuilder::default() }
+    pub fn builder(nodes: Vec<AXNode<'a>>) -> GetChildAXNodesReturnsBuilder<'a> {
+        GetChildAXNodesReturnsBuilder {
+            nodes: nodes,
+        }
+    }
     pub fn nodes(&self) -> &[AXNode<'a>] { &self.nodes }
 }
 
-#[derive(Default)]
+
 pub struct GetChildAXNodesReturnsBuilder<'a> {
-    nodes: Option<Vec<AXNode<'a>>>,
+    nodes: Vec<AXNode<'a>>,
 }
 
 impl<'a> GetChildAXNodesReturnsBuilder<'a> {
-    pub fn nodes(mut self, nodes: Vec<AXNode<'a>>) -> Self { self.nodes = Some(nodes); self }
     pub fn build(self) -> GetChildAXNodesReturns<'a> {
         GetChildAXNodesReturns {
-            nodes: self.nodes.unwrap_or_default(),
+            nodes: self.nodes,
         }
     }
 }
@@ -1041,7 +1082,15 @@ pub struct QueryAXTreeParams<'a> {
 }
 
 impl<'a> QueryAXTreeParams<'a> {
-    pub fn builder() -> QueryAXTreeParamsBuilder<'a> { QueryAXTreeParamsBuilder::default() }
+    pub fn builder() -> QueryAXTreeParamsBuilder<'a> {
+        QueryAXTreeParamsBuilder {
+            nodeId: None,
+            backendNodeId: None,
+            objectId: None,
+            accessibleName: None,
+            role: None,
+        }
+    }
     pub fn nodeId(&self) -> Option<&crate::dom::NodeId> { self.nodeId.as_ref() }
     pub fn backendNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.backendNodeId.as_ref() }
     pub fn objectId(&self) -> Option<&crate::runtime::RemoteObjectId<'a>> { self.objectId.as_ref() }
@@ -1095,22 +1144,23 @@ pub struct QueryAXTreeReturns<'a> {
 }
 
 impl<'a> QueryAXTreeReturns<'a> {
-    pub fn builder() -> QueryAXTreeReturnsBuilder<'a> { QueryAXTreeReturnsBuilder::default() }
+    pub fn builder(nodes: Vec<AXNode<'a>>) -> QueryAXTreeReturnsBuilder<'a> {
+        QueryAXTreeReturnsBuilder {
+            nodes: nodes,
+        }
+    }
     pub fn nodes(&self) -> &[AXNode<'a>] { &self.nodes }
 }
 
-#[derive(Default)]
+
 pub struct QueryAXTreeReturnsBuilder<'a> {
-    nodes: Option<Vec<AXNode<'a>>>,
+    nodes: Vec<AXNode<'a>>,
 }
 
 impl<'a> QueryAXTreeReturnsBuilder<'a> {
-    /// A list of 'Accessibility.AXNode' matching the specified attributes,
-    /// including nodes that are ignored for accessibility.
-    pub fn nodes(mut self, nodes: Vec<AXNode<'a>>) -> Self { self.nodes = Some(nodes); self }
     pub fn build(self) -> QueryAXTreeReturns<'a> {
         QueryAXTreeReturns {
-            nodes: self.nodes.unwrap_or_default(),
+            nodes: self.nodes,
         }
     }
 }

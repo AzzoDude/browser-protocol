@@ -62,7 +62,20 @@ pub struct EventListener<'a> {
 }
 
 impl<'a> EventListener<'a> {
-    pub fn builder() -> EventListenerBuilder<'a> { EventListenerBuilder::default() }
+    pub fn builder(type_: impl Into<Cow<'a, str>>, useCapture: bool, passive: bool, once: bool, scriptId: crate::runtime::ScriptId<'a>, lineNumber: i64, columnNumber: i64) -> EventListenerBuilder<'a> {
+        EventListenerBuilder {
+            type_: type_.into(),
+            useCapture: useCapture,
+            passive: passive,
+            once: once,
+            scriptId: scriptId,
+            lineNumber: lineNumber,
+            columnNumber: columnNumber,
+            handler: None,
+            originalHandler: None,
+            backendNodeId: None,
+        }
+    }
     pub fn type_(&self) -> &str { self.type_.as_ref() }
     pub fn useCapture(&self) -> bool { self.useCapture }
     pub fn passive(&self) -> bool { self.passive }
@@ -75,35 +88,21 @@ impl<'a> EventListener<'a> {
     pub fn backendNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.backendNodeId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct EventListenerBuilder<'a> {
-    type_: Option<Cow<'a, str>>,
-    useCapture: Option<bool>,
-    passive: Option<bool>,
-    once: Option<bool>,
-    scriptId: Option<crate::runtime::ScriptId<'a>>,
-    lineNumber: Option<i64>,
-    columnNumber: Option<i64>,
+    type_: Cow<'a, str>,
+    useCapture: bool,
+    passive: bool,
+    once: bool,
+    scriptId: crate::runtime::ScriptId<'a>,
+    lineNumber: i64,
+    columnNumber: i64,
     handler: Option<crate::runtime::RemoteObject>,
     originalHandler: Option<crate::runtime::RemoteObject>,
     backendNodeId: Option<crate::dom::BackendNodeId>,
 }
 
 impl<'a> EventListenerBuilder<'a> {
-    /// 'EventListener''s type.
-    pub fn type_(mut self, type_: impl Into<Cow<'a, str>>) -> Self { self.type_ = Some(type_.into()); self }
-    /// 'EventListener''s useCapture.
-    pub fn useCapture(mut self, useCapture: bool) -> Self { self.useCapture = Some(useCapture); self }
-    /// 'EventListener''s passive flag.
-    pub fn passive(mut self, passive: bool) -> Self { self.passive = Some(passive); self }
-    /// 'EventListener''s once flag.
-    pub fn once(mut self, once: bool) -> Self { self.once = Some(once); self }
-    /// Script id of the handler code.
-    pub fn scriptId(mut self, scriptId: crate::runtime::ScriptId<'a>) -> Self { self.scriptId = Some(scriptId); self }
-    /// Line number in the script (0-based).
-    pub fn lineNumber(mut self, lineNumber: i64) -> Self { self.lineNumber = Some(lineNumber); self }
-    /// Column number in the script (0-based).
-    pub fn columnNumber(mut self, columnNumber: i64) -> Self { self.columnNumber = Some(columnNumber); self }
     /// Event handler function value.
     pub fn handler(mut self, handler: crate::runtime::RemoteObject) -> Self { self.handler = Some(handler); self }
     /// Event original handler function value.
@@ -112,13 +111,13 @@ impl<'a> EventListenerBuilder<'a> {
     pub fn backendNodeId(mut self, backendNodeId: crate::dom::BackendNodeId) -> Self { self.backendNodeId = Some(backendNodeId); self }
     pub fn build(self) -> EventListener<'a> {
         EventListener {
-            type_: self.type_.unwrap_or_default(),
-            useCapture: self.useCapture.unwrap_or_default(),
-            passive: self.passive.unwrap_or_default(),
-            once: self.once.unwrap_or_default(),
-            scriptId: self.scriptId.unwrap_or_default(),
-            lineNumber: self.lineNumber.unwrap_or_default(),
-            columnNumber: self.columnNumber.unwrap_or_default(),
+            type_: self.type_,
+            useCapture: self.useCapture,
+            passive: self.passive,
+            once: self.once,
+            scriptId: self.scriptId,
+            lineNumber: self.lineNumber,
+            columnNumber: self.columnNumber,
             handler: self.handler,
             originalHandler: self.originalHandler,
             backendNodeId: self.backendNodeId,
@@ -144,22 +143,26 @@ pub struct GetEventListenersParams<'a> {
 }
 
 impl<'a> GetEventListenersParams<'a> {
-    pub fn builder() -> GetEventListenersParamsBuilder<'a> { GetEventListenersParamsBuilder::default() }
+    pub fn builder(objectId: crate::runtime::RemoteObjectId<'a>) -> GetEventListenersParamsBuilder<'a> {
+        GetEventListenersParamsBuilder {
+            objectId: objectId,
+            depth: None,
+            pierce: None,
+        }
+    }
     pub fn objectId(&self) -> &crate::runtime::RemoteObjectId<'a> { &self.objectId }
     pub fn depth(&self) -> Option<i64> { self.depth }
     pub fn pierce(&self) -> Option<bool> { self.pierce }
 }
 
-#[derive(Default)]
+
 pub struct GetEventListenersParamsBuilder<'a> {
-    objectId: Option<crate::runtime::RemoteObjectId<'a>>,
+    objectId: crate::runtime::RemoteObjectId<'a>,
     depth: Option<i64>,
     pierce: Option<bool>,
 }
 
 impl<'a> GetEventListenersParamsBuilder<'a> {
-    /// Identifier of the object to return listeners for.
-    pub fn objectId(mut self, objectId: crate::runtime::RemoteObjectId<'a>) -> Self { self.objectId = Some(objectId); self }
     /// The maximum depth at which Node children should be retrieved, defaults to 1. Use -1 for the
     /// entire subtree or provide an integer larger than 0.
     pub fn depth(mut self, depth: i64) -> Self { self.depth = Some(depth); self }
@@ -168,7 +171,7 @@ impl<'a> GetEventListenersParamsBuilder<'a> {
     pub fn pierce(mut self, pierce: bool) -> Self { self.pierce = Some(pierce); self }
     pub fn build(self) -> GetEventListenersParams<'a> {
         GetEventListenersParams {
-            objectId: self.objectId.unwrap_or_default(),
+            objectId: self.objectId,
             depth: self.depth,
             pierce: self.pierce,
         }
@@ -185,21 +188,23 @@ pub struct GetEventListenersReturns<'a> {
 }
 
 impl<'a> GetEventListenersReturns<'a> {
-    pub fn builder() -> GetEventListenersReturnsBuilder<'a> { GetEventListenersReturnsBuilder::default() }
+    pub fn builder(listeners: Vec<EventListener<'a>>) -> GetEventListenersReturnsBuilder<'a> {
+        GetEventListenersReturnsBuilder {
+            listeners: listeners,
+        }
+    }
     pub fn listeners(&self) -> &[EventListener<'a>] { &self.listeners }
 }
 
-#[derive(Default)]
+
 pub struct GetEventListenersReturnsBuilder<'a> {
-    listeners: Option<Vec<EventListener<'a>>>,
+    listeners: Vec<EventListener<'a>>,
 }
 
 impl<'a> GetEventListenersReturnsBuilder<'a> {
-    /// Array of relevant listeners.
-    pub fn listeners(mut self, listeners: Vec<EventListener<'a>>) -> Self { self.listeners = Some(listeners); self }
     pub fn build(self) -> GetEventListenersReturns<'a> {
         GetEventListenersReturns {
-            listeners: self.listeners.unwrap_or_default(),
+            listeners: self.listeners,
         }
     }
 }
@@ -224,26 +229,27 @@ pub struct RemoveDOMBreakpointParams {
 }
 
 impl RemoveDOMBreakpointParams {
-    pub fn builder() -> RemoveDOMBreakpointParamsBuilder { RemoveDOMBreakpointParamsBuilder::default() }
+    pub fn builder(nodeId: crate::dom::NodeId, type_: DOMBreakpointType) -> RemoveDOMBreakpointParamsBuilder {
+        RemoveDOMBreakpointParamsBuilder {
+            nodeId: nodeId,
+            type_: type_,
+        }
+    }
     pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
     pub fn type_(&self) -> &DOMBreakpointType { &self.type_ }
 }
 
-#[derive(Default)]
+
 pub struct RemoveDOMBreakpointParamsBuilder {
-    nodeId: Option<crate::dom::NodeId>,
-    type_: Option<DOMBreakpointType>,
+    nodeId: crate::dom::NodeId,
+    type_: DOMBreakpointType,
 }
 
 impl RemoveDOMBreakpointParamsBuilder {
-    /// Identifier of the node to remove breakpoint from.
-    pub fn nodeId(mut self, nodeId: crate::dom::NodeId) -> Self { self.nodeId = Some(nodeId); self }
-    /// Type of the breakpoint to remove.
-    pub fn type_(mut self, type_: DOMBreakpointType) -> Self { self.type_ = Some(type_); self }
     pub fn build(self) -> RemoveDOMBreakpointParams {
         RemoveDOMBreakpointParams {
-            nodeId: self.nodeId.unwrap_or_default(),
-            type_: self.type_.unwrap_or_default(),
+            nodeId: self.nodeId,
+            type_: self.type_,
         }
     }
 }
@@ -268,25 +274,28 @@ pub struct RemoveEventListenerBreakpointParams<'a> {
 }
 
 impl<'a> RemoveEventListenerBreakpointParams<'a> {
-    pub fn builder() -> RemoveEventListenerBreakpointParamsBuilder<'a> { RemoveEventListenerBreakpointParamsBuilder::default() }
+    pub fn builder(eventName: impl Into<Cow<'a, str>>) -> RemoveEventListenerBreakpointParamsBuilder<'a> {
+        RemoveEventListenerBreakpointParamsBuilder {
+            eventName: eventName.into(),
+            targetName: None,
+        }
+    }
     pub fn eventName(&self) -> &str { self.eventName.as_ref() }
     pub fn targetName(&self) -> Option<&str> { self.targetName.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct RemoveEventListenerBreakpointParamsBuilder<'a> {
-    eventName: Option<Cow<'a, str>>,
+    eventName: Cow<'a, str>,
     targetName: Option<Cow<'a, str>>,
 }
 
 impl<'a> RemoveEventListenerBreakpointParamsBuilder<'a> {
-    /// Event name.
-    pub fn eventName(mut self, eventName: impl Into<Cow<'a, str>>) -> Self { self.eventName = Some(eventName.into()); self }
     /// EventTarget interface name.
     pub fn targetName(mut self, targetName: impl Into<Cow<'a, str>>) -> Self { self.targetName = Some(targetName.into()); self }
     pub fn build(self) -> RemoveEventListenerBreakpointParams<'a> {
         RemoveEventListenerBreakpointParams {
-            eventName: self.eventName.unwrap_or_default(),
+            eventName: self.eventName,
             targetName: self.targetName,
         }
     }
@@ -309,21 +318,23 @@ pub struct RemoveInstrumentationBreakpointParams<'a> {
 }
 
 impl<'a> RemoveInstrumentationBreakpointParams<'a> {
-    pub fn builder() -> RemoveInstrumentationBreakpointParamsBuilder<'a> { RemoveInstrumentationBreakpointParamsBuilder::default() }
+    pub fn builder(eventName: impl Into<Cow<'a, str>>) -> RemoveInstrumentationBreakpointParamsBuilder<'a> {
+        RemoveInstrumentationBreakpointParamsBuilder {
+            eventName: eventName.into(),
+        }
+    }
     pub fn eventName(&self) -> &str { self.eventName.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct RemoveInstrumentationBreakpointParamsBuilder<'a> {
-    eventName: Option<Cow<'a, str>>,
+    eventName: Cow<'a, str>,
 }
 
 impl<'a> RemoveInstrumentationBreakpointParamsBuilder<'a> {
-    /// Instrumentation name to stop on.
-    pub fn eventName(mut self, eventName: impl Into<Cow<'a, str>>) -> Self { self.eventName = Some(eventName.into()); self }
     pub fn build(self) -> RemoveInstrumentationBreakpointParams<'a> {
         RemoveInstrumentationBreakpointParams {
-            eventName: self.eventName.unwrap_or_default(),
+            eventName: self.eventName,
         }
     }
 }
@@ -345,21 +356,23 @@ pub struct RemoveXHRBreakpointParams<'a> {
 }
 
 impl<'a> RemoveXHRBreakpointParams<'a> {
-    pub fn builder() -> RemoveXHRBreakpointParamsBuilder<'a> { RemoveXHRBreakpointParamsBuilder::default() }
+    pub fn builder(url: impl Into<Cow<'a, str>>) -> RemoveXHRBreakpointParamsBuilder<'a> {
+        RemoveXHRBreakpointParamsBuilder {
+            url: url.into(),
+        }
+    }
     pub fn url(&self) -> &str { self.url.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct RemoveXHRBreakpointParamsBuilder<'a> {
-    url: Option<Cow<'a, str>>,
+    url: Cow<'a, str>,
 }
 
 impl<'a> RemoveXHRBreakpointParamsBuilder<'a> {
-    /// Resource URL substring.
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
     pub fn build(self) -> RemoveXHRBreakpointParams<'a> {
         RemoveXHRBreakpointParams {
-            url: self.url.unwrap_or_default(),
+            url: self.url,
         }
     }
 }
@@ -381,21 +394,23 @@ pub struct SetBreakOnCSPViolationParams {
 }
 
 impl SetBreakOnCSPViolationParams {
-    pub fn builder() -> SetBreakOnCSPViolationParamsBuilder { SetBreakOnCSPViolationParamsBuilder::default() }
+    pub fn builder(violationTypes: Vec<CSPViolationType>) -> SetBreakOnCSPViolationParamsBuilder {
+        SetBreakOnCSPViolationParamsBuilder {
+            violationTypes: violationTypes,
+        }
+    }
     pub fn violationTypes(&self) -> &[CSPViolationType] { &self.violationTypes }
 }
 
-#[derive(Default)]
+
 pub struct SetBreakOnCSPViolationParamsBuilder {
-    violationTypes: Option<Vec<CSPViolationType>>,
+    violationTypes: Vec<CSPViolationType>,
 }
 
 impl SetBreakOnCSPViolationParamsBuilder {
-    /// CSP Violations to stop upon.
-    pub fn violationTypes(mut self, violationTypes: Vec<CSPViolationType>) -> Self { self.violationTypes = Some(violationTypes); self }
     pub fn build(self) -> SetBreakOnCSPViolationParams {
         SetBreakOnCSPViolationParams {
-            violationTypes: self.violationTypes.unwrap_or_default(),
+            violationTypes: self.violationTypes,
         }
     }
 }
@@ -420,26 +435,27 @@ pub struct SetDOMBreakpointParams {
 }
 
 impl SetDOMBreakpointParams {
-    pub fn builder() -> SetDOMBreakpointParamsBuilder { SetDOMBreakpointParamsBuilder::default() }
+    pub fn builder(nodeId: crate::dom::NodeId, type_: DOMBreakpointType) -> SetDOMBreakpointParamsBuilder {
+        SetDOMBreakpointParamsBuilder {
+            nodeId: nodeId,
+            type_: type_,
+        }
+    }
     pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
     pub fn type_(&self) -> &DOMBreakpointType { &self.type_ }
 }
 
-#[derive(Default)]
+
 pub struct SetDOMBreakpointParamsBuilder {
-    nodeId: Option<crate::dom::NodeId>,
-    type_: Option<DOMBreakpointType>,
+    nodeId: crate::dom::NodeId,
+    type_: DOMBreakpointType,
 }
 
 impl SetDOMBreakpointParamsBuilder {
-    /// Identifier of the node to set breakpoint on.
-    pub fn nodeId(mut self, nodeId: crate::dom::NodeId) -> Self { self.nodeId = Some(nodeId); self }
-    /// Type of the operation to stop upon.
-    pub fn type_(mut self, type_: DOMBreakpointType) -> Self { self.type_ = Some(type_); self }
     pub fn build(self) -> SetDOMBreakpointParams {
         SetDOMBreakpointParams {
-            nodeId: self.nodeId.unwrap_or_default(),
-            type_: self.type_.unwrap_or_default(),
+            nodeId: self.nodeId,
+            type_: self.type_,
         }
     }
 }
@@ -465,26 +481,29 @@ pub struct SetEventListenerBreakpointParams<'a> {
 }
 
 impl<'a> SetEventListenerBreakpointParams<'a> {
-    pub fn builder() -> SetEventListenerBreakpointParamsBuilder<'a> { SetEventListenerBreakpointParamsBuilder::default() }
+    pub fn builder(eventName: impl Into<Cow<'a, str>>) -> SetEventListenerBreakpointParamsBuilder<'a> {
+        SetEventListenerBreakpointParamsBuilder {
+            eventName: eventName.into(),
+            targetName: None,
+        }
+    }
     pub fn eventName(&self) -> &str { self.eventName.as_ref() }
     pub fn targetName(&self) -> Option<&str> { self.targetName.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct SetEventListenerBreakpointParamsBuilder<'a> {
-    eventName: Option<Cow<'a, str>>,
+    eventName: Cow<'a, str>,
     targetName: Option<Cow<'a, str>>,
 }
 
 impl<'a> SetEventListenerBreakpointParamsBuilder<'a> {
-    /// DOM Event name to stop on (any DOM event will do).
-    pub fn eventName(mut self, eventName: impl Into<Cow<'a, str>>) -> Self { self.eventName = Some(eventName.into()); self }
     /// EventTarget interface name to stop on. If equal to '"*"' or not provided, will stop on any
     /// EventTarget.
     pub fn targetName(mut self, targetName: impl Into<Cow<'a, str>>) -> Self { self.targetName = Some(targetName.into()); self }
     pub fn build(self) -> SetEventListenerBreakpointParams<'a> {
         SetEventListenerBreakpointParams {
-            eventName: self.eventName.unwrap_or_default(),
+            eventName: self.eventName,
             targetName: self.targetName,
         }
     }
@@ -507,21 +526,23 @@ pub struct SetInstrumentationBreakpointParams<'a> {
 }
 
 impl<'a> SetInstrumentationBreakpointParams<'a> {
-    pub fn builder() -> SetInstrumentationBreakpointParamsBuilder<'a> { SetInstrumentationBreakpointParamsBuilder::default() }
+    pub fn builder(eventName: impl Into<Cow<'a, str>>) -> SetInstrumentationBreakpointParamsBuilder<'a> {
+        SetInstrumentationBreakpointParamsBuilder {
+            eventName: eventName.into(),
+        }
+    }
     pub fn eventName(&self) -> &str { self.eventName.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetInstrumentationBreakpointParamsBuilder<'a> {
-    eventName: Option<Cow<'a, str>>,
+    eventName: Cow<'a, str>,
 }
 
 impl<'a> SetInstrumentationBreakpointParamsBuilder<'a> {
-    /// Instrumentation name to stop on.
-    pub fn eventName(mut self, eventName: impl Into<Cow<'a, str>>) -> Self { self.eventName = Some(eventName.into()); self }
     pub fn build(self) -> SetInstrumentationBreakpointParams<'a> {
         SetInstrumentationBreakpointParams {
-            eventName: self.eventName.unwrap_or_default(),
+            eventName: self.eventName,
         }
     }
 }
@@ -543,21 +564,23 @@ pub struct SetXHRBreakpointParams<'a> {
 }
 
 impl<'a> SetXHRBreakpointParams<'a> {
-    pub fn builder() -> SetXHRBreakpointParamsBuilder<'a> { SetXHRBreakpointParamsBuilder::default() }
+    pub fn builder(url: impl Into<Cow<'a, str>>) -> SetXHRBreakpointParamsBuilder<'a> {
+        SetXHRBreakpointParamsBuilder {
+            url: url.into(),
+        }
+    }
     pub fn url(&self) -> &str { self.url.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetXHRBreakpointParamsBuilder<'a> {
-    url: Option<Cow<'a, str>>,
+    url: Cow<'a, str>,
 }
 
 impl<'a> SetXHRBreakpointParamsBuilder<'a> {
-    /// Resource URL substring. All XHRs having this substring in the URL will get stopped upon.
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
     pub fn build(self) -> SetXHRBreakpointParams<'a> {
         SetXHRBreakpointParams {
-            url: self.url.unwrap_or_default(),
+            url: self.url,
         }
     }
 }

@@ -50,26 +50,27 @@ pub struct UsageForType {
 }
 
 impl UsageForType {
-    pub fn builder() -> UsageForTypeBuilder { UsageForTypeBuilder::default() }
+    pub fn builder(storageType: StorageType, usage: f64) -> UsageForTypeBuilder {
+        UsageForTypeBuilder {
+            storageType: storageType,
+            usage: usage,
+        }
+    }
     pub fn storageType(&self) -> &StorageType { &self.storageType }
     pub fn usage(&self) -> f64 { self.usage }
 }
 
-#[derive(Default)]
+
 pub struct UsageForTypeBuilder {
-    storageType: Option<StorageType>,
-    usage: Option<f64>,
+    storageType: StorageType,
+    usage: f64,
 }
 
 impl UsageForTypeBuilder {
-    /// Name of storage type.
-    pub fn storageType(mut self, storageType: StorageType) -> Self { self.storageType = Some(storageType); self }
-    /// Storage usage (bytes).
-    pub fn usage(mut self, usage: f64) -> Self { self.usage = Some(usage); self }
     pub fn build(self) -> UsageForType {
         UsageForType {
-            storageType: self.storageType.unwrap_or_default(),
-            usage: self.usage.unwrap_or_default(),
+            storageType: self.storageType,
+            usage: self.usage,
         }
     }
 }
@@ -85,24 +86,27 @@ pub struct TrustTokens<'a> {
 }
 
 impl<'a> TrustTokens<'a> {
-    pub fn builder() -> TrustTokensBuilder<'a> { TrustTokensBuilder::default() }
+    pub fn builder(issuerOrigin: impl Into<Cow<'a, str>>, count: f64) -> TrustTokensBuilder<'a> {
+        TrustTokensBuilder {
+            issuerOrigin: issuerOrigin.into(),
+            count: count,
+        }
+    }
     pub fn issuerOrigin(&self) -> &str { self.issuerOrigin.as_ref() }
     pub fn count(&self) -> f64 { self.count }
 }
 
-#[derive(Default)]
+
 pub struct TrustTokensBuilder<'a> {
-    issuerOrigin: Option<Cow<'a, str>>,
-    count: Option<f64>,
+    issuerOrigin: Cow<'a, str>,
+    count: f64,
 }
 
 impl<'a> TrustTokensBuilder<'a> {
-    pub fn issuerOrigin(mut self, issuerOrigin: impl Into<Cow<'a, str>>) -> Self { self.issuerOrigin = Some(issuerOrigin.into()); self }
-    pub fn count(mut self, count: f64) -> Self { self.count = Some(count); self }
     pub fn build(self) -> TrustTokens<'a> {
         TrustTokens {
-            issuerOrigin: self.issuerOrigin.unwrap_or_default(),
-            count: self.count.unwrap_or_default(),
+            issuerOrigin: self.issuerOrigin,
+            count: self.count,
         }
     }
 }
@@ -230,24 +234,27 @@ pub struct SharedStorageEntry<'a> {
 }
 
 impl<'a> SharedStorageEntry<'a> {
-    pub fn builder() -> SharedStorageEntryBuilder<'a> { SharedStorageEntryBuilder::default() }
+    pub fn builder(key: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> SharedStorageEntryBuilder<'a> {
+        SharedStorageEntryBuilder {
+            key: key.into(),
+            value: value.into(),
+        }
+    }
     pub fn key(&self) -> &str { self.key.as_ref() }
     pub fn value(&self) -> &str { self.value.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SharedStorageEntryBuilder<'a> {
-    key: Option<Cow<'a, str>>,
-    value: Option<Cow<'a, str>>,
+    key: Cow<'a, str>,
+    value: Cow<'a, str>,
 }
 
 impl<'a> SharedStorageEntryBuilder<'a> {
-    pub fn key(mut self, key: impl Into<Cow<'a, str>>) -> Self { self.key = Some(key.into()); self }
-    pub fn value(mut self, value: impl Into<Cow<'a, str>>) -> Self { self.value = Some(value.into()); self }
     pub fn build(self) -> SharedStorageEntry<'a> {
         SharedStorageEntry {
-            key: self.key.unwrap_or_default(),
-            value: self.value.unwrap_or_default(),
+            key: self.key,
+            value: self.value,
         }
     }
 }
@@ -269,37 +276,35 @@ pub struct SharedStorageMetadata {
 }
 
 impl SharedStorageMetadata {
-    pub fn builder() -> SharedStorageMetadataBuilder { SharedStorageMetadataBuilder::default() }
+    pub fn builder(creationTime: crate::network::TimeSinceEpoch, length: u64, remainingBudget: f64, bytesUsed: i64) -> SharedStorageMetadataBuilder {
+        SharedStorageMetadataBuilder {
+            creationTime: creationTime,
+            length: length,
+            remainingBudget: remainingBudget,
+            bytesUsed: bytesUsed,
+        }
+    }
     pub fn creationTime(&self) -> &crate::network::TimeSinceEpoch { &self.creationTime }
     pub fn length(&self) -> u64 { self.length }
     pub fn remainingBudget(&self) -> f64 { self.remainingBudget }
     pub fn bytesUsed(&self) -> i64 { self.bytesUsed }
 }
 
-#[derive(Default)]
+
 pub struct SharedStorageMetadataBuilder {
-    creationTime: Option<crate::network::TimeSinceEpoch>,
-    length: Option<u64>,
-    remainingBudget: Option<f64>,
-    bytesUsed: Option<i64>,
+    creationTime: crate::network::TimeSinceEpoch,
+    length: u64,
+    remainingBudget: f64,
+    bytesUsed: i64,
 }
 
 impl SharedStorageMetadataBuilder {
-    /// Time when the origin's shared storage was last created.
-    pub fn creationTime(mut self, creationTime: crate::network::TimeSinceEpoch) -> Self { self.creationTime = Some(creationTime); self }
-    /// Number of key-value pairs stored in origin's shared storage.
-    pub fn length(mut self, length: u64) -> Self { self.length = Some(length); self }
-    /// Current amount of bits of entropy remaining in the navigation budget.
-    pub fn remainingBudget(mut self, remainingBudget: f64) -> Self { self.remainingBudget = Some(remainingBudget); self }
-    /// Total number of bytes stored as key-value pairs in origin's shared
-    /// storage.
-    pub fn bytesUsed(mut self, bytesUsed: i64) -> Self { self.bytesUsed = Some(bytesUsed); self }
     pub fn build(self) -> SharedStorageMetadata {
         SharedStorageMetadata {
-            creationTime: self.creationTime.unwrap_or_default(),
-            length: self.length.unwrap_or_default(),
-            remainingBudget: self.remainingBudget.unwrap_or_default(),
-            bytesUsed: self.bytesUsed.unwrap_or_default(),
+            creationTime: self.creationTime,
+            length: self.length,
+            remainingBudget: self.remainingBudget,
+            bytesUsed: self.bytesUsed,
         }
     }
 }
@@ -324,18 +329,25 @@ pub struct SharedStoragePrivateAggregationConfig<'a> {
 }
 
 impl<'a> SharedStoragePrivateAggregationConfig<'a> {
-    pub fn builder() -> SharedStoragePrivateAggregationConfigBuilder<'a> { SharedStoragePrivateAggregationConfigBuilder::default() }
+    pub fn builder(filteringIdMaxBytes: u64) -> SharedStoragePrivateAggregationConfigBuilder<'a> {
+        SharedStoragePrivateAggregationConfigBuilder {
+            aggregationCoordinatorOrigin: None,
+            contextId: None,
+            filteringIdMaxBytes: filteringIdMaxBytes,
+            maxContributions: None,
+        }
+    }
     pub fn aggregationCoordinatorOrigin(&self) -> Option<&str> { self.aggregationCoordinatorOrigin.as_deref() }
     pub fn contextId(&self) -> Option<&str> { self.contextId.as_deref() }
     pub fn filteringIdMaxBytes(&self) -> u64 { self.filteringIdMaxBytes }
     pub fn maxContributions(&self) -> Option<i64> { self.maxContributions }
 }
 
-#[derive(Default)]
+
 pub struct SharedStoragePrivateAggregationConfigBuilder<'a> {
     aggregationCoordinatorOrigin: Option<Cow<'a, str>>,
     contextId: Option<Cow<'a, str>>,
-    filteringIdMaxBytes: Option<u64>,
+    filteringIdMaxBytes: u64,
     maxContributions: Option<i64>,
 }
 
@@ -344,15 +356,13 @@ impl<'a> SharedStoragePrivateAggregationConfigBuilder<'a> {
     pub fn aggregationCoordinatorOrigin(mut self, aggregationCoordinatorOrigin: impl Into<Cow<'a, str>>) -> Self { self.aggregationCoordinatorOrigin = Some(aggregationCoordinatorOrigin.into()); self }
     /// The context ID provided.
     pub fn contextId(mut self, contextId: impl Into<Cow<'a, str>>) -> Self { self.contextId = Some(contextId.into()); self }
-    /// Configures the maximum size allowed for filtering IDs.
-    pub fn filteringIdMaxBytes(mut self, filteringIdMaxBytes: u64) -> Self { self.filteringIdMaxBytes = Some(filteringIdMaxBytes); self }
     /// The limit on the number of contributions in the final report.
     pub fn maxContributions(mut self, maxContributions: i64) -> Self { self.maxContributions = Some(maxContributions); self }
     pub fn build(self) -> SharedStoragePrivateAggregationConfig<'a> {
         SharedStoragePrivateAggregationConfig {
             aggregationCoordinatorOrigin: self.aggregationCoordinatorOrigin,
             contextId: self.contextId,
-            filteringIdMaxBytes: self.filteringIdMaxBytes.unwrap_or_default(),
+            filteringIdMaxBytes: self.filteringIdMaxBytes,
             maxContributions: self.maxContributions,
         }
     }
@@ -368,24 +378,27 @@ pub struct SharedStorageReportingMetadata<'a> {
 }
 
 impl<'a> SharedStorageReportingMetadata<'a> {
-    pub fn builder() -> SharedStorageReportingMetadataBuilder<'a> { SharedStorageReportingMetadataBuilder::default() }
+    pub fn builder(eventType: impl Into<Cow<'a, str>>, reportingUrl: impl Into<Cow<'a, str>>) -> SharedStorageReportingMetadataBuilder<'a> {
+        SharedStorageReportingMetadataBuilder {
+            eventType: eventType.into(),
+            reportingUrl: reportingUrl.into(),
+        }
+    }
     pub fn eventType(&self) -> &str { self.eventType.as_ref() }
     pub fn reportingUrl(&self) -> &str { self.reportingUrl.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SharedStorageReportingMetadataBuilder<'a> {
-    eventType: Option<Cow<'a, str>>,
-    reportingUrl: Option<Cow<'a, str>>,
+    eventType: Cow<'a, str>,
+    reportingUrl: Cow<'a, str>,
 }
 
 impl<'a> SharedStorageReportingMetadataBuilder<'a> {
-    pub fn eventType(mut self, eventType: impl Into<Cow<'a, str>>) -> Self { self.eventType = Some(eventType.into()); self }
-    pub fn reportingUrl(mut self, reportingUrl: impl Into<Cow<'a, str>>) -> Self { self.reportingUrl = Some(reportingUrl.into()); self }
     pub fn build(self) -> SharedStorageReportingMetadata<'a> {
         SharedStorageReportingMetadata {
-            eventType: self.eventType.unwrap_or_default(),
-            reportingUrl: self.reportingUrl.unwrap_or_default(),
+            eventType: self.eventType,
+            reportingUrl: self.reportingUrl,
         }
     }
 }
@@ -402,26 +415,27 @@ pub struct SharedStorageUrlWithMetadata<'a> {
 }
 
 impl<'a> SharedStorageUrlWithMetadata<'a> {
-    pub fn builder() -> SharedStorageUrlWithMetadataBuilder<'a> { SharedStorageUrlWithMetadataBuilder::default() }
+    pub fn builder(url: impl Into<Cow<'a, str>>, reportingMetadata: Vec<SharedStorageReportingMetadata<'a>>) -> SharedStorageUrlWithMetadataBuilder<'a> {
+        SharedStorageUrlWithMetadataBuilder {
+            url: url.into(),
+            reportingMetadata: reportingMetadata,
+        }
+    }
     pub fn url(&self) -> &str { self.url.as_ref() }
     pub fn reportingMetadata(&self) -> &[SharedStorageReportingMetadata<'a>] { &self.reportingMetadata }
 }
 
-#[derive(Default)]
+
 pub struct SharedStorageUrlWithMetadataBuilder<'a> {
-    url: Option<Cow<'a, str>>,
-    reportingMetadata: Option<Vec<SharedStorageReportingMetadata<'a>>>,
+    url: Cow<'a, str>,
+    reportingMetadata: Vec<SharedStorageReportingMetadata<'a>>,
 }
 
 impl<'a> SharedStorageUrlWithMetadataBuilder<'a> {
-    /// Spec of candidate URL.
-    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
-    /// Any associated reporting metadata.
-    pub fn reportingMetadata(mut self, reportingMetadata: Vec<SharedStorageReportingMetadata<'a>>) -> Self { self.reportingMetadata = Some(reportingMetadata); self }
     pub fn build(self) -> SharedStorageUrlWithMetadata<'a> {
         SharedStorageUrlWithMetadata {
-            url: self.url.unwrap_or_default(),
-            reportingMetadata: self.reportingMetadata.unwrap_or_default(),
+            url: self.url,
+            reportingMetadata: self.reportingMetadata,
         }
     }
 }
@@ -516,7 +530,27 @@ pub struct SharedStorageAccessParams<'a> {
 }
 
 impl<'a> SharedStorageAccessParams<'a> {
-    pub fn builder() -> SharedStorageAccessParamsBuilder<'a> { SharedStorageAccessParamsBuilder::default() }
+    pub fn builder() -> SharedStorageAccessParamsBuilder<'a> {
+        SharedStorageAccessParamsBuilder {
+            scriptSourceUrl: None,
+            dataOrigin: None,
+            operationName: None,
+            operationId: None,
+            keepAlive: None,
+            privateAggregationConfig: None,
+            serializedData: None,
+            urlsWithMetadata: None,
+            urnUuid: None,
+            key: None,
+            value: None,
+            ignoreIfPresent: None,
+            workletOrdinal: None,
+            workletTargetId: None,
+            withLock: None,
+            batchUpdateId: None,
+            batchSize: None,
+        }
+    }
     pub fn scriptSourceUrl(&self) -> Option<&str> { self.scriptSourceUrl.as_deref() }
     pub fn dataOrigin(&self) -> Option<&str> { self.dataOrigin.as_deref() }
     pub fn operationName(&self) -> Option<&str> { self.operationName.as_deref() }
@@ -666,24 +700,28 @@ pub struct StorageBucket<'a> {
 }
 
 impl<'a> StorageBucket<'a> {
-    pub fn builder() -> StorageBucketBuilder<'a> { StorageBucketBuilder::default() }
+    pub fn builder(storageKey: SerializedStorageKey<'a>) -> StorageBucketBuilder<'a> {
+        StorageBucketBuilder {
+            storageKey: storageKey,
+            name: None,
+        }
+    }
     pub fn storageKey(&self) -> &SerializedStorageKey<'a> { &self.storageKey }
     pub fn name(&self) -> Option<&str> { self.name.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct StorageBucketBuilder<'a> {
-    storageKey: Option<SerializedStorageKey<'a>>,
+    storageKey: SerializedStorageKey<'a>,
     name: Option<Cow<'a, str>>,
 }
 
 impl<'a> StorageBucketBuilder<'a> {
-    pub fn storageKey(mut self, storageKey: SerializedStorageKey<'a>) -> Self { self.storageKey = Some(storageKey); self }
     /// If not specified, it is the default bucket of the storageKey.
     pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
     pub fn build(self) -> StorageBucket<'a> {
         StorageBucket {
-            storageKey: self.storageKey.unwrap_or_default(),
+            storageKey: self.storageKey,
             name: self.name,
         }
     }
@@ -703,7 +741,16 @@ pub struct StorageBucketInfo<'a> {
 }
 
 impl<'a> StorageBucketInfo<'a> {
-    pub fn builder() -> StorageBucketInfoBuilder<'a> { StorageBucketInfoBuilder::default() }
+    pub fn builder(bucket: StorageBucket<'a>, id: impl Into<Cow<'a, str>>, expiration: crate::network::TimeSinceEpoch, quota: f64, persistent: bool, durability: StorageBucketsDurability) -> StorageBucketInfoBuilder<'a> {
+        StorageBucketInfoBuilder {
+            bucket: bucket,
+            id: id.into(),
+            expiration: expiration,
+            quota: quota,
+            persistent: persistent,
+            durability: durability,
+        }
+    }
     pub fn bucket(&self) -> &StorageBucket<'a> { &self.bucket }
     pub fn id(&self) -> &str { self.id.as_ref() }
     pub fn expiration(&self) -> &crate::network::TimeSinceEpoch { &self.expiration }
@@ -712,32 +759,25 @@ impl<'a> StorageBucketInfo<'a> {
     pub fn durability(&self) -> &StorageBucketsDurability { &self.durability }
 }
 
-#[derive(Default)]
+
 pub struct StorageBucketInfoBuilder<'a> {
-    bucket: Option<StorageBucket<'a>>,
-    id: Option<Cow<'a, str>>,
-    expiration: Option<crate::network::TimeSinceEpoch>,
-    quota: Option<f64>,
-    persistent: Option<bool>,
-    durability: Option<StorageBucketsDurability>,
+    bucket: StorageBucket<'a>,
+    id: Cow<'a, str>,
+    expiration: crate::network::TimeSinceEpoch,
+    quota: f64,
+    persistent: bool,
+    durability: StorageBucketsDurability,
 }
 
 impl<'a> StorageBucketInfoBuilder<'a> {
-    pub fn bucket(mut self, bucket: StorageBucket<'a>) -> Self { self.bucket = Some(bucket); self }
-    pub fn id(mut self, id: impl Into<Cow<'a, str>>) -> Self { self.id = Some(id.into()); self }
-    pub fn expiration(mut self, expiration: crate::network::TimeSinceEpoch) -> Self { self.expiration = Some(expiration); self }
-    /// Storage quota (bytes).
-    pub fn quota(mut self, quota: f64) -> Self { self.quota = Some(quota); self }
-    pub fn persistent(mut self, persistent: bool) -> Self { self.persistent = Some(persistent); self }
-    pub fn durability(mut self, durability: StorageBucketsDurability) -> Self { self.durability = Some(durability); self }
     pub fn build(self) -> StorageBucketInfo<'a> {
         StorageBucketInfo {
-            bucket: self.bucket.unwrap_or_default(),
-            id: self.id.unwrap_or_default(),
-            expiration: self.expiration.unwrap_or_default(),
-            quota: self.quota.unwrap_or_default(),
-            persistent: self.persistent.unwrap_or_default(),
-            durability: self.durability.unwrap_or_default(),
+            bucket: self.bucket,
+            id: self.id,
+            expiration: self.expiration,
+            quota: self.quota,
+            persistent: self.persistent,
+            durability: self.durability,
         }
     }
 }
@@ -756,31 +796,31 @@ pub struct RelatedWebsiteSet<'a> {
 }
 
 impl<'a> RelatedWebsiteSet<'a> {
-    pub fn builder() -> RelatedWebsiteSetBuilder<'a> { RelatedWebsiteSetBuilder::default() }
+    pub fn builder(primarySites: Vec<Cow<'a, str>>, associatedSites: Vec<Cow<'a, str>>, serviceSites: Vec<Cow<'a, str>>) -> RelatedWebsiteSetBuilder<'a> {
+        RelatedWebsiteSetBuilder {
+            primarySites: primarySites,
+            associatedSites: associatedSites,
+            serviceSites: serviceSites,
+        }
+    }
     pub fn primarySites(&self) -> &[Cow<'a, str>] { &self.primarySites }
     pub fn associatedSites(&self) -> &[Cow<'a, str>] { &self.associatedSites }
     pub fn serviceSites(&self) -> &[Cow<'a, str>] { &self.serviceSites }
 }
 
-#[derive(Default)]
+
 pub struct RelatedWebsiteSetBuilder<'a> {
-    primarySites: Option<Vec<Cow<'a, str>>>,
-    associatedSites: Option<Vec<Cow<'a, str>>>,
-    serviceSites: Option<Vec<Cow<'a, str>>>,
+    primarySites: Vec<Cow<'a, str>>,
+    associatedSites: Vec<Cow<'a, str>>,
+    serviceSites: Vec<Cow<'a, str>>,
 }
 
 impl<'a> RelatedWebsiteSetBuilder<'a> {
-    /// The primary site of this set, along with the ccTLDs if there is any.
-    pub fn primarySites(mut self, primarySites: Vec<Cow<'a, str>>) -> Self { self.primarySites = Some(primarySites); self }
-    /// The associated sites of this set, along with the ccTLDs if there is any.
-    pub fn associatedSites(mut self, associatedSites: Vec<Cow<'a, str>>) -> Self { self.associatedSites = Some(associatedSites); self }
-    /// The service sites of this set, along with the ccTLDs if there is any.
-    pub fn serviceSites(mut self, serviceSites: Vec<Cow<'a, str>>) -> Self { self.serviceSites = Some(serviceSites); self }
     pub fn build(self) -> RelatedWebsiteSet<'a> {
         RelatedWebsiteSet {
-            primarySites: self.primarySites.unwrap_or_default(),
-            associatedSites: self.associatedSites.unwrap_or_default(),
-            serviceSites: self.serviceSites.unwrap_or_default(),
+            primarySites: self.primarySites,
+            associatedSites: self.associatedSites,
+            serviceSites: self.serviceSites,
         }
     }
 }
@@ -795,20 +835,23 @@ pub struct GetStorageKeyForFrameParams<'a> {
 }
 
 impl<'a> GetStorageKeyForFrameParams<'a> {
-    pub fn builder() -> GetStorageKeyForFrameParamsBuilder<'a> { GetStorageKeyForFrameParamsBuilder::default() }
+    pub fn builder(frameId: crate::page::FrameId<'a>) -> GetStorageKeyForFrameParamsBuilder<'a> {
+        GetStorageKeyForFrameParamsBuilder {
+            frameId: frameId,
+        }
+    }
     pub fn frameId(&self) -> &crate::page::FrameId<'a> { &self.frameId }
 }
 
-#[derive(Default)]
+
 pub struct GetStorageKeyForFrameParamsBuilder<'a> {
-    frameId: Option<crate::page::FrameId<'a>>,
+    frameId: crate::page::FrameId<'a>,
 }
 
 impl<'a> GetStorageKeyForFrameParamsBuilder<'a> {
-    pub fn frameId(mut self, frameId: crate::page::FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
     pub fn build(self) -> GetStorageKeyForFrameParams<'a> {
         GetStorageKeyForFrameParams {
-            frameId: self.frameId.unwrap_or_default(),
+            frameId: self.frameId,
         }
     }
 }
@@ -823,20 +866,23 @@ pub struct GetStorageKeyForFrameReturns<'a> {
 }
 
 impl<'a> GetStorageKeyForFrameReturns<'a> {
-    pub fn builder() -> GetStorageKeyForFrameReturnsBuilder<'a> { GetStorageKeyForFrameReturnsBuilder::default() }
+    pub fn builder(storageKey: SerializedStorageKey<'a>) -> GetStorageKeyForFrameReturnsBuilder<'a> {
+        GetStorageKeyForFrameReturnsBuilder {
+            storageKey: storageKey,
+        }
+    }
     pub fn storageKey(&self) -> &SerializedStorageKey<'a> { &self.storageKey }
 }
 
-#[derive(Default)]
+
 pub struct GetStorageKeyForFrameReturnsBuilder<'a> {
-    storageKey: Option<SerializedStorageKey<'a>>,
+    storageKey: SerializedStorageKey<'a>,
 }
 
 impl<'a> GetStorageKeyForFrameReturnsBuilder<'a> {
-    pub fn storageKey(mut self, storageKey: SerializedStorageKey<'a>) -> Self { self.storageKey = Some(storageKey); self }
     pub fn build(self) -> GetStorageKeyForFrameReturns<'a> {
         GetStorageKeyForFrameReturns {
-            storageKey: self.storageKey.unwrap_or_default(),
+            storageKey: self.storageKey,
         }
     }
 }
@@ -859,7 +905,11 @@ pub struct GetStorageKeyParams<'a> {
 }
 
 impl<'a> GetStorageKeyParams<'a> {
-    pub fn builder() -> GetStorageKeyParamsBuilder<'a> { GetStorageKeyParamsBuilder::default() }
+    pub fn builder() -> GetStorageKeyParamsBuilder<'a> {
+        GetStorageKeyParamsBuilder {
+            frameId: None,
+        }
+    }
     pub fn frameId(&self) -> Option<&crate::page::FrameId<'a>> { self.frameId.as_ref() }
 }
 
@@ -887,20 +937,23 @@ pub struct GetStorageKeyReturns<'a> {
 }
 
 impl<'a> GetStorageKeyReturns<'a> {
-    pub fn builder() -> GetStorageKeyReturnsBuilder<'a> { GetStorageKeyReturnsBuilder::default() }
+    pub fn builder(storageKey: SerializedStorageKey<'a>) -> GetStorageKeyReturnsBuilder<'a> {
+        GetStorageKeyReturnsBuilder {
+            storageKey: storageKey,
+        }
+    }
     pub fn storageKey(&self) -> &SerializedStorageKey<'a> { &self.storageKey }
 }
 
-#[derive(Default)]
+
 pub struct GetStorageKeyReturnsBuilder<'a> {
-    storageKey: Option<SerializedStorageKey<'a>>,
+    storageKey: SerializedStorageKey<'a>,
 }
 
 impl<'a> GetStorageKeyReturnsBuilder<'a> {
-    pub fn storageKey(mut self, storageKey: SerializedStorageKey<'a>) -> Self { self.storageKey = Some(storageKey); self }
     pub fn build(self) -> GetStorageKeyReturns<'a> {
         GetStorageKeyReturns {
-            storageKey: self.storageKey.unwrap_or_default(),
+            storageKey: self.storageKey,
         }
     }
 }
@@ -924,26 +977,27 @@ pub struct ClearDataForOriginParams<'a> {
 }
 
 impl<'a> ClearDataForOriginParams<'a> {
-    pub fn builder() -> ClearDataForOriginParamsBuilder<'a> { ClearDataForOriginParamsBuilder::default() }
+    pub fn builder(origin: impl Into<Cow<'a, str>>, storageTypes: impl Into<Cow<'a, str>>) -> ClearDataForOriginParamsBuilder<'a> {
+        ClearDataForOriginParamsBuilder {
+            origin: origin.into(),
+            storageTypes: storageTypes.into(),
+        }
+    }
     pub fn origin(&self) -> &str { self.origin.as_ref() }
     pub fn storageTypes(&self) -> &str { self.storageTypes.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct ClearDataForOriginParamsBuilder<'a> {
-    origin: Option<Cow<'a, str>>,
-    storageTypes: Option<Cow<'a, str>>,
+    origin: Cow<'a, str>,
+    storageTypes: Cow<'a, str>,
 }
 
 impl<'a> ClearDataForOriginParamsBuilder<'a> {
-    /// Security origin.
-    pub fn origin(mut self, origin: impl Into<Cow<'a, str>>) -> Self { self.origin = Some(origin.into()); self }
-    /// Comma separated list of StorageType to clear.
-    pub fn storageTypes(mut self, storageTypes: impl Into<Cow<'a, str>>) -> Self { self.storageTypes = Some(storageTypes.into()); self }
     pub fn build(self) -> ClearDataForOriginParams<'a> {
         ClearDataForOriginParams {
-            origin: self.origin.unwrap_or_default(),
-            storageTypes: self.storageTypes.unwrap_or_default(),
+            origin: self.origin,
+            storageTypes: self.storageTypes,
         }
     }
 }
@@ -967,26 +1021,27 @@ pub struct ClearDataForStorageKeyParams<'a> {
 }
 
 impl<'a> ClearDataForStorageKeyParams<'a> {
-    pub fn builder() -> ClearDataForStorageKeyParamsBuilder<'a> { ClearDataForStorageKeyParamsBuilder::default() }
+    pub fn builder(storageKey: impl Into<Cow<'a, str>>, storageTypes: impl Into<Cow<'a, str>>) -> ClearDataForStorageKeyParamsBuilder<'a> {
+        ClearDataForStorageKeyParamsBuilder {
+            storageKey: storageKey.into(),
+            storageTypes: storageTypes.into(),
+        }
+    }
     pub fn storageKey(&self) -> &str { self.storageKey.as_ref() }
     pub fn storageTypes(&self) -> &str { self.storageTypes.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct ClearDataForStorageKeyParamsBuilder<'a> {
-    storageKey: Option<Cow<'a, str>>,
-    storageTypes: Option<Cow<'a, str>>,
+    storageKey: Cow<'a, str>,
+    storageTypes: Cow<'a, str>,
 }
 
 impl<'a> ClearDataForStorageKeyParamsBuilder<'a> {
-    /// Storage key.
-    pub fn storageKey(mut self, storageKey: impl Into<Cow<'a, str>>) -> Self { self.storageKey = Some(storageKey.into()); self }
-    /// Comma separated list of StorageType to clear.
-    pub fn storageTypes(mut self, storageTypes: impl Into<Cow<'a, str>>) -> Self { self.storageTypes = Some(storageTypes.into()); self }
     pub fn build(self) -> ClearDataForStorageKeyParams<'a> {
         ClearDataForStorageKeyParams {
-            storageKey: self.storageKey.unwrap_or_default(),
-            storageTypes: self.storageTypes.unwrap_or_default(),
+            storageKey: self.storageKey,
+            storageTypes: self.storageTypes,
         }
     }
 }
@@ -1009,7 +1064,11 @@ pub struct GetCookiesParams<'a> {
 }
 
 impl<'a> GetCookiesParams<'a> {
-    pub fn builder() -> GetCookiesParamsBuilder<'a> { GetCookiesParamsBuilder::default() }
+    pub fn builder() -> GetCookiesParamsBuilder<'a> {
+        GetCookiesParamsBuilder {
+            browserContextId: None,
+        }
+    }
     pub fn browserContextId(&self) -> Option<&crate::browser::BrowserContextID<'a>> { self.browserContextId.as_ref() }
 }
 
@@ -1038,21 +1097,23 @@ pub struct GetCookiesReturns<'a> {
 }
 
 impl<'a> GetCookiesReturns<'a> {
-    pub fn builder() -> GetCookiesReturnsBuilder<'a> { GetCookiesReturnsBuilder::default() }
+    pub fn builder(cookies: Vec<crate::network::Cookie<'a>>) -> GetCookiesReturnsBuilder<'a> {
+        GetCookiesReturnsBuilder {
+            cookies: cookies,
+        }
+    }
     pub fn cookies(&self) -> &[crate::network::Cookie<'a>] { &self.cookies }
 }
 
-#[derive(Default)]
+
 pub struct GetCookiesReturnsBuilder<'a> {
-    cookies: Option<Vec<crate::network::Cookie<'a>>>,
+    cookies: Vec<crate::network::Cookie<'a>>,
 }
 
 impl<'a> GetCookiesReturnsBuilder<'a> {
-    /// Array of cookie objects.
-    pub fn cookies(mut self, cookies: Vec<crate::network::Cookie<'a>>) -> Self { self.cookies = Some(cookies); self }
     pub fn build(self) -> GetCookiesReturns<'a> {
         GetCookiesReturns {
-            cookies: self.cookies.unwrap_or_default(),
+            cookies: self.cookies,
         }
     }
 }
@@ -1077,25 +1138,28 @@ pub struct SetCookiesParams<'a> {
 }
 
 impl<'a> SetCookiesParams<'a> {
-    pub fn builder() -> SetCookiesParamsBuilder<'a> { SetCookiesParamsBuilder::default() }
+    pub fn builder(cookies: Vec<crate::network::CookieParam<'a>>) -> SetCookiesParamsBuilder<'a> {
+        SetCookiesParamsBuilder {
+            cookies: cookies,
+            browserContextId: None,
+        }
+    }
     pub fn cookies(&self) -> &[crate::network::CookieParam<'a>] { &self.cookies }
     pub fn browserContextId(&self) -> Option<&crate::browser::BrowserContextID<'a>> { self.browserContextId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetCookiesParamsBuilder<'a> {
-    cookies: Option<Vec<crate::network::CookieParam<'a>>>,
+    cookies: Vec<crate::network::CookieParam<'a>>,
     browserContextId: Option<crate::browser::BrowserContextID<'a>>,
 }
 
 impl<'a> SetCookiesParamsBuilder<'a> {
-    /// Cookies to be set.
-    pub fn cookies(mut self, cookies: Vec<crate::network::CookieParam<'a>>) -> Self { self.cookies = Some(cookies); self }
     /// Browser context to use when called on the browser endpoint.
     pub fn browserContextId(mut self, browserContextId: crate::browser::BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
     pub fn build(self) -> SetCookiesParams<'a> {
         SetCookiesParams {
-            cookies: self.cookies.unwrap_or_default(),
+            cookies: self.cookies,
             browserContextId: self.browserContextId,
         }
     }
@@ -1119,7 +1183,11 @@ pub struct ClearCookiesParams<'a> {
 }
 
 impl<'a> ClearCookiesParams<'a> {
-    pub fn builder() -> ClearCookiesParamsBuilder<'a> { ClearCookiesParamsBuilder::default() }
+    pub fn builder() -> ClearCookiesParamsBuilder<'a> {
+        ClearCookiesParamsBuilder {
+            browserContextId: None,
+        }
+    }
     pub fn browserContextId(&self) -> Option<&crate::browser::BrowserContextID<'a>> { self.browserContextId.as_ref() }
 }
 
@@ -1155,21 +1223,23 @@ pub struct GetUsageAndQuotaParams<'a> {
 }
 
 impl<'a> GetUsageAndQuotaParams<'a> {
-    pub fn builder() -> GetUsageAndQuotaParamsBuilder<'a> { GetUsageAndQuotaParamsBuilder::default() }
+    pub fn builder(origin: impl Into<Cow<'a, str>>) -> GetUsageAndQuotaParamsBuilder<'a> {
+        GetUsageAndQuotaParamsBuilder {
+            origin: origin.into(),
+        }
+    }
     pub fn origin(&self) -> &str { self.origin.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct GetUsageAndQuotaParamsBuilder<'a> {
-    origin: Option<Cow<'a, str>>,
+    origin: Cow<'a, str>,
 }
 
 impl<'a> GetUsageAndQuotaParamsBuilder<'a> {
-    /// Security origin.
-    pub fn origin(mut self, origin: impl Into<Cow<'a, str>>) -> Self { self.origin = Some(origin.into()); self }
     pub fn build(self) -> GetUsageAndQuotaParams<'a> {
         GetUsageAndQuotaParams {
-            origin: self.origin.unwrap_or_default(),
+            origin: self.origin,
         }
     }
 }
@@ -1190,36 +1260,35 @@ pub struct GetUsageAndQuotaReturns {
 }
 
 impl GetUsageAndQuotaReturns {
-    pub fn builder() -> GetUsageAndQuotaReturnsBuilder { GetUsageAndQuotaReturnsBuilder::default() }
+    pub fn builder(usage: f64, quota: f64, overrideActive: bool, usageBreakdown: Vec<UsageForType>) -> GetUsageAndQuotaReturnsBuilder {
+        GetUsageAndQuotaReturnsBuilder {
+            usage: usage,
+            quota: quota,
+            overrideActive: overrideActive,
+            usageBreakdown: usageBreakdown,
+        }
+    }
     pub fn usage(&self) -> f64 { self.usage }
     pub fn quota(&self) -> f64 { self.quota }
     pub fn overrideActive(&self) -> bool { self.overrideActive }
     pub fn usageBreakdown(&self) -> &[UsageForType] { &self.usageBreakdown }
 }
 
-#[derive(Default)]
+
 pub struct GetUsageAndQuotaReturnsBuilder {
-    usage: Option<f64>,
-    quota: Option<f64>,
-    overrideActive: Option<bool>,
-    usageBreakdown: Option<Vec<UsageForType>>,
+    usage: f64,
+    quota: f64,
+    overrideActive: bool,
+    usageBreakdown: Vec<UsageForType>,
 }
 
 impl GetUsageAndQuotaReturnsBuilder {
-    /// Storage usage (bytes).
-    pub fn usage(mut self, usage: f64) -> Self { self.usage = Some(usage); self }
-    /// Storage quota (bytes).
-    pub fn quota(mut self, quota: f64) -> Self { self.quota = Some(quota); self }
-    /// Whether or not the origin has an active storage quota override
-    pub fn overrideActive(mut self, overrideActive: bool) -> Self { self.overrideActive = Some(overrideActive); self }
-    /// Storage usage per type (bytes).
-    pub fn usageBreakdown(mut self, usageBreakdown: Vec<UsageForType>) -> Self { self.usageBreakdown = Some(usageBreakdown); self }
     pub fn build(self) -> GetUsageAndQuotaReturns {
         GetUsageAndQuotaReturns {
-            usage: self.usage.unwrap_or_default(),
-            quota: self.quota.unwrap_or_default(),
-            overrideActive: self.overrideActive.unwrap_or_default(),
-            usageBreakdown: self.usageBreakdown.unwrap_or_default(),
+            usage: self.usage,
+            quota: self.quota,
+            overrideActive: self.overrideActive,
+            usageBreakdown: self.usageBreakdown,
         }
     }
 }
@@ -1250,20 +1319,23 @@ pub struct OverrideQuotaForOriginParams<'a> {
 }
 
 impl<'a> OverrideQuotaForOriginParams<'a> {
-    pub fn builder() -> OverrideQuotaForOriginParamsBuilder<'a> { OverrideQuotaForOriginParamsBuilder::default() }
+    pub fn builder(origin: impl Into<Cow<'a, str>>) -> OverrideQuotaForOriginParamsBuilder<'a> {
+        OverrideQuotaForOriginParamsBuilder {
+            origin: origin.into(),
+            quotaSize: None,
+        }
+    }
     pub fn origin(&self) -> &str { self.origin.as_ref() }
     pub fn quotaSize(&self) -> Option<f64> { self.quotaSize }
 }
 
-#[derive(Default)]
+
 pub struct OverrideQuotaForOriginParamsBuilder<'a> {
-    origin: Option<Cow<'a, str>>,
+    origin: Cow<'a, str>,
     quotaSize: Option<f64>,
 }
 
 impl<'a> OverrideQuotaForOriginParamsBuilder<'a> {
-    /// Security origin.
-    pub fn origin(mut self, origin: impl Into<Cow<'a, str>>) -> Self { self.origin = Some(origin.into()); self }
     /// The quota size (in bytes) to override the original quota with.
     /// If this is called multiple times, the overridden quota will be equal to
     /// the quotaSize provided in the final call. If this is called without
@@ -1274,7 +1346,7 @@ impl<'a> OverrideQuotaForOriginParamsBuilder<'a> {
     pub fn quotaSize(mut self, quotaSize: f64) -> Self { self.quotaSize = Some(quotaSize); self }
     pub fn build(self) -> OverrideQuotaForOriginParams<'a> {
         OverrideQuotaForOriginParams {
-            origin: self.origin.unwrap_or_default(),
+            origin: self.origin,
             quotaSize: self.quotaSize,
         }
     }
@@ -1297,21 +1369,23 @@ pub struct TrackCacheStorageForOriginParams<'a> {
 }
 
 impl<'a> TrackCacheStorageForOriginParams<'a> {
-    pub fn builder() -> TrackCacheStorageForOriginParamsBuilder<'a> { TrackCacheStorageForOriginParamsBuilder::default() }
+    pub fn builder(origin: impl Into<Cow<'a, str>>) -> TrackCacheStorageForOriginParamsBuilder<'a> {
+        TrackCacheStorageForOriginParamsBuilder {
+            origin: origin.into(),
+        }
+    }
     pub fn origin(&self) -> &str { self.origin.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct TrackCacheStorageForOriginParamsBuilder<'a> {
-    origin: Option<Cow<'a, str>>,
+    origin: Cow<'a, str>,
 }
 
 impl<'a> TrackCacheStorageForOriginParamsBuilder<'a> {
-    /// Security origin.
-    pub fn origin(mut self, origin: impl Into<Cow<'a, str>>) -> Self { self.origin = Some(origin.into()); self }
     pub fn build(self) -> TrackCacheStorageForOriginParams<'a> {
         TrackCacheStorageForOriginParams {
-            origin: self.origin.unwrap_or_default(),
+            origin: self.origin,
         }
     }
 }
@@ -1333,21 +1407,23 @@ pub struct TrackCacheStorageForStorageKeyParams<'a> {
 }
 
 impl<'a> TrackCacheStorageForStorageKeyParams<'a> {
-    pub fn builder() -> TrackCacheStorageForStorageKeyParamsBuilder<'a> { TrackCacheStorageForStorageKeyParamsBuilder::default() }
+    pub fn builder(storageKey: impl Into<Cow<'a, str>>) -> TrackCacheStorageForStorageKeyParamsBuilder<'a> {
+        TrackCacheStorageForStorageKeyParamsBuilder {
+            storageKey: storageKey.into(),
+        }
+    }
     pub fn storageKey(&self) -> &str { self.storageKey.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct TrackCacheStorageForStorageKeyParamsBuilder<'a> {
-    storageKey: Option<Cow<'a, str>>,
+    storageKey: Cow<'a, str>,
 }
 
 impl<'a> TrackCacheStorageForStorageKeyParamsBuilder<'a> {
-    /// Storage key.
-    pub fn storageKey(mut self, storageKey: impl Into<Cow<'a, str>>) -> Self { self.storageKey = Some(storageKey.into()); self }
     pub fn build(self) -> TrackCacheStorageForStorageKeyParams<'a> {
         TrackCacheStorageForStorageKeyParams {
-            storageKey: self.storageKey.unwrap_or_default(),
+            storageKey: self.storageKey,
         }
     }
 }
@@ -1369,21 +1445,23 @@ pub struct TrackIndexedDBForOriginParams<'a> {
 }
 
 impl<'a> TrackIndexedDBForOriginParams<'a> {
-    pub fn builder() -> TrackIndexedDBForOriginParamsBuilder<'a> { TrackIndexedDBForOriginParamsBuilder::default() }
+    pub fn builder(origin: impl Into<Cow<'a, str>>) -> TrackIndexedDBForOriginParamsBuilder<'a> {
+        TrackIndexedDBForOriginParamsBuilder {
+            origin: origin.into(),
+        }
+    }
     pub fn origin(&self) -> &str { self.origin.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct TrackIndexedDBForOriginParamsBuilder<'a> {
-    origin: Option<Cow<'a, str>>,
+    origin: Cow<'a, str>,
 }
 
 impl<'a> TrackIndexedDBForOriginParamsBuilder<'a> {
-    /// Security origin.
-    pub fn origin(mut self, origin: impl Into<Cow<'a, str>>) -> Self { self.origin = Some(origin.into()); self }
     pub fn build(self) -> TrackIndexedDBForOriginParams<'a> {
         TrackIndexedDBForOriginParams {
-            origin: self.origin.unwrap_or_default(),
+            origin: self.origin,
         }
     }
 }
@@ -1405,21 +1483,23 @@ pub struct TrackIndexedDBForStorageKeyParams<'a> {
 }
 
 impl<'a> TrackIndexedDBForStorageKeyParams<'a> {
-    pub fn builder() -> TrackIndexedDBForStorageKeyParamsBuilder<'a> { TrackIndexedDBForStorageKeyParamsBuilder::default() }
+    pub fn builder(storageKey: impl Into<Cow<'a, str>>) -> TrackIndexedDBForStorageKeyParamsBuilder<'a> {
+        TrackIndexedDBForStorageKeyParamsBuilder {
+            storageKey: storageKey.into(),
+        }
+    }
     pub fn storageKey(&self) -> &str { self.storageKey.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct TrackIndexedDBForStorageKeyParamsBuilder<'a> {
-    storageKey: Option<Cow<'a, str>>,
+    storageKey: Cow<'a, str>,
 }
 
 impl<'a> TrackIndexedDBForStorageKeyParamsBuilder<'a> {
-    /// Storage key.
-    pub fn storageKey(mut self, storageKey: impl Into<Cow<'a, str>>) -> Self { self.storageKey = Some(storageKey.into()); self }
     pub fn build(self) -> TrackIndexedDBForStorageKeyParams<'a> {
         TrackIndexedDBForStorageKeyParams {
-            storageKey: self.storageKey.unwrap_or_default(),
+            storageKey: self.storageKey,
         }
     }
 }
@@ -1441,21 +1521,23 @@ pub struct UntrackCacheStorageForOriginParams<'a> {
 }
 
 impl<'a> UntrackCacheStorageForOriginParams<'a> {
-    pub fn builder() -> UntrackCacheStorageForOriginParamsBuilder<'a> { UntrackCacheStorageForOriginParamsBuilder::default() }
+    pub fn builder(origin: impl Into<Cow<'a, str>>) -> UntrackCacheStorageForOriginParamsBuilder<'a> {
+        UntrackCacheStorageForOriginParamsBuilder {
+            origin: origin.into(),
+        }
+    }
     pub fn origin(&self) -> &str { self.origin.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct UntrackCacheStorageForOriginParamsBuilder<'a> {
-    origin: Option<Cow<'a, str>>,
+    origin: Cow<'a, str>,
 }
 
 impl<'a> UntrackCacheStorageForOriginParamsBuilder<'a> {
-    /// Security origin.
-    pub fn origin(mut self, origin: impl Into<Cow<'a, str>>) -> Self { self.origin = Some(origin.into()); self }
     pub fn build(self) -> UntrackCacheStorageForOriginParams<'a> {
         UntrackCacheStorageForOriginParams {
-            origin: self.origin.unwrap_or_default(),
+            origin: self.origin,
         }
     }
 }
@@ -1477,21 +1559,23 @@ pub struct UntrackCacheStorageForStorageKeyParams<'a> {
 }
 
 impl<'a> UntrackCacheStorageForStorageKeyParams<'a> {
-    pub fn builder() -> UntrackCacheStorageForStorageKeyParamsBuilder<'a> { UntrackCacheStorageForStorageKeyParamsBuilder::default() }
+    pub fn builder(storageKey: impl Into<Cow<'a, str>>) -> UntrackCacheStorageForStorageKeyParamsBuilder<'a> {
+        UntrackCacheStorageForStorageKeyParamsBuilder {
+            storageKey: storageKey.into(),
+        }
+    }
     pub fn storageKey(&self) -> &str { self.storageKey.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct UntrackCacheStorageForStorageKeyParamsBuilder<'a> {
-    storageKey: Option<Cow<'a, str>>,
+    storageKey: Cow<'a, str>,
 }
 
 impl<'a> UntrackCacheStorageForStorageKeyParamsBuilder<'a> {
-    /// Storage key.
-    pub fn storageKey(mut self, storageKey: impl Into<Cow<'a, str>>) -> Self { self.storageKey = Some(storageKey.into()); self }
     pub fn build(self) -> UntrackCacheStorageForStorageKeyParams<'a> {
         UntrackCacheStorageForStorageKeyParams {
-            storageKey: self.storageKey.unwrap_or_default(),
+            storageKey: self.storageKey,
         }
     }
 }
@@ -1513,21 +1597,23 @@ pub struct UntrackIndexedDBForOriginParams<'a> {
 }
 
 impl<'a> UntrackIndexedDBForOriginParams<'a> {
-    pub fn builder() -> UntrackIndexedDBForOriginParamsBuilder<'a> { UntrackIndexedDBForOriginParamsBuilder::default() }
+    pub fn builder(origin: impl Into<Cow<'a, str>>) -> UntrackIndexedDBForOriginParamsBuilder<'a> {
+        UntrackIndexedDBForOriginParamsBuilder {
+            origin: origin.into(),
+        }
+    }
     pub fn origin(&self) -> &str { self.origin.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct UntrackIndexedDBForOriginParamsBuilder<'a> {
-    origin: Option<Cow<'a, str>>,
+    origin: Cow<'a, str>,
 }
 
 impl<'a> UntrackIndexedDBForOriginParamsBuilder<'a> {
-    /// Security origin.
-    pub fn origin(mut self, origin: impl Into<Cow<'a, str>>) -> Self { self.origin = Some(origin.into()); self }
     pub fn build(self) -> UntrackIndexedDBForOriginParams<'a> {
         UntrackIndexedDBForOriginParams {
-            origin: self.origin.unwrap_or_default(),
+            origin: self.origin,
         }
     }
 }
@@ -1549,21 +1635,23 @@ pub struct UntrackIndexedDBForStorageKeyParams<'a> {
 }
 
 impl<'a> UntrackIndexedDBForStorageKeyParams<'a> {
-    pub fn builder() -> UntrackIndexedDBForStorageKeyParamsBuilder<'a> { UntrackIndexedDBForStorageKeyParamsBuilder::default() }
+    pub fn builder(storageKey: impl Into<Cow<'a, str>>) -> UntrackIndexedDBForStorageKeyParamsBuilder<'a> {
+        UntrackIndexedDBForStorageKeyParamsBuilder {
+            storageKey: storageKey.into(),
+        }
+    }
     pub fn storageKey(&self) -> &str { self.storageKey.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct UntrackIndexedDBForStorageKeyParamsBuilder<'a> {
-    storageKey: Option<Cow<'a, str>>,
+    storageKey: Cow<'a, str>,
 }
 
 impl<'a> UntrackIndexedDBForStorageKeyParamsBuilder<'a> {
-    /// Storage key.
-    pub fn storageKey(mut self, storageKey: impl Into<Cow<'a, str>>) -> Self { self.storageKey = Some(storageKey.into()); self }
     pub fn build(self) -> UntrackIndexedDBForStorageKeyParams<'a> {
         UntrackIndexedDBForStorageKeyParams {
-            storageKey: self.storageKey.unwrap_or_default(),
+            storageKey: self.storageKey,
         }
     }
 }
@@ -1585,41 +1673,29 @@ pub struct GetTrustTokensReturns<'a> {
 }
 
 impl<'a> GetTrustTokensReturns<'a> {
-    pub fn builder() -> GetTrustTokensReturnsBuilder<'a> { GetTrustTokensReturnsBuilder::default() }
+    pub fn builder(tokens: Vec<TrustTokens<'a>>) -> GetTrustTokensReturnsBuilder<'a> {
+        GetTrustTokensReturnsBuilder {
+            tokens: tokens,
+        }
+    }
     pub fn tokens(&self) -> &[TrustTokens<'a>] { &self.tokens }
 }
 
-#[derive(Default)]
+
 pub struct GetTrustTokensReturnsBuilder<'a> {
-    tokens: Option<Vec<TrustTokens<'a>>>,
+    tokens: Vec<TrustTokens<'a>>,
 }
 
 impl<'a> GetTrustTokensReturnsBuilder<'a> {
-    pub fn tokens(mut self, tokens: Vec<TrustTokens<'a>>) -> Self { self.tokens = Some(tokens); self }
     pub fn build(self) -> GetTrustTokensReturns<'a> {
         GetTrustTokensReturns {
-            tokens: self.tokens.unwrap_or_default(),
+            tokens: self.tokens,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetTrustTokensParams {}
-
-impl GetTrustTokensParams {
-    pub fn builder() -> GetTrustTokensParamsBuilder {
-        GetTrustTokensParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetTrustTokensParamsBuilder {}
-
-impl GetTrustTokensParamsBuilder {
-    pub fn build(self) -> GetTrustTokensParams {
-        GetTrustTokensParams {}
-    }
-}
 
 impl GetTrustTokensParams { pub const METHOD: &'static str = "Storage.getTrustTokens"; }
 
@@ -1638,20 +1714,23 @@ pub struct ClearTrustTokensParams<'a> {
 }
 
 impl<'a> ClearTrustTokensParams<'a> {
-    pub fn builder() -> ClearTrustTokensParamsBuilder<'a> { ClearTrustTokensParamsBuilder::default() }
+    pub fn builder(issuerOrigin: impl Into<Cow<'a, str>>) -> ClearTrustTokensParamsBuilder<'a> {
+        ClearTrustTokensParamsBuilder {
+            issuerOrigin: issuerOrigin.into(),
+        }
+    }
     pub fn issuerOrigin(&self) -> &str { self.issuerOrigin.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct ClearTrustTokensParamsBuilder<'a> {
-    issuerOrigin: Option<Cow<'a, str>>,
+    issuerOrigin: Cow<'a, str>,
 }
 
 impl<'a> ClearTrustTokensParamsBuilder<'a> {
-    pub fn issuerOrigin(mut self, issuerOrigin: impl Into<Cow<'a, str>>) -> Self { self.issuerOrigin = Some(issuerOrigin.into()); self }
     pub fn build(self) -> ClearTrustTokensParams<'a> {
         ClearTrustTokensParams {
-            issuerOrigin: self.issuerOrigin.unwrap_or_default(),
+            issuerOrigin: self.issuerOrigin,
         }
     }
 }
@@ -1667,21 +1746,23 @@ pub struct ClearTrustTokensReturns {
 }
 
 impl ClearTrustTokensReturns {
-    pub fn builder() -> ClearTrustTokensReturnsBuilder { ClearTrustTokensReturnsBuilder::default() }
+    pub fn builder(didDeleteTokens: bool) -> ClearTrustTokensReturnsBuilder {
+        ClearTrustTokensReturnsBuilder {
+            didDeleteTokens: didDeleteTokens,
+        }
+    }
     pub fn didDeleteTokens(&self) -> bool { self.didDeleteTokens }
 }
 
-#[derive(Default)]
+
 pub struct ClearTrustTokensReturnsBuilder {
-    didDeleteTokens: Option<bool>,
+    didDeleteTokens: bool,
 }
 
 impl ClearTrustTokensReturnsBuilder {
-    /// True if any tokens were deleted, false otherwise.
-    pub fn didDeleteTokens(mut self, didDeleteTokens: bool) -> Self { self.didDeleteTokens = Some(didDeleteTokens); self }
     pub fn build(self) -> ClearTrustTokensReturns {
         ClearTrustTokensReturns {
-            didDeleteTokens: self.didDeleteTokens.unwrap_or_default(),
+            didDeleteTokens: self.didDeleteTokens,
         }
     }
 }
@@ -1703,24 +1784,27 @@ pub struct GetInterestGroupDetailsParams<'a> {
 }
 
 impl<'a> GetInterestGroupDetailsParams<'a> {
-    pub fn builder() -> GetInterestGroupDetailsParamsBuilder<'a> { GetInterestGroupDetailsParamsBuilder::default() }
+    pub fn builder(ownerOrigin: impl Into<Cow<'a, str>>, name: impl Into<Cow<'a, str>>) -> GetInterestGroupDetailsParamsBuilder<'a> {
+        GetInterestGroupDetailsParamsBuilder {
+            ownerOrigin: ownerOrigin.into(),
+            name: name.into(),
+        }
+    }
     pub fn ownerOrigin(&self) -> &str { self.ownerOrigin.as_ref() }
     pub fn name(&self) -> &str { self.name.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct GetInterestGroupDetailsParamsBuilder<'a> {
-    ownerOrigin: Option<Cow<'a, str>>,
-    name: Option<Cow<'a, str>>,
+    ownerOrigin: Cow<'a, str>,
+    name: Cow<'a, str>,
 }
 
 impl<'a> GetInterestGroupDetailsParamsBuilder<'a> {
-    pub fn ownerOrigin(mut self, ownerOrigin: impl Into<Cow<'a, str>>) -> Self { self.ownerOrigin = Some(ownerOrigin.into()); self }
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
     pub fn build(self) -> GetInterestGroupDetailsParams<'a> {
         GetInterestGroupDetailsParams {
-            ownerOrigin: self.ownerOrigin.unwrap_or_default(),
-            name: self.name.unwrap_or_default(),
+            ownerOrigin: self.ownerOrigin,
+            name: self.name,
         }
     }
 }
@@ -1738,24 +1822,23 @@ pub struct GetInterestGroupDetailsReturns {
 }
 
 impl GetInterestGroupDetailsReturns {
-    pub fn builder() -> GetInterestGroupDetailsReturnsBuilder { GetInterestGroupDetailsReturnsBuilder::default() }
+    pub fn builder(details: serde_json::Map<String, JsonValue>) -> GetInterestGroupDetailsReturnsBuilder {
+        GetInterestGroupDetailsReturnsBuilder {
+            details: details,
+        }
+    }
     pub fn details(&self) -> &serde_json::Map<String, JsonValue> { &self.details }
 }
 
-#[derive(Default)]
+
 pub struct GetInterestGroupDetailsReturnsBuilder {
-    details: Option<serde_json::Map<String, JsonValue>>,
+    details: serde_json::Map<String, JsonValue>,
 }
 
 impl GetInterestGroupDetailsReturnsBuilder {
-    /// This largely corresponds to:
-    /// https://wicg.github.io/turtledove/#dictdef-generatebidinterestgroup
-    /// but has absolute expirationTime instead of relative lifetimeMs and
-    /// also adds joiningOrigin.
-    pub fn details(mut self, details: serde_json::Map<String, JsonValue>) -> Self { self.details = Some(details); self }
     pub fn build(self) -> GetInterestGroupDetailsReturns {
         GetInterestGroupDetailsReturns {
-            details: self.details.unwrap_or_default(),
+            details: self.details,
         }
     }
 }
@@ -1776,20 +1859,23 @@ pub struct SetInterestGroupTrackingParams {
 }
 
 impl SetInterestGroupTrackingParams {
-    pub fn builder() -> SetInterestGroupTrackingParamsBuilder { SetInterestGroupTrackingParamsBuilder::default() }
+    pub fn builder(enable: bool) -> SetInterestGroupTrackingParamsBuilder {
+        SetInterestGroupTrackingParamsBuilder {
+            enable: enable,
+        }
+    }
     pub fn enable(&self) -> bool { self.enable }
 }
 
-#[derive(Default)]
+
 pub struct SetInterestGroupTrackingParamsBuilder {
-    enable: Option<bool>,
+    enable: bool,
 }
 
 impl SetInterestGroupTrackingParamsBuilder {
-    pub fn enable(mut self, enable: bool) -> Self { self.enable = Some(enable); self }
     pub fn build(self) -> SetInterestGroupTrackingParams {
         SetInterestGroupTrackingParams {
-            enable: self.enable.unwrap_or_default(),
+            enable: self.enable,
         }
     }
 }
@@ -1811,20 +1897,23 @@ pub struct SetInterestGroupAuctionTrackingParams {
 }
 
 impl SetInterestGroupAuctionTrackingParams {
-    pub fn builder() -> SetInterestGroupAuctionTrackingParamsBuilder { SetInterestGroupAuctionTrackingParamsBuilder::default() }
+    pub fn builder(enable: bool) -> SetInterestGroupAuctionTrackingParamsBuilder {
+        SetInterestGroupAuctionTrackingParamsBuilder {
+            enable: enable,
+        }
+    }
     pub fn enable(&self) -> bool { self.enable }
 }
 
-#[derive(Default)]
+
 pub struct SetInterestGroupAuctionTrackingParamsBuilder {
-    enable: Option<bool>,
+    enable: bool,
 }
 
 impl SetInterestGroupAuctionTrackingParamsBuilder {
-    pub fn enable(mut self, enable: bool) -> Self { self.enable = Some(enable); self }
     pub fn build(self) -> SetInterestGroupAuctionTrackingParams {
         SetInterestGroupAuctionTrackingParams {
-            enable: self.enable.unwrap_or_default(),
+            enable: self.enable,
         }
     }
 }
@@ -1845,20 +1934,23 @@ pub struct GetSharedStorageMetadataParams<'a> {
 }
 
 impl<'a> GetSharedStorageMetadataParams<'a> {
-    pub fn builder() -> GetSharedStorageMetadataParamsBuilder<'a> { GetSharedStorageMetadataParamsBuilder::default() }
+    pub fn builder(ownerOrigin: impl Into<Cow<'a, str>>) -> GetSharedStorageMetadataParamsBuilder<'a> {
+        GetSharedStorageMetadataParamsBuilder {
+            ownerOrigin: ownerOrigin.into(),
+        }
+    }
     pub fn ownerOrigin(&self) -> &str { self.ownerOrigin.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct GetSharedStorageMetadataParamsBuilder<'a> {
-    ownerOrigin: Option<Cow<'a, str>>,
+    ownerOrigin: Cow<'a, str>,
 }
 
 impl<'a> GetSharedStorageMetadataParamsBuilder<'a> {
-    pub fn ownerOrigin(mut self, ownerOrigin: impl Into<Cow<'a, str>>) -> Self { self.ownerOrigin = Some(ownerOrigin.into()); self }
     pub fn build(self) -> GetSharedStorageMetadataParams<'a> {
         GetSharedStorageMetadataParams {
-            ownerOrigin: self.ownerOrigin.unwrap_or_default(),
+            ownerOrigin: self.ownerOrigin,
         }
     }
 }
@@ -1872,20 +1964,23 @@ pub struct GetSharedStorageMetadataReturns {
 }
 
 impl GetSharedStorageMetadataReturns {
-    pub fn builder() -> GetSharedStorageMetadataReturnsBuilder { GetSharedStorageMetadataReturnsBuilder::default() }
+    pub fn builder(metadata: SharedStorageMetadata) -> GetSharedStorageMetadataReturnsBuilder {
+        GetSharedStorageMetadataReturnsBuilder {
+            metadata: metadata,
+        }
+    }
     pub fn metadata(&self) -> &SharedStorageMetadata { &self.metadata }
 }
 
-#[derive(Default)]
+
 pub struct GetSharedStorageMetadataReturnsBuilder {
-    metadata: Option<SharedStorageMetadata>,
+    metadata: SharedStorageMetadata,
 }
 
 impl GetSharedStorageMetadataReturnsBuilder {
-    pub fn metadata(mut self, metadata: SharedStorageMetadata) -> Self { self.metadata = Some(metadata); self }
     pub fn build(self) -> GetSharedStorageMetadataReturns {
         GetSharedStorageMetadataReturns {
-            metadata: self.metadata.unwrap_or_default(),
+            metadata: self.metadata,
         }
     }
 }
@@ -1906,20 +2001,23 @@ pub struct GetSharedStorageEntriesParams<'a> {
 }
 
 impl<'a> GetSharedStorageEntriesParams<'a> {
-    pub fn builder() -> GetSharedStorageEntriesParamsBuilder<'a> { GetSharedStorageEntriesParamsBuilder::default() }
+    pub fn builder(ownerOrigin: impl Into<Cow<'a, str>>) -> GetSharedStorageEntriesParamsBuilder<'a> {
+        GetSharedStorageEntriesParamsBuilder {
+            ownerOrigin: ownerOrigin.into(),
+        }
+    }
     pub fn ownerOrigin(&self) -> &str { self.ownerOrigin.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct GetSharedStorageEntriesParamsBuilder<'a> {
-    ownerOrigin: Option<Cow<'a, str>>,
+    ownerOrigin: Cow<'a, str>,
 }
 
 impl<'a> GetSharedStorageEntriesParamsBuilder<'a> {
-    pub fn ownerOrigin(mut self, ownerOrigin: impl Into<Cow<'a, str>>) -> Self { self.ownerOrigin = Some(ownerOrigin.into()); self }
     pub fn build(self) -> GetSharedStorageEntriesParams<'a> {
         GetSharedStorageEntriesParams {
-            ownerOrigin: self.ownerOrigin.unwrap_or_default(),
+            ownerOrigin: self.ownerOrigin,
         }
     }
 }
@@ -1933,20 +2031,23 @@ pub struct GetSharedStorageEntriesReturns<'a> {
 }
 
 impl<'a> GetSharedStorageEntriesReturns<'a> {
-    pub fn builder() -> GetSharedStorageEntriesReturnsBuilder<'a> { GetSharedStorageEntriesReturnsBuilder::default() }
+    pub fn builder(entries: Vec<SharedStorageEntry<'a>>) -> GetSharedStorageEntriesReturnsBuilder<'a> {
+        GetSharedStorageEntriesReturnsBuilder {
+            entries: entries,
+        }
+    }
     pub fn entries(&self) -> &[SharedStorageEntry<'a>] { &self.entries }
 }
 
-#[derive(Default)]
+
 pub struct GetSharedStorageEntriesReturnsBuilder<'a> {
-    entries: Option<Vec<SharedStorageEntry<'a>>>,
+    entries: Vec<SharedStorageEntry<'a>>,
 }
 
 impl<'a> GetSharedStorageEntriesReturnsBuilder<'a> {
-    pub fn entries(mut self, entries: Vec<SharedStorageEntry<'a>>) -> Self { self.entries = Some(entries); self }
     pub fn build(self) -> GetSharedStorageEntriesReturns<'a> {
         GetSharedStorageEntriesReturns {
-            entries: self.entries.unwrap_or_default(),
+            entries: self.entries,
         }
     }
 }
@@ -1973,33 +2074,37 @@ pub struct SetSharedStorageEntryParams<'a> {
 }
 
 impl<'a> SetSharedStorageEntryParams<'a> {
-    pub fn builder() -> SetSharedStorageEntryParamsBuilder<'a> { SetSharedStorageEntryParamsBuilder::default() }
+    pub fn builder(ownerOrigin: impl Into<Cow<'a, str>>, key: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> SetSharedStorageEntryParamsBuilder<'a> {
+        SetSharedStorageEntryParamsBuilder {
+            ownerOrigin: ownerOrigin.into(),
+            key: key.into(),
+            value: value.into(),
+            ignoreIfPresent: None,
+        }
+    }
     pub fn ownerOrigin(&self) -> &str { self.ownerOrigin.as_ref() }
     pub fn key(&self) -> &str { self.key.as_ref() }
     pub fn value(&self) -> &str { self.value.as_ref() }
     pub fn ignoreIfPresent(&self) -> Option<bool> { self.ignoreIfPresent }
 }
 
-#[derive(Default)]
+
 pub struct SetSharedStorageEntryParamsBuilder<'a> {
-    ownerOrigin: Option<Cow<'a, str>>,
-    key: Option<Cow<'a, str>>,
-    value: Option<Cow<'a, str>>,
+    ownerOrigin: Cow<'a, str>,
+    key: Cow<'a, str>,
+    value: Cow<'a, str>,
     ignoreIfPresent: Option<bool>,
 }
 
 impl<'a> SetSharedStorageEntryParamsBuilder<'a> {
-    pub fn ownerOrigin(mut self, ownerOrigin: impl Into<Cow<'a, str>>) -> Self { self.ownerOrigin = Some(ownerOrigin.into()); self }
-    pub fn key(mut self, key: impl Into<Cow<'a, str>>) -> Self { self.key = Some(key.into()); self }
-    pub fn value(mut self, value: impl Into<Cow<'a, str>>) -> Self { self.value = Some(value.into()); self }
     /// If 'ignoreIfPresent' is included and true, then only sets the entry if
     /// 'key' doesn't already exist.
     pub fn ignoreIfPresent(mut self, ignoreIfPresent: bool) -> Self { self.ignoreIfPresent = Some(ignoreIfPresent); self }
     pub fn build(self) -> SetSharedStorageEntryParams<'a> {
         SetSharedStorageEntryParams {
-            ownerOrigin: self.ownerOrigin.unwrap_or_default(),
-            key: self.key.unwrap_or_default(),
-            value: self.value.unwrap_or_default(),
+            ownerOrigin: self.ownerOrigin,
+            key: self.key,
+            value: self.value,
             ignoreIfPresent: self.ignoreIfPresent,
         }
     }
@@ -2022,24 +2127,27 @@ pub struct DeleteSharedStorageEntryParams<'a> {
 }
 
 impl<'a> DeleteSharedStorageEntryParams<'a> {
-    pub fn builder() -> DeleteSharedStorageEntryParamsBuilder<'a> { DeleteSharedStorageEntryParamsBuilder::default() }
+    pub fn builder(ownerOrigin: impl Into<Cow<'a, str>>, key: impl Into<Cow<'a, str>>) -> DeleteSharedStorageEntryParamsBuilder<'a> {
+        DeleteSharedStorageEntryParamsBuilder {
+            ownerOrigin: ownerOrigin.into(),
+            key: key.into(),
+        }
+    }
     pub fn ownerOrigin(&self) -> &str { self.ownerOrigin.as_ref() }
     pub fn key(&self) -> &str { self.key.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct DeleteSharedStorageEntryParamsBuilder<'a> {
-    ownerOrigin: Option<Cow<'a, str>>,
-    key: Option<Cow<'a, str>>,
+    ownerOrigin: Cow<'a, str>,
+    key: Cow<'a, str>,
 }
 
 impl<'a> DeleteSharedStorageEntryParamsBuilder<'a> {
-    pub fn ownerOrigin(mut self, ownerOrigin: impl Into<Cow<'a, str>>) -> Self { self.ownerOrigin = Some(ownerOrigin.into()); self }
-    pub fn key(mut self, key: impl Into<Cow<'a, str>>) -> Self { self.key = Some(key.into()); self }
     pub fn build(self) -> DeleteSharedStorageEntryParams<'a> {
         DeleteSharedStorageEntryParams {
-            ownerOrigin: self.ownerOrigin.unwrap_or_default(),
-            key: self.key.unwrap_or_default(),
+            ownerOrigin: self.ownerOrigin,
+            key: self.key,
         }
     }
 }
@@ -2060,20 +2168,23 @@ pub struct ClearSharedStorageEntriesParams<'a> {
 }
 
 impl<'a> ClearSharedStorageEntriesParams<'a> {
-    pub fn builder() -> ClearSharedStorageEntriesParamsBuilder<'a> { ClearSharedStorageEntriesParamsBuilder::default() }
+    pub fn builder(ownerOrigin: impl Into<Cow<'a, str>>) -> ClearSharedStorageEntriesParamsBuilder<'a> {
+        ClearSharedStorageEntriesParamsBuilder {
+            ownerOrigin: ownerOrigin.into(),
+        }
+    }
     pub fn ownerOrigin(&self) -> &str { self.ownerOrigin.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct ClearSharedStorageEntriesParamsBuilder<'a> {
-    ownerOrigin: Option<Cow<'a, str>>,
+    ownerOrigin: Cow<'a, str>,
 }
 
 impl<'a> ClearSharedStorageEntriesParamsBuilder<'a> {
-    pub fn ownerOrigin(mut self, ownerOrigin: impl Into<Cow<'a, str>>) -> Self { self.ownerOrigin = Some(ownerOrigin.into()); self }
     pub fn build(self) -> ClearSharedStorageEntriesParams<'a> {
         ClearSharedStorageEntriesParams {
-            ownerOrigin: self.ownerOrigin.unwrap_or_default(),
+            ownerOrigin: self.ownerOrigin,
         }
     }
 }
@@ -2094,20 +2205,23 @@ pub struct ResetSharedStorageBudgetParams<'a> {
 }
 
 impl<'a> ResetSharedStorageBudgetParams<'a> {
-    pub fn builder() -> ResetSharedStorageBudgetParamsBuilder<'a> { ResetSharedStorageBudgetParamsBuilder::default() }
+    pub fn builder(ownerOrigin: impl Into<Cow<'a, str>>) -> ResetSharedStorageBudgetParamsBuilder<'a> {
+        ResetSharedStorageBudgetParamsBuilder {
+            ownerOrigin: ownerOrigin.into(),
+        }
+    }
     pub fn ownerOrigin(&self) -> &str { self.ownerOrigin.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct ResetSharedStorageBudgetParamsBuilder<'a> {
-    ownerOrigin: Option<Cow<'a, str>>,
+    ownerOrigin: Cow<'a, str>,
 }
 
 impl<'a> ResetSharedStorageBudgetParamsBuilder<'a> {
-    pub fn ownerOrigin(mut self, ownerOrigin: impl Into<Cow<'a, str>>) -> Self { self.ownerOrigin = Some(ownerOrigin.into()); self }
     pub fn build(self) -> ResetSharedStorageBudgetParams<'a> {
         ResetSharedStorageBudgetParams {
-            ownerOrigin: self.ownerOrigin.unwrap_or_default(),
+            ownerOrigin: self.ownerOrigin,
         }
     }
 }
@@ -2128,20 +2242,23 @@ pub struct SetSharedStorageTrackingParams {
 }
 
 impl SetSharedStorageTrackingParams {
-    pub fn builder() -> SetSharedStorageTrackingParamsBuilder { SetSharedStorageTrackingParamsBuilder::default() }
+    pub fn builder(enable: bool) -> SetSharedStorageTrackingParamsBuilder {
+        SetSharedStorageTrackingParamsBuilder {
+            enable: enable,
+        }
+    }
     pub fn enable(&self) -> bool { self.enable }
 }
 
-#[derive(Default)]
+
 pub struct SetSharedStorageTrackingParamsBuilder {
-    enable: Option<bool>,
+    enable: bool,
 }
 
 impl SetSharedStorageTrackingParamsBuilder {
-    pub fn enable(mut self, enable: bool) -> Self { self.enable = Some(enable); self }
     pub fn build(self) -> SetSharedStorageTrackingParams {
         SetSharedStorageTrackingParams {
-            enable: self.enable.unwrap_or_default(),
+            enable: self.enable,
         }
     }
 }
@@ -2163,24 +2280,27 @@ pub struct SetStorageBucketTrackingParams<'a> {
 }
 
 impl<'a> SetStorageBucketTrackingParams<'a> {
-    pub fn builder() -> SetStorageBucketTrackingParamsBuilder<'a> { SetStorageBucketTrackingParamsBuilder::default() }
+    pub fn builder(storageKey: impl Into<Cow<'a, str>>, enable: bool) -> SetStorageBucketTrackingParamsBuilder<'a> {
+        SetStorageBucketTrackingParamsBuilder {
+            storageKey: storageKey.into(),
+            enable: enable,
+        }
+    }
     pub fn storageKey(&self) -> &str { self.storageKey.as_ref() }
     pub fn enable(&self) -> bool { self.enable }
 }
 
-#[derive(Default)]
+
 pub struct SetStorageBucketTrackingParamsBuilder<'a> {
-    storageKey: Option<Cow<'a, str>>,
-    enable: Option<bool>,
+    storageKey: Cow<'a, str>,
+    enable: bool,
 }
 
 impl<'a> SetStorageBucketTrackingParamsBuilder<'a> {
-    pub fn storageKey(mut self, storageKey: impl Into<Cow<'a, str>>) -> Self { self.storageKey = Some(storageKey.into()); self }
-    pub fn enable(mut self, enable: bool) -> Self { self.enable = Some(enable); self }
     pub fn build(self) -> SetStorageBucketTrackingParams<'a> {
         SetStorageBucketTrackingParams {
-            storageKey: self.storageKey.unwrap_or_default(),
-            enable: self.enable.unwrap_or_default(),
+            storageKey: self.storageKey,
+            enable: self.enable,
         }
     }
 }
@@ -2201,20 +2321,23 @@ pub struct DeleteStorageBucketParams<'a> {
 }
 
 impl<'a> DeleteStorageBucketParams<'a> {
-    pub fn builder() -> DeleteStorageBucketParamsBuilder<'a> { DeleteStorageBucketParamsBuilder::default() }
+    pub fn builder(bucket: StorageBucket<'a>) -> DeleteStorageBucketParamsBuilder<'a> {
+        DeleteStorageBucketParamsBuilder {
+            bucket: bucket,
+        }
+    }
     pub fn bucket(&self) -> &StorageBucket<'a> { &self.bucket }
 }
 
-#[derive(Default)]
+
 pub struct DeleteStorageBucketParamsBuilder<'a> {
-    bucket: Option<StorageBucket<'a>>,
+    bucket: StorageBucket<'a>,
 }
 
 impl<'a> DeleteStorageBucketParamsBuilder<'a> {
-    pub fn bucket(mut self, bucket: StorageBucket<'a>) -> Self { self.bucket = Some(bucket); self }
     pub fn build(self) -> DeleteStorageBucketParams<'a> {
         DeleteStorageBucketParams {
-            bucket: self.bucket.unwrap_or_default(),
+            bucket: self.bucket,
         }
     }
 }
@@ -2235,41 +2358,29 @@ pub struct RunBounceTrackingMitigationsReturns<'a> {
 }
 
 impl<'a> RunBounceTrackingMitigationsReturns<'a> {
-    pub fn builder() -> RunBounceTrackingMitigationsReturnsBuilder<'a> { RunBounceTrackingMitigationsReturnsBuilder::default() }
+    pub fn builder(deletedSites: Vec<Cow<'a, str>>) -> RunBounceTrackingMitigationsReturnsBuilder<'a> {
+        RunBounceTrackingMitigationsReturnsBuilder {
+            deletedSites: deletedSites,
+        }
+    }
     pub fn deletedSites(&self) -> &[Cow<'a, str>] { &self.deletedSites }
 }
 
-#[derive(Default)]
+
 pub struct RunBounceTrackingMitigationsReturnsBuilder<'a> {
-    deletedSites: Option<Vec<Cow<'a, str>>>,
+    deletedSites: Vec<Cow<'a, str>>,
 }
 
 impl<'a> RunBounceTrackingMitigationsReturnsBuilder<'a> {
-    pub fn deletedSites(mut self, deletedSites: Vec<Cow<'a, str>>) -> Self { self.deletedSites = Some(deletedSites); self }
     pub fn build(self) -> RunBounceTrackingMitigationsReturns<'a> {
         RunBounceTrackingMitigationsReturns {
-            deletedSites: self.deletedSites.unwrap_or_default(),
+            deletedSites: self.deletedSites,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct RunBounceTrackingMitigationsParams {}
-
-impl RunBounceTrackingMitigationsParams {
-    pub fn builder() -> RunBounceTrackingMitigationsParamsBuilder {
-        RunBounceTrackingMitigationsParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct RunBounceTrackingMitigationsParamsBuilder {}
-
-impl RunBounceTrackingMitigationsParamsBuilder {
-    pub fn build(self) -> RunBounceTrackingMitigationsParams {
-        RunBounceTrackingMitigationsParams {}
-    }
-}
 
 impl RunBounceTrackingMitigationsParams { pub const METHOD: &'static str = "Storage.runBounceTrackingMitigations"; }
 
@@ -2288,41 +2399,29 @@ pub struct GetRelatedWebsiteSetsReturns<'a> {
 }
 
 impl<'a> GetRelatedWebsiteSetsReturns<'a> {
-    pub fn builder() -> GetRelatedWebsiteSetsReturnsBuilder<'a> { GetRelatedWebsiteSetsReturnsBuilder::default() }
+    pub fn builder(sets: Vec<RelatedWebsiteSet<'a>>) -> GetRelatedWebsiteSetsReturnsBuilder<'a> {
+        GetRelatedWebsiteSetsReturnsBuilder {
+            sets: sets,
+        }
+    }
     pub fn sets(&self) -> &[RelatedWebsiteSet<'a>] { &self.sets }
 }
 
-#[derive(Default)]
+
 pub struct GetRelatedWebsiteSetsReturnsBuilder<'a> {
-    sets: Option<Vec<RelatedWebsiteSet<'a>>>,
+    sets: Vec<RelatedWebsiteSet<'a>>,
 }
 
 impl<'a> GetRelatedWebsiteSetsReturnsBuilder<'a> {
-    pub fn sets(mut self, sets: Vec<RelatedWebsiteSet<'a>>) -> Self { self.sets = Some(sets); self }
     pub fn build(self) -> GetRelatedWebsiteSetsReturns<'a> {
         GetRelatedWebsiteSetsReturns {
-            sets: self.sets.unwrap_or_default(),
+            sets: self.sets,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetRelatedWebsiteSetsParams {}
-
-impl GetRelatedWebsiteSetsParams {
-    pub fn builder() -> GetRelatedWebsiteSetsParamsBuilder {
-        GetRelatedWebsiteSetsParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetRelatedWebsiteSetsParamsBuilder {}
-
-impl GetRelatedWebsiteSetsParamsBuilder {
-    pub fn build(self) -> GetRelatedWebsiteSetsParams {
-        GetRelatedWebsiteSetsParams {}
-    }
-}
 
 impl GetRelatedWebsiteSetsParams { pub const METHOD: &'static str = "Storage.getRelatedWebsiteSets"; }
 
@@ -2341,28 +2440,31 @@ pub struct SetProtectedAudienceKAnonymityParams<'a> {
 }
 
 impl<'a> SetProtectedAudienceKAnonymityParams<'a> {
-    pub fn builder() -> SetProtectedAudienceKAnonymityParamsBuilder<'a> { SetProtectedAudienceKAnonymityParamsBuilder::default() }
+    pub fn builder(owner: impl Into<Cow<'a, str>>, name: impl Into<Cow<'a, str>>, hashes: Vec<Cow<'a, str>>) -> SetProtectedAudienceKAnonymityParamsBuilder<'a> {
+        SetProtectedAudienceKAnonymityParamsBuilder {
+            owner: owner.into(),
+            name: name.into(),
+            hashes: hashes,
+        }
+    }
     pub fn owner(&self) -> &str { self.owner.as_ref() }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn hashes(&self) -> &[Cow<'a, str>] { &self.hashes }
 }
 
-#[derive(Default)]
+
 pub struct SetProtectedAudienceKAnonymityParamsBuilder<'a> {
-    owner: Option<Cow<'a, str>>,
-    name: Option<Cow<'a, str>>,
-    hashes: Option<Vec<Cow<'a, str>>>,
+    owner: Cow<'a, str>,
+    name: Cow<'a, str>,
+    hashes: Vec<Cow<'a, str>>,
 }
 
 impl<'a> SetProtectedAudienceKAnonymityParamsBuilder<'a> {
-    pub fn owner(mut self, owner: impl Into<Cow<'a, str>>) -> Self { self.owner = Some(owner.into()); self }
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    pub fn hashes(mut self, hashes: Vec<Cow<'a, str>>) -> Self { self.hashes = Some(hashes); self }
     pub fn build(self) -> SetProtectedAudienceKAnonymityParams<'a> {
         SetProtectedAudienceKAnonymityParams {
-            owner: self.owner.unwrap_or_default(),
-            name: self.name.unwrap_or_default(),
-            hashes: self.hashes.unwrap_or_default(),
+            owner: self.owner,
+            name: self.name,
+            hashes: self.hashes,
         }
     }
 }

@@ -17,21 +17,23 @@ pub struct SetInstrumentationBreakpointParams<'a> {
 }
 
 impl<'a> SetInstrumentationBreakpointParams<'a> {
-    pub fn builder() -> SetInstrumentationBreakpointParamsBuilder<'a> { SetInstrumentationBreakpointParamsBuilder::default() }
+    pub fn builder(eventName: impl Into<Cow<'a, str>>) -> SetInstrumentationBreakpointParamsBuilder<'a> {
+        SetInstrumentationBreakpointParamsBuilder {
+            eventName: eventName.into(),
+        }
+    }
     pub fn eventName(&self) -> &str { self.eventName.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetInstrumentationBreakpointParamsBuilder<'a> {
-    eventName: Option<Cow<'a, str>>,
+    eventName: Cow<'a, str>,
 }
 
 impl<'a> SetInstrumentationBreakpointParamsBuilder<'a> {
-    /// Instrumentation name to stop on.
-    pub fn eventName(mut self, eventName: impl Into<Cow<'a, str>>) -> Self { self.eventName = Some(eventName.into()); self }
     pub fn build(self) -> SetInstrumentationBreakpointParams<'a> {
         SetInstrumentationBreakpointParams {
-            eventName: self.eventName.unwrap_or_default(),
+            eventName: self.eventName,
         }
     }
 }
@@ -53,21 +55,23 @@ pub struct RemoveInstrumentationBreakpointParams<'a> {
 }
 
 impl<'a> RemoveInstrumentationBreakpointParams<'a> {
-    pub fn builder() -> RemoveInstrumentationBreakpointParamsBuilder<'a> { RemoveInstrumentationBreakpointParamsBuilder::default() }
+    pub fn builder(eventName: impl Into<Cow<'a, str>>) -> RemoveInstrumentationBreakpointParamsBuilder<'a> {
+        RemoveInstrumentationBreakpointParamsBuilder {
+            eventName: eventName.into(),
+        }
+    }
     pub fn eventName(&self) -> &str { self.eventName.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct RemoveInstrumentationBreakpointParamsBuilder<'a> {
-    eventName: Option<Cow<'a, str>>,
+    eventName: Cow<'a, str>,
 }
 
 impl<'a> RemoveInstrumentationBreakpointParamsBuilder<'a> {
-    /// Instrumentation name to stop on.
-    pub fn eventName(mut self, eventName: impl Into<Cow<'a, str>>) -> Self { self.eventName = Some(eventName.into()); self }
     pub fn build(self) -> RemoveInstrumentationBreakpointParams<'a> {
         RemoveInstrumentationBreakpointParams {
-            eventName: self.eventName.unwrap_or_default(),
+            eventName: self.eventName,
         }
     }
 }
@@ -81,21 +85,6 @@ impl<'a> crate::CdpCommand<'a> for RemoveInstrumentationBreakpointParams<'a> {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct DisableParams {}
-
-impl DisableParams {
-    pub fn builder() -> DisableParamsBuilder {
-        DisableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct DisableParamsBuilder {}
-
-impl DisableParamsBuilder {
-    pub fn build(self) -> DisableParams {
-        DisableParams {}
-    }
-}
 
 impl DisableParams { pub const METHOD: &'static str = "EventBreakpoints.disable"; }
 

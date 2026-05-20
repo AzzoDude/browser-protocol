@@ -36,7 +36,18 @@ pub struct SafeAreaInsets {
 }
 
 impl SafeAreaInsets {
-    pub fn builder() -> SafeAreaInsetsBuilder { SafeAreaInsetsBuilder::default() }
+    pub fn builder() -> SafeAreaInsetsBuilder {
+        SafeAreaInsetsBuilder {
+            top: None,
+            topMax: None,
+            left: None,
+            leftMax: None,
+            bottom: None,
+            bottomMax: None,
+            right: None,
+            rightMax: None,
+        }
+    }
     pub fn top(&self) -> Option<i64> { self.top }
     pub fn topMax(&self) -> Option<i64> { self.topMax }
     pub fn left(&self) -> Option<i64> { self.left }
@@ -103,26 +114,27 @@ pub struct ScreenOrientation<'a> {
 }
 
 impl<'a> ScreenOrientation<'a> {
-    pub fn builder() -> ScreenOrientationBuilder<'a> { ScreenOrientationBuilder::default() }
+    pub fn builder(type_: impl Into<Cow<'a, str>>, angle: i64) -> ScreenOrientationBuilder<'a> {
+        ScreenOrientationBuilder {
+            type_: type_.into(),
+            angle: angle,
+        }
+    }
     pub fn type_(&self) -> &str { self.type_.as_ref() }
     pub fn angle(&self) -> i64 { self.angle }
 }
 
-#[derive(Default)]
+
 pub struct ScreenOrientationBuilder<'a> {
-    type_: Option<Cow<'a, str>>,
-    angle: Option<i64>,
+    type_: Cow<'a, str>,
+    angle: i64,
 }
 
 impl<'a> ScreenOrientationBuilder<'a> {
-    /// Orientation type.
-    pub fn type_(mut self, type_: impl Into<Cow<'a, str>>) -> Self { self.type_ = Some(type_.into()); self }
-    /// Orientation angle.
-    pub fn angle(mut self, angle: i64) -> Self { self.angle = Some(angle); self }
     pub fn build(self) -> ScreenOrientation<'a> {
         ScreenOrientation {
-            type_: self.type_.unwrap_or_default(),
-            angle: self.angle.unwrap_or_default(),
+            type_: self.type_,
+            angle: self.angle,
         }
     }
 }
@@ -143,34 +155,31 @@ pub struct DisplayFeature<'a> {
 }
 
 impl<'a> DisplayFeature<'a> {
-    pub fn builder() -> DisplayFeatureBuilder<'a> { DisplayFeatureBuilder::default() }
+    pub fn builder(orientation: impl Into<Cow<'a, str>>, offset: i32, maskLength: u64) -> DisplayFeatureBuilder<'a> {
+        DisplayFeatureBuilder {
+            orientation: orientation.into(),
+            offset: offset,
+            maskLength: maskLength,
+        }
+    }
     pub fn orientation(&self) -> &str { self.orientation.as_ref() }
     pub fn offset(&self) -> i32 { self.offset }
     pub fn maskLength(&self) -> u64 { self.maskLength }
 }
 
-#[derive(Default)]
+
 pub struct DisplayFeatureBuilder<'a> {
-    orientation: Option<Cow<'a, str>>,
-    offset: Option<i32>,
-    maskLength: Option<u64>,
+    orientation: Cow<'a, str>,
+    offset: i32,
+    maskLength: u64,
 }
 
 impl<'a> DisplayFeatureBuilder<'a> {
-    /// Orientation of a display feature in relation to screen
-    pub fn orientation(mut self, orientation: impl Into<Cow<'a, str>>) -> Self { self.orientation = Some(orientation.into()); self }
-    /// The offset from the screen origin in either the x (for vertical
-    /// orientation) or y (for horizontal orientation) direction.
-    pub fn offset(mut self, offset: i32) -> Self { self.offset = Some(offset); self }
-    /// A display feature may mask content such that it is not physically
-    /// displayed - this length along with the offset describes this area.
-    /// A display feature that only splits content will have a 0 mask_length.
-    pub fn maskLength(mut self, maskLength: u64) -> Self { self.maskLength = Some(maskLength); self }
     pub fn build(self) -> DisplayFeature<'a> {
         DisplayFeature {
-            orientation: self.orientation.unwrap_or_default(),
-            offset: self.offset.unwrap_or_default(),
-            maskLength: self.maskLength.unwrap_or_default(),
+            orientation: self.orientation,
+            offset: self.offset,
+            maskLength: self.maskLength,
         }
     }
 }
@@ -185,21 +194,23 @@ pub struct DevicePosture<'a> {
 }
 
 impl<'a> DevicePosture<'a> {
-    pub fn builder() -> DevicePostureBuilder<'a> { DevicePostureBuilder::default() }
+    pub fn builder(type_: impl Into<Cow<'a, str>>) -> DevicePostureBuilder<'a> {
+        DevicePostureBuilder {
+            type_: type_.into(),
+        }
+    }
     pub fn type_(&self) -> &str { self.type_.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct DevicePostureBuilder<'a> {
-    type_: Option<Cow<'a, str>>,
+    type_: Cow<'a, str>,
 }
 
 impl<'a> DevicePostureBuilder<'a> {
-    /// Current posture of the device
-    pub fn type_(mut self, type_: impl Into<Cow<'a, str>>) -> Self { self.type_ = Some(type_.into()); self }
     pub fn build(self) -> DevicePosture<'a> {
         DevicePosture {
-            type_: self.type_.unwrap_or_default(),
+            type_: self.type_,
         }
     }
 }
@@ -213,24 +224,27 @@ pub struct MediaFeature<'a> {
 }
 
 impl<'a> MediaFeature<'a> {
-    pub fn builder() -> MediaFeatureBuilder<'a> { MediaFeatureBuilder::default() }
+    pub fn builder(name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> MediaFeatureBuilder<'a> {
+        MediaFeatureBuilder {
+            name: name.into(),
+            value: value.into(),
+        }
+    }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn value(&self) -> &str { self.value.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct MediaFeatureBuilder<'a> {
-    name: Option<Cow<'a, str>>,
-    value: Option<Cow<'a, str>>,
+    name: Cow<'a, str>,
+    value: Cow<'a, str>,
 }
 
 impl<'a> MediaFeatureBuilder<'a> {
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    pub fn value(mut self, value: impl Into<Cow<'a, str>>) -> Self { self.value = Some(value.into()); self }
     pub fn build(self) -> MediaFeature<'a> {
         MediaFeature {
-            name: self.name.unwrap_or_default(),
-            value: self.value.unwrap_or_default(),
+            name: self.name,
+            value: self.value,
         }
     }
 }
@@ -261,24 +275,27 @@ pub struct UserAgentBrandVersion<'a> {
 }
 
 impl<'a> UserAgentBrandVersion<'a> {
-    pub fn builder() -> UserAgentBrandVersionBuilder<'a> { UserAgentBrandVersionBuilder::default() }
+    pub fn builder(brand: impl Into<Cow<'a, str>>, version: impl Into<Cow<'a, str>>) -> UserAgentBrandVersionBuilder<'a> {
+        UserAgentBrandVersionBuilder {
+            brand: brand.into(),
+            version: version.into(),
+        }
+    }
     pub fn brand(&self) -> &str { self.brand.as_ref() }
     pub fn version(&self) -> &str { self.version.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct UserAgentBrandVersionBuilder<'a> {
-    brand: Option<Cow<'a, str>>,
-    version: Option<Cow<'a, str>>,
+    brand: Cow<'a, str>,
+    version: Cow<'a, str>,
 }
 
 impl<'a> UserAgentBrandVersionBuilder<'a> {
-    pub fn brand(mut self, brand: impl Into<Cow<'a, str>>) -> Self { self.brand = Some(brand.into()); self }
-    pub fn version(mut self, version: impl Into<Cow<'a, str>>) -> Self { self.version = Some(version.into()); self }
     pub fn build(self) -> UserAgentBrandVersion<'a> {
         UserAgentBrandVersion {
-            brand: self.brand.unwrap_or_default(),
-            version: self.version.unwrap_or_default(),
+            brand: self.brand,
+            version: self.version,
         }
     }
 }
@@ -313,7 +330,21 @@ pub struct UserAgentMetadata<'a> {
 }
 
 impl<'a> UserAgentMetadata<'a> {
-    pub fn builder() -> UserAgentMetadataBuilder<'a> { UserAgentMetadataBuilder::default() }
+    pub fn builder(platform: impl Into<Cow<'a, str>>, platformVersion: impl Into<Cow<'a, str>>, architecture: impl Into<Cow<'a, str>>, model: impl Into<Cow<'a, str>>, mobile: bool) -> UserAgentMetadataBuilder<'a> {
+        UserAgentMetadataBuilder {
+            brands: None,
+            fullVersionList: None,
+            fullVersion: None,
+            platform: platform.into(),
+            platformVersion: platformVersion.into(),
+            architecture: architecture.into(),
+            model: model.into(),
+            mobile: mobile,
+            bitness: None,
+            wow64: None,
+            formFactors: None,
+        }
+    }
     pub fn brands(&self) -> Option<&[UserAgentBrandVersion<'a>]> { self.brands.as_deref() }
     pub fn fullVersionList(&self) -> Option<&[UserAgentBrandVersion<'a>]> { self.fullVersionList.as_deref() }
     pub fn fullVersion(&self) -> Option<&str> { self.fullVersion.as_deref() }
@@ -327,16 +358,16 @@ impl<'a> UserAgentMetadata<'a> {
     pub fn formFactors(&self) -> Option<&[Cow<'a, str>]> { self.formFactors.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct UserAgentMetadataBuilder<'a> {
     brands: Option<Vec<UserAgentBrandVersion<'a>>>,
     fullVersionList: Option<Vec<UserAgentBrandVersion<'a>>>,
     fullVersion: Option<Cow<'a, str>>,
-    platform: Option<Cow<'a, str>>,
-    platformVersion: Option<Cow<'a, str>>,
-    architecture: Option<Cow<'a, str>>,
-    model: Option<Cow<'a, str>>,
-    mobile: Option<bool>,
+    platform: Cow<'a, str>,
+    platformVersion: Cow<'a, str>,
+    architecture: Cow<'a, str>,
+    model: Cow<'a, str>,
+    mobile: bool,
     bitness: Option<Cow<'a, str>>,
     wow64: Option<bool>,
     formFactors: Option<Vec<Cow<'a, str>>>,
@@ -348,11 +379,6 @@ impl<'a> UserAgentMetadataBuilder<'a> {
     /// Brands appearing in Sec-CH-UA-Full-Version-List.
     pub fn fullVersionList(mut self, fullVersionList: Vec<UserAgentBrandVersion<'a>>) -> Self { self.fullVersionList = Some(fullVersionList); self }
     pub fn fullVersion(mut self, fullVersion: impl Into<Cow<'a, str>>) -> Self { self.fullVersion = Some(fullVersion.into()); self }
-    pub fn platform(mut self, platform: impl Into<Cow<'a, str>>) -> Self { self.platform = Some(platform.into()); self }
-    pub fn platformVersion(mut self, platformVersion: impl Into<Cow<'a, str>>) -> Self { self.platformVersion = Some(platformVersion.into()); self }
-    pub fn architecture(mut self, architecture: impl Into<Cow<'a, str>>) -> Self { self.architecture = Some(architecture.into()); self }
-    pub fn model(mut self, model: impl Into<Cow<'a, str>>) -> Self { self.model = Some(model.into()); self }
-    pub fn mobile(mut self, mobile: bool) -> Self { self.mobile = Some(mobile); self }
     pub fn bitness(mut self, bitness: impl Into<Cow<'a, str>>) -> Self { self.bitness = Some(bitness.into()); self }
     pub fn wow64(mut self, wow64: bool) -> Self { self.wow64 = Some(wow64); self }
     /// Used to specify User Agent form-factor values.
@@ -363,11 +389,11 @@ impl<'a> UserAgentMetadataBuilder<'a> {
             brands: self.brands,
             fullVersionList: self.fullVersionList,
             fullVersion: self.fullVersion,
-            platform: self.platform.unwrap_or_default(),
-            platformVersion: self.platformVersion.unwrap_or_default(),
-            architecture: self.architecture.unwrap_or_default(),
-            model: self.model.unwrap_or_default(),
-            mobile: self.mobile.unwrap_or_default(),
+            platform: self.platform,
+            platformVersion: self.platformVersion,
+            architecture: self.architecture,
+            model: self.model,
+            mobile: self.mobile,
             bitness: self.bitness,
             wow64: self.wow64,
             formFactors: self.formFactors,
@@ -412,7 +438,13 @@ pub struct SensorMetadata {
 }
 
 impl SensorMetadata {
-    pub fn builder() -> SensorMetadataBuilder { SensorMetadataBuilder::default() }
+    pub fn builder() -> SensorMetadataBuilder {
+        SensorMetadataBuilder {
+            available: None,
+            minimumFrequency: None,
+            maximumFrequency: None,
+        }
+    }
     pub fn available(&self) -> Option<bool> { self.available }
     pub fn minimumFrequency(&self) -> Option<f64> { self.minimumFrequency }
     pub fn maximumFrequency(&self) -> Option<f64> { self.maximumFrequency }
@@ -446,20 +478,23 @@ pub struct SensorReadingSingle {
 }
 
 impl SensorReadingSingle {
-    pub fn builder() -> SensorReadingSingleBuilder { SensorReadingSingleBuilder::default() }
+    pub fn builder(value: f64) -> SensorReadingSingleBuilder {
+        SensorReadingSingleBuilder {
+            value: value,
+        }
+    }
     pub fn value(&self) -> f64 { self.value }
 }
 
-#[derive(Default)]
+
 pub struct SensorReadingSingleBuilder {
-    value: Option<f64>,
+    value: f64,
 }
 
 impl SensorReadingSingleBuilder {
-    pub fn value(mut self, value: f64) -> Self { self.value = Some(value); self }
     pub fn build(self) -> SensorReadingSingle {
         SensorReadingSingle {
-            value: self.value.unwrap_or_default(),
+            value: self.value,
         }
     }
 }
@@ -474,28 +509,31 @@ pub struct SensorReadingXYZ {
 }
 
 impl SensorReadingXYZ {
-    pub fn builder() -> SensorReadingXYZBuilder { SensorReadingXYZBuilder::default() }
+    pub fn builder(x: f64, y: f64, z: f64) -> SensorReadingXYZBuilder {
+        SensorReadingXYZBuilder {
+            x: x,
+            y: y,
+            z: z,
+        }
+    }
     pub fn x(&self) -> f64 { self.x }
     pub fn y(&self) -> f64 { self.y }
     pub fn z(&self) -> f64 { self.z }
 }
 
-#[derive(Default)]
+
 pub struct SensorReadingXYZBuilder {
-    x: Option<f64>,
-    y: Option<f64>,
-    z: Option<f64>,
+    x: f64,
+    y: f64,
+    z: f64,
 }
 
 impl SensorReadingXYZBuilder {
-    pub fn x(mut self, x: f64) -> Self { self.x = Some(x); self }
-    pub fn y(mut self, y: f64) -> Self { self.y = Some(y); self }
-    pub fn z(mut self, z: f64) -> Self { self.z = Some(z); self }
     pub fn build(self) -> SensorReadingXYZ {
         SensorReadingXYZ {
-            x: self.x.unwrap_or_default(),
-            y: self.y.unwrap_or_default(),
-            z: self.z.unwrap_or_default(),
+            x: self.x,
+            y: self.y,
+            z: self.z,
         }
     }
 }
@@ -511,32 +549,35 @@ pub struct SensorReadingQuaternion {
 }
 
 impl SensorReadingQuaternion {
-    pub fn builder() -> SensorReadingQuaternionBuilder { SensorReadingQuaternionBuilder::default() }
+    pub fn builder(x: f64, y: f64, z: f64, w: f64) -> SensorReadingQuaternionBuilder {
+        SensorReadingQuaternionBuilder {
+            x: x,
+            y: y,
+            z: z,
+            w: w,
+        }
+    }
     pub fn x(&self) -> f64 { self.x }
     pub fn y(&self) -> f64 { self.y }
     pub fn z(&self) -> f64 { self.z }
     pub fn w(&self) -> f64 { self.w }
 }
 
-#[derive(Default)]
+
 pub struct SensorReadingQuaternionBuilder {
-    x: Option<f64>,
-    y: Option<f64>,
-    z: Option<f64>,
-    w: Option<f64>,
+    x: f64,
+    y: f64,
+    z: f64,
+    w: f64,
 }
 
 impl SensorReadingQuaternionBuilder {
-    pub fn x(mut self, x: f64) -> Self { self.x = Some(x); self }
-    pub fn y(mut self, y: f64) -> Self { self.y = Some(y); self }
-    pub fn z(mut self, z: f64) -> Self { self.z = Some(z); self }
-    pub fn w(mut self, w: f64) -> Self { self.w = Some(w); self }
     pub fn build(self) -> SensorReadingQuaternion {
         SensorReadingQuaternion {
-            x: self.x.unwrap_or_default(),
-            y: self.y.unwrap_or_default(),
-            z: self.z.unwrap_or_default(),
-            w: self.w.unwrap_or_default(),
+            x: self.x,
+            y: self.y,
+            z: self.z,
+            w: self.w,
         }
     }
 }
@@ -554,7 +595,13 @@ pub struct SensorReading {
 }
 
 impl SensorReading {
-    pub fn builder() -> SensorReadingBuilder { SensorReadingBuilder::default() }
+    pub fn builder() -> SensorReadingBuilder {
+        SensorReadingBuilder {
+            single: None,
+            xyz: None,
+            quaternion: None,
+        }
+    }
     pub fn single(&self) -> Option<&SensorReadingSingle> { self.single.as_ref() }
     pub fn xyz(&self) -> Option<&SensorReadingXYZ> { self.xyz.as_ref() }
     pub fn quaternion(&self) -> Option<&SensorReadingQuaternion> { self.quaternion.as_ref() }
@@ -611,7 +658,11 @@ pub struct PressureMetadata {
 }
 
 impl PressureMetadata {
-    pub fn builder() -> PressureMetadataBuilder { PressureMetadataBuilder::default() }
+    pub fn builder() -> PressureMetadataBuilder {
+        PressureMetadataBuilder {
+            available: None,
+        }
+    }
     pub fn available(&self) -> Option<bool> { self.available }
 }
 
@@ -648,7 +699,14 @@ pub struct WorkAreaInsets {
 }
 
 impl WorkAreaInsets {
-    pub fn builder() -> WorkAreaInsetsBuilder { WorkAreaInsetsBuilder::default() }
+    pub fn builder() -> WorkAreaInsetsBuilder {
+        WorkAreaInsetsBuilder {
+            top: None,
+            left: None,
+            bottom: None,
+            right: None,
+        }
+    }
     pub fn top(&self) -> Option<i64> { self.top }
     pub fn left(&self) -> Option<i64> { self.left }
     pub fn bottom(&self) -> Option<i64> { self.bottom }
@@ -726,7 +784,26 @@ pub struct ScreenInfo<'a> {
 }
 
 impl<'a> ScreenInfo<'a> {
-    pub fn builder() -> ScreenInfoBuilder<'a> { ScreenInfoBuilder::default() }
+    pub fn builder(left: i64, top: i64, width: u64, height: i64, availLeft: i64, availTop: i64, availWidth: u64, availHeight: i64, devicePixelRatio: f64, orientation: ScreenOrientation<'a>, colorDepth: i64, isExtended: bool, isInternal: bool, isPrimary: bool, label: impl Into<Cow<'a, str>>, id: ScreenId<'a>) -> ScreenInfoBuilder<'a> {
+        ScreenInfoBuilder {
+            left: left,
+            top: top,
+            width: width,
+            height: height,
+            availLeft: availLeft,
+            availTop: availTop,
+            availWidth: availWidth,
+            availHeight: availHeight,
+            devicePixelRatio: devicePixelRatio,
+            orientation: orientation,
+            colorDepth: colorDepth,
+            isExtended: isExtended,
+            isInternal: isInternal,
+            isPrimary: isPrimary,
+            label: label.into(),
+            id: id,
+        }
+    }
     pub fn left(&self) -> i64 { self.left }
     pub fn top(&self) -> i64 { self.top }
     pub fn width(&self) -> u64 { self.width }
@@ -745,77 +822,45 @@ impl<'a> ScreenInfo<'a> {
     pub fn id(&self) -> &ScreenId<'a> { &self.id }
 }
 
-#[derive(Default)]
+
 pub struct ScreenInfoBuilder<'a> {
-    left: Option<i64>,
-    top: Option<i64>,
-    width: Option<u64>,
-    height: Option<i64>,
-    availLeft: Option<i64>,
-    availTop: Option<i64>,
-    availWidth: Option<u64>,
-    availHeight: Option<i64>,
-    devicePixelRatio: Option<f64>,
-    orientation: Option<ScreenOrientation<'a>>,
-    colorDepth: Option<i64>,
-    isExtended: Option<bool>,
-    isInternal: Option<bool>,
-    isPrimary: Option<bool>,
-    label: Option<Cow<'a, str>>,
-    id: Option<ScreenId<'a>>,
+    left: i64,
+    top: i64,
+    width: u64,
+    height: i64,
+    availLeft: i64,
+    availTop: i64,
+    availWidth: u64,
+    availHeight: i64,
+    devicePixelRatio: f64,
+    orientation: ScreenOrientation<'a>,
+    colorDepth: i64,
+    isExtended: bool,
+    isInternal: bool,
+    isPrimary: bool,
+    label: Cow<'a, str>,
+    id: ScreenId<'a>,
 }
 
 impl<'a> ScreenInfoBuilder<'a> {
-    /// Offset of the left edge of the screen.
-    pub fn left(mut self, left: i64) -> Self { self.left = Some(left); self }
-    /// Offset of the top edge of the screen.
-    pub fn top(mut self, top: i64) -> Self { self.top = Some(top); self }
-    /// Width of the screen.
-    pub fn width(mut self, width: u64) -> Self { self.width = Some(width); self }
-    /// Height of the screen.
-    pub fn height(mut self, height: i64) -> Self { self.height = Some(height); self }
-    /// Offset of the left edge of the available screen area.
-    pub fn availLeft(mut self, availLeft: i64) -> Self { self.availLeft = Some(availLeft); self }
-    /// Offset of the top edge of the available screen area.
-    pub fn availTop(mut self, availTop: i64) -> Self { self.availTop = Some(availTop); self }
-    /// Width of the available screen area.
-    pub fn availWidth(mut self, availWidth: u64) -> Self { self.availWidth = Some(availWidth); self }
-    /// Height of the available screen area.
-    pub fn availHeight(mut self, availHeight: i64) -> Self { self.availHeight = Some(availHeight); self }
-    /// Specifies the screen's device pixel ratio.
-    pub fn devicePixelRatio(mut self, devicePixelRatio: f64) -> Self { self.devicePixelRatio = Some(devicePixelRatio); self }
-    /// Specifies the screen's orientation.
-    pub fn orientation(mut self, orientation: ScreenOrientation<'a>) -> Self { self.orientation = Some(orientation); self }
-    /// Specifies the screen's color depth in bits.
-    pub fn colorDepth(mut self, colorDepth: i64) -> Self { self.colorDepth = Some(colorDepth); self }
-    /// Indicates whether the device has multiple screens.
-    pub fn isExtended(mut self, isExtended: bool) -> Self { self.isExtended = Some(isExtended); self }
-    /// Indicates whether the screen is internal to the device or external, attached to the device.
-    pub fn isInternal(mut self, isInternal: bool) -> Self { self.isInternal = Some(isInternal); self }
-    /// Indicates whether the screen is set as the the operating system primary screen.
-    pub fn isPrimary(mut self, isPrimary: bool) -> Self { self.isPrimary = Some(isPrimary); self }
-    /// Specifies the descriptive label for the screen.
-    pub fn label(mut self, label: impl Into<Cow<'a, str>>) -> Self { self.label = Some(label.into()); self }
-    /// Specifies the unique identifier of the screen.
-    pub fn id(mut self, id: ScreenId<'a>) -> Self { self.id = Some(id); self }
     pub fn build(self) -> ScreenInfo<'a> {
         ScreenInfo {
-            left: self.left.unwrap_or_default(),
-            top: self.top.unwrap_or_default(),
-            width: self.width.unwrap_or_default(),
-            height: self.height.unwrap_or_default(),
-            availLeft: self.availLeft.unwrap_or_default(),
-            availTop: self.availTop.unwrap_or_default(),
-            availWidth: self.availWidth.unwrap_or_default(),
-            availHeight: self.availHeight.unwrap_or_default(),
-            devicePixelRatio: self.devicePixelRatio.unwrap_or_default(),
-            orientation: self.orientation.unwrap_or_default(),
-            colorDepth: self.colorDepth.unwrap_or_default(),
-            isExtended: self.isExtended.unwrap_or_default(),
-            isInternal: self.isInternal.unwrap_or_default(),
-            isPrimary: self.isPrimary.unwrap_or_default(),
-            label: self.label.unwrap_or_default(),
-            id: self.id.unwrap_or_default(),
+            left: self.left,
+            top: self.top,
+            width: self.width,
+            height: self.height,
+            availLeft: self.availLeft,
+            availTop: self.availTop,
+            availWidth: self.availWidth,
+            availHeight: self.availHeight,
+            devicePixelRatio: self.devicePixelRatio,
+            orientation: self.orientation,
+            colorDepth: self.colorDepth,
+            isExtended: self.isExtended,
+            isInternal: self.isInternal,
+            isPrimary: self.isPrimary,
+            label: self.label,
+            id: self.id,
         }
     }
 }
@@ -843,42 +888,29 @@ pub struct CanEmulateReturns {
 }
 
 impl CanEmulateReturns {
-    pub fn builder() -> CanEmulateReturnsBuilder { CanEmulateReturnsBuilder::default() }
+    pub fn builder(result: bool) -> CanEmulateReturnsBuilder {
+        CanEmulateReturnsBuilder {
+            result: result,
+        }
+    }
     pub fn result(&self) -> bool { self.result }
 }
 
-#[derive(Default)]
+
 pub struct CanEmulateReturnsBuilder {
-    result: Option<bool>,
+    result: bool,
 }
 
 impl CanEmulateReturnsBuilder {
-    /// True if emulation is supported.
-    pub fn result(mut self, result: bool) -> Self { self.result = Some(result); self }
     pub fn build(self) -> CanEmulateReturns {
         CanEmulateReturns {
-            result: self.result.unwrap_or_default(),
+            result: self.result,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct CanEmulateParams {}
-
-impl CanEmulateParams {
-    pub fn builder() -> CanEmulateParamsBuilder {
-        CanEmulateParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct CanEmulateParamsBuilder {}
-
-impl CanEmulateParamsBuilder {
-    pub fn build(self) -> CanEmulateParams {
-        CanEmulateParams {}
-    }
-}
 
 impl CanEmulateParams { pub const METHOD: &'static str = "Emulation.canEmulate"; }
 
@@ -890,21 +922,6 @@ impl<'a> crate::CdpCommand<'a> for CanEmulateParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ClearDeviceMetricsOverrideParams {}
 
-impl ClearDeviceMetricsOverrideParams {
-    pub fn builder() -> ClearDeviceMetricsOverrideParamsBuilder {
-        ClearDeviceMetricsOverrideParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct ClearDeviceMetricsOverrideParamsBuilder {}
-
-impl ClearDeviceMetricsOverrideParamsBuilder {
-    pub fn build(self) -> ClearDeviceMetricsOverrideParams {
-        ClearDeviceMetricsOverrideParams {}
-    }
-}
-
 impl ClearDeviceMetricsOverrideParams { pub const METHOD: &'static str = "Emulation.clearDeviceMetricsOverride"; }
 
 impl<'a> crate::CdpCommand<'a> for ClearDeviceMetricsOverrideParams {
@@ -915,21 +932,6 @@ impl<'a> crate::CdpCommand<'a> for ClearDeviceMetricsOverrideParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ClearGeolocationOverrideParams {}
 
-impl ClearGeolocationOverrideParams {
-    pub fn builder() -> ClearGeolocationOverrideParamsBuilder {
-        ClearGeolocationOverrideParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct ClearGeolocationOverrideParamsBuilder {}
-
-impl ClearGeolocationOverrideParamsBuilder {
-    pub fn build(self) -> ClearGeolocationOverrideParams {
-        ClearGeolocationOverrideParams {}
-    }
-}
-
 impl ClearGeolocationOverrideParams { pub const METHOD: &'static str = "Emulation.clearGeolocationOverride"; }
 
 impl<'a> crate::CdpCommand<'a> for ClearGeolocationOverrideParams {
@@ -939,21 +941,6 @@ impl<'a> crate::CdpCommand<'a> for ClearGeolocationOverrideParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ResetPageScaleFactorParams {}
-
-impl ResetPageScaleFactorParams {
-    pub fn builder() -> ResetPageScaleFactorParamsBuilder {
-        ResetPageScaleFactorParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct ResetPageScaleFactorParamsBuilder {}
-
-impl ResetPageScaleFactorParamsBuilder {
-    pub fn build(self) -> ResetPageScaleFactorParams {
-        ResetPageScaleFactorParams {}
-    }
-}
 
 impl ResetPageScaleFactorParams { pub const METHOD: &'static str = "Emulation.resetPageScaleFactor"; }
 
@@ -972,21 +959,23 @@ pub struct SetFocusEmulationEnabledParams {
 }
 
 impl SetFocusEmulationEnabledParams {
-    pub fn builder() -> SetFocusEmulationEnabledParamsBuilder { SetFocusEmulationEnabledParamsBuilder::default() }
+    pub fn builder(enabled: bool) -> SetFocusEmulationEnabledParamsBuilder {
+        SetFocusEmulationEnabledParamsBuilder {
+            enabled: enabled,
+        }
+    }
     pub fn enabled(&self) -> bool { self.enabled }
 }
 
-#[derive(Default)]
+
 pub struct SetFocusEmulationEnabledParamsBuilder {
-    enabled: Option<bool>,
+    enabled: bool,
 }
 
 impl SetFocusEmulationEnabledParamsBuilder {
-    /// Whether to enable to disable focus emulation.
-    pub fn enabled(mut self, enabled: bool) -> Self { self.enabled = Some(enabled); self }
     pub fn build(self) -> SetFocusEmulationEnabledParams {
         SetFocusEmulationEnabledParams {
-            enabled: self.enabled.unwrap_or_default(),
+            enabled: self.enabled,
         }
     }
 }
@@ -1010,7 +999,11 @@ pub struct SetAutoDarkModeOverrideParams {
 }
 
 impl SetAutoDarkModeOverrideParams {
-    pub fn builder() -> SetAutoDarkModeOverrideParamsBuilder { SetAutoDarkModeOverrideParamsBuilder::default() }
+    pub fn builder() -> SetAutoDarkModeOverrideParamsBuilder {
+        SetAutoDarkModeOverrideParamsBuilder {
+            enabled: None,
+        }
+    }
     pub fn enabled(&self) -> Option<bool> { self.enabled }
 }
 
@@ -1047,21 +1040,23 @@ pub struct SetCPUThrottlingRateParams {
 }
 
 impl SetCPUThrottlingRateParams {
-    pub fn builder() -> SetCPUThrottlingRateParamsBuilder { SetCPUThrottlingRateParamsBuilder::default() }
+    pub fn builder(rate: f64) -> SetCPUThrottlingRateParamsBuilder {
+        SetCPUThrottlingRateParamsBuilder {
+            rate: rate,
+        }
+    }
     pub fn rate(&self) -> f64 { self.rate }
 }
 
-#[derive(Default)]
+
 pub struct SetCPUThrottlingRateParamsBuilder {
-    rate: Option<f64>,
+    rate: f64,
 }
 
 impl SetCPUThrottlingRateParamsBuilder {
-    /// Throttling rate as a slowdown factor (1 is no throttle, 2 is 2x slowdown, etc).
-    pub fn rate(mut self, rate: f64) -> Self { self.rate = Some(rate); self }
     pub fn build(self) -> SetCPUThrottlingRateParams {
         SetCPUThrottlingRateParams {
-            rate: self.rate.unwrap_or_default(),
+            rate: self.rate,
         }
     }
 }
@@ -1086,7 +1081,11 @@ pub struct SetDefaultBackgroundColorOverrideParams {
 }
 
 impl SetDefaultBackgroundColorOverrideParams {
-    pub fn builder() -> SetDefaultBackgroundColorOverrideParamsBuilder { SetDefaultBackgroundColorOverrideParamsBuilder::default() }
+    pub fn builder() -> SetDefaultBackgroundColorOverrideParamsBuilder {
+        SetDefaultBackgroundColorOverrideParamsBuilder {
+            color: None,
+        }
+    }
     pub fn color(&self) -> Option<&crate::dom::RGBA> { self.color.as_ref() }
 }
 
@@ -1123,20 +1122,23 @@ pub struct SetSafeAreaInsetsOverrideParams {
 }
 
 impl SetSafeAreaInsetsOverrideParams {
-    pub fn builder() -> SetSafeAreaInsetsOverrideParamsBuilder { SetSafeAreaInsetsOverrideParamsBuilder::default() }
+    pub fn builder(insets: SafeAreaInsets) -> SetSafeAreaInsetsOverrideParamsBuilder {
+        SetSafeAreaInsetsOverrideParamsBuilder {
+            insets: insets,
+        }
+    }
     pub fn insets(&self) -> &SafeAreaInsets { &self.insets }
 }
 
-#[derive(Default)]
+
 pub struct SetSafeAreaInsetsOverrideParamsBuilder {
-    insets: Option<SafeAreaInsets>,
+    insets: SafeAreaInsets,
 }
 
 impl SetSafeAreaInsetsOverrideParamsBuilder {
-    pub fn insets(mut self, insets: SafeAreaInsets) -> Self { self.insets = Some(insets); self }
     pub fn build(self) -> SetSafeAreaInsetsOverrideParams {
         SetSafeAreaInsetsOverrideParams {
-            insets: self.insets.unwrap_or_default(),
+            insets: self.insets,
         }
     }
 }
@@ -1212,7 +1214,26 @@ pub struct SetDeviceMetricsOverrideParams<'a> {
 }
 
 impl<'a> SetDeviceMetricsOverrideParams<'a> {
-    pub fn builder() -> SetDeviceMetricsOverrideParamsBuilder<'a> { SetDeviceMetricsOverrideParamsBuilder::default() }
+    pub fn builder(width: u64, height: i64, deviceScaleFactor: f64, mobile: bool) -> SetDeviceMetricsOverrideParamsBuilder<'a> {
+        SetDeviceMetricsOverrideParamsBuilder {
+            width: width,
+            height: height,
+            deviceScaleFactor: deviceScaleFactor,
+            mobile: mobile,
+            scale: None,
+            screenWidth: None,
+            screenHeight: None,
+            positionX: None,
+            positionY: None,
+            dontSetVisibleSize: None,
+            screenOrientation: None,
+            viewport: None,
+            displayFeature: None,
+            devicePosture: None,
+            scrollbarType: None,
+            screenOrientationLockEmulation: None,
+        }
+    }
     pub fn width(&self) -> u64 { self.width }
     pub fn height(&self) -> i64 { self.height }
     pub fn deviceScaleFactor(&self) -> f64 { self.deviceScaleFactor }
@@ -1231,12 +1252,12 @@ impl<'a> SetDeviceMetricsOverrideParams<'a> {
     pub fn screenOrientationLockEmulation(&self) -> Option<bool> { self.screenOrientationLockEmulation }
 }
 
-#[derive(Default)]
+
 pub struct SetDeviceMetricsOverrideParamsBuilder<'a> {
-    width: Option<u64>,
-    height: Option<i64>,
-    deviceScaleFactor: Option<f64>,
-    mobile: Option<bool>,
+    width: u64,
+    height: i64,
+    deviceScaleFactor: f64,
+    mobile: bool,
     scale: Option<f64>,
     screenWidth: Option<u64>,
     screenHeight: Option<i64>,
@@ -1252,15 +1273,6 @@ pub struct SetDeviceMetricsOverrideParamsBuilder<'a> {
 }
 
 impl<'a> SetDeviceMetricsOverrideParamsBuilder<'a> {
-    /// Overriding width value in pixels (minimum 0, maximum 10000000). 0 disables the override.
-    pub fn width(mut self, width: u64) -> Self { self.width = Some(width); self }
-    /// Overriding height value in pixels (minimum 0, maximum 10000000). 0 disables the override.
-    pub fn height(mut self, height: i64) -> Self { self.height = Some(height); self }
-    /// Overriding device scale factor value. 0 disables the override.
-    pub fn deviceScaleFactor(mut self, deviceScaleFactor: f64) -> Self { self.deviceScaleFactor = Some(deviceScaleFactor); self }
-    /// Whether to emulate mobile device. This includes viewport meta tag, overlay scrollbars, text
-    /// autosizing and more.
-    pub fn mobile(mut self, mobile: bool) -> Self { self.mobile = Some(mobile); self }
     /// Scale to apply to resulting view image.
     pub fn scale(mut self, scale: f64) -> Self { self.scale = Some(scale); self }
     /// Overriding screen width value in pixels (minimum 0, maximum 10000000).
@@ -1296,10 +1308,10 @@ impl<'a> SetDeviceMetricsOverrideParamsBuilder<'a> {
     pub fn screenOrientationLockEmulation(mut self, screenOrientationLockEmulation: bool) -> Self { self.screenOrientationLockEmulation = Some(screenOrientationLockEmulation); self }
     pub fn build(self) -> SetDeviceMetricsOverrideParams<'a> {
         SetDeviceMetricsOverrideParams {
-            width: self.width.unwrap_or_default(),
-            height: self.height.unwrap_or_default(),
-            deviceScaleFactor: self.deviceScaleFactor.unwrap_or_default(),
-            mobile: self.mobile.unwrap_or_default(),
+            width: self.width,
+            height: self.height,
+            deviceScaleFactor: self.deviceScaleFactor,
+            mobile: self.mobile,
             scale: self.scale,
             screenWidth: self.screenWidth,
             screenHeight: self.screenHeight,
@@ -1333,20 +1345,23 @@ pub struct SetDevicePostureOverrideParams<'a> {
 }
 
 impl<'a> SetDevicePostureOverrideParams<'a> {
-    pub fn builder() -> SetDevicePostureOverrideParamsBuilder<'a> { SetDevicePostureOverrideParamsBuilder::default() }
+    pub fn builder(posture: DevicePosture<'a>) -> SetDevicePostureOverrideParamsBuilder<'a> {
+        SetDevicePostureOverrideParamsBuilder {
+            posture: posture,
+        }
+    }
     pub fn posture(&self) -> &DevicePosture<'a> { &self.posture }
 }
 
-#[derive(Default)]
+
 pub struct SetDevicePostureOverrideParamsBuilder<'a> {
-    posture: Option<DevicePosture<'a>>,
+    posture: DevicePosture<'a>,
 }
 
 impl<'a> SetDevicePostureOverrideParamsBuilder<'a> {
-    pub fn posture(mut self, posture: DevicePosture<'a>) -> Self { self.posture = Some(posture); self }
     pub fn build(self) -> SetDevicePostureOverrideParams<'a> {
         SetDevicePostureOverrideParams {
-            posture: self.posture.unwrap_or_default(),
+            posture: self.posture,
         }
     }
 }
@@ -1360,21 +1375,6 @@ impl<'a> crate::CdpCommand<'a> for SetDevicePostureOverrideParams<'a> {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ClearDevicePostureOverrideParams {}
-
-impl ClearDevicePostureOverrideParams {
-    pub fn builder() -> ClearDevicePostureOverrideParamsBuilder {
-        ClearDevicePostureOverrideParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct ClearDevicePostureOverrideParamsBuilder {}
-
-impl ClearDevicePostureOverrideParamsBuilder {
-    pub fn build(self) -> ClearDevicePostureOverrideParams {
-        ClearDevicePostureOverrideParams {}
-    }
-}
 
 impl ClearDevicePostureOverrideParams { pub const METHOD: &'static str = "Emulation.clearDevicePostureOverride"; }
 
@@ -1393,20 +1393,23 @@ pub struct SetDisplayFeaturesOverrideParams<'a> {
 }
 
 impl<'a> SetDisplayFeaturesOverrideParams<'a> {
-    pub fn builder() -> SetDisplayFeaturesOverrideParamsBuilder<'a> { SetDisplayFeaturesOverrideParamsBuilder::default() }
+    pub fn builder(features: Vec<DisplayFeature<'a>>) -> SetDisplayFeaturesOverrideParamsBuilder<'a> {
+        SetDisplayFeaturesOverrideParamsBuilder {
+            features: features,
+        }
+    }
     pub fn features(&self) -> &[DisplayFeature<'a>] { &self.features }
 }
 
-#[derive(Default)]
+
 pub struct SetDisplayFeaturesOverrideParamsBuilder<'a> {
-    features: Option<Vec<DisplayFeature<'a>>>,
+    features: Vec<DisplayFeature<'a>>,
 }
 
 impl<'a> SetDisplayFeaturesOverrideParamsBuilder<'a> {
-    pub fn features(mut self, features: Vec<DisplayFeature<'a>>) -> Self { self.features = Some(features); self }
     pub fn build(self) -> SetDisplayFeaturesOverrideParams<'a> {
         SetDisplayFeaturesOverrideParams {
-            features: self.features.unwrap_or_default(),
+            features: self.features,
         }
     }
 }
@@ -1420,21 +1423,6 @@ impl<'a> crate::CdpCommand<'a> for SetDisplayFeaturesOverrideParams<'a> {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ClearDisplayFeaturesOverrideParams {}
-
-impl ClearDisplayFeaturesOverrideParams {
-    pub fn builder() -> ClearDisplayFeaturesOverrideParamsBuilder {
-        ClearDisplayFeaturesOverrideParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct ClearDisplayFeaturesOverrideParamsBuilder {}
-
-impl ClearDisplayFeaturesOverrideParamsBuilder {
-    pub fn build(self) -> ClearDisplayFeaturesOverrideParams {
-        ClearDisplayFeaturesOverrideParams {}
-    }
-}
 
 impl ClearDisplayFeaturesOverrideParams { pub const METHOD: &'static str = "Emulation.clearDisplayFeaturesOverride"; }
 
@@ -1452,21 +1440,23 @@ pub struct SetScrollbarsHiddenParams {
 }
 
 impl SetScrollbarsHiddenParams {
-    pub fn builder() -> SetScrollbarsHiddenParamsBuilder { SetScrollbarsHiddenParamsBuilder::default() }
+    pub fn builder(hidden: bool) -> SetScrollbarsHiddenParamsBuilder {
+        SetScrollbarsHiddenParamsBuilder {
+            hidden: hidden,
+        }
+    }
     pub fn hidden(&self) -> bool { self.hidden }
 }
 
-#[derive(Default)]
+
 pub struct SetScrollbarsHiddenParamsBuilder {
-    hidden: Option<bool>,
+    hidden: bool,
 }
 
 impl SetScrollbarsHiddenParamsBuilder {
-    /// Whether scrollbars should be always hidden.
-    pub fn hidden(mut self, hidden: bool) -> Self { self.hidden = Some(hidden); self }
     pub fn build(self) -> SetScrollbarsHiddenParams {
         SetScrollbarsHiddenParams {
-            hidden: self.hidden.unwrap_or_default(),
+            hidden: self.hidden,
         }
     }
 }
@@ -1487,21 +1477,23 @@ pub struct SetDocumentCookieDisabledParams {
 }
 
 impl SetDocumentCookieDisabledParams {
-    pub fn builder() -> SetDocumentCookieDisabledParamsBuilder { SetDocumentCookieDisabledParamsBuilder::default() }
+    pub fn builder(disabled: bool) -> SetDocumentCookieDisabledParamsBuilder {
+        SetDocumentCookieDisabledParamsBuilder {
+            disabled: disabled,
+        }
+    }
     pub fn disabled(&self) -> bool { self.disabled }
 }
 
-#[derive(Default)]
+
 pub struct SetDocumentCookieDisabledParamsBuilder {
-    disabled: Option<bool>,
+    disabled: bool,
 }
 
 impl SetDocumentCookieDisabledParamsBuilder {
-    /// Whether document.coookie API should be disabled.
-    pub fn disabled(mut self, disabled: bool) -> Self { self.disabled = Some(disabled); self }
     pub fn build(self) -> SetDocumentCookieDisabledParams {
         SetDocumentCookieDisabledParams {
-            disabled: self.disabled.unwrap_or_default(),
+            disabled: self.disabled,
         }
     }
 }
@@ -1525,25 +1517,28 @@ pub struct SetEmitTouchEventsForMouseParams<'a> {
 }
 
 impl<'a> SetEmitTouchEventsForMouseParams<'a> {
-    pub fn builder() -> SetEmitTouchEventsForMouseParamsBuilder<'a> { SetEmitTouchEventsForMouseParamsBuilder::default() }
+    pub fn builder(enabled: bool) -> SetEmitTouchEventsForMouseParamsBuilder<'a> {
+        SetEmitTouchEventsForMouseParamsBuilder {
+            enabled: enabled,
+            configuration: None,
+        }
+    }
     pub fn enabled(&self) -> bool { self.enabled }
     pub fn configuration(&self) -> Option<&str> { self.configuration.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct SetEmitTouchEventsForMouseParamsBuilder<'a> {
-    enabled: Option<bool>,
+    enabled: bool,
     configuration: Option<Cow<'a, str>>,
 }
 
 impl<'a> SetEmitTouchEventsForMouseParamsBuilder<'a> {
-    /// Whether touch emulation based on mouse input should be enabled.
-    pub fn enabled(mut self, enabled: bool) -> Self { self.enabled = Some(enabled); self }
     /// Touch/gesture events configuration. Default: current platform.
     pub fn configuration(mut self, configuration: impl Into<Cow<'a, str>>) -> Self { self.configuration = Some(configuration.into()); self }
     pub fn build(self) -> SetEmitTouchEventsForMouseParams<'a> {
         SetEmitTouchEventsForMouseParams {
-            enabled: self.enabled.unwrap_or_default(),
+            enabled: self.enabled,
             configuration: self.configuration,
         }
     }
@@ -1570,7 +1565,12 @@ pub struct SetEmulatedMediaParams<'a> {
 }
 
 impl<'a> SetEmulatedMediaParams<'a> {
-    pub fn builder() -> SetEmulatedMediaParamsBuilder<'a> { SetEmulatedMediaParamsBuilder::default() }
+    pub fn builder() -> SetEmulatedMediaParamsBuilder<'a> {
+        SetEmulatedMediaParamsBuilder {
+            media: None,
+            features: None,
+        }
+    }
     pub fn media(&self) -> Option<&str> { self.media.as_deref() }
     pub fn features(&self) -> Option<&[MediaFeature<'a>]> { self.features.as_deref() }
 }
@@ -1613,22 +1613,23 @@ pub struct SetEmulatedVisionDeficiencyParams<'a> {
 }
 
 impl<'a> SetEmulatedVisionDeficiencyParams<'a> {
-    pub fn builder() -> SetEmulatedVisionDeficiencyParamsBuilder<'a> { SetEmulatedVisionDeficiencyParamsBuilder::default() }
+    pub fn builder(type_: impl Into<Cow<'a, str>>) -> SetEmulatedVisionDeficiencyParamsBuilder<'a> {
+        SetEmulatedVisionDeficiencyParamsBuilder {
+            type_: type_.into(),
+        }
+    }
     pub fn type_(&self) -> &str { self.type_.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetEmulatedVisionDeficiencyParamsBuilder<'a> {
-    type_: Option<Cow<'a, str>>,
+    type_: Cow<'a, str>,
 }
 
 impl<'a> SetEmulatedVisionDeficiencyParamsBuilder<'a> {
-    /// Vision deficiency to emulate. Order: best-effort emulations come first, followed by any
-    /// physiologically accurate emulations for medically recognized color vision deficiencies.
-    pub fn type_(mut self, type_: impl Into<Cow<'a, str>>) -> Self { self.type_ = Some(type_.into()); self }
     pub fn build(self) -> SetEmulatedVisionDeficiencyParams<'a> {
         SetEmulatedVisionDeficiencyParams {
-            type_: self.type_.unwrap_or_default(),
+            type_: self.type_,
         }
     }
 }
@@ -1650,7 +1651,11 @@ pub struct SetEmulatedOSTextScaleParams {
 }
 
 impl SetEmulatedOSTextScaleParams {
-    pub fn builder() -> SetEmulatedOSTextScaleParamsBuilder { SetEmulatedOSTextScaleParamsBuilder::default() }
+    pub fn builder() -> SetEmulatedOSTextScaleParamsBuilder {
+        SetEmulatedOSTextScaleParamsBuilder {
+            scale: None,
+        }
+    }
     pub fn scale(&self) -> Option<f64> { self.scale }
 }
 
@@ -1705,7 +1710,17 @@ pub struct SetGeolocationOverrideParams {
 }
 
 impl SetGeolocationOverrideParams {
-    pub fn builder() -> SetGeolocationOverrideParamsBuilder { SetGeolocationOverrideParamsBuilder::default() }
+    pub fn builder() -> SetGeolocationOverrideParamsBuilder {
+        SetGeolocationOverrideParamsBuilder {
+            latitude: None,
+            longitude: None,
+            accuracy: None,
+            altitude: None,
+            altitudeAccuracy: None,
+            heading: None,
+            speed: None,
+        }
+    }
     pub fn latitude(&self) -> Option<f64> { self.latitude }
     pub fn longitude(&self) -> Option<f64> { self.longitude }
     pub fn accuracy(&self) -> Option<f64> { self.accuracy }
@@ -1770,20 +1785,23 @@ pub struct GetOverriddenSensorInformationParams {
 }
 
 impl GetOverriddenSensorInformationParams {
-    pub fn builder() -> GetOverriddenSensorInformationParamsBuilder { GetOverriddenSensorInformationParamsBuilder::default() }
+    pub fn builder(type_: SensorType) -> GetOverriddenSensorInformationParamsBuilder {
+        GetOverriddenSensorInformationParamsBuilder {
+            type_: type_,
+        }
+    }
     pub fn type_(&self) -> &SensorType { &self.type_ }
 }
 
-#[derive(Default)]
+
 pub struct GetOverriddenSensorInformationParamsBuilder {
-    type_: Option<SensorType>,
+    type_: SensorType,
 }
 
 impl GetOverriddenSensorInformationParamsBuilder {
-    pub fn type_(mut self, type_: SensorType) -> Self { self.type_ = Some(type_); self }
     pub fn build(self) -> GetOverriddenSensorInformationParams {
         GetOverriddenSensorInformationParams {
-            type_: self.type_.unwrap_or_default(),
+            type_: self.type_,
         }
     }
 }
@@ -1796,20 +1814,23 @@ pub struct GetOverriddenSensorInformationReturns {
 }
 
 impl GetOverriddenSensorInformationReturns {
-    pub fn builder() -> GetOverriddenSensorInformationReturnsBuilder { GetOverriddenSensorInformationReturnsBuilder::default() }
+    pub fn builder(requestedSamplingFrequency: f64) -> GetOverriddenSensorInformationReturnsBuilder {
+        GetOverriddenSensorInformationReturnsBuilder {
+            requestedSamplingFrequency: requestedSamplingFrequency,
+        }
+    }
     pub fn requestedSamplingFrequency(&self) -> f64 { self.requestedSamplingFrequency }
 }
 
-#[derive(Default)]
+
 pub struct GetOverriddenSensorInformationReturnsBuilder {
-    requestedSamplingFrequency: Option<f64>,
+    requestedSamplingFrequency: f64,
 }
 
 impl GetOverriddenSensorInformationReturnsBuilder {
-    pub fn requestedSamplingFrequency(mut self, requestedSamplingFrequency: f64) -> Self { self.requestedSamplingFrequency = Some(requestedSamplingFrequency); self }
     pub fn build(self) -> GetOverriddenSensorInformationReturns {
         GetOverriddenSensorInformationReturns {
-            requestedSamplingFrequency: self.requestedSamplingFrequency.unwrap_or_default(),
+            requestedSamplingFrequency: self.requestedSamplingFrequency,
         }
     }
 }
@@ -1838,27 +1859,31 @@ pub struct SetSensorOverrideEnabledParams {
 }
 
 impl SetSensorOverrideEnabledParams {
-    pub fn builder() -> SetSensorOverrideEnabledParamsBuilder { SetSensorOverrideEnabledParamsBuilder::default() }
+    pub fn builder(enabled: bool, type_: SensorType) -> SetSensorOverrideEnabledParamsBuilder {
+        SetSensorOverrideEnabledParamsBuilder {
+            enabled: enabled,
+            type_: type_,
+            metadata: None,
+        }
+    }
     pub fn enabled(&self) -> bool { self.enabled }
     pub fn type_(&self) -> &SensorType { &self.type_ }
     pub fn metadata(&self) -> Option<&SensorMetadata> { self.metadata.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetSensorOverrideEnabledParamsBuilder {
-    enabled: Option<bool>,
-    type_: Option<SensorType>,
+    enabled: bool,
+    type_: SensorType,
     metadata: Option<SensorMetadata>,
 }
 
 impl SetSensorOverrideEnabledParamsBuilder {
-    pub fn enabled(mut self, enabled: bool) -> Self { self.enabled = Some(enabled); self }
-    pub fn type_(mut self, type_: SensorType) -> Self { self.type_ = Some(type_); self }
     pub fn metadata(mut self, metadata: SensorMetadata) -> Self { self.metadata = Some(metadata); self }
     pub fn build(self) -> SetSensorOverrideEnabledParams {
         SetSensorOverrideEnabledParams {
-            enabled: self.enabled.unwrap_or_default(),
-            type_: self.type_.unwrap_or_default(),
+            enabled: self.enabled,
+            type_: self.type_,
             metadata: self.metadata,
         }
     }
@@ -1883,24 +1908,27 @@ pub struct SetSensorOverrideReadingsParams {
 }
 
 impl SetSensorOverrideReadingsParams {
-    pub fn builder() -> SetSensorOverrideReadingsParamsBuilder { SetSensorOverrideReadingsParamsBuilder::default() }
+    pub fn builder(type_: SensorType, reading: SensorReading) -> SetSensorOverrideReadingsParamsBuilder {
+        SetSensorOverrideReadingsParamsBuilder {
+            type_: type_,
+            reading: reading,
+        }
+    }
     pub fn type_(&self) -> &SensorType { &self.type_ }
     pub fn reading(&self) -> &SensorReading { &self.reading }
 }
 
-#[derive(Default)]
+
 pub struct SetSensorOverrideReadingsParamsBuilder {
-    type_: Option<SensorType>,
-    reading: Option<SensorReading>,
+    type_: SensorType,
+    reading: SensorReading,
 }
 
 impl SetSensorOverrideReadingsParamsBuilder {
-    pub fn type_(mut self, type_: SensorType) -> Self { self.type_ = Some(type_); self }
-    pub fn reading(mut self, reading: SensorReading) -> Self { self.reading = Some(reading); self }
     pub fn build(self) -> SetSensorOverrideReadingsParams {
         SetSensorOverrideReadingsParams {
-            type_: self.type_.unwrap_or_default(),
-            reading: self.reading.unwrap_or_default(),
+            type_: self.type_,
+            reading: self.reading,
         }
     }
 }
@@ -1927,27 +1955,31 @@ pub struct SetPressureSourceOverrideEnabledParams {
 }
 
 impl SetPressureSourceOverrideEnabledParams {
-    pub fn builder() -> SetPressureSourceOverrideEnabledParamsBuilder { SetPressureSourceOverrideEnabledParamsBuilder::default() }
+    pub fn builder(enabled: bool, source: PressureSource) -> SetPressureSourceOverrideEnabledParamsBuilder {
+        SetPressureSourceOverrideEnabledParamsBuilder {
+            enabled: enabled,
+            source: source,
+            metadata: None,
+        }
+    }
     pub fn enabled(&self) -> bool { self.enabled }
     pub fn source(&self) -> &PressureSource { &self.source }
     pub fn metadata(&self) -> Option<&PressureMetadata> { self.metadata.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetPressureSourceOverrideEnabledParamsBuilder {
-    enabled: Option<bool>,
-    source: Option<PressureSource>,
+    enabled: bool,
+    source: PressureSource,
     metadata: Option<PressureMetadata>,
 }
 
 impl SetPressureSourceOverrideEnabledParamsBuilder {
-    pub fn enabled(mut self, enabled: bool) -> Self { self.enabled = Some(enabled); self }
-    pub fn source(mut self, source: PressureSource) -> Self { self.source = Some(source); self }
     pub fn metadata(mut self, metadata: PressureMetadata) -> Self { self.metadata = Some(metadata); self }
     pub fn build(self) -> SetPressureSourceOverrideEnabledParams {
         SetPressureSourceOverrideEnabledParams {
-            enabled: self.enabled.unwrap_or_default(),
-            source: self.source.unwrap_or_default(),
+            enabled: self.enabled,
+            source: self.source,
             metadata: self.metadata,
         }
     }
@@ -1973,24 +2005,27 @@ pub struct SetPressureStateOverrideParams {
 }
 
 impl SetPressureStateOverrideParams {
-    pub fn builder() -> SetPressureStateOverrideParamsBuilder { SetPressureStateOverrideParamsBuilder::default() }
+    pub fn builder(source: PressureSource, state: PressureState) -> SetPressureStateOverrideParamsBuilder {
+        SetPressureStateOverrideParamsBuilder {
+            source: source,
+            state: state,
+        }
+    }
     pub fn source(&self) -> &PressureSource { &self.source }
     pub fn state(&self) -> &PressureState { &self.state }
 }
 
-#[derive(Default)]
+
 pub struct SetPressureStateOverrideParamsBuilder {
-    source: Option<PressureSource>,
-    state: Option<PressureState>,
+    source: PressureSource,
+    state: PressureState,
 }
 
 impl SetPressureStateOverrideParamsBuilder {
-    pub fn source(mut self, source: PressureSource) -> Self { self.source = Some(source); self }
-    pub fn state(mut self, state: PressureState) -> Self { self.state = Some(state); self }
     pub fn build(self) -> SetPressureStateOverrideParams {
         SetPressureStateOverrideParams {
-            source: self.source.unwrap_or_default(),
-            state: self.state.unwrap_or_default(),
+            source: self.source,
+            state: self.state,
         }
     }
 }
@@ -2016,27 +2051,31 @@ pub struct SetPressureDataOverrideParams {
 }
 
 impl SetPressureDataOverrideParams {
-    pub fn builder() -> SetPressureDataOverrideParamsBuilder { SetPressureDataOverrideParamsBuilder::default() }
+    pub fn builder(source: PressureSource, state: PressureState) -> SetPressureDataOverrideParamsBuilder {
+        SetPressureDataOverrideParamsBuilder {
+            source: source,
+            state: state,
+            ownContributionEstimate: None,
+        }
+    }
     pub fn source(&self) -> &PressureSource { &self.source }
     pub fn state(&self) -> &PressureState { &self.state }
     pub fn ownContributionEstimate(&self) -> Option<f64> { self.ownContributionEstimate }
 }
 
-#[derive(Default)]
+
 pub struct SetPressureDataOverrideParamsBuilder {
-    source: Option<PressureSource>,
-    state: Option<PressureState>,
+    source: PressureSource,
+    state: PressureState,
     ownContributionEstimate: Option<f64>,
 }
 
 impl SetPressureDataOverrideParamsBuilder {
-    pub fn source(mut self, source: PressureSource) -> Self { self.source = Some(source); self }
-    pub fn state(mut self, state: PressureState) -> Self { self.state = Some(state); self }
     pub fn ownContributionEstimate(mut self, ownContributionEstimate: f64) -> Self { self.ownContributionEstimate = Some(ownContributionEstimate); self }
     pub fn build(self) -> SetPressureDataOverrideParams {
         SetPressureDataOverrideParams {
-            source: self.source.unwrap_or_default(),
-            state: self.state.unwrap_or_default(),
+            source: self.source,
+            state: self.state,
             ownContributionEstimate: self.ownContributionEstimate,
         }
     }
@@ -2061,26 +2100,27 @@ pub struct SetIdleOverrideParams {
 }
 
 impl SetIdleOverrideParams {
-    pub fn builder() -> SetIdleOverrideParamsBuilder { SetIdleOverrideParamsBuilder::default() }
+    pub fn builder(isUserActive: bool, isScreenUnlocked: bool) -> SetIdleOverrideParamsBuilder {
+        SetIdleOverrideParamsBuilder {
+            isUserActive: isUserActive,
+            isScreenUnlocked: isScreenUnlocked,
+        }
+    }
     pub fn isUserActive(&self) -> bool { self.isUserActive }
     pub fn isScreenUnlocked(&self) -> bool { self.isScreenUnlocked }
 }
 
-#[derive(Default)]
+
 pub struct SetIdleOverrideParamsBuilder {
-    isUserActive: Option<bool>,
-    isScreenUnlocked: Option<bool>,
+    isUserActive: bool,
+    isScreenUnlocked: bool,
 }
 
 impl SetIdleOverrideParamsBuilder {
-    /// Mock isUserActive
-    pub fn isUserActive(mut self, isUserActive: bool) -> Self { self.isUserActive = Some(isUserActive); self }
-    /// Mock isScreenUnlocked
-    pub fn isScreenUnlocked(mut self, isScreenUnlocked: bool) -> Self { self.isScreenUnlocked = Some(isScreenUnlocked); self }
     pub fn build(self) -> SetIdleOverrideParams {
         SetIdleOverrideParams {
-            isUserActive: self.isUserActive.unwrap_or_default(),
-            isScreenUnlocked: self.isScreenUnlocked.unwrap_or_default(),
+            isUserActive: self.isUserActive,
+            isScreenUnlocked: self.isScreenUnlocked,
         }
     }
 }
@@ -2094,21 +2134,6 @@ impl<'a> crate::CdpCommand<'a> for SetIdleOverrideParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ClearIdleOverrideParams {}
-
-impl ClearIdleOverrideParams {
-    pub fn builder() -> ClearIdleOverrideParamsBuilder {
-        ClearIdleOverrideParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct ClearIdleOverrideParamsBuilder {}
-
-impl ClearIdleOverrideParamsBuilder {
-    pub fn build(self) -> ClearIdleOverrideParams {
-        ClearIdleOverrideParams {}
-    }
-}
 
 impl ClearIdleOverrideParams { pub const METHOD: &'static str = "Emulation.clearIdleOverride"; }
 
@@ -2127,21 +2152,23 @@ pub struct SetNavigatorOverridesParams<'a> {
 }
 
 impl<'a> SetNavigatorOverridesParams<'a> {
-    pub fn builder() -> SetNavigatorOverridesParamsBuilder<'a> { SetNavigatorOverridesParamsBuilder::default() }
+    pub fn builder(platform: impl Into<Cow<'a, str>>) -> SetNavigatorOverridesParamsBuilder<'a> {
+        SetNavigatorOverridesParamsBuilder {
+            platform: platform.into(),
+        }
+    }
     pub fn platform(&self) -> &str { self.platform.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetNavigatorOverridesParamsBuilder<'a> {
-    platform: Option<Cow<'a, str>>,
+    platform: Cow<'a, str>,
 }
 
 impl<'a> SetNavigatorOverridesParamsBuilder<'a> {
-    /// The platform navigator.platform should return.
-    pub fn platform(mut self, platform: impl Into<Cow<'a, str>>) -> Self { self.platform = Some(platform.into()); self }
     pub fn build(self) -> SetNavigatorOverridesParams<'a> {
         SetNavigatorOverridesParams {
-            platform: self.platform.unwrap_or_default(),
+            platform: self.platform,
         }
     }
 }
@@ -2163,21 +2190,23 @@ pub struct SetPageScaleFactorParams {
 }
 
 impl SetPageScaleFactorParams {
-    pub fn builder() -> SetPageScaleFactorParamsBuilder { SetPageScaleFactorParamsBuilder::default() }
+    pub fn builder(pageScaleFactor: f64) -> SetPageScaleFactorParamsBuilder {
+        SetPageScaleFactorParamsBuilder {
+            pageScaleFactor: pageScaleFactor,
+        }
+    }
     pub fn pageScaleFactor(&self) -> f64 { self.pageScaleFactor }
 }
 
-#[derive(Default)]
+
 pub struct SetPageScaleFactorParamsBuilder {
-    pageScaleFactor: Option<f64>,
+    pageScaleFactor: f64,
 }
 
 impl SetPageScaleFactorParamsBuilder {
-    /// Page scale factor.
-    pub fn pageScaleFactor(mut self, pageScaleFactor: f64) -> Self { self.pageScaleFactor = Some(pageScaleFactor); self }
     pub fn build(self) -> SetPageScaleFactorParams {
         SetPageScaleFactorParams {
-            pageScaleFactor: self.pageScaleFactor.unwrap_or_default(),
+            pageScaleFactor: self.pageScaleFactor,
         }
     }
 }
@@ -2199,21 +2228,23 @@ pub struct SetScriptExecutionDisabledParams {
 }
 
 impl SetScriptExecutionDisabledParams {
-    pub fn builder() -> SetScriptExecutionDisabledParamsBuilder { SetScriptExecutionDisabledParamsBuilder::default() }
+    pub fn builder(value: bool) -> SetScriptExecutionDisabledParamsBuilder {
+        SetScriptExecutionDisabledParamsBuilder {
+            value: value,
+        }
+    }
     pub fn value(&self) -> bool { self.value }
 }
 
-#[derive(Default)]
+
 pub struct SetScriptExecutionDisabledParamsBuilder {
-    value: Option<bool>,
+    value: bool,
 }
 
 impl SetScriptExecutionDisabledParamsBuilder {
-    /// Whether script execution should be disabled in the page.
-    pub fn value(mut self, value: bool) -> Self { self.value = Some(value); self }
     pub fn build(self) -> SetScriptExecutionDisabledParams {
         SetScriptExecutionDisabledParams {
-            value: self.value.unwrap_or_default(),
+            value: self.value,
         }
     }
 }
@@ -2238,25 +2269,28 @@ pub struct SetTouchEmulationEnabledParams {
 }
 
 impl SetTouchEmulationEnabledParams {
-    pub fn builder() -> SetTouchEmulationEnabledParamsBuilder { SetTouchEmulationEnabledParamsBuilder::default() }
+    pub fn builder(enabled: bool) -> SetTouchEmulationEnabledParamsBuilder {
+        SetTouchEmulationEnabledParamsBuilder {
+            enabled: enabled,
+            maxTouchPoints: None,
+        }
+    }
     pub fn enabled(&self) -> bool { self.enabled }
     pub fn maxTouchPoints(&self) -> Option<i64> { self.maxTouchPoints }
 }
 
-#[derive(Default)]
+
 pub struct SetTouchEmulationEnabledParamsBuilder {
-    enabled: Option<bool>,
+    enabled: bool,
     maxTouchPoints: Option<i64>,
 }
 
 impl SetTouchEmulationEnabledParamsBuilder {
-    /// Whether the touch event emulation should be enabled.
-    pub fn enabled(mut self, enabled: bool) -> Self { self.enabled = Some(enabled); self }
     /// Maximum touch points supported. Defaults to one.
     pub fn maxTouchPoints(mut self, maxTouchPoints: i64) -> Self { self.maxTouchPoints = Some(maxTouchPoints); self }
     pub fn build(self) -> SetTouchEmulationEnabledParams {
         SetTouchEmulationEnabledParams {
-            enabled: self.enabled.unwrap_or_default(),
+            enabled: self.enabled,
             maxTouchPoints: self.maxTouchPoints,
         }
     }
@@ -2290,23 +2324,29 @@ pub struct SetVirtualTimePolicyParams {
 }
 
 impl SetVirtualTimePolicyParams {
-    pub fn builder() -> SetVirtualTimePolicyParamsBuilder { SetVirtualTimePolicyParamsBuilder::default() }
+    pub fn builder(policy: VirtualTimePolicy) -> SetVirtualTimePolicyParamsBuilder {
+        SetVirtualTimePolicyParamsBuilder {
+            policy: policy,
+            budget: None,
+            maxVirtualTimeTaskStarvationCount: None,
+            initialVirtualTime: None,
+        }
+    }
     pub fn policy(&self) -> &VirtualTimePolicy { &self.policy }
     pub fn budget(&self) -> Option<f64> { self.budget }
     pub fn maxVirtualTimeTaskStarvationCount(&self) -> Option<u64> { self.maxVirtualTimeTaskStarvationCount }
     pub fn initialVirtualTime(&self) -> Option<&crate::network::TimeSinceEpoch> { self.initialVirtualTime.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetVirtualTimePolicyParamsBuilder {
-    policy: Option<VirtualTimePolicy>,
+    policy: VirtualTimePolicy,
     budget: Option<f64>,
     maxVirtualTimeTaskStarvationCount: Option<u64>,
     initialVirtualTime: Option<crate::network::TimeSinceEpoch>,
 }
 
 impl SetVirtualTimePolicyParamsBuilder {
-    pub fn policy(mut self, policy: VirtualTimePolicy) -> Self { self.policy = Some(policy); self }
     /// If set, after this many virtual milliseconds have elapsed virtual time will be paused and a
     /// virtualTimeBudgetExpired event is sent.
     pub fn budget(mut self, budget: f64) -> Self { self.budget = Some(budget); self }
@@ -2317,7 +2357,7 @@ impl SetVirtualTimePolicyParamsBuilder {
     pub fn initialVirtualTime(mut self, initialVirtualTime: crate::network::TimeSinceEpoch) -> Self { self.initialVirtualTime = Some(initialVirtualTime); self }
     pub fn build(self) -> SetVirtualTimePolicyParams {
         SetVirtualTimePolicyParams {
-            policy: self.policy.unwrap_or_default(),
+            policy: self.policy,
             budget: self.budget,
             maxVirtualTimeTaskStarvationCount: self.maxVirtualTimeTaskStarvationCount,
             initialVirtualTime: self.initialVirtualTime,
@@ -2336,21 +2376,23 @@ pub struct SetVirtualTimePolicyReturns {
 }
 
 impl SetVirtualTimePolicyReturns {
-    pub fn builder() -> SetVirtualTimePolicyReturnsBuilder { SetVirtualTimePolicyReturnsBuilder::default() }
+    pub fn builder(virtualTimeTicksBase: f64) -> SetVirtualTimePolicyReturnsBuilder {
+        SetVirtualTimePolicyReturnsBuilder {
+            virtualTimeTicksBase: virtualTimeTicksBase,
+        }
+    }
     pub fn virtualTimeTicksBase(&self) -> f64 { self.virtualTimeTicksBase }
 }
 
-#[derive(Default)]
+
 pub struct SetVirtualTimePolicyReturnsBuilder {
-    virtualTimeTicksBase: Option<f64>,
+    virtualTimeTicksBase: f64,
 }
 
 impl SetVirtualTimePolicyReturnsBuilder {
-    /// Absolute timestamp at which virtual time was first enabled (up time in milliseconds).
-    pub fn virtualTimeTicksBase(mut self, virtualTimeTicksBase: f64) -> Self { self.virtualTimeTicksBase = Some(virtualTimeTicksBase); self }
     pub fn build(self) -> SetVirtualTimePolicyReturns {
         SetVirtualTimePolicyReturns {
-            virtualTimeTicksBase: self.virtualTimeTicksBase.unwrap_or_default(),
+            virtualTimeTicksBase: self.virtualTimeTicksBase,
         }
     }
 }
@@ -2374,7 +2416,11 @@ pub struct SetLocaleOverrideParams<'a> {
 }
 
 impl<'a> SetLocaleOverrideParams<'a> {
-    pub fn builder() -> SetLocaleOverrideParamsBuilder<'a> { SetLocaleOverrideParamsBuilder::default() }
+    pub fn builder() -> SetLocaleOverrideParamsBuilder<'a> {
+        SetLocaleOverrideParamsBuilder {
+            locale: None,
+        }
+    }
     pub fn locale(&self) -> Option<&str> { self.locale.as_deref() }
 }
 
@@ -2413,23 +2459,23 @@ pub struct SetTimezoneOverrideParams<'a> {
 }
 
 impl<'a> SetTimezoneOverrideParams<'a> {
-    pub fn builder() -> SetTimezoneOverrideParamsBuilder<'a> { SetTimezoneOverrideParamsBuilder::default() }
+    pub fn builder(timezoneId: impl Into<Cow<'a, str>>) -> SetTimezoneOverrideParamsBuilder<'a> {
+        SetTimezoneOverrideParamsBuilder {
+            timezoneId: timezoneId.into(),
+        }
+    }
     pub fn timezoneId(&self) -> &str { self.timezoneId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetTimezoneOverrideParamsBuilder<'a> {
-    timezoneId: Option<Cow<'a, str>>,
+    timezoneId: Cow<'a, str>,
 }
 
 impl<'a> SetTimezoneOverrideParamsBuilder<'a> {
-    /// The timezone identifier. List of supported timezones:
-    /// https://source.chromium.org/chromium/chromium/deps/icu.git/+/faee8bc70570192d82d2978a71e2a615788597d1:source/data/misc/metaZones.txt
-    /// If empty, disables the override and restores default host system timezone.
-    pub fn timezoneId(mut self, timezoneId: impl Into<Cow<'a, str>>) -> Self { self.timezoneId = Some(timezoneId.into()); self }
     pub fn build(self) -> SetTimezoneOverrideParams<'a> {
         SetTimezoneOverrideParams {
-            timezoneId: self.timezoneId.unwrap_or_default(),
+            timezoneId: self.timezoneId,
         }
     }
 }
@@ -2455,26 +2501,27 @@ pub struct SetVisibleSizeParams {
 }
 
 impl SetVisibleSizeParams {
-    pub fn builder() -> SetVisibleSizeParamsBuilder { SetVisibleSizeParamsBuilder::default() }
+    pub fn builder(width: u64, height: i64) -> SetVisibleSizeParamsBuilder {
+        SetVisibleSizeParamsBuilder {
+            width: width,
+            height: height,
+        }
+    }
     pub fn width(&self) -> u64 { self.width }
     pub fn height(&self) -> i64 { self.height }
 }
 
-#[derive(Default)]
+
 pub struct SetVisibleSizeParamsBuilder {
-    width: Option<u64>,
-    height: Option<i64>,
+    width: u64,
+    height: i64,
 }
 
 impl SetVisibleSizeParamsBuilder {
-    /// Frame width (DIP).
-    pub fn width(mut self, width: u64) -> Self { self.width = Some(width); self }
-    /// Frame height (DIP).
-    pub fn height(mut self, height: i64) -> Self { self.height = Some(height); self }
     pub fn build(self) -> SetVisibleSizeParams {
         SetVisibleSizeParams {
-            width: self.width.unwrap_or_default(),
-            height: self.height.unwrap_or_default(),
+            width: self.width,
+            height: self.height,
         }
     }
 }
@@ -2495,21 +2542,23 @@ pub struct SetDisabledImageTypesParams {
 }
 
 impl SetDisabledImageTypesParams {
-    pub fn builder() -> SetDisabledImageTypesParamsBuilder { SetDisabledImageTypesParamsBuilder::default() }
+    pub fn builder(imageTypes: Vec<DisabledImageType>) -> SetDisabledImageTypesParamsBuilder {
+        SetDisabledImageTypesParamsBuilder {
+            imageTypes: imageTypes,
+        }
+    }
     pub fn imageTypes(&self) -> &[DisabledImageType] { &self.imageTypes }
 }
 
-#[derive(Default)]
+
 pub struct SetDisabledImageTypesParamsBuilder {
-    imageTypes: Option<Vec<DisabledImageType>>,
+    imageTypes: Vec<DisabledImageType>,
 }
 
 impl SetDisabledImageTypesParamsBuilder {
-    /// Image types to disable.
-    pub fn imageTypes(mut self, imageTypes: Vec<DisabledImageType>) -> Self { self.imageTypes = Some(imageTypes); self }
     pub fn build(self) -> SetDisabledImageTypesParams {
         SetDisabledImageTypesParams {
-            imageTypes: self.imageTypes.unwrap_or_default(),
+            imageTypes: self.imageTypes,
         }
     }
 }
@@ -2532,7 +2581,11 @@ pub struct SetDataSaverOverrideParams {
 }
 
 impl SetDataSaverOverrideParams {
-    pub fn builder() -> SetDataSaverOverrideParamsBuilder { SetDataSaverOverrideParamsBuilder::default() }
+    pub fn builder() -> SetDataSaverOverrideParamsBuilder {
+        SetDataSaverOverrideParamsBuilder {
+            dataSaverEnabled: None,
+        }
+    }
     pub fn dataSaverEnabled(&self) -> Option<bool> { self.dataSaverEnabled }
 }
 
@@ -2567,21 +2620,23 @@ pub struct SetHardwareConcurrencyOverrideParams {
 }
 
 impl SetHardwareConcurrencyOverrideParams {
-    pub fn builder() -> SetHardwareConcurrencyOverrideParamsBuilder { SetHardwareConcurrencyOverrideParamsBuilder::default() }
+    pub fn builder(hardwareConcurrency: i64) -> SetHardwareConcurrencyOverrideParamsBuilder {
+        SetHardwareConcurrencyOverrideParamsBuilder {
+            hardwareConcurrency: hardwareConcurrency,
+        }
+    }
     pub fn hardwareConcurrency(&self) -> i64 { self.hardwareConcurrency }
 }
 
-#[derive(Default)]
+
 pub struct SetHardwareConcurrencyOverrideParamsBuilder {
-    hardwareConcurrency: Option<i64>,
+    hardwareConcurrency: i64,
 }
 
 impl SetHardwareConcurrencyOverrideParamsBuilder {
-    /// Hardware concurrency to report
-    pub fn hardwareConcurrency(mut self, hardwareConcurrency: i64) -> Self { self.hardwareConcurrency = Some(hardwareConcurrency); self }
     pub fn build(self) -> SetHardwareConcurrencyOverrideParams {
         SetHardwareConcurrencyOverrideParams {
-            hardwareConcurrency: self.hardwareConcurrency.unwrap_or_default(),
+            hardwareConcurrency: self.hardwareConcurrency,
         }
     }
 }
@@ -2613,24 +2668,29 @@ pub struct SetUserAgentOverrideParams<'a> {
 }
 
 impl<'a> SetUserAgentOverrideParams<'a> {
-    pub fn builder() -> SetUserAgentOverrideParamsBuilder<'a> { SetUserAgentOverrideParamsBuilder::default() }
+    pub fn builder(userAgent: impl Into<Cow<'a, str>>) -> SetUserAgentOverrideParamsBuilder<'a> {
+        SetUserAgentOverrideParamsBuilder {
+            userAgent: userAgent.into(),
+            acceptLanguage: None,
+            platform: None,
+            userAgentMetadata: None,
+        }
+    }
     pub fn userAgent(&self) -> &str { self.userAgent.as_ref() }
     pub fn acceptLanguage(&self) -> Option<&str> { self.acceptLanguage.as_deref() }
     pub fn platform(&self) -> Option<&str> { self.platform.as_deref() }
     pub fn userAgentMetadata(&self) -> Option<&UserAgentMetadata<'a>> { self.userAgentMetadata.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetUserAgentOverrideParamsBuilder<'a> {
-    userAgent: Option<Cow<'a, str>>,
+    userAgent: Cow<'a, str>,
     acceptLanguage: Option<Cow<'a, str>>,
     platform: Option<Cow<'a, str>>,
     userAgentMetadata: Option<UserAgentMetadata<'a>>,
 }
 
 impl<'a> SetUserAgentOverrideParamsBuilder<'a> {
-    /// User agent to use.
-    pub fn userAgent(mut self, userAgent: impl Into<Cow<'a, str>>) -> Self { self.userAgent = Some(userAgent.into()); self }
     /// Browser language to emulate.
     pub fn acceptLanguage(mut self, acceptLanguage: impl Into<Cow<'a, str>>) -> Self { self.acceptLanguage = Some(acceptLanguage.into()); self }
     /// The platform navigator.platform should return.
@@ -2639,7 +2699,7 @@ impl<'a> SetUserAgentOverrideParamsBuilder<'a> {
     pub fn userAgentMetadata(mut self, userAgentMetadata: UserAgentMetadata<'a>) -> Self { self.userAgentMetadata = Some(userAgentMetadata); self }
     pub fn build(self) -> SetUserAgentOverrideParams<'a> {
         SetUserAgentOverrideParams {
-            userAgent: self.userAgent.unwrap_or_default(),
+            userAgent: self.userAgent,
             acceptLanguage: self.acceptLanguage,
             platform: self.platform,
             userAgentMetadata: self.userAgentMetadata,
@@ -2664,21 +2724,23 @@ pub struct SetAutomationOverrideParams {
 }
 
 impl SetAutomationOverrideParams {
-    pub fn builder() -> SetAutomationOverrideParamsBuilder { SetAutomationOverrideParamsBuilder::default() }
+    pub fn builder(enabled: bool) -> SetAutomationOverrideParamsBuilder {
+        SetAutomationOverrideParamsBuilder {
+            enabled: enabled,
+        }
+    }
     pub fn enabled(&self) -> bool { self.enabled }
 }
 
-#[derive(Default)]
+
 pub struct SetAutomationOverrideParamsBuilder {
-    enabled: Option<bool>,
+    enabled: bool,
 }
 
 impl SetAutomationOverrideParamsBuilder {
-    /// Whether the override should be enabled.
-    pub fn enabled(mut self, enabled: bool) -> Self { self.enabled = Some(enabled); self }
     pub fn build(self) -> SetAutomationOverrideParams {
         SetAutomationOverrideParams {
-            enabled: self.enabled.unwrap_or_default(),
+            enabled: self.enabled,
         }
     }
 }
@@ -2702,22 +2764,23 @@ pub struct SetSmallViewportHeightDifferenceOverrideParams {
 }
 
 impl SetSmallViewportHeightDifferenceOverrideParams {
-    pub fn builder() -> SetSmallViewportHeightDifferenceOverrideParamsBuilder { SetSmallViewportHeightDifferenceOverrideParamsBuilder::default() }
+    pub fn builder(difference: i64) -> SetSmallViewportHeightDifferenceOverrideParamsBuilder {
+        SetSmallViewportHeightDifferenceOverrideParamsBuilder {
+            difference: difference,
+        }
+    }
     pub fn difference(&self) -> i64 { self.difference }
 }
 
-#[derive(Default)]
+
 pub struct SetSmallViewportHeightDifferenceOverrideParamsBuilder {
-    difference: Option<i64>,
+    difference: i64,
 }
 
 impl SetSmallViewportHeightDifferenceOverrideParamsBuilder {
-    /// This will cause an element of size 100svh to be 'difference' pixels smaller than an element
-    /// of size 100lvh.
-    pub fn difference(mut self, difference: i64) -> Self { self.difference = Some(difference); self }
     pub fn build(self) -> SetSmallViewportHeightDifferenceOverrideParams {
         SetSmallViewportHeightDifferenceOverrideParams {
-            difference: self.difference.unwrap_or_default(),
+            difference: self.difference,
         }
     }
 }
@@ -2739,41 +2802,29 @@ pub struct GetScreenInfosReturns<'a> {
 }
 
 impl<'a> GetScreenInfosReturns<'a> {
-    pub fn builder() -> GetScreenInfosReturnsBuilder<'a> { GetScreenInfosReturnsBuilder::default() }
+    pub fn builder(screenInfos: Vec<ScreenInfo<'a>>) -> GetScreenInfosReturnsBuilder<'a> {
+        GetScreenInfosReturnsBuilder {
+            screenInfos: screenInfos,
+        }
+    }
     pub fn screenInfos(&self) -> &[ScreenInfo<'a>] { &self.screenInfos }
 }
 
-#[derive(Default)]
+
 pub struct GetScreenInfosReturnsBuilder<'a> {
-    screenInfos: Option<Vec<ScreenInfo<'a>>>,
+    screenInfos: Vec<ScreenInfo<'a>>,
 }
 
 impl<'a> GetScreenInfosReturnsBuilder<'a> {
-    pub fn screenInfos(mut self, screenInfos: Vec<ScreenInfo<'a>>) -> Self { self.screenInfos = Some(screenInfos); self }
     pub fn build(self) -> GetScreenInfosReturns<'a> {
         GetScreenInfosReturns {
-            screenInfos: self.screenInfos.unwrap_or_default(),
+            screenInfos: self.screenInfos,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetScreenInfosParams {}
-
-impl GetScreenInfosParams {
-    pub fn builder() -> GetScreenInfosParamsBuilder {
-        GetScreenInfosParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetScreenInfosParamsBuilder {}
-
-impl GetScreenInfosParamsBuilder {
-    pub fn build(self) -> GetScreenInfosParams {
-        GetScreenInfosParams {}
-    }
-}
 
 impl GetScreenInfosParams { pub const METHOD: &'static str = "Emulation.getScreenInfos"; }
 
@@ -2816,7 +2867,20 @@ pub struct AddScreenParams<'a> {
 }
 
 impl<'a> AddScreenParams<'a> {
-    pub fn builder() -> AddScreenParamsBuilder<'a> { AddScreenParamsBuilder::default() }
+    pub fn builder(left: i64, top: i64, width: u64, height: i64) -> AddScreenParamsBuilder<'a> {
+        AddScreenParamsBuilder {
+            left: left,
+            top: top,
+            width: width,
+            height: height,
+            workAreaInsets: None,
+            devicePixelRatio: None,
+            rotation: None,
+            colorDepth: None,
+            label: None,
+            isInternal: None,
+        }
+    }
     pub fn left(&self) -> i64 { self.left }
     pub fn top(&self) -> i64 { self.top }
     pub fn width(&self) -> u64 { self.width }
@@ -2829,12 +2893,12 @@ impl<'a> AddScreenParams<'a> {
     pub fn isInternal(&self) -> Option<bool> { self.isInternal }
 }
 
-#[derive(Default)]
+
 pub struct AddScreenParamsBuilder<'a> {
-    left: Option<i64>,
-    top: Option<i64>,
-    width: Option<u64>,
-    height: Option<i64>,
+    left: i64,
+    top: i64,
+    width: u64,
+    height: i64,
     workAreaInsets: Option<WorkAreaInsets>,
     devicePixelRatio: Option<f64>,
     rotation: Option<i64>,
@@ -2844,14 +2908,6 @@ pub struct AddScreenParamsBuilder<'a> {
 }
 
 impl<'a> AddScreenParamsBuilder<'a> {
-    /// Offset of the left edge of the screen in pixels.
-    pub fn left(mut self, left: i64) -> Self { self.left = Some(left); self }
-    /// Offset of the top edge of the screen in pixels.
-    pub fn top(mut self, top: i64) -> Self { self.top = Some(top); self }
-    /// The width of the screen in pixels.
-    pub fn width(mut self, width: u64) -> Self { self.width = Some(width); self }
-    /// The height of the screen in pixels.
-    pub fn height(mut self, height: i64) -> Self { self.height = Some(height); self }
     /// Specifies the screen's work area. Default is entire screen.
     pub fn workAreaInsets(mut self, workAreaInsets: WorkAreaInsets) -> Self { self.workAreaInsets = Some(workAreaInsets); self }
     /// Specifies the screen's device pixel ratio. Default is 1.
@@ -2866,10 +2922,10 @@ impl<'a> AddScreenParamsBuilder<'a> {
     pub fn isInternal(mut self, isInternal: bool) -> Self { self.isInternal = Some(isInternal); self }
     pub fn build(self) -> AddScreenParams<'a> {
         AddScreenParams {
-            left: self.left.unwrap_or_default(),
-            top: self.top.unwrap_or_default(),
-            width: self.width.unwrap_or_default(),
-            height: self.height.unwrap_or_default(),
+            left: self.left,
+            top: self.top,
+            width: self.width,
+            height: self.height,
             workAreaInsets: self.workAreaInsets,
             devicePixelRatio: self.devicePixelRatio,
             rotation: self.rotation,
@@ -2889,20 +2945,23 @@ pub struct AddScreenReturns<'a> {
 }
 
 impl<'a> AddScreenReturns<'a> {
-    pub fn builder() -> AddScreenReturnsBuilder<'a> { AddScreenReturnsBuilder::default() }
+    pub fn builder(screenInfo: ScreenInfo<'a>) -> AddScreenReturnsBuilder<'a> {
+        AddScreenReturnsBuilder {
+            screenInfo: screenInfo,
+        }
+    }
     pub fn screenInfo(&self) -> &ScreenInfo<'a> { &self.screenInfo }
 }
 
-#[derive(Default)]
+
 pub struct AddScreenReturnsBuilder<'a> {
-    screenInfo: Option<ScreenInfo<'a>>,
+    screenInfo: ScreenInfo<'a>,
 }
 
 impl<'a> AddScreenReturnsBuilder<'a> {
-    pub fn screenInfo(mut self, screenInfo: ScreenInfo<'a>) -> Self { self.screenInfo = Some(screenInfo); self }
     pub fn build(self) -> AddScreenReturns<'a> {
         AddScreenReturns {
-            screenInfo: self.screenInfo.unwrap_or_default(),
+            screenInfo: self.screenInfo,
         }
     }
 }
@@ -2954,7 +3013,21 @@ pub struct UpdateScreenParams<'a> {
 }
 
 impl<'a> UpdateScreenParams<'a> {
-    pub fn builder() -> UpdateScreenParamsBuilder<'a> { UpdateScreenParamsBuilder::default() }
+    pub fn builder(screenId: ScreenId<'a>) -> UpdateScreenParamsBuilder<'a> {
+        UpdateScreenParamsBuilder {
+            screenId: screenId,
+            left: None,
+            top: None,
+            width: None,
+            height: None,
+            workAreaInsets: None,
+            devicePixelRatio: None,
+            rotation: None,
+            colorDepth: None,
+            label: None,
+            isInternal: None,
+        }
+    }
     pub fn screenId(&self) -> &ScreenId<'a> { &self.screenId }
     pub fn left(&self) -> Option<i64> { self.left }
     pub fn top(&self) -> Option<i64> { self.top }
@@ -2968,9 +3041,9 @@ impl<'a> UpdateScreenParams<'a> {
     pub fn isInternal(&self) -> Option<bool> { self.isInternal }
 }
 
-#[derive(Default)]
+
 pub struct UpdateScreenParamsBuilder<'a> {
-    screenId: Option<ScreenId<'a>>,
+    screenId: ScreenId<'a>,
     left: Option<i64>,
     top: Option<i64>,
     width: Option<u64>,
@@ -2984,8 +3057,6 @@ pub struct UpdateScreenParamsBuilder<'a> {
 }
 
 impl<'a> UpdateScreenParamsBuilder<'a> {
-    /// Target screen identifier.
-    pub fn screenId(mut self, screenId: ScreenId<'a>) -> Self { self.screenId = Some(screenId); self }
     /// Offset of the left edge of the screen in pixels.
     pub fn left(mut self, left: i64) -> Self { self.left = Some(left); self }
     /// Offset of the top edge of the screen in pixels.
@@ -3008,7 +3079,7 @@ impl<'a> UpdateScreenParamsBuilder<'a> {
     pub fn isInternal(mut self, isInternal: bool) -> Self { self.isInternal = Some(isInternal); self }
     pub fn build(self) -> UpdateScreenParams<'a> {
         UpdateScreenParams {
-            screenId: self.screenId.unwrap_or_default(),
+            screenId: self.screenId,
             left: self.left,
             top: self.top,
             width: self.width,
@@ -3032,20 +3103,23 @@ pub struct UpdateScreenReturns<'a> {
 }
 
 impl<'a> UpdateScreenReturns<'a> {
-    pub fn builder() -> UpdateScreenReturnsBuilder<'a> { UpdateScreenReturnsBuilder::default() }
+    pub fn builder(screenInfo: ScreenInfo<'a>) -> UpdateScreenReturnsBuilder<'a> {
+        UpdateScreenReturnsBuilder {
+            screenInfo: screenInfo,
+        }
+    }
     pub fn screenInfo(&self) -> &ScreenInfo<'a> { &self.screenInfo }
 }
 
-#[derive(Default)]
+
 pub struct UpdateScreenReturnsBuilder<'a> {
-    screenInfo: Option<ScreenInfo<'a>>,
+    screenInfo: ScreenInfo<'a>,
 }
 
 impl<'a> UpdateScreenReturnsBuilder<'a> {
-    pub fn screenInfo(mut self, screenInfo: ScreenInfo<'a>) -> Self { self.screenInfo = Some(screenInfo); self }
     pub fn build(self) -> UpdateScreenReturns<'a> {
         UpdateScreenReturns {
-            screenInfo: self.screenInfo.unwrap_or_default(),
+            screenInfo: self.screenInfo,
         }
     }
 }
@@ -3066,20 +3140,23 @@ pub struct RemoveScreenParams<'a> {
 }
 
 impl<'a> RemoveScreenParams<'a> {
-    pub fn builder() -> RemoveScreenParamsBuilder<'a> { RemoveScreenParamsBuilder::default() }
+    pub fn builder(screenId: ScreenId<'a>) -> RemoveScreenParamsBuilder<'a> {
+        RemoveScreenParamsBuilder {
+            screenId: screenId,
+        }
+    }
     pub fn screenId(&self) -> &ScreenId<'a> { &self.screenId }
 }
 
-#[derive(Default)]
+
 pub struct RemoveScreenParamsBuilder<'a> {
-    screenId: Option<ScreenId<'a>>,
+    screenId: ScreenId<'a>,
 }
 
 impl<'a> RemoveScreenParamsBuilder<'a> {
-    pub fn screenId(mut self, screenId: ScreenId<'a>) -> Self { self.screenId = Some(screenId); self }
     pub fn build(self) -> RemoveScreenParams<'a> {
         RemoveScreenParams {
-            screenId: self.screenId.unwrap_or_default(),
+            screenId: self.screenId,
         }
     }
 }
@@ -3103,20 +3180,23 @@ pub struct SetPrimaryScreenParams<'a> {
 }
 
 impl<'a> SetPrimaryScreenParams<'a> {
-    pub fn builder() -> SetPrimaryScreenParamsBuilder<'a> { SetPrimaryScreenParamsBuilder::default() }
+    pub fn builder(screenId: ScreenId<'a>) -> SetPrimaryScreenParamsBuilder<'a> {
+        SetPrimaryScreenParamsBuilder {
+            screenId: screenId,
+        }
+    }
     pub fn screenId(&self) -> &ScreenId<'a> { &self.screenId }
 }
 
-#[derive(Default)]
+
 pub struct SetPrimaryScreenParamsBuilder<'a> {
-    screenId: Option<ScreenId<'a>>,
+    screenId: ScreenId<'a>,
 }
 
 impl<'a> SetPrimaryScreenParamsBuilder<'a> {
-    pub fn screenId(mut self, screenId: ScreenId<'a>) -> Self { self.screenId = Some(screenId); self }
     pub fn build(self) -> SetPrimaryScreenParams<'a> {
         SetPrimaryScreenParams {
-            screenId: self.screenId.unwrap_or_default(),
+            screenId: self.screenId,
         }
     }
 }

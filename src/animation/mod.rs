@@ -40,7 +40,21 @@ pub struct Animation<'a> {
 }
 
 impl<'a> Animation<'a> {
-    pub fn builder() -> AnimationBuilder<'a> { AnimationBuilder::default() }
+    pub fn builder(id: impl Into<Cow<'a, str>>, name: impl Into<Cow<'a, str>>, pausedState: bool, playState: impl Into<Cow<'a, str>>, playbackRate: f64, startTime: f64, currentTime: f64, type_: impl Into<Cow<'a, str>>) -> AnimationBuilder<'a> {
+        AnimationBuilder {
+            id: id.into(),
+            name: name.into(),
+            pausedState: pausedState,
+            playState: playState.into(),
+            playbackRate: playbackRate,
+            startTime: startTime,
+            currentTime: currentTime,
+            type_: type_.into(),
+            source: None,
+            cssId: None,
+            viewOrScrollTimeline: None,
+        }
+    }
     pub fn id(&self) -> &str { self.id.as_ref() }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn pausedState(&self) -> bool { self.pausedState }
@@ -54,41 +68,22 @@ impl<'a> Animation<'a> {
     pub fn viewOrScrollTimeline(&self) -> Option<&ViewOrScrollTimeline> { self.viewOrScrollTimeline.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct AnimationBuilder<'a> {
-    id: Option<Cow<'a, str>>,
-    name: Option<Cow<'a, str>>,
-    pausedState: Option<bool>,
-    playState: Option<Cow<'a, str>>,
-    playbackRate: Option<f64>,
-    startTime: Option<f64>,
-    currentTime: Option<f64>,
-    type_: Option<Cow<'a, str>>,
+    id: Cow<'a, str>,
+    name: Cow<'a, str>,
+    pausedState: bool,
+    playState: Cow<'a, str>,
+    playbackRate: f64,
+    startTime: f64,
+    currentTime: f64,
+    type_: Cow<'a, str>,
     source: Option<AnimationEffect<'a>>,
     cssId: Option<Cow<'a, str>>,
     viewOrScrollTimeline: Option<ViewOrScrollTimeline>,
 }
 
 impl<'a> AnimationBuilder<'a> {
-    /// 'Animation''s id.
-    pub fn id(mut self, id: impl Into<Cow<'a, str>>) -> Self { self.id = Some(id.into()); self }
-    /// 'Animation''s name.
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    /// 'Animation''s internal paused state.
-    pub fn pausedState(mut self, pausedState: bool) -> Self { self.pausedState = Some(pausedState); self }
-    /// 'Animation''s play state.
-    pub fn playState(mut self, playState: impl Into<Cow<'a, str>>) -> Self { self.playState = Some(playState.into()); self }
-    /// 'Animation''s playback rate.
-    pub fn playbackRate(mut self, playbackRate: f64) -> Self { self.playbackRate = Some(playbackRate); self }
-    /// 'Animation''s start time.
-    /// Milliseconds for time based animations and
-    /// percentage [0 - 100] for scroll driven animations
-    /// (i.e. when viewOrScrollTimeline exists).
-    pub fn startTime(mut self, startTime: f64) -> Self { self.startTime = Some(startTime); self }
-    /// 'Animation''s current time.
-    pub fn currentTime(mut self, currentTime: f64) -> Self { self.currentTime = Some(currentTime); self }
-    /// Animation type of 'Animation'.
-    pub fn type_(mut self, type_: impl Into<Cow<'a, str>>) -> Self { self.type_ = Some(type_.into()); self }
     /// 'Animation''s source animation node.
     pub fn source(mut self, source: AnimationEffect<'a>) -> Self { self.source = Some(source); self }
     /// A unique ID for 'Animation' representing the sources that triggered this CSS
@@ -98,14 +93,14 @@ impl<'a> AnimationBuilder<'a> {
     pub fn viewOrScrollTimeline(mut self, viewOrScrollTimeline: ViewOrScrollTimeline) -> Self { self.viewOrScrollTimeline = Some(viewOrScrollTimeline); self }
     pub fn build(self) -> Animation<'a> {
         Animation {
-            id: self.id.unwrap_or_default(),
-            name: self.name.unwrap_or_default(),
-            pausedState: self.pausedState.unwrap_or_default(),
-            playState: self.playState.unwrap_or_default(),
-            playbackRate: self.playbackRate.unwrap_or_default(),
-            startTime: self.startTime.unwrap_or_default(),
-            currentTime: self.currentTime.unwrap_or_default(),
-            type_: self.type_.unwrap_or_default(),
+            id: self.id,
+            name: self.name,
+            pausedState: self.pausedState,
+            playState: self.playState,
+            playbackRate: self.playbackRate,
+            startTime: self.startTime,
+            currentTime: self.currentTime,
+            type_: self.type_,
             source: self.source,
             cssId: self.cssId,
             viewOrScrollTimeline: self.viewOrScrollTimeline,
@@ -139,7 +134,15 @@ pub struct ViewOrScrollTimeline {
 }
 
 impl ViewOrScrollTimeline {
-    pub fn builder() -> ViewOrScrollTimelineBuilder { ViewOrScrollTimelineBuilder::default() }
+    pub fn builder(axis: crate::dom::ScrollOrientation) -> ViewOrScrollTimelineBuilder {
+        ViewOrScrollTimelineBuilder {
+            sourceNodeId: None,
+            startOffset: None,
+            endOffset: None,
+            subjectNodeId: None,
+            axis: axis,
+        }
+    }
     pub fn sourceNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.sourceNodeId.as_ref() }
     pub fn startOffset(&self) -> Option<f64> { self.startOffset }
     pub fn endOffset(&self) -> Option<f64> { self.endOffset }
@@ -147,13 +150,13 @@ impl ViewOrScrollTimeline {
     pub fn axis(&self) -> &crate::dom::ScrollOrientation { &self.axis }
 }
 
-#[derive(Default)]
+
 pub struct ViewOrScrollTimelineBuilder {
     sourceNodeId: Option<crate::dom::BackendNodeId>,
     startOffset: Option<f64>,
     endOffset: Option<f64>,
     subjectNodeId: Option<crate::dom::BackendNodeId>,
-    axis: Option<crate::dom::ScrollOrientation>,
+    axis: crate::dom::ScrollOrientation,
 }
 
 impl ViewOrScrollTimelineBuilder {
@@ -169,15 +172,13 @@ impl ViewOrScrollTimelineBuilder {
     /// scrollport defined the progress of the timeline.
     /// Does not exist for animations with ScrollTimeline
     pub fn subjectNodeId(mut self, subjectNodeId: crate::dom::BackendNodeId) -> Self { self.subjectNodeId = Some(subjectNodeId); self }
-    /// Orientation of the scroll
-    pub fn axis(mut self, axis: crate::dom::ScrollOrientation) -> Self { self.axis = Some(axis); self }
     pub fn build(self) -> ViewOrScrollTimeline {
         ViewOrScrollTimeline {
             sourceNodeId: self.sourceNodeId,
             startOffset: self.startOffset,
             endOffset: self.endOffset,
             subjectNodeId: self.subjectNodeId,
-            axis: self.axis.unwrap_or_default(),
+            axis: self.axis,
         }
     }
 }
@@ -216,7 +217,20 @@ pub struct AnimationEffect<'a> {
 }
 
 impl<'a> AnimationEffect<'a> {
-    pub fn builder() -> AnimationEffectBuilder<'a> { AnimationEffectBuilder::default() }
+    pub fn builder(delay: f64, endDelay: f64, iterationStart: f64, duration: f64, direction: impl Into<Cow<'a, str>>, fill: impl Into<Cow<'a, str>>, easing: impl Into<Cow<'a, str>>) -> AnimationEffectBuilder<'a> {
+        AnimationEffectBuilder {
+            delay: delay,
+            endDelay: endDelay,
+            iterationStart: iterationStart,
+            iterations: None,
+            duration: duration,
+            direction: direction.into(),
+            fill: fill.into(),
+            backendNodeId: None,
+            keyframesRule: None,
+            easing: easing.into(),
+        }
+    }
     pub fn delay(&self) -> f64 { self.delay }
     pub fn endDelay(&self) -> f64 { self.endDelay }
     pub fn iterationStart(&self) -> f64 { self.iterationStart }
@@ -229,56 +243,39 @@ impl<'a> AnimationEffect<'a> {
     pub fn easing(&self) -> &str { self.easing.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct AnimationEffectBuilder<'a> {
-    delay: Option<f64>,
-    endDelay: Option<f64>,
-    iterationStart: Option<f64>,
+    delay: f64,
+    endDelay: f64,
+    iterationStart: f64,
     iterations: Option<f64>,
-    duration: Option<f64>,
-    direction: Option<Cow<'a, str>>,
-    fill: Option<Cow<'a, str>>,
+    duration: f64,
+    direction: Cow<'a, str>,
+    fill: Cow<'a, str>,
     backendNodeId: Option<crate::dom::BackendNodeId>,
     keyframesRule: Option<KeyframesRule<'a>>,
-    easing: Option<Cow<'a, str>>,
+    easing: Cow<'a, str>,
 }
 
 impl<'a> AnimationEffectBuilder<'a> {
-    /// 'AnimationEffect''s delay.
-    pub fn delay(mut self, delay: f64) -> Self { self.delay = Some(delay); self }
-    /// 'AnimationEffect''s end delay.
-    pub fn endDelay(mut self, endDelay: f64) -> Self { self.endDelay = Some(endDelay); self }
-    /// 'AnimationEffect''s iteration start.
-    pub fn iterationStart(mut self, iterationStart: f64) -> Self { self.iterationStart = Some(iterationStart); self }
     /// 'AnimationEffect''s iterations. Omitted if the value is infinite.
     pub fn iterations(mut self, iterations: f64) -> Self { self.iterations = Some(iterations); self }
-    /// 'AnimationEffect''s iteration duration.
-    /// Milliseconds for time based animations and
-    /// percentage [0 - 100] for scroll driven animations
-    /// (i.e. when viewOrScrollTimeline exists).
-    pub fn duration(mut self, duration: f64) -> Self { self.duration = Some(duration); self }
-    /// 'AnimationEffect''s playback direction.
-    pub fn direction(mut self, direction: impl Into<Cow<'a, str>>) -> Self { self.direction = Some(direction.into()); self }
-    /// 'AnimationEffect''s fill mode.
-    pub fn fill(mut self, fill: impl Into<Cow<'a, str>>) -> Self { self.fill = Some(fill.into()); self }
     /// 'AnimationEffect''s target node.
     pub fn backendNodeId(mut self, backendNodeId: crate::dom::BackendNodeId) -> Self { self.backendNodeId = Some(backendNodeId); self }
     /// 'AnimationEffect''s keyframes.
     pub fn keyframesRule(mut self, keyframesRule: KeyframesRule<'a>) -> Self { self.keyframesRule = Some(keyframesRule); self }
-    /// 'AnimationEffect''s timing function.
-    pub fn easing(mut self, easing: impl Into<Cow<'a, str>>) -> Self { self.easing = Some(easing.into()); self }
     pub fn build(self) -> AnimationEffect<'a> {
         AnimationEffect {
-            delay: self.delay.unwrap_or_default(),
-            endDelay: self.endDelay.unwrap_or_default(),
-            iterationStart: self.iterationStart.unwrap_or_default(),
+            delay: self.delay,
+            endDelay: self.endDelay,
+            iterationStart: self.iterationStart,
             iterations: self.iterations,
-            duration: self.duration.unwrap_or_default(),
-            direction: self.direction.unwrap_or_default(),
-            fill: self.fill.unwrap_or_default(),
+            duration: self.duration,
+            direction: self.direction,
+            fill: self.fill,
             backendNodeId: self.backendNodeId,
             keyframesRule: self.keyframesRule,
-            easing: self.easing.unwrap_or_default(),
+            easing: self.easing,
         }
     }
 }
@@ -296,26 +293,29 @@ pub struct KeyframesRule<'a> {
 }
 
 impl<'a> KeyframesRule<'a> {
-    pub fn builder() -> KeyframesRuleBuilder<'a> { KeyframesRuleBuilder::default() }
+    pub fn builder(keyframes: Vec<KeyframeStyle<'a>>) -> KeyframesRuleBuilder<'a> {
+        KeyframesRuleBuilder {
+            name: None,
+            keyframes: keyframes,
+        }
+    }
     pub fn name(&self) -> Option<&str> { self.name.as_deref() }
     pub fn keyframes(&self) -> &[KeyframeStyle<'a>] { &self.keyframes }
 }
 
-#[derive(Default)]
+
 pub struct KeyframesRuleBuilder<'a> {
     name: Option<Cow<'a, str>>,
-    keyframes: Option<Vec<KeyframeStyle<'a>>>,
+    keyframes: Vec<KeyframeStyle<'a>>,
 }
 
 impl<'a> KeyframesRuleBuilder<'a> {
     /// CSS keyframed animation's name.
     pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    /// List of animation keyframes.
-    pub fn keyframes(mut self, keyframes: Vec<KeyframeStyle<'a>>) -> Self { self.keyframes = Some(keyframes); self }
     pub fn build(self) -> KeyframesRule<'a> {
         KeyframesRule {
             name: self.name,
-            keyframes: self.keyframes.unwrap_or_default(),
+            keyframes: self.keyframes,
         }
     }
 }
@@ -332,47 +332,33 @@ pub struct KeyframeStyle<'a> {
 }
 
 impl<'a> KeyframeStyle<'a> {
-    pub fn builder() -> KeyframeStyleBuilder<'a> { KeyframeStyleBuilder::default() }
+    pub fn builder(offset: impl Into<Cow<'a, str>>, easing: impl Into<Cow<'a, str>>) -> KeyframeStyleBuilder<'a> {
+        KeyframeStyleBuilder {
+            offset: offset.into(),
+            easing: easing.into(),
+        }
+    }
     pub fn offset(&self) -> &str { self.offset.as_ref() }
     pub fn easing(&self) -> &str { self.easing.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct KeyframeStyleBuilder<'a> {
-    offset: Option<Cow<'a, str>>,
-    easing: Option<Cow<'a, str>>,
+    offset: Cow<'a, str>,
+    easing: Cow<'a, str>,
 }
 
 impl<'a> KeyframeStyleBuilder<'a> {
-    /// Keyframe's time offset.
-    pub fn offset(mut self, offset: impl Into<Cow<'a, str>>) -> Self { self.offset = Some(offset.into()); self }
-    /// 'AnimationEffect''s timing function.
-    pub fn easing(mut self, easing: impl Into<Cow<'a, str>>) -> Self { self.easing = Some(easing.into()); self }
     pub fn build(self) -> KeyframeStyle<'a> {
         KeyframeStyle {
-            offset: self.offset.unwrap_or_default(),
-            easing: self.easing.unwrap_or_default(),
+            offset: self.offset,
+            easing: self.easing,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct DisableParams {}
-
-impl DisableParams {
-    pub fn builder() -> DisableParamsBuilder {
-        DisableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct DisableParamsBuilder {}
-
-impl DisableParamsBuilder {
-    pub fn build(self) -> DisableParams {
-        DisableParams {}
-    }
-}
 
 impl DisableParams { pub const METHOD: &'static str = "Animation.disable"; }
 
@@ -383,21 +369,6 @@ impl<'a> crate::CdpCommand<'a> for DisableParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct EnableParams {}
-
-impl EnableParams {
-    pub fn builder() -> EnableParamsBuilder {
-        EnableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct EnableParamsBuilder {}
-
-impl EnableParamsBuilder {
-    pub fn build(self) -> EnableParams {
-        EnableParams {}
-    }
-}
 
 impl EnableParams { pub const METHOD: &'static str = "Animation.enable"; }
 
@@ -416,21 +387,23 @@ pub struct GetCurrentTimeParams<'a> {
 }
 
 impl<'a> GetCurrentTimeParams<'a> {
-    pub fn builder() -> GetCurrentTimeParamsBuilder<'a> { GetCurrentTimeParamsBuilder::default() }
+    pub fn builder(id: impl Into<Cow<'a, str>>) -> GetCurrentTimeParamsBuilder<'a> {
+        GetCurrentTimeParamsBuilder {
+            id: id.into(),
+        }
+    }
     pub fn id(&self) -> &str { self.id.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct GetCurrentTimeParamsBuilder<'a> {
-    id: Option<Cow<'a, str>>,
+    id: Cow<'a, str>,
 }
 
 impl<'a> GetCurrentTimeParamsBuilder<'a> {
-    /// Id of animation.
-    pub fn id(mut self, id: impl Into<Cow<'a, str>>) -> Self { self.id = Some(id.into()); self }
     pub fn build(self) -> GetCurrentTimeParams<'a> {
         GetCurrentTimeParams {
-            id: self.id.unwrap_or_default(),
+            id: self.id,
         }
     }
 }
@@ -445,21 +418,23 @@ pub struct GetCurrentTimeReturns {
 }
 
 impl GetCurrentTimeReturns {
-    pub fn builder() -> GetCurrentTimeReturnsBuilder { GetCurrentTimeReturnsBuilder::default() }
+    pub fn builder(currentTime: f64) -> GetCurrentTimeReturnsBuilder {
+        GetCurrentTimeReturnsBuilder {
+            currentTime: currentTime,
+        }
+    }
     pub fn currentTime(&self) -> f64 { self.currentTime }
 }
 
-#[derive(Default)]
+
 pub struct GetCurrentTimeReturnsBuilder {
-    currentTime: Option<f64>,
+    currentTime: f64,
 }
 
 impl GetCurrentTimeReturnsBuilder {
-    /// Current time of the page.
-    pub fn currentTime(mut self, currentTime: f64) -> Self { self.currentTime = Some(currentTime); self }
     pub fn build(self) -> GetCurrentTimeReturns {
         GetCurrentTimeReturns {
-            currentTime: self.currentTime.unwrap_or_default(),
+            currentTime: self.currentTime,
         }
     }
 }
@@ -481,42 +456,29 @@ pub struct GetPlaybackRateReturns {
 }
 
 impl GetPlaybackRateReturns {
-    pub fn builder() -> GetPlaybackRateReturnsBuilder { GetPlaybackRateReturnsBuilder::default() }
+    pub fn builder(playbackRate: f64) -> GetPlaybackRateReturnsBuilder {
+        GetPlaybackRateReturnsBuilder {
+            playbackRate: playbackRate,
+        }
+    }
     pub fn playbackRate(&self) -> f64 { self.playbackRate }
 }
 
-#[derive(Default)]
+
 pub struct GetPlaybackRateReturnsBuilder {
-    playbackRate: Option<f64>,
+    playbackRate: f64,
 }
 
 impl GetPlaybackRateReturnsBuilder {
-    /// Playback rate for animations on page.
-    pub fn playbackRate(mut self, playbackRate: f64) -> Self { self.playbackRate = Some(playbackRate); self }
     pub fn build(self) -> GetPlaybackRateReturns {
         GetPlaybackRateReturns {
-            playbackRate: self.playbackRate.unwrap_or_default(),
+            playbackRate: self.playbackRate,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetPlaybackRateParams {}
-
-impl GetPlaybackRateParams {
-    pub fn builder() -> GetPlaybackRateParamsBuilder {
-        GetPlaybackRateParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct GetPlaybackRateParamsBuilder {}
-
-impl GetPlaybackRateParamsBuilder {
-    pub fn build(self) -> GetPlaybackRateParams {
-        GetPlaybackRateParams {}
-    }
-}
 
 impl GetPlaybackRateParams { pub const METHOD: &'static str = "Animation.getPlaybackRate"; }
 
@@ -535,21 +497,23 @@ pub struct ReleaseAnimationsParams<'a> {
 }
 
 impl<'a> ReleaseAnimationsParams<'a> {
-    pub fn builder() -> ReleaseAnimationsParamsBuilder<'a> { ReleaseAnimationsParamsBuilder::default() }
+    pub fn builder(animations: Vec<Cow<'a, str>>) -> ReleaseAnimationsParamsBuilder<'a> {
+        ReleaseAnimationsParamsBuilder {
+            animations: animations,
+        }
+    }
     pub fn animations(&self) -> &[Cow<'a, str>] { &self.animations }
 }
 
-#[derive(Default)]
+
 pub struct ReleaseAnimationsParamsBuilder<'a> {
-    animations: Option<Vec<Cow<'a, str>>>,
+    animations: Vec<Cow<'a, str>>,
 }
 
 impl<'a> ReleaseAnimationsParamsBuilder<'a> {
-    /// List of animation ids to seek.
-    pub fn animations(mut self, animations: Vec<Cow<'a, str>>) -> Self { self.animations = Some(animations); self }
     pub fn build(self) -> ReleaseAnimationsParams<'a> {
         ReleaseAnimationsParams {
-            animations: self.animations.unwrap_or_default(),
+            animations: self.animations,
         }
     }
 }
@@ -571,21 +535,23 @@ pub struct ResolveAnimationParams<'a> {
 }
 
 impl<'a> ResolveAnimationParams<'a> {
-    pub fn builder() -> ResolveAnimationParamsBuilder<'a> { ResolveAnimationParamsBuilder::default() }
+    pub fn builder(animationId: impl Into<Cow<'a, str>>) -> ResolveAnimationParamsBuilder<'a> {
+        ResolveAnimationParamsBuilder {
+            animationId: animationId.into(),
+        }
+    }
     pub fn animationId(&self) -> &str { self.animationId.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct ResolveAnimationParamsBuilder<'a> {
-    animationId: Option<Cow<'a, str>>,
+    animationId: Cow<'a, str>,
 }
 
 impl<'a> ResolveAnimationParamsBuilder<'a> {
-    /// Animation id.
-    pub fn animationId(mut self, animationId: impl Into<Cow<'a, str>>) -> Self { self.animationId = Some(animationId.into()); self }
     pub fn build(self) -> ResolveAnimationParams<'a> {
         ResolveAnimationParams {
-            animationId: self.animationId.unwrap_or_default(),
+            animationId: self.animationId,
         }
     }
 }
@@ -600,21 +566,23 @@ pub struct ResolveAnimationReturns {
 }
 
 impl ResolveAnimationReturns {
-    pub fn builder() -> ResolveAnimationReturnsBuilder { ResolveAnimationReturnsBuilder::default() }
+    pub fn builder(remoteObject: crate::runtime::RemoteObject) -> ResolveAnimationReturnsBuilder {
+        ResolveAnimationReturnsBuilder {
+            remoteObject: remoteObject,
+        }
+    }
     pub fn remoteObject(&self) -> &crate::runtime::RemoteObject { &self.remoteObject }
 }
 
-#[derive(Default)]
+
 pub struct ResolveAnimationReturnsBuilder {
-    remoteObject: Option<crate::runtime::RemoteObject>,
+    remoteObject: crate::runtime::RemoteObject,
 }
 
 impl ResolveAnimationReturnsBuilder {
-    /// Corresponding remote object.
-    pub fn remoteObject(mut self, remoteObject: crate::runtime::RemoteObject) -> Self { self.remoteObject = Some(remoteObject); self }
     pub fn build(self) -> ResolveAnimationReturns {
         ResolveAnimationReturns {
-            remoteObject: self.remoteObject.unwrap_or_default(),
+            remoteObject: self.remoteObject,
         }
     }
 }
@@ -638,26 +606,27 @@ pub struct SeekAnimationsParams<'a> {
 }
 
 impl<'a> SeekAnimationsParams<'a> {
-    pub fn builder() -> SeekAnimationsParamsBuilder<'a> { SeekAnimationsParamsBuilder::default() }
+    pub fn builder(animations: Vec<Cow<'a, str>>, currentTime: f64) -> SeekAnimationsParamsBuilder<'a> {
+        SeekAnimationsParamsBuilder {
+            animations: animations,
+            currentTime: currentTime,
+        }
+    }
     pub fn animations(&self) -> &[Cow<'a, str>] { &self.animations }
     pub fn currentTime(&self) -> f64 { self.currentTime }
 }
 
-#[derive(Default)]
+
 pub struct SeekAnimationsParamsBuilder<'a> {
-    animations: Option<Vec<Cow<'a, str>>>,
-    currentTime: Option<f64>,
+    animations: Vec<Cow<'a, str>>,
+    currentTime: f64,
 }
 
 impl<'a> SeekAnimationsParamsBuilder<'a> {
-    /// List of animation ids to seek.
-    pub fn animations(mut self, animations: Vec<Cow<'a, str>>) -> Self { self.animations = Some(animations); self }
-    /// Set the current time of each animation.
-    pub fn currentTime(mut self, currentTime: f64) -> Self { self.currentTime = Some(currentTime); self }
     pub fn build(self) -> SeekAnimationsParams<'a> {
         SeekAnimationsParams {
-            animations: self.animations.unwrap_or_default(),
-            currentTime: self.currentTime.unwrap_or_default(),
+            animations: self.animations,
+            currentTime: self.currentTime,
         }
     }
 }
@@ -681,26 +650,27 @@ pub struct SetPausedParams<'a> {
 }
 
 impl<'a> SetPausedParams<'a> {
-    pub fn builder() -> SetPausedParamsBuilder<'a> { SetPausedParamsBuilder::default() }
+    pub fn builder(animations: Vec<Cow<'a, str>>, paused: bool) -> SetPausedParamsBuilder<'a> {
+        SetPausedParamsBuilder {
+            animations: animations,
+            paused: paused,
+        }
+    }
     pub fn animations(&self) -> &[Cow<'a, str>] { &self.animations }
     pub fn paused(&self) -> bool { self.paused }
 }
 
-#[derive(Default)]
+
 pub struct SetPausedParamsBuilder<'a> {
-    animations: Option<Vec<Cow<'a, str>>>,
-    paused: Option<bool>,
+    animations: Vec<Cow<'a, str>>,
+    paused: bool,
 }
 
 impl<'a> SetPausedParamsBuilder<'a> {
-    /// Animations to set the pause state of.
-    pub fn animations(mut self, animations: Vec<Cow<'a, str>>) -> Self { self.animations = Some(animations); self }
-    /// Paused state to set to.
-    pub fn paused(mut self, paused: bool) -> Self { self.paused = Some(paused); self }
     pub fn build(self) -> SetPausedParams<'a> {
         SetPausedParams {
-            animations: self.animations.unwrap_or_default(),
-            paused: self.paused.unwrap_or_default(),
+            animations: self.animations,
+            paused: self.paused,
         }
     }
 }
@@ -722,21 +692,23 @@ pub struct SetPlaybackRateParams {
 }
 
 impl SetPlaybackRateParams {
-    pub fn builder() -> SetPlaybackRateParamsBuilder { SetPlaybackRateParamsBuilder::default() }
+    pub fn builder(playbackRate: f64) -> SetPlaybackRateParamsBuilder {
+        SetPlaybackRateParamsBuilder {
+            playbackRate: playbackRate,
+        }
+    }
     pub fn playbackRate(&self) -> f64 { self.playbackRate }
 }
 
-#[derive(Default)]
+
 pub struct SetPlaybackRateParamsBuilder {
-    playbackRate: Option<f64>,
+    playbackRate: f64,
 }
 
 impl SetPlaybackRateParamsBuilder {
-    /// Playback rate for animations on page
-    pub fn playbackRate(mut self, playbackRate: f64) -> Self { self.playbackRate = Some(playbackRate); self }
     pub fn build(self) -> SetPlaybackRateParams {
         SetPlaybackRateParams {
-            playbackRate: self.playbackRate.unwrap_or_default(),
+            playbackRate: self.playbackRate,
         }
     }
 }
@@ -762,31 +734,31 @@ pub struct SetTimingParams<'a> {
 }
 
 impl<'a> SetTimingParams<'a> {
-    pub fn builder() -> SetTimingParamsBuilder<'a> { SetTimingParamsBuilder::default() }
+    pub fn builder(animationId: impl Into<Cow<'a, str>>, duration: f64, delay: f64) -> SetTimingParamsBuilder<'a> {
+        SetTimingParamsBuilder {
+            animationId: animationId.into(),
+            duration: duration,
+            delay: delay,
+        }
+    }
     pub fn animationId(&self) -> &str { self.animationId.as_ref() }
     pub fn duration(&self) -> f64 { self.duration }
     pub fn delay(&self) -> f64 { self.delay }
 }
 
-#[derive(Default)]
+
 pub struct SetTimingParamsBuilder<'a> {
-    animationId: Option<Cow<'a, str>>,
-    duration: Option<f64>,
-    delay: Option<f64>,
+    animationId: Cow<'a, str>,
+    duration: f64,
+    delay: f64,
 }
 
 impl<'a> SetTimingParamsBuilder<'a> {
-    /// Animation id.
-    pub fn animationId(mut self, animationId: impl Into<Cow<'a, str>>) -> Self { self.animationId = Some(animationId.into()); self }
-    /// Duration of the animation.
-    pub fn duration(mut self, duration: f64) -> Self { self.duration = Some(duration); self }
-    /// Delay of the animation.
-    pub fn delay(mut self, delay: f64) -> Self { self.delay = Some(delay); self }
     pub fn build(self) -> SetTimingParams<'a> {
         SetTimingParams {
-            animationId: self.animationId.unwrap_or_default(),
-            duration: self.duration.unwrap_or_default(),
-            delay: self.delay.unwrap_or_default(),
+            animationId: self.animationId,
+            duration: self.duration,
+            delay: self.delay,
         }
     }
 }

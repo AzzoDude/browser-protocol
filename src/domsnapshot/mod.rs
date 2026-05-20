@@ -98,7 +98,38 @@ pub struct DOMNode<'a> {
 }
 
 impl<'a> DOMNode<'a> {
-    pub fn builder() -> DOMNodeBuilder<'a> { DOMNodeBuilder::default() }
+    pub fn builder(nodeType: i64, nodeName: impl Into<Cow<'a, str>>, nodeValue: impl Into<Cow<'a, str>>, backendNodeId: crate::dom::BackendNodeId) -> DOMNodeBuilder<'a> {
+        DOMNodeBuilder {
+            nodeType: nodeType,
+            nodeName: nodeName.into(),
+            nodeValue: nodeValue.into(),
+            textValue: None,
+            inputValue: None,
+            inputChecked: None,
+            optionSelected: None,
+            backendNodeId: backendNodeId,
+            childNodeIndexes: None,
+            attributes: None,
+            pseudoElementIndexes: None,
+            layoutNodeIndex: None,
+            documentURL: None,
+            baseURL: None,
+            contentLanguage: None,
+            documentEncoding: None,
+            publicId: None,
+            systemId: None,
+            frameId: None,
+            contentDocumentIndex: None,
+            pseudoType: None,
+            shadowRootType: None,
+            isClickable: None,
+            eventListeners: None,
+            currentSourceURL: None,
+            originURL: None,
+            scrollOffsetX: None,
+            scrollOffsetY: None,
+        }
+    }
     pub fn nodeType(&self) -> i64 { self.nodeType }
     pub fn nodeName(&self) -> &str { self.nodeName.as_ref() }
     pub fn nodeValue(&self) -> &str { self.nodeValue.as_ref() }
@@ -129,16 +160,16 @@ impl<'a> DOMNode<'a> {
     pub fn scrollOffsetY(&self) -> Option<f64> { self.scrollOffsetY }
 }
 
-#[derive(Default)]
+
 pub struct DOMNodeBuilder<'a> {
-    nodeType: Option<i64>,
-    nodeName: Option<Cow<'a, str>>,
-    nodeValue: Option<Cow<'a, str>>,
+    nodeType: i64,
+    nodeName: Cow<'a, str>,
+    nodeValue: Cow<'a, str>,
     textValue: Option<Cow<'a, str>>,
     inputValue: Option<Cow<'a, str>>,
     inputChecked: Option<bool>,
     optionSelected: Option<bool>,
-    backendNodeId: Option<crate::dom::BackendNodeId>,
+    backendNodeId: crate::dom::BackendNodeId,
     childNodeIndexes: Option<Vec<i64>>,
     attributes: Option<Vec<NameValue<'a>>>,
     pseudoElementIndexes: Option<Vec<i64>>,
@@ -162,12 +193,6 @@ pub struct DOMNodeBuilder<'a> {
 }
 
 impl<'a> DOMNodeBuilder<'a> {
-    /// 'Node''s nodeType.
-    pub fn nodeType(mut self, nodeType: i64) -> Self { self.nodeType = Some(nodeType); self }
-    /// 'Node''s nodeName.
-    pub fn nodeName(mut self, nodeName: impl Into<Cow<'a, str>>) -> Self { self.nodeName = Some(nodeName.into()); self }
-    /// 'Node''s nodeValue.
-    pub fn nodeValue(mut self, nodeValue: impl Into<Cow<'a, str>>) -> Self { self.nodeValue = Some(nodeValue.into()); self }
     /// Only set for textarea elements, contains the text value.
     pub fn textValue(mut self, textValue: impl Into<Cow<'a, str>>) -> Self { self.textValue = Some(textValue.into()); self }
     /// Only set for input elements, contains the input's associated text value.
@@ -176,8 +201,6 @@ impl<'a> DOMNodeBuilder<'a> {
     pub fn inputChecked(mut self, inputChecked: bool) -> Self { self.inputChecked = Some(inputChecked); self }
     /// Only set for option elements, indicates if the element has been selected
     pub fn optionSelected(mut self, optionSelected: bool) -> Self { self.optionSelected = Some(optionSelected); self }
-    /// 'Node''s id, corresponds to DOM.Node.backendNodeId.
-    pub fn backendNodeId(mut self, backendNodeId: crate::dom::BackendNodeId) -> Self { self.backendNodeId = Some(backendNodeId); self }
     /// The indexes of the node's child nodes in the 'domNodes' array returned by 'getSnapshot', if
     /// any.
     pub fn childNodeIndexes(mut self, childNodeIndexes: Vec<i64>) -> Self { self.childNodeIndexes = Some(childNodeIndexes); self }
@@ -225,14 +248,14 @@ impl<'a> DOMNodeBuilder<'a> {
     pub fn scrollOffsetY(mut self, scrollOffsetY: f64) -> Self { self.scrollOffsetY = Some(scrollOffsetY); self }
     pub fn build(self) -> DOMNode<'a> {
         DOMNode {
-            nodeType: self.nodeType.unwrap_or_default(),
-            nodeName: self.nodeName.unwrap_or_default(),
-            nodeValue: self.nodeValue.unwrap_or_default(),
+            nodeType: self.nodeType,
+            nodeName: self.nodeName,
+            nodeValue: self.nodeValue,
             textValue: self.textValue,
             inputValue: self.inputValue,
             inputChecked: self.inputChecked,
             optionSelected: self.optionSelected,
-            backendNodeId: self.backendNodeId.unwrap_or_default(),
+            backendNodeId: self.backendNodeId,
             childNodeIndexes: self.childNodeIndexes,
             attributes: self.attributes,
             pseudoElementIndexes: self.pseudoElementIndexes,
@@ -274,33 +297,31 @@ pub struct InlineTextBox {
 }
 
 impl InlineTextBox {
-    pub fn builder() -> InlineTextBoxBuilder { InlineTextBoxBuilder::default() }
+    pub fn builder(boundingBox: crate::dom::Rect, startCharacterIndex: u64, numCharacters: i64) -> InlineTextBoxBuilder {
+        InlineTextBoxBuilder {
+            boundingBox: boundingBox,
+            startCharacterIndex: startCharacterIndex,
+            numCharacters: numCharacters,
+        }
+    }
     pub fn boundingBox(&self) -> &crate::dom::Rect { &self.boundingBox }
     pub fn startCharacterIndex(&self) -> u64 { self.startCharacterIndex }
     pub fn numCharacters(&self) -> i64 { self.numCharacters }
 }
 
-#[derive(Default)]
+
 pub struct InlineTextBoxBuilder {
-    boundingBox: Option<crate::dom::Rect>,
-    startCharacterIndex: Option<u64>,
-    numCharacters: Option<i64>,
+    boundingBox: crate::dom::Rect,
+    startCharacterIndex: u64,
+    numCharacters: i64,
 }
 
 impl InlineTextBoxBuilder {
-    /// The bounding box in document coordinates. Note that scroll offset of the document is ignored.
-    pub fn boundingBox(mut self, boundingBox: crate::dom::Rect) -> Self { self.boundingBox = Some(boundingBox); self }
-    /// The starting index in characters, for this post layout textbox substring. Characters that
-    /// would be represented as a surrogate pair in UTF-16 have length 2.
-    pub fn startCharacterIndex(mut self, startCharacterIndex: u64) -> Self { self.startCharacterIndex = Some(startCharacterIndex); self }
-    /// The number of characters in this post layout textbox substring. Characters that would be
-    /// represented as a surrogate pair in UTF-16 have length 2.
-    pub fn numCharacters(mut self, numCharacters: i64) -> Self { self.numCharacters = Some(numCharacters); self }
     pub fn build(self) -> InlineTextBox {
         InlineTextBox {
-            boundingBox: self.boundingBox.unwrap_or_default(),
-            startCharacterIndex: self.startCharacterIndex.unwrap_or_default(),
-            numCharacters: self.numCharacters.unwrap_or_default(),
+            boundingBox: self.boundingBox,
+            startCharacterIndex: self.startCharacterIndex,
+            numCharacters: self.numCharacters,
         }
     }
 }
@@ -334,7 +355,17 @@ pub struct LayoutTreeNode<'a> {
 }
 
 impl<'a> LayoutTreeNode<'a> {
-    pub fn builder() -> LayoutTreeNodeBuilder<'a> { LayoutTreeNodeBuilder::default() }
+    pub fn builder(domNodeIndex: u64, boundingBox: crate::dom::Rect) -> LayoutTreeNodeBuilder<'a> {
+        LayoutTreeNodeBuilder {
+            domNodeIndex: domNodeIndex,
+            boundingBox: boundingBox,
+            layoutText: None,
+            inlineTextNodes: None,
+            styleIndex: None,
+            paintOrder: None,
+            isStackingContext: None,
+        }
+    }
     pub fn domNodeIndex(&self) -> u64 { self.domNodeIndex }
     pub fn boundingBox(&self) -> &crate::dom::Rect { &self.boundingBox }
     pub fn layoutText(&self) -> Option<&str> { self.layoutText.as_deref() }
@@ -344,10 +375,10 @@ impl<'a> LayoutTreeNode<'a> {
     pub fn isStackingContext(&self) -> Option<bool> { self.isStackingContext }
 }
 
-#[derive(Default)]
+
 pub struct LayoutTreeNodeBuilder<'a> {
-    domNodeIndex: Option<u64>,
-    boundingBox: Option<crate::dom::Rect>,
+    domNodeIndex: u64,
+    boundingBox: crate::dom::Rect,
     layoutText: Option<Cow<'a, str>>,
     inlineTextNodes: Option<Vec<InlineTextBox>>,
     styleIndex: Option<u64>,
@@ -356,10 +387,6 @@ pub struct LayoutTreeNodeBuilder<'a> {
 }
 
 impl<'a> LayoutTreeNodeBuilder<'a> {
-    /// The index of the related DOM node in the 'domNodes' array returned by 'getSnapshot'.
-    pub fn domNodeIndex(mut self, domNodeIndex: u64) -> Self { self.domNodeIndex = Some(domNodeIndex); self }
-    /// The bounding box in document coordinates. Note that scroll offset of the document is ignored.
-    pub fn boundingBox(mut self, boundingBox: crate::dom::Rect) -> Self { self.boundingBox = Some(boundingBox); self }
     /// Contents of the LayoutText, if any.
     pub fn layoutText(mut self, layoutText: impl Into<Cow<'a, str>>) -> Self { self.layoutText = Some(layoutText.into()); self }
     /// The post-layout inline text nodes, if any.
@@ -374,8 +401,8 @@ impl<'a> LayoutTreeNodeBuilder<'a> {
     pub fn isStackingContext(mut self, isStackingContext: bool) -> Self { self.isStackingContext = Some(isStackingContext); self }
     pub fn build(self) -> LayoutTreeNode<'a> {
         LayoutTreeNode {
-            domNodeIndex: self.domNodeIndex.unwrap_or_default(),
-            boundingBox: self.boundingBox.unwrap_or_default(),
+            domNodeIndex: self.domNodeIndex,
+            boundingBox: self.boundingBox,
             layoutText: self.layoutText,
             inlineTextNodes: self.inlineTextNodes,
             styleIndex: self.styleIndex,
@@ -395,21 +422,23 @@ pub struct ComputedStyle<'a> {
 }
 
 impl<'a> ComputedStyle<'a> {
-    pub fn builder() -> ComputedStyleBuilder<'a> { ComputedStyleBuilder::default() }
+    pub fn builder(properties: Vec<NameValue<'a>>) -> ComputedStyleBuilder<'a> {
+        ComputedStyleBuilder {
+            properties: properties,
+        }
+    }
     pub fn properties(&self) -> &[NameValue<'a>] { &self.properties }
 }
 
-#[derive(Default)]
+
 pub struct ComputedStyleBuilder<'a> {
-    properties: Option<Vec<NameValue<'a>>>,
+    properties: Vec<NameValue<'a>>,
 }
 
 impl<'a> ComputedStyleBuilder<'a> {
-    /// Name/value pairs of computed style properties.
-    pub fn properties(mut self, properties: Vec<NameValue<'a>>) -> Self { self.properties = Some(properties); self }
     pub fn build(self) -> ComputedStyle<'a> {
         ComputedStyle {
-            properties: self.properties.unwrap_or_default(),
+            properties: self.properties,
         }
     }
 }
@@ -426,26 +455,27 @@ pub struct NameValue<'a> {
 }
 
 impl<'a> NameValue<'a> {
-    pub fn builder() -> NameValueBuilder<'a> { NameValueBuilder::default() }
+    pub fn builder(name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> NameValueBuilder<'a> {
+        NameValueBuilder {
+            name: name.into(),
+            value: value.into(),
+        }
+    }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn value(&self) -> &str { self.value.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct NameValueBuilder<'a> {
-    name: Option<Cow<'a, str>>,
-    value: Option<Cow<'a, str>>,
+    name: Cow<'a, str>,
+    value: Cow<'a, str>,
 }
 
 impl<'a> NameValueBuilder<'a> {
-    /// Attribute/property name.
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    /// Attribute/property value.
-    pub fn value(mut self, value: impl Into<Cow<'a, str>>) -> Self { self.value = Some(value.into()); self }
     pub fn build(self) -> NameValue<'a> {
         NameValue {
-            name: self.name.unwrap_or_default(),
-            value: self.value.unwrap_or_default(),
+            name: self.name,
+            value: self.value,
         }
     }
 }
@@ -468,24 +498,27 @@ pub struct RareStringData {
 }
 
 impl RareStringData {
-    pub fn builder() -> RareStringDataBuilder { RareStringDataBuilder::default() }
+    pub fn builder(index: Vec<i64>, value: Vec<StringIndex>) -> RareStringDataBuilder {
+        RareStringDataBuilder {
+            index: index,
+            value: value,
+        }
+    }
     pub fn index(&self) -> &[i64] { &self.index }
     pub fn value(&self) -> &[StringIndex] { &self.value }
 }
 
-#[derive(Default)]
+
 pub struct RareStringDataBuilder {
-    index: Option<Vec<i64>>,
-    value: Option<Vec<StringIndex>>,
+    index: Vec<i64>,
+    value: Vec<StringIndex>,
 }
 
 impl RareStringDataBuilder {
-    pub fn index(mut self, index: Vec<i64>) -> Self { self.index = Some(index); self }
-    pub fn value(mut self, value: Vec<StringIndex>) -> Self { self.value = Some(value); self }
     pub fn build(self) -> RareStringData {
         RareStringData {
-            index: self.index.unwrap_or_default(),
-            value: self.value.unwrap_or_default(),
+            index: self.index,
+            value: self.value,
         }
     }
 }
@@ -498,20 +531,23 @@ pub struct RareBooleanData {
 }
 
 impl RareBooleanData {
-    pub fn builder() -> RareBooleanDataBuilder { RareBooleanDataBuilder::default() }
+    pub fn builder(index: Vec<i64>) -> RareBooleanDataBuilder {
+        RareBooleanDataBuilder {
+            index: index,
+        }
+    }
     pub fn index(&self) -> &[i64] { &self.index }
 }
 
-#[derive(Default)]
+
 pub struct RareBooleanDataBuilder {
-    index: Option<Vec<i64>>,
+    index: Vec<i64>,
 }
 
 impl RareBooleanDataBuilder {
-    pub fn index(mut self, index: Vec<i64>) -> Self { self.index = Some(index); self }
     pub fn build(self) -> RareBooleanData {
         RareBooleanData {
-            index: self.index.unwrap_or_default(),
+            index: self.index,
         }
     }
 }
@@ -525,24 +561,27 @@ pub struct RareIntegerData {
 }
 
 impl RareIntegerData {
-    pub fn builder() -> RareIntegerDataBuilder { RareIntegerDataBuilder::default() }
+    pub fn builder(index: Vec<i64>, value: Vec<i64>) -> RareIntegerDataBuilder {
+        RareIntegerDataBuilder {
+            index: index,
+            value: value,
+        }
+    }
     pub fn index(&self) -> &[i64] { &self.index }
     pub fn value(&self) -> &[i64] { &self.value }
 }
 
-#[derive(Default)]
+
 pub struct RareIntegerDataBuilder {
-    index: Option<Vec<i64>>,
-    value: Option<Vec<i64>>,
+    index: Vec<i64>,
+    value: Vec<i64>,
 }
 
 impl RareIntegerDataBuilder {
-    pub fn index(mut self, index: Vec<i64>) -> Self { self.index = Some(index); self }
-    pub fn value(mut self, value: Vec<i64>) -> Self { self.value = Some(value); self }
     pub fn build(self) -> RareIntegerData {
         RareIntegerData {
-            index: self.index.unwrap_or_default(),
-            value: self.value.unwrap_or_default(),
+            index: self.index,
+            value: self.value,
         }
     }
 }
@@ -592,7 +631,25 @@ pub struct DocumentSnapshot {
 }
 
 impl DocumentSnapshot {
-    pub fn builder() -> DocumentSnapshotBuilder { DocumentSnapshotBuilder::default() }
+    pub fn builder(documentURL: StringIndex, title: StringIndex, baseURL: StringIndex, contentLanguage: StringIndex, encodingName: StringIndex, publicId: StringIndex, systemId: StringIndex, frameId: StringIndex, nodes: NodeTreeSnapshot, layout: LayoutTreeSnapshot, textBoxes: TextBoxSnapshot) -> DocumentSnapshotBuilder {
+        DocumentSnapshotBuilder {
+            documentURL: documentURL,
+            title: title,
+            baseURL: baseURL,
+            contentLanguage: contentLanguage,
+            encodingName: encodingName,
+            publicId: publicId,
+            systemId: systemId,
+            frameId: frameId,
+            nodes: nodes,
+            layout: layout,
+            textBoxes: textBoxes,
+            scrollOffsetX: None,
+            scrollOffsetY: None,
+            contentWidth: None,
+            contentHeight: None,
+        }
+    }
     pub fn documentURL(&self) -> &StringIndex { &self.documentURL }
     pub fn title(&self) -> &StringIndex { &self.title }
     pub fn baseURL(&self) -> &StringIndex { &self.baseURL }
@@ -610,19 +667,19 @@ impl DocumentSnapshot {
     pub fn contentHeight(&self) -> Option<f64> { self.contentHeight }
 }
 
-#[derive(Default)]
+
 pub struct DocumentSnapshotBuilder {
-    documentURL: Option<StringIndex>,
-    title: Option<StringIndex>,
-    baseURL: Option<StringIndex>,
-    contentLanguage: Option<StringIndex>,
-    encodingName: Option<StringIndex>,
-    publicId: Option<StringIndex>,
-    systemId: Option<StringIndex>,
-    frameId: Option<StringIndex>,
-    nodes: Option<NodeTreeSnapshot>,
-    layout: Option<LayoutTreeSnapshot>,
-    textBoxes: Option<TextBoxSnapshot>,
+    documentURL: StringIndex,
+    title: StringIndex,
+    baseURL: StringIndex,
+    contentLanguage: StringIndex,
+    encodingName: StringIndex,
+    publicId: StringIndex,
+    systemId: StringIndex,
+    frameId: StringIndex,
+    nodes: NodeTreeSnapshot,
+    layout: LayoutTreeSnapshot,
+    textBoxes: TextBoxSnapshot,
     scrollOffsetX: Option<f64>,
     scrollOffsetY: Option<f64>,
     contentWidth: Option<f64>,
@@ -630,28 +687,6 @@ pub struct DocumentSnapshotBuilder {
 }
 
 impl DocumentSnapshotBuilder {
-    /// Document URL that 'Document' or 'FrameOwner' node points to.
-    pub fn documentURL(mut self, documentURL: StringIndex) -> Self { self.documentURL = Some(documentURL); self }
-    /// Document title.
-    pub fn title(mut self, title: StringIndex) -> Self { self.title = Some(title); self }
-    /// Base URL that 'Document' or 'FrameOwner' node uses for URL completion.
-    pub fn baseURL(mut self, baseURL: StringIndex) -> Self { self.baseURL = Some(baseURL); self }
-    /// Contains the document's content language.
-    pub fn contentLanguage(mut self, contentLanguage: StringIndex) -> Self { self.contentLanguage = Some(contentLanguage); self }
-    /// Contains the document's character set encoding.
-    pub fn encodingName(mut self, encodingName: StringIndex) -> Self { self.encodingName = Some(encodingName); self }
-    /// 'DocumentType' node's publicId.
-    pub fn publicId(mut self, publicId: StringIndex) -> Self { self.publicId = Some(publicId); self }
-    /// 'DocumentType' node's systemId.
-    pub fn systemId(mut self, systemId: StringIndex) -> Self { self.systemId = Some(systemId); self }
-    /// Frame ID for frame owner elements and also for the document node.
-    pub fn frameId(mut self, frameId: StringIndex) -> Self { self.frameId = Some(frameId); self }
-    /// A table with dom nodes.
-    pub fn nodes(mut self, nodes: NodeTreeSnapshot) -> Self { self.nodes = Some(nodes); self }
-    /// The nodes in the layout tree.
-    pub fn layout(mut self, layout: LayoutTreeSnapshot) -> Self { self.layout = Some(layout); self }
-    /// The post-layout inline text nodes.
-    pub fn textBoxes(mut self, textBoxes: TextBoxSnapshot) -> Self { self.textBoxes = Some(textBoxes); self }
     /// Horizontal scroll offset.
     pub fn scrollOffsetX(mut self, scrollOffsetX: f64) -> Self { self.scrollOffsetX = Some(scrollOffsetX); self }
     /// Vertical scroll offset.
@@ -662,17 +697,17 @@ impl DocumentSnapshotBuilder {
     pub fn contentHeight(mut self, contentHeight: f64) -> Self { self.contentHeight = Some(contentHeight); self }
     pub fn build(self) -> DocumentSnapshot {
         DocumentSnapshot {
-            documentURL: self.documentURL.unwrap_or_default(),
-            title: self.title.unwrap_or_default(),
-            baseURL: self.baseURL.unwrap_or_default(),
-            contentLanguage: self.contentLanguage.unwrap_or_default(),
-            encodingName: self.encodingName.unwrap_or_default(),
-            publicId: self.publicId.unwrap_or_default(),
-            systemId: self.systemId.unwrap_or_default(),
-            frameId: self.frameId.unwrap_or_default(),
-            nodes: self.nodes.unwrap_or_default(),
-            layout: self.layout.unwrap_or_default(),
-            textBoxes: self.textBoxes.unwrap_or_default(),
+            documentURL: self.documentURL,
+            title: self.title,
+            baseURL: self.baseURL,
+            contentLanguage: self.contentLanguage,
+            encodingName: self.encodingName,
+            publicId: self.publicId,
+            systemId: self.systemId,
+            frameId: self.frameId,
+            nodes: self.nodes,
+            layout: self.layout,
+            textBoxes: self.textBoxes,
             scrollOffsetX: self.scrollOffsetX,
             scrollOffsetY: self.scrollOffsetY,
             contentWidth: self.contentWidth,
@@ -743,7 +778,27 @@ pub struct NodeTreeSnapshot {
 }
 
 impl NodeTreeSnapshot {
-    pub fn builder() -> NodeTreeSnapshotBuilder { NodeTreeSnapshotBuilder::default() }
+    pub fn builder() -> NodeTreeSnapshotBuilder {
+        NodeTreeSnapshotBuilder {
+            parentIndex: None,
+            nodeType: None,
+            shadowRootType: None,
+            nodeName: None,
+            nodeValue: None,
+            backendNodeId: None,
+            attributes: None,
+            textValue: None,
+            inputValue: None,
+            inputChecked: None,
+            optionSelected: None,
+            contentDocumentIndex: None,
+            pseudoType: None,
+            pseudoIdentifier: None,
+            isClickable: None,
+            currentSourceURL: None,
+            originURL: None,
+        }
+    }
     pub fn parentIndex(&self) -> Option<&[i64]> { self.parentIndex.as_deref() }
     pub fn nodeType(&self) -> Option<&[i64]> { self.nodeType.as_deref() }
     pub fn shadowRootType(&self) -> Option<&RareStringData> { self.shadowRootType.as_ref() }
@@ -883,7 +938,21 @@ pub struct LayoutTreeSnapshot {
 }
 
 impl LayoutTreeSnapshot {
-    pub fn builder() -> LayoutTreeSnapshotBuilder { LayoutTreeSnapshotBuilder::default() }
+    pub fn builder(nodeIndex: Vec<i64>, styles: Vec<ArrayOfStrings>, bounds: Vec<Rectangle>, text: Vec<StringIndex>, stackingContexts: RareBooleanData) -> LayoutTreeSnapshotBuilder {
+        LayoutTreeSnapshotBuilder {
+            nodeIndex: nodeIndex,
+            styles: styles,
+            bounds: bounds,
+            text: text,
+            stackingContexts: stackingContexts,
+            paintOrders: None,
+            offsetRects: None,
+            scrollRects: None,
+            clientRects: None,
+            blendedBackgroundColors: None,
+            textColorOpacities: None,
+        }
+    }
     pub fn nodeIndex(&self) -> &[i64] { &self.nodeIndex }
     pub fn styles(&self) -> &[ArrayOfStrings] { &self.styles }
     pub fn bounds(&self) -> &[Rectangle] { &self.bounds }
@@ -897,13 +966,13 @@ impl LayoutTreeSnapshot {
     pub fn textColorOpacities(&self) -> Option<&[f64]> { self.textColorOpacities.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct LayoutTreeSnapshotBuilder {
-    nodeIndex: Option<Vec<i64>>,
-    styles: Option<Vec<ArrayOfStrings>>,
-    bounds: Option<Vec<Rectangle>>,
-    text: Option<Vec<StringIndex>>,
-    stackingContexts: Option<RareBooleanData>,
+    nodeIndex: Vec<i64>,
+    styles: Vec<ArrayOfStrings>,
+    bounds: Vec<Rectangle>,
+    text: Vec<StringIndex>,
+    stackingContexts: RareBooleanData,
     paintOrders: Option<Vec<i64>>,
     offsetRects: Option<Vec<Rectangle>>,
     scrollRects: Option<Vec<Rectangle>>,
@@ -913,16 +982,6 @@ pub struct LayoutTreeSnapshotBuilder {
 }
 
 impl LayoutTreeSnapshotBuilder {
-    /// Index of the corresponding node in the 'NodeTreeSnapshot' array returned by 'captureSnapshot'.
-    pub fn nodeIndex(mut self, nodeIndex: Vec<i64>) -> Self { self.nodeIndex = Some(nodeIndex); self }
-    /// Array of indexes specifying computed style strings, filtered according to the 'computedStyles' parameter passed to 'captureSnapshot'.
-    pub fn styles(mut self, styles: Vec<ArrayOfStrings>) -> Self { self.styles = Some(styles); self }
-    /// The absolute position bounding box.
-    pub fn bounds(mut self, bounds: Vec<Rectangle>) -> Self { self.bounds = Some(bounds); self }
-    /// Contents of the LayoutText, if any.
-    pub fn text(mut self, text: Vec<StringIndex>) -> Self { self.text = Some(text); self }
-    /// Stacking context information.
-    pub fn stackingContexts(mut self, stackingContexts: RareBooleanData) -> Self { self.stackingContexts = Some(stackingContexts); self }
     /// Global paint order index, which is determined by the stacking order of the nodes. Nodes
     /// that are painted together will have the same index. Only provided if includePaintOrder in
     /// captureSnapshot was true.
@@ -939,11 +998,11 @@ impl LayoutTreeSnapshotBuilder {
     pub fn textColorOpacities(mut self, textColorOpacities: Vec<f64>) -> Self { self.textColorOpacities = Some(textColorOpacities); self }
     pub fn build(self) -> LayoutTreeSnapshot {
         LayoutTreeSnapshot {
-            nodeIndex: self.nodeIndex.unwrap_or_default(),
-            styles: self.styles.unwrap_or_default(),
-            bounds: self.bounds.unwrap_or_default(),
-            text: self.text.unwrap_or_default(),
-            stackingContexts: self.stackingContexts.unwrap_or_default(),
+            nodeIndex: self.nodeIndex,
+            styles: self.styles,
+            bounds: self.bounds,
+            text: self.text,
+            stackingContexts: self.stackingContexts,
             paintOrders: self.paintOrders,
             offsetRects: self.offsetRects,
             scrollRects: self.scrollRects,
@@ -973,59 +1032,41 @@ pub struct TextBoxSnapshot {
 }
 
 impl TextBoxSnapshot {
-    pub fn builder() -> TextBoxSnapshotBuilder { TextBoxSnapshotBuilder::default() }
+    pub fn builder(layoutIndex: Vec<i64>, bounds: Vec<Rectangle>, start: Vec<i64>, length: Vec<i64>) -> TextBoxSnapshotBuilder {
+        TextBoxSnapshotBuilder {
+            layoutIndex: layoutIndex,
+            bounds: bounds,
+            start: start,
+            length: length,
+        }
+    }
     pub fn layoutIndex(&self) -> &[i64] { &self.layoutIndex }
     pub fn bounds(&self) -> &[Rectangle] { &self.bounds }
     pub fn start(&self) -> &[i64] { &self.start }
     pub fn length(&self) -> &[i64] { &self.length }
 }
 
-#[derive(Default)]
+
 pub struct TextBoxSnapshotBuilder {
-    layoutIndex: Option<Vec<i64>>,
-    bounds: Option<Vec<Rectangle>>,
-    start: Option<Vec<i64>>,
-    length: Option<Vec<i64>>,
+    layoutIndex: Vec<i64>,
+    bounds: Vec<Rectangle>,
+    start: Vec<i64>,
+    length: Vec<i64>,
 }
 
 impl TextBoxSnapshotBuilder {
-    /// Index of the layout tree node that owns this box collection.
-    pub fn layoutIndex(mut self, layoutIndex: Vec<i64>) -> Self { self.layoutIndex = Some(layoutIndex); self }
-    /// The absolute position bounding box.
-    pub fn bounds(mut self, bounds: Vec<Rectangle>) -> Self { self.bounds = Some(bounds); self }
-    /// The starting index in characters, for this post layout textbox substring. Characters that
-    /// would be represented as a surrogate pair in UTF-16 have length 2.
-    pub fn start(mut self, start: Vec<i64>) -> Self { self.start = Some(start); self }
-    /// The number of characters in this post layout textbox substring. Characters that would be
-    /// represented as a surrogate pair in UTF-16 have length 2.
-    pub fn length(mut self, length: Vec<i64>) -> Self { self.length = Some(length); self }
     pub fn build(self) -> TextBoxSnapshot {
         TextBoxSnapshot {
-            layoutIndex: self.layoutIndex.unwrap_or_default(),
-            bounds: self.bounds.unwrap_or_default(),
-            start: self.start.unwrap_or_default(),
-            length: self.length.unwrap_or_default(),
+            layoutIndex: self.layoutIndex,
+            bounds: self.bounds,
+            start: self.start,
+            length: self.length,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct DisableParams {}
-
-impl DisableParams {
-    pub fn builder() -> DisableParamsBuilder {
-        DisableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct DisableParamsBuilder {}
-
-impl DisableParamsBuilder {
-    pub fn build(self) -> DisableParams {
-        DisableParams {}
-    }
-}
 
 impl DisableParams { pub const METHOD: &'static str = "DOMSnapshot.disable"; }
 
@@ -1036,21 +1077,6 @@ impl<'a> crate::CdpCommand<'a> for DisableParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct EnableParams {}
-
-impl EnableParams {
-    pub fn builder() -> EnableParamsBuilder {
-        EnableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct EnableParamsBuilder {}
-
-impl EnableParamsBuilder {
-    pub fn build(self) -> EnableParams {
-        EnableParams {}
-    }
-}
 
 impl EnableParams { pub const METHOD: &'static str = "DOMSnapshot.enable"; }
 
@@ -1081,24 +1107,29 @@ pub struct GetSnapshotParams<'a> {
 }
 
 impl<'a> GetSnapshotParams<'a> {
-    pub fn builder() -> GetSnapshotParamsBuilder<'a> { GetSnapshotParamsBuilder::default() }
+    pub fn builder(computedStyleWhitelist: Vec<Cow<'a, str>>) -> GetSnapshotParamsBuilder<'a> {
+        GetSnapshotParamsBuilder {
+            computedStyleWhitelist: computedStyleWhitelist,
+            includeEventListeners: None,
+            includePaintOrder: None,
+            includeUserAgentShadowTree: None,
+        }
+    }
     pub fn computedStyleWhitelist(&self) -> &[Cow<'a, str>] { &self.computedStyleWhitelist }
     pub fn includeEventListeners(&self) -> Option<bool> { self.includeEventListeners }
     pub fn includePaintOrder(&self) -> Option<bool> { self.includePaintOrder }
     pub fn includeUserAgentShadowTree(&self) -> Option<bool> { self.includeUserAgentShadowTree }
 }
 
-#[derive(Default)]
+
 pub struct GetSnapshotParamsBuilder<'a> {
-    computedStyleWhitelist: Option<Vec<Cow<'a, str>>>,
+    computedStyleWhitelist: Vec<Cow<'a, str>>,
     includeEventListeners: Option<bool>,
     includePaintOrder: Option<bool>,
     includeUserAgentShadowTree: Option<bool>,
 }
 
 impl<'a> GetSnapshotParamsBuilder<'a> {
-    /// Whitelist of computed styles to return.
-    pub fn computedStyleWhitelist(mut self, computedStyleWhitelist: Vec<Cow<'a, str>>) -> Self { self.computedStyleWhitelist = Some(computedStyleWhitelist); self }
     /// Whether or not to retrieve details of DOM listeners (default false).
     pub fn includeEventListeners(mut self, includeEventListeners: bool) -> Self { self.includeEventListeners = Some(includeEventListeners); self }
     /// Whether to determine and include the paint order index of LayoutTreeNodes (default false).
@@ -1107,7 +1138,7 @@ impl<'a> GetSnapshotParamsBuilder<'a> {
     pub fn includeUserAgentShadowTree(mut self, includeUserAgentShadowTree: bool) -> Self { self.includeUserAgentShadowTree = Some(includeUserAgentShadowTree); self }
     pub fn build(self) -> GetSnapshotParams<'a> {
         GetSnapshotParams {
-            computedStyleWhitelist: self.computedStyleWhitelist.unwrap_or_default(),
+            computedStyleWhitelist: self.computedStyleWhitelist,
             includeEventListeners: self.includeEventListeners,
             includePaintOrder: self.includePaintOrder,
             includeUserAgentShadowTree: self.includeUserAgentShadowTree,
@@ -1132,31 +1163,31 @@ pub struct GetSnapshotReturns<'a> {
 }
 
 impl<'a> GetSnapshotReturns<'a> {
-    pub fn builder() -> GetSnapshotReturnsBuilder<'a> { GetSnapshotReturnsBuilder::default() }
+    pub fn builder(domNodes: Vec<DOMNode<'a>>, layoutTreeNodes: Vec<LayoutTreeNode<'a>>, computedStyles: Vec<ComputedStyle<'a>>) -> GetSnapshotReturnsBuilder<'a> {
+        GetSnapshotReturnsBuilder {
+            domNodes: domNodes,
+            layoutTreeNodes: layoutTreeNodes,
+            computedStyles: computedStyles,
+        }
+    }
     pub fn domNodes(&self) -> &[DOMNode<'a>] { &self.domNodes }
     pub fn layoutTreeNodes(&self) -> &[LayoutTreeNode<'a>] { &self.layoutTreeNodes }
     pub fn computedStyles(&self) -> &[ComputedStyle<'a>] { &self.computedStyles }
 }
 
-#[derive(Default)]
+
 pub struct GetSnapshotReturnsBuilder<'a> {
-    domNodes: Option<Vec<DOMNode<'a>>>,
-    layoutTreeNodes: Option<Vec<LayoutTreeNode<'a>>>,
-    computedStyles: Option<Vec<ComputedStyle<'a>>>,
+    domNodes: Vec<DOMNode<'a>>,
+    layoutTreeNodes: Vec<LayoutTreeNode<'a>>,
+    computedStyles: Vec<ComputedStyle<'a>>,
 }
 
 impl<'a> GetSnapshotReturnsBuilder<'a> {
-    /// The nodes in the DOM tree. The DOMNode at index 0 corresponds to the root document.
-    pub fn domNodes(mut self, domNodes: Vec<DOMNode<'a>>) -> Self { self.domNodes = Some(domNodes); self }
-    /// The nodes in the layout tree.
-    pub fn layoutTreeNodes(mut self, layoutTreeNodes: Vec<LayoutTreeNode<'a>>) -> Self { self.layoutTreeNodes = Some(layoutTreeNodes); self }
-    /// Whitelisted ComputedStyle properties for each node in the layout tree.
-    pub fn computedStyles(mut self, computedStyles: Vec<ComputedStyle<'a>>) -> Self { self.computedStyles = Some(computedStyles); self }
     pub fn build(self) -> GetSnapshotReturns<'a> {
         GetSnapshotReturns {
-            domNodes: self.domNodes.unwrap_or_default(),
-            layoutTreeNodes: self.layoutTreeNodes.unwrap_or_default(),
-            computedStyles: self.computedStyles.unwrap_or_default(),
+            domNodes: self.domNodes,
+            layoutTreeNodes: self.layoutTreeNodes,
+            computedStyles: self.computedStyles,
         }
     }
 }
@@ -1197,7 +1228,15 @@ pub struct CaptureSnapshotParams<'a> {
 }
 
 impl<'a> CaptureSnapshotParams<'a> {
-    pub fn builder() -> CaptureSnapshotParamsBuilder<'a> { CaptureSnapshotParamsBuilder::default() }
+    pub fn builder(computedStyles: Vec<Cow<'a, str>>) -> CaptureSnapshotParamsBuilder<'a> {
+        CaptureSnapshotParamsBuilder {
+            computedStyles: computedStyles,
+            includePaintOrder: None,
+            includeDOMRects: None,
+            includeBlendedBackgroundColors: None,
+            includeTextColorOpacities: None,
+        }
+    }
     pub fn computedStyles(&self) -> &[Cow<'a, str>] { &self.computedStyles }
     pub fn includePaintOrder(&self) -> Option<bool> { self.includePaintOrder }
     pub fn includeDOMRects(&self) -> Option<bool> { self.includeDOMRects }
@@ -1205,9 +1244,9 @@ impl<'a> CaptureSnapshotParams<'a> {
     pub fn includeTextColorOpacities(&self) -> Option<bool> { self.includeTextColorOpacities }
 }
 
-#[derive(Default)]
+
 pub struct CaptureSnapshotParamsBuilder<'a> {
-    computedStyles: Option<Vec<Cow<'a, str>>>,
+    computedStyles: Vec<Cow<'a, str>>,
     includePaintOrder: Option<bool>,
     includeDOMRects: Option<bool>,
     includeBlendedBackgroundColors: Option<bool>,
@@ -1215,8 +1254,6 @@ pub struct CaptureSnapshotParamsBuilder<'a> {
 }
 
 impl<'a> CaptureSnapshotParamsBuilder<'a> {
-    /// Whitelist of computed styles to return.
-    pub fn computedStyles(mut self, computedStyles: Vec<Cow<'a, str>>) -> Self { self.computedStyles = Some(computedStyles); self }
     /// Whether to include layout object paint orders into the snapshot.
     pub fn includePaintOrder(mut self, includePaintOrder: bool) -> Self { self.includePaintOrder = Some(includePaintOrder); self }
     /// Whether to include DOM rectangles (offsetRects, clientRects, scrollRects) into the snapshot
@@ -1231,7 +1268,7 @@ impl<'a> CaptureSnapshotParamsBuilder<'a> {
     pub fn includeTextColorOpacities(mut self, includeTextColorOpacities: bool) -> Self { self.includeTextColorOpacities = Some(includeTextColorOpacities); self }
     pub fn build(self) -> CaptureSnapshotParams<'a> {
         CaptureSnapshotParams {
-            computedStyles: self.computedStyles.unwrap_or_default(),
+            computedStyles: self.computedStyles,
             includePaintOrder: self.includePaintOrder,
             includeDOMRects: self.includeDOMRects,
             includeBlendedBackgroundColors: self.includeBlendedBackgroundColors,
@@ -1255,26 +1292,27 @@ pub struct CaptureSnapshotReturns<'a> {
 }
 
 impl<'a> CaptureSnapshotReturns<'a> {
-    pub fn builder() -> CaptureSnapshotReturnsBuilder<'a> { CaptureSnapshotReturnsBuilder::default() }
+    pub fn builder(documents: Vec<DocumentSnapshot>, strings: Vec<Cow<'a, str>>) -> CaptureSnapshotReturnsBuilder<'a> {
+        CaptureSnapshotReturnsBuilder {
+            documents: documents,
+            strings: strings,
+        }
+    }
     pub fn documents(&self) -> &[DocumentSnapshot] { &self.documents }
     pub fn strings(&self) -> &[Cow<'a, str>] { &self.strings }
 }
 
-#[derive(Default)]
+
 pub struct CaptureSnapshotReturnsBuilder<'a> {
-    documents: Option<Vec<DocumentSnapshot>>,
-    strings: Option<Vec<Cow<'a, str>>>,
+    documents: Vec<DocumentSnapshot>,
+    strings: Vec<Cow<'a, str>>,
 }
 
 impl<'a> CaptureSnapshotReturnsBuilder<'a> {
-    /// The nodes in the DOM tree. The DOMNode at index 0 corresponds to the root document.
-    pub fn documents(mut self, documents: Vec<DocumentSnapshot>) -> Self { self.documents = Some(documents); self }
-    /// Shared string table that all string properties refer to with indexes.
-    pub fn strings(mut self, strings: Vec<Cow<'a, str>>) -> Self { self.strings = Some(strings); self }
     pub fn build(self) -> CaptureSnapshotReturns<'a> {
         CaptureSnapshotReturns {
-            documents: self.documents.unwrap_or_default(),
-            strings: self.strings.unwrap_or_default(),
+            documents: self.documents,
+            strings: self.strings,
         }
     }
 }

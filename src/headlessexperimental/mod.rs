@@ -22,7 +22,13 @@ pub struct ScreenshotParams<'a> {
 }
 
 impl<'a> ScreenshotParams<'a> {
-    pub fn builder() -> ScreenshotParamsBuilder<'a> { ScreenshotParamsBuilder::default() }
+    pub fn builder() -> ScreenshotParamsBuilder<'a> {
+        ScreenshotParamsBuilder {
+            format: None,
+            quality: None,
+            optimizeForSpeed: None,
+        }
+    }
     pub fn format(&self) -> Option<&str> { self.format.as_deref() }
     pub fn quality(&self) -> Option<i64> { self.quality }
     pub fn optimizeForSpeed(&self) -> Option<bool> { self.optimizeForSpeed }
@@ -80,7 +86,14 @@ pub struct BeginFrameParams<'a> {
 }
 
 impl<'a> BeginFrameParams<'a> {
-    pub fn builder() -> BeginFrameParamsBuilder<'a> { BeginFrameParamsBuilder::default() }
+    pub fn builder() -> BeginFrameParamsBuilder<'a> {
+        BeginFrameParamsBuilder {
+            frameTimeTicks: None,
+            interval: None,
+            noDisplayUpdates: None,
+            screenshot: None,
+        }
+    }
     pub fn frameTimeTicks(&self) -> Option<f64> { self.frameTimeTicks }
     pub fn interval(&self) -> Option<f64> { self.interval }
     pub fn noDisplayUpdates(&self) -> Option<bool> { self.noDisplayUpdates }
@@ -137,26 +150,28 @@ pub struct BeginFrameReturns<'a> {
 }
 
 impl<'a> BeginFrameReturns<'a> {
-    pub fn builder() -> BeginFrameReturnsBuilder<'a> { BeginFrameReturnsBuilder::default() }
+    pub fn builder(hasDamage: bool) -> BeginFrameReturnsBuilder<'a> {
+        BeginFrameReturnsBuilder {
+            hasDamage: hasDamage,
+            screenshotData: None,
+        }
+    }
     pub fn hasDamage(&self) -> bool { self.hasDamage }
     pub fn screenshotData(&self) -> Option<&str> { self.screenshotData.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct BeginFrameReturnsBuilder<'a> {
-    hasDamage: Option<bool>,
+    hasDamage: bool,
     screenshotData: Option<Cow<'a, str>>,
 }
 
 impl<'a> BeginFrameReturnsBuilder<'a> {
-    /// Whether the BeginFrame resulted in damage and, thus, a new frame was committed to the
-    /// display. Reported for diagnostic uses, may be removed in the future.
-    pub fn hasDamage(mut self, hasDamage: bool) -> Self { self.hasDamage = Some(hasDamage); self }
     /// Base64-encoded image data of the screenshot, if one was requested and successfully taken. (Encoded as a base64 string when passed over JSON)
     pub fn screenshotData(mut self, screenshotData: impl Into<Cow<'a, str>>) -> Self { self.screenshotData = Some(screenshotData.into()); self }
     pub fn build(self) -> BeginFrameReturns<'a> {
         BeginFrameReturns {
-            hasDamage: self.hasDamage.unwrap_or_default(),
+            hasDamage: self.hasDamage,
             screenshotData: self.screenshotData,
         }
     }
@@ -172,21 +187,6 @@ impl<'a> crate::CdpCommand<'a> for BeginFrameParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct DisableParams {}
 
-impl DisableParams {
-    pub fn builder() -> DisableParamsBuilder {
-        DisableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct DisableParamsBuilder {}
-
-impl DisableParamsBuilder {
-    pub fn build(self) -> DisableParams {
-        DisableParams {}
-    }
-}
-
 impl DisableParams { pub const METHOD: &'static str = "HeadlessExperimental.disable"; }
 
 impl<'a> crate::CdpCommand<'a> for DisableParams {
@@ -196,21 +196,6 @@ impl<'a> crate::CdpCommand<'a> for DisableParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct EnableParams {}
-
-impl EnableParams {
-    pub fn builder() -> EnableParamsBuilder {
-        EnableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct EnableParamsBuilder {}
-
-impl EnableParamsBuilder {
-    pub fn build(self) -> EnableParams {
-        EnableParams {}
-    }
-}
 
 impl EnableParams { pub const METHOD: &'static str = "HeadlessExperimental.enable"; }
 

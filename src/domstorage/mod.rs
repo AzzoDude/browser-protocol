@@ -24,17 +24,23 @@ pub struct StorageId<'a> {
 }
 
 impl<'a> StorageId<'a> {
-    pub fn builder() -> StorageIdBuilder<'a> { StorageIdBuilder::default() }
+    pub fn builder(isLocalStorage: bool) -> StorageIdBuilder<'a> {
+        StorageIdBuilder {
+            securityOrigin: None,
+            storageKey: None,
+            isLocalStorage: isLocalStorage,
+        }
+    }
     pub fn securityOrigin(&self) -> Option<&str> { self.securityOrigin.as_deref() }
     pub fn storageKey(&self) -> Option<&SerializedStorageKey<'a>> { self.storageKey.as_ref() }
     pub fn isLocalStorage(&self) -> bool { self.isLocalStorage }
 }
 
-#[derive(Default)]
+
 pub struct StorageIdBuilder<'a> {
     securityOrigin: Option<Cow<'a, str>>,
     storageKey: Option<SerializedStorageKey<'a>>,
-    isLocalStorage: Option<bool>,
+    isLocalStorage: bool,
 }
 
 impl<'a> StorageIdBuilder<'a> {
@@ -42,13 +48,11 @@ impl<'a> StorageIdBuilder<'a> {
     pub fn securityOrigin(mut self, securityOrigin: impl Into<Cow<'a, str>>) -> Self { self.securityOrigin = Some(securityOrigin.into()); self }
     /// Represents a key by which DOM Storage keys its CachedStorageAreas
     pub fn storageKey(mut self, storageKey: SerializedStorageKey<'a>) -> Self { self.storageKey = Some(storageKey); self }
-    /// Whether the storage is local storage (not session storage).
-    pub fn isLocalStorage(mut self, isLocalStorage: bool) -> Self { self.isLocalStorage = Some(isLocalStorage); self }
     pub fn build(self) -> StorageId<'a> {
         StorageId {
             securityOrigin: self.securityOrigin,
             storageKey: self.storageKey,
-            isLocalStorage: self.isLocalStorage.unwrap_or_default(),
+            isLocalStorage: self.isLocalStorage,
         }
     }
 }
@@ -65,20 +69,23 @@ pub struct ClearParams<'a> {
 }
 
 impl<'a> ClearParams<'a> {
-    pub fn builder() -> ClearParamsBuilder<'a> { ClearParamsBuilder::default() }
+    pub fn builder(storageId: StorageId<'a>) -> ClearParamsBuilder<'a> {
+        ClearParamsBuilder {
+            storageId: storageId,
+        }
+    }
     pub fn storageId(&self) -> &StorageId<'a> { &self.storageId }
 }
 
-#[derive(Default)]
+
 pub struct ClearParamsBuilder<'a> {
-    storageId: Option<StorageId<'a>>,
+    storageId: StorageId<'a>,
 }
 
 impl<'a> ClearParamsBuilder<'a> {
-    pub fn storageId(mut self, storageId: StorageId<'a>) -> Self { self.storageId = Some(storageId); self }
     pub fn build(self) -> ClearParams<'a> {
         ClearParams {
-            storageId: self.storageId.unwrap_or_default(),
+            storageId: self.storageId,
         }
     }
 }
@@ -93,21 +100,6 @@ impl<'a> crate::CdpCommand<'a> for ClearParams<'a> {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct DisableParams {}
 
-impl DisableParams {
-    pub fn builder() -> DisableParamsBuilder {
-        DisableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct DisableParamsBuilder {}
-
-impl DisableParamsBuilder {
-    pub fn build(self) -> DisableParams {
-        DisableParams {}
-    }
-}
-
 impl DisableParams { pub const METHOD: &'static str = "DOMStorage.disable"; }
 
 impl<'a> crate::CdpCommand<'a> for DisableParams {
@@ -117,21 +109,6 @@ impl<'a> crate::CdpCommand<'a> for DisableParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct EnableParams {}
-
-impl EnableParams {
-    pub fn builder() -> EnableParamsBuilder {
-        EnableParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct EnableParamsBuilder {}
-
-impl EnableParamsBuilder {
-    pub fn build(self) -> EnableParams {
-        EnableParams {}
-    }
-}
 
 impl EnableParams { pub const METHOD: &'static str = "DOMStorage.enable"; }
 
@@ -148,20 +125,23 @@ pub struct GetDOMStorageItemsParams<'a> {
 }
 
 impl<'a> GetDOMStorageItemsParams<'a> {
-    pub fn builder() -> GetDOMStorageItemsParamsBuilder<'a> { GetDOMStorageItemsParamsBuilder::default() }
+    pub fn builder(storageId: StorageId<'a>) -> GetDOMStorageItemsParamsBuilder<'a> {
+        GetDOMStorageItemsParamsBuilder {
+            storageId: storageId,
+        }
+    }
     pub fn storageId(&self) -> &StorageId<'a> { &self.storageId }
 }
 
-#[derive(Default)]
+
 pub struct GetDOMStorageItemsParamsBuilder<'a> {
-    storageId: Option<StorageId<'a>>,
+    storageId: StorageId<'a>,
 }
 
 impl<'a> GetDOMStorageItemsParamsBuilder<'a> {
-    pub fn storageId(mut self, storageId: StorageId<'a>) -> Self { self.storageId = Some(storageId); self }
     pub fn build(self) -> GetDOMStorageItemsParams<'a> {
         GetDOMStorageItemsParams {
-            storageId: self.storageId.unwrap_or_default(),
+            storageId: self.storageId,
         }
     }
 }
@@ -174,20 +154,23 @@ pub struct GetDOMStorageItemsReturns<'a> {
 }
 
 impl<'a> GetDOMStorageItemsReturns<'a> {
-    pub fn builder() -> GetDOMStorageItemsReturnsBuilder<'a> { GetDOMStorageItemsReturnsBuilder::default() }
+    pub fn builder(entries: Vec<Item<'a>>) -> GetDOMStorageItemsReturnsBuilder<'a> {
+        GetDOMStorageItemsReturnsBuilder {
+            entries: entries,
+        }
+    }
     pub fn entries(&self) -> &[Item<'a>] { &self.entries }
 }
 
-#[derive(Default)]
+
 pub struct GetDOMStorageItemsReturnsBuilder<'a> {
-    entries: Option<Vec<Item<'a>>>,
+    entries: Vec<Item<'a>>,
 }
 
 impl<'a> GetDOMStorageItemsReturnsBuilder<'a> {
-    pub fn entries(mut self, entries: Vec<Item<'a>>) -> Self { self.entries = Some(entries); self }
     pub fn build(self) -> GetDOMStorageItemsReturns<'a> {
         GetDOMStorageItemsReturns {
-            entries: self.entries.unwrap_or_default(),
+            entries: self.entries,
         }
     }
 }
@@ -208,24 +191,27 @@ pub struct RemoveDOMStorageItemParams<'a> {
 }
 
 impl<'a> RemoveDOMStorageItemParams<'a> {
-    pub fn builder() -> RemoveDOMStorageItemParamsBuilder<'a> { RemoveDOMStorageItemParamsBuilder::default() }
+    pub fn builder(storageId: StorageId<'a>, key: impl Into<Cow<'a, str>>) -> RemoveDOMStorageItemParamsBuilder<'a> {
+        RemoveDOMStorageItemParamsBuilder {
+            storageId: storageId,
+            key: key.into(),
+        }
+    }
     pub fn storageId(&self) -> &StorageId<'a> { &self.storageId }
     pub fn key(&self) -> &str { self.key.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct RemoveDOMStorageItemParamsBuilder<'a> {
-    storageId: Option<StorageId<'a>>,
-    key: Option<Cow<'a, str>>,
+    storageId: StorageId<'a>,
+    key: Cow<'a, str>,
 }
 
 impl<'a> RemoveDOMStorageItemParamsBuilder<'a> {
-    pub fn storageId(mut self, storageId: StorageId<'a>) -> Self { self.storageId = Some(storageId); self }
-    pub fn key(mut self, key: impl Into<Cow<'a, str>>) -> Self { self.key = Some(key.into()); self }
     pub fn build(self) -> RemoveDOMStorageItemParams<'a> {
         RemoveDOMStorageItemParams {
-            storageId: self.storageId.unwrap_or_default(),
-            key: self.key.unwrap_or_default(),
+            storageId: self.storageId,
+            key: self.key,
         }
     }
 }
@@ -247,28 +233,31 @@ pub struct SetDOMStorageItemParams<'a> {
 }
 
 impl<'a> SetDOMStorageItemParams<'a> {
-    pub fn builder() -> SetDOMStorageItemParamsBuilder<'a> { SetDOMStorageItemParamsBuilder::default() }
+    pub fn builder(storageId: StorageId<'a>, key: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>) -> SetDOMStorageItemParamsBuilder<'a> {
+        SetDOMStorageItemParamsBuilder {
+            storageId: storageId,
+            key: key.into(),
+            value: value.into(),
+        }
+    }
     pub fn storageId(&self) -> &StorageId<'a> { &self.storageId }
     pub fn key(&self) -> &str { self.key.as_ref() }
     pub fn value(&self) -> &str { self.value.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SetDOMStorageItemParamsBuilder<'a> {
-    storageId: Option<StorageId<'a>>,
-    key: Option<Cow<'a, str>>,
-    value: Option<Cow<'a, str>>,
+    storageId: StorageId<'a>,
+    key: Cow<'a, str>,
+    value: Cow<'a, str>,
 }
 
 impl<'a> SetDOMStorageItemParamsBuilder<'a> {
-    pub fn storageId(mut self, storageId: StorageId<'a>) -> Self { self.storageId = Some(storageId); self }
-    pub fn key(mut self, key: impl Into<Cow<'a, str>>) -> Self { self.key = Some(key.into()); self }
-    pub fn value(mut self, value: impl Into<Cow<'a, str>>) -> Self { self.value = Some(value.into()); self }
     pub fn build(self) -> SetDOMStorageItemParams<'a> {
         SetDOMStorageItemParams {
-            storageId: self.storageId.unwrap_or_default(),
-            key: self.key.unwrap_or_default(),
-            value: self.value.unwrap_or_default(),
+            storageId: self.storageId,
+            key: self.key,
+            value: self.value,
         }
     }
 }

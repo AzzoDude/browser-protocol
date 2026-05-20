@@ -41,7 +41,21 @@ pub struct TouchPoint {
 }
 
 impl TouchPoint {
-    pub fn builder() -> TouchPointBuilder { TouchPointBuilder::default() }
+    pub fn builder(x: f64, y: f64) -> TouchPointBuilder {
+        TouchPointBuilder {
+            x: x,
+            y: y,
+            radiusX: None,
+            radiusY: None,
+            rotationAngle: None,
+            force: None,
+            tangentialPressure: None,
+            tiltX: None,
+            tiltY: None,
+            twist: None,
+            id: None,
+        }
+    }
     pub fn x(&self) -> f64 { self.x }
     pub fn y(&self) -> f64 { self.y }
     pub fn radiusX(&self) -> Option<f64> { self.radiusX }
@@ -55,10 +69,10 @@ impl TouchPoint {
     pub fn id(&self) -> Option<f64> { self.id }
 }
 
-#[derive(Default)]
+
 pub struct TouchPointBuilder {
-    x: Option<f64>,
-    y: Option<f64>,
+    x: f64,
+    y: f64,
     radiusX: Option<f64>,
     radiusY: Option<f64>,
     rotationAngle: Option<f64>,
@@ -71,11 +85,6 @@ pub struct TouchPointBuilder {
 }
 
 impl TouchPointBuilder {
-    /// X coordinate of the event relative to the main frame's viewport in CSS pixels.
-    pub fn x(mut self, x: f64) -> Self { self.x = Some(x); self }
-    /// Y coordinate of the event relative to the main frame's viewport in CSS pixels. 0 refers to
-    /// the top of the viewport and Y increases as it proceeds towards the bottom of the viewport.
-    pub fn y(mut self, y: f64) -> Self { self.y = Some(y); self }
     /// X radius of the touch area (default: 1.0).
     pub fn radiusX(mut self, radiusX: f64) -> Self { self.radiusX = Some(radiusX); self }
     /// Y radius of the touch area (default: 1.0).
@@ -96,8 +105,8 @@ impl TouchPointBuilder {
     pub fn id(mut self, id: f64) -> Self { self.id = Some(id); self }
     pub fn build(self) -> TouchPoint {
         TouchPoint {
-            x: self.x.unwrap_or_default(),
-            y: self.y.unwrap_or_default(),
+            x: self.x,
+            y: self.y,
             radiusX: self.radiusX,
             radiusY: self.radiusY,
             rotationAngle: self.rotationAngle,
@@ -164,27 +173,29 @@ pub struct DragDataItem<'a> {
 }
 
 impl<'a> DragDataItem<'a> {
-    pub fn builder() -> DragDataItemBuilder<'a> { DragDataItemBuilder::default() }
+    pub fn builder(mimeType: impl Into<Cow<'a, str>>, data: impl Into<Cow<'a, str>>) -> DragDataItemBuilder<'a> {
+        DragDataItemBuilder {
+            mimeType: mimeType.into(),
+            data: data.into(),
+            title: None,
+            baseURL: None,
+        }
+    }
     pub fn mimeType(&self) -> &str { self.mimeType.as_ref() }
     pub fn data(&self) -> &str { self.data.as_ref() }
     pub fn title(&self) -> Option<&str> { self.title.as_deref() }
     pub fn baseURL(&self) -> Option<&str> { self.baseURL.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct DragDataItemBuilder<'a> {
-    mimeType: Option<Cow<'a, str>>,
-    data: Option<Cow<'a, str>>,
+    mimeType: Cow<'a, str>,
+    data: Cow<'a, str>,
     title: Option<Cow<'a, str>>,
     baseURL: Option<Cow<'a, str>>,
 }
 
 impl<'a> DragDataItemBuilder<'a> {
-    /// Mime type of the dragged data.
-    pub fn mimeType(mut self, mimeType: impl Into<Cow<'a, str>>) -> Self { self.mimeType = Some(mimeType.into()); self }
-    /// Depending of the value of 'mimeType', it contains the dragged link,
-    /// text, HTML markup or any other data.
-    pub fn data(mut self, data: impl Into<Cow<'a, str>>) -> Self { self.data = Some(data.into()); self }
     /// Title associated with a link. Only valid when 'mimeType' == "text/uri-list".
     pub fn title(mut self, title: impl Into<Cow<'a, str>>) -> Self { self.title = Some(title.into()); self }
     /// Stores the base URL for the contained markup. Only valid when 'mimeType'
@@ -192,8 +203,8 @@ impl<'a> DragDataItemBuilder<'a> {
     pub fn baseURL(mut self, baseURL: impl Into<Cow<'a, str>>) -> Self { self.baseURL = Some(baseURL.into()); self }
     pub fn build(self) -> DragDataItem<'a> {
         DragDataItem {
-            mimeType: self.mimeType.unwrap_or_default(),
-            data: self.data.unwrap_or_default(),
+            mimeType: self.mimeType,
+            data: self.data,
             title: self.title,
             baseURL: self.baseURL,
         }
@@ -213,30 +224,33 @@ pub struct DragData<'a> {
 }
 
 impl<'a> DragData<'a> {
-    pub fn builder() -> DragDataBuilder<'a> { DragDataBuilder::default() }
+    pub fn builder(items: Vec<DragDataItem<'a>>, dragOperationsMask: i64) -> DragDataBuilder<'a> {
+        DragDataBuilder {
+            items: items,
+            files: None,
+            dragOperationsMask: dragOperationsMask,
+        }
+    }
     pub fn items(&self) -> &[DragDataItem<'a>] { &self.items }
     pub fn files(&self) -> Option<&[Cow<'a, str>]> { self.files.as_deref() }
     pub fn dragOperationsMask(&self) -> i64 { self.dragOperationsMask }
 }
 
-#[derive(Default)]
+
 pub struct DragDataBuilder<'a> {
-    items: Option<Vec<DragDataItem<'a>>>,
+    items: Vec<DragDataItem<'a>>,
     files: Option<Vec<Cow<'a, str>>>,
-    dragOperationsMask: Option<i64>,
+    dragOperationsMask: i64,
 }
 
 impl<'a> DragDataBuilder<'a> {
-    pub fn items(mut self, items: Vec<DragDataItem<'a>>) -> Self { self.items = Some(items); self }
     /// List of filenames that should be included when dropping
     pub fn files(mut self, files: Vec<Cow<'a, str>>) -> Self { self.files = Some(files); self }
-    /// Bit field representing allowed drag operations. Copy = 1, Link = 2, Move = 16
-    pub fn dragOperationsMask(mut self, dragOperationsMask: i64) -> Self { self.dragOperationsMask = Some(dragOperationsMask); self }
     pub fn build(self) -> DragData<'a> {
         DragData {
-            items: self.items.unwrap_or_default(),
+            items: self.items,
             files: self.files,
-            dragOperationsMask: self.dragOperationsMask.unwrap_or_default(),
+            dragOperationsMask: self.dragOperationsMask,
         }
     }
 }
@@ -262,7 +276,15 @@ pub struct DispatchDragEventParams<'a> {
 }
 
 impl<'a> DispatchDragEventParams<'a> {
-    pub fn builder() -> DispatchDragEventParamsBuilder<'a> { DispatchDragEventParamsBuilder::default() }
+    pub fn builder(type_: impl Into<Cow<'a, str>>, x: f64, y: f64, data: DragData<'a>) -> DispatchDragEventParamsBuilder<'a> {
+        DispatchDragEventParamsBuilder {
+            type_: type_.into(),
+            x: x,
+            y: y,
+            data: data,
+            modifiers: None,
+        }
+    }
     pub fn type_(&self) -> &str { self.type_.as_ref() }
     pub fn x(&self) -> f64 { self.x }
     pub fn y(&self) -> f64 { self.y }
@@ -270,33 +292,25 @@ impl<'a> DispatchDragEventParams<'a> {
     pub fn modifiers(&self) -> Option<i64> { self.modifiers }
 }
 
-#[derive(Default)]
+
 pub struct DispatchDragEventParamsBuilder<'a> {
-    type_: Option<Cow<'a, str>>,
-    x: Option<f64>,
-    y: Option<f64>,
-    data: Option<DragData<'a>>,
+    type_: Cow<'a, str>,
+    x: f64,
+    y: f64,
+    data: DragData<'a>,
     modifiers: Option<i64>,
 }
 
 impl<'a> DispatchDragEventParamsBuilder<'a> {
-    /// Type of the drag event.
-    pub fn type_(mut self, type_: impl Into<Cow<'a, str>>) -> Self { self.type_ = Some(type_.into()); self }
-    /// X coordinate of the event relative to the main frame's viewport in CSS pixels.
-    pub fn x(mut self, x: f64) -> Self { self.x = Some(x); self }
-    /// Y coordinate of the event relative to the main frame's viewport in CSS pixels. 0 refers to
-    /// the top of the viewport and Y increases as it proceeds towards the bottom of the viewport.
-    pub fn y(mut self, y: f64) -> Self { self.y = Some(y); self }
-    pub fn data(mut self, data: DragData<'a>) -> Self { self.data = Some(data); self }
     /// Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8
     /// (default: 0).
     pub fn modifiers(mut self, modifiers: i64) -> Self { self.modifiers = Some(modifiers); self }
     pub fn build(self) -> DispatchDragEventParams<'a> {
         DispatchDragEventParams {
-            type_: self.type_.unwrap_or_default(),
-            x: self.x.unwrap_or_default(),
-            y: self.y.unwrap_or_default(),
-            data: self.data.unwrap_or_default(),
+            type_: self.type_,
+            x: self.x,
+            y: self.y,
+            data: self.data,
             modifiers: self.modifiers,
         }
     }
@@ -369,7 +383,25 @@ pub struct DispatchKeyEventParams<'a> {
 }
 
 impl<'a> DispatchKeyEventParams<'a> {
-    pub fn builder() -> DispatchKeyEventParamsBuilder<'a> { DispatchKeyEventParamsBuilder::default() }
+    pub fn builder(type_: impl Into<Cow<'a, str>>) -> DispatchKeyEventParamsBuilder<'a> {
+        DispatchKeyEventParamsBuilder {
+            type_: type_.into(),
+            modifiers: None,
+            timestamp: None,
+            text: None,
+            unmodifiedText: None,
+            keyIdentifier: None,
+            code: None,
+            key: None,
+            windowsVirtualKeyCode: None,
+            nativeVirtualKeyCode: None,
+            autoRepeat: None,
+            isKeypad: None,
+            isSystemKey: None,
+            location: None,
+            commands: None,
+        }
+    }
     pub fn type_(&self) -> &str { self.type_.as_ref() }
     pub fn modifiers(&self) -> Option<i64> { self.modifiers }
     pub fn timestamp(&self) -> Option<&TimeSinceEpoch> { self.timestamp.as_ref() }
@@ -387,9 +419,9 @@ impl<'a> DispatchKeyEventParams<'a> {
     pub fn commands(&self) -> Option<&[Cow<'a, str>]> { self.commands.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct DispatchKeyEventParamsBuilder<'a> {
-    type_: Option<Cow<'a, str>>,
+    type_: Cow<'a, str>,
     modifiers: Option<i64>,
     timestamp: Option<TimeSinceEpoch>,
     text: Option<Cow<'a, str>>,
@@ -407,8 +439,6 @@ pub struct DispatchKeyEventParamsBuilder<'a> {
 }
 
 impl<'a> DispatchKeyEventParamsBuilder<'a> {
-    /// Type of the key event.
-    pub fn type_(mut self, type_: impl Into<Cow<'a, str>>) -> Self { self.type_ = Some(type_.into()); self }
     /// Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8
     /// (default: 0).
     pub fn modifiers(mut self, modifiers: i64) -> Self { self.modifiers = Some(modifiers); self }
@@ -446,7 +476,7 @@ impl<'a> DispatchKeyEventParamsBuilder<'a> {
     pub fn commands(mut self, commands: Vec<Cow<'a, str>>) -> Self { self.commands = Some(commands); self }
     pub fn build(self) -> DispatchKeyEventParams<'a> {
         DispatchKeyEventParams {
-            type_: self.type_.unwrap_or_default(),
+            type_: self.type_,
             modifiers: self.modifiers,
             timestamp: self.timestamp,
             text: self.text,
@@ -483,21 +513,23 @@ pub struct InsertTextParams<'a> {
 }
 
 impl<'a> InsertTextParams<'a> {
-    pub fn builder() -> InsertTextParamsBuilder<'a> { InsertTextParamsBuilder::default() }
+    pub fn builder(text: impl Into<Cow<'a, str>>) -> InsertTextParamsBuilder<'a> {
+        InsertTextParamsBuilder {
+            text: text.into(),
+        }
+    }
     pub fn text(&self) -> &str { self.text.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct InsertTextParamsBuilder<'a> {
-    text: Option<Cow<'a, str>>,
+    text: Cow<'a, str>,
 }
 
 impl<'a> InsertTextParamsBuilder<'a> {
-    /// The text to insert.
-    pub fn text(mut self, text: impl Into<Cow<'a, str>>) -> Self { self.text = Some(text.into()); self }
     pub fn build(self) -> InsertTextParams<'a> {
         InsertTextParams {
-            text: self.text.unwrap_or_default(),
+            text: self.text,
         }
     }
 }
@@ -531,7 +563,15 @@ pub struct ImeSetCompositionParams<'a> {
 }
 
 impl<'a> ImeSetCompositionParams<'a> {
-    pub fn builder() -> ImeSetCompositionParamsBuilder<'a> { ImeSetCompositionParamsBuilder::default() }
+    pub fn builder(text: impl Into<Cow<'a, str>>, selectionStart: i64, selectionEnd: i64) -> ImeSetCompositionParamsBuilder<'a> {
+        ImeSetCompositionParamsBuilder {
+            text: text.into(),
+            selectionStart: selectionStart,
+            selectionEnd: selectionEnd,
+            replacementStart: None,
+            replacementEnd: None,
+        }
+    }
     pub fn text(&self) -> &str { self.text.as_ref() }
     pub fn selectionStart(&self) -> i64 { self.selectionStart }
     pub fn selectionEnd(&self) -> i64 { self.selectionEnd }
@@ -539,31 +579,25 @@ impl<'a> ImeSetCompositionParams<'a> {
     pub fn replacementEnd(&self) -> Option<i64> { self.replacementEnd }
 }
 
-#[derive(Default)]
+
 pub struct ImeSetCompositionParamsBuilder<'a> {
-    text: Option<Cow<'a, str>>,
-    selectionStart: Option<i64>,
-    selectionEnd: Option<i64>,
+    text: Cow<'a, str>,
+    selectionStart: i64,
+    selectionEnd: i64,
     replacementStart: Option<i64>,
     replacementEnd: Option<i64>,
 }
 
 impl<'a> ImeSetCompositionParamsBuilder<'a> {
-    /// The text to insert
-    pub fn text(mut self, text: impl Into<Cow<'a, str>>) -> Self { self.text = Some(text.into()); self }
-    /// selection start
-    pub fn selectionStart(mut self, selectionStart: i64) -> Self { self.selectionStart = Some(selectionStart); self }
-    /// selection end
-    pub fn selectionEnd(mut self, selectionEnd: i64) -> Self { self.selectionEnd = Some(selectionEnd); self }
     /// replacement start
     pub fn replacementStart(mut self, replacementStart: i64) -> Self { self.replacementStart = Some(replacementStart); self }
     /// replacement end
     pub fn replacementEnd(mut self, replacementEnd: i64) -> Self { self.replacementEnd = Some(replacementEnd); self }
     pub fn build(self) -> ImeSetCompositionParams<'a> {
         ImeSetCompositionParams {
-            text: self.text.unwrap_or_default(),
-            selectionStart: self.selectionStart.unwrap_or_default(),
-            selectionEnd: self.selectionEnd.unwrap_or_default(),
+            text: self.text,
+            selectionStart: self.selectionStart,
+            selectionEnd: self.selectionEnd,
             replacementStart: self.replacementStart,
             replacementEnd: self.replacementEnd,
         }
@@ -634,7 +668,26 @@ pub struct DispatchMouseEventParams<'a> {
 }
 
 impl<'a> DispatchMouseEventParams<'a> {
-    pub fn builder() -> DispatchMouseEventParamsBuilder<'a> { DispatchMouseEventParamsBuilder::default() }
+    pub fn builder(type_: impl Into<Cow<'a, str>>, x: f64, y: f64) -> DispatchMouseEventParamsBuilder<'a> {
+        DispatchMouseEventParamsBuilder {
+            type_: type_.into(),
+            x: x,
+            y: y,
+            modifiers: None,
+            timestamp: None,
+            button: None,
+            buttons: None,
+            clickCount: None,
+            force: None,
+            tangentialPressure: None,
+            tiltX: None,
+            tiltY: None,
+            twist: None,
+            deltaX: None,
+            deltaY: None,
+            pointerType: None,
+        }
+    }
     pub fn type_(&self) -> &str { self.type_.as_ref() }
     pub fn x(&self) -> f64 { self.x }
     pub fn y(&self) -> f64 { self.y }
@@ -653,11 +706,11 @@ impl<'a> DispatchMouseEventParams<'a> {
     pub fn pointerType(&self) -> Option<&str> { self.pointerType.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct DispatchMouseEventParamsBuilder<'a> {
-    type_: Option<Cow<'a, str>>,
-    x: Option<f64>,
-    y: Option<f64>,
+    type_: Cow<'a, str>,
+    x: f64,
+    y: f64,
     modifiers: Option<i64>,
     timestamp: Option<TimeSinceEpoch>,
     button: Option<MouseButton>,
@@ -674,13 +727,6 @@ pub struct DispatchMouseEventParamsBuilder<'a> {
 }
 
 impl<'a> DispatchMouseEventParamsBuilder<'a> {
-    /// Type of the mouse event.
-    pub fn type_(mut self, type_: impl Into<Cow<'a, str>>) -> Self { self.type_ = Some(type_.into()); self }
-    /// X coordinate of the event relative to the main frame's viewport in CSS pixels.
-    pub fn x(mut self, x: f64) -> Self { self.x = Some(x); self }
-    /// Y coordinate of the event relative to the main frame's viewport in CSS pixels. 0 refers to
-    /// the top of the viewport and Y increases as it proceeds towards the bottom of the viewport.
-    pub fn y(mut self, y: f64) -> Self { self.y = Some(y); self }
     /// Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8
     /// (default: 0).
     pub fn modifiers(mut self, modifiers: i64) -> Self { self.modifiers = Some(modifiers); self }
@@ -711,9 +757,9 @@ impl<'a> DispatchMouseEventParamsBuilder<'a> {
     pub fn pointerType(mut self, pointerType: impl Into<Cow<'a, str>>) -> Self { self.pointerType = Some(pointerType.into()); self }
     pub fn build(self) -> DispatchMouseEventParams<'a> {
         DispatchMouseEventParams {
-            type_: self.type_.unwrap_or_default(),
-            x: self.x.unwrap_or_default(),
-            y: self.y.unwrap_or_default(),
+            type_: self.type_,
+            x: self.x,
+            y: self.y,
             modifiers: self.modifiers,
             timestamp: self.timestamp,
             button: self.button,
@@ -761,29 +807,29 @@ pub struct DispatchTouchEventParams<'a> {
 }
 
 impl<'a> DispatchTouchEventParams<'a> {
-    pub fn builder() -> DispatchTouchEventParamsBuilder<'a> { DispatchTouchEventParamsBuilder::default() }
+    pub fn builder(type_: impl Into<Cow<'a, str>>, touchPoints: Vec<TouchPoint>) -> DispatchTouchEventParamsBuilder<'a> {
+        DispatchTouchEventParamsBuilder {
+            type_: type_.into(),
+            touchPoints: touchPoints,
+            modifiers: None,
+            timestamp: None,
+        }
+    }
     pub fn type_(&self) -> &str { self.type_.as_ref() }
     pub fn touchPoints(&self) -> &[TouchPoint] { &self.touchPoints }
     pub fn modifiers(&self) -> Option<i64> { self.modifiers }
     pub fn timestamp(&self) -> Option<&TimeSinceEpoch> { self.timestamp.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct DispatchTouchEventParamsBuilder<'a> {
-    type_: Option<Cow<'a, str>>,
-    touchPoints: Option<Vec<TouchPoint>>,
+    type_: Cow<'a, str>,
+    touchPoints: Vec<TouchPoint>,
     modifiers: Option<i64>,
     timestamp: Option<TimeSinceEpoch>,
 }
 
 impl<'a> DispatchTouchEventParamsBuilder<'a> {
-    /// Type of the touch event. TouchEnd and TouchCancel must not contain any touch points, while
-    /// TouchStart and TouchMove must contains at least one.
-    pub fn type_(mut self, type_: impl Into<Cow<'a, str>>) -> Self { self.type_ = Some(type_.into()); self }
-    /// Active touch points on the touch device. One event per any changed point (compared to
-    /// previous touch event in a sequence) is generated, emulating pressing/moving/releasing points
-    /// one by one.
-    pub fn touchPoints(mut self, touchPoints: Vec<TouchPoint>) -> Self { self.touchPoints = Some(touchPoints); self }
     /// Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8
     /// (default: 0).
     pub fn modifiers(mut self, modifiers: i64) -> Self { self.modifiers = Some(modifiers); self }
@@ -791,8 +837,8 @@ impl<'a> DispatchTouchEventParamsBuilder<'a> {
     pub fn timestamp(mut self, timestamp: TimeSinceEpoch) -> Self { self.timestamp = Some(timestamp); self }
     pub fn build(self) -> DispatchTouchEventParams<'a> {
         DispatchTouchEventParams {
-            type_: self.type_.unwrap_or_default(),
-            touchPoints: self.touchPoints.unwrap_or_default(),
+            type_: self.type_,
+            touchPoints: self.touchPoints,
             modifiers: self.modifiers,
             timestamp: self.timestamp,
         }
@@ -808,21 +854,6 @@ impl<'a> crate::CdpCommand<'a> for DispatchTouchEventParams<'a> {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct CancelDraggingParams {}
-
-impl CancelDraggingParams {
-    pub fn builder() -> CancelDraggingParamsBuilder {
-        CancelDraggingParamsBuilder::default()
-    }
-}
-
-#[derive(Default)]
-pub struct CancelDraggingParamsBuilder {}
-
-impl CancelDraggingParamsBuilder {
-    pub fn build(self) -> CancelDraggingParams {
-        CancelDraggingParams {}
-    }
-}
 
 impl CancelDraggingParams { pub const METHOD: &'static str = "Input.cancelDragging"; }
 
@@ -864,7 +895,19 @@ pub struct EmulateTouchFromMouseEventParams<'a> {
 }
 
 impl<'a> EmulateTouchFromMouseEventParams<'a> {
-    pub fn builder() -> EmulateTouchFromMouseEventParamsBuilder<'a> { EmulateTouchFromMouseEventParamsBuilder::default() }
+    pub fn builder(type_: impl Into<Cow<'a, str>>, x: i32, y: i32, button: MouseButton) -> EmulateTouchFromMouseEventParamsBuilder<'a> {
+        EmulateTouchFromMouseEventParamsBuilder {
+            type_: type_.into(),
+            x: x,
+            y: y,
+            button: button,
+            timestamp: None,
+            deltaX: None,
+            deltaY: None,
+            modifiers: None,
+            clickCount: None,
+        }
+    }
     pub fn type_(&self) -> &str { self.type_.as_ref() }
     pub fn x(&self) -> i32 { self.x }
     pub fn y(&self) -> i32 { self.y }
@@ -876,12 +919,12 @@ impl<'a> EmulateTouchFromMouseEventParams<'a> {
     pub fn clickCount(&self) -> Option<u64> { self.clickCount }
 }
 
-#[derive(Default)]
+
 pub struct EmulateTouchFromMouseEventParamsBuilder<'a> {
-    type_: Option<Cow<'a, str>>,
-    x: Option<i32>,
-    y: Option<i32>,
-    button: Option<MouseButton>,
+    type_: Cow<'a, str>,
+    x: i32,
+    y: i32,
+    button: MouseButton,
     timestamp: Option<TimeSinceEpoch>,
     deltaX: Option<f64>,
     deltaY: Option<f64>,
@@ -890,14 +933,6 @@ pub struct EmulateTouchFromMouseEventParamsBuilder<'a> {
 }
 
 impl<'a> EmulateTouchFromMouseEventParamsBuilder<'a> {
-    /// Type of the mouse event.
-    pub fn type_(mut self, type_: impl Into<Cow<'a, str>>) -> Self { self.type_ = Some(type_.into()); self }
-    /// X coordinate of the mouse pointer in DIP.
-    pub fn x(mut self, x: i32) -> Self { self.x = Some(x); self }
-    /// Y coordinate of the mouse pointer in DIP.
-    pub fn y(mut self, y: i32) -> Self { self.y = Some(y); self }
-    /// Mouse button. Only "none", "left", "right" are supported.
-    pub fn button(mut self, button: MouseButton) -> Self { self.button = Some(button); self }
     /// Time at which the event occurred (default: current time).
     pub fn timestamp(mut self, timestamp: TimeSinceEpoch) -> Self { self.timestamp = Some(timestamp); self }
     /// X delta in DIP for mouse wheel event (default: 0).
@@ -911,10 +946,10 @@ impl<'a> EmulateTouchFromMouseEventParamsBuilder<'a> {
     pub fn clickCount(mut self, clickCount: u64) -> Self { self.clickCount = Some(clickCount); self }
     pub fn build(self) -> EmulateTouchFromMouseEventParams<'a> {
         EmulateTouchFromMouseEventParams {
-            type_: self.type_.unwrap_or_default(),
-            x: self.x.unwrap_or_default(),
-            y: self.y.unwrap_or_default(),
-            button: self.button.unwrap_or_default(),
+            type_: self.type_,
+            x: self.x,
+            y: self.y,
+            button: self.button,
             timestamp: self.timestamp,
             deltaX: self.deltaX,
             deltaY: self.deltaY,
@@ -941,21 +976,23 @@ pub struct SetIgnoreInputEventsParams {
 }
 
 impl SetIgnoreInputEventsParams {
-    pub fn builder() -> SetIgnoreInputEventsParamsBuilder { SetIgnoreInputEventsParamsBuilder::default() }
+    pub fn builder(ignore: bool) -> SetIgnoreInputEventsParamsBuilder {
+        SetIgnoreInputEventsParamsBuilder {
+            ignore: ignore,
+        }
+    }
     pub fn ignore(&self) -> bool { self.ignore }
 }
 
-#[derive(Default)]
+
 pub struct SetIgnoreInputEventsParamsBuilder {
-    ignore: Option<bool>,
+    ignore: bool,
 }
 
 impl SetIgnoreInputEventsParamsBuilder {
-    /// Ignores input events processing when set to true.
-    pub fn ignore(mut self, ignore: bool) -> Self { self.ignore = Some(ignore); self }
     pub fn build(self) -> SetIgnoreInputEventsParams {
         SetIgnoreInputEventsParams {
-            ignore: self.ignore.unwrap_or_default(),
+            ignore: self.ignore,
         }
     }
 }
@@ -977,20 +1014,23 @@ pub struct SetInterceptDragsParams {
 }
 
 impl SetInterceptDragsParams {
-    pub fn builder() -> SetInterceptDragsParamsBuilder { SetInterceptDragsParamsBuilder::default() }
+    pub fn builder(enabled: bool) -> SetInterceptDragsParamsBuilder {
+        SetInterceptDragsParamsBuilder {
+            enabled: enabled,
+        }
+    }
     pub fn enabled(&self) -> bool { self.enabled }
 }
 
-#[derive(Default)]
+
 pub struct SetInterceptDragsParamsBuilder {
-    enabled: Option<bool>,
+    enabled: bool,
 }
 
 impl SetInterceptDragsParamsBuilder {
-    pub fn enabled(mut self, enabled: bool) -> Self { self.enabled = Some(enabled); self }
     pub fn build(self) -> SetInterceptDragsParams {
         SetInterceptDragsParams {
-            enabled: self.enabled.unwrap_or_default(),
+            enabled: self.enabled,
         }
     }
 }
@@ -1023,7 +1063,15 @@ pub struct SynthesizePinchGestureParams {
 }
 
 impl SynthesizePinchGestureParams {
-    pub fn builder() -> SynthesizePinchGestureParamsBuilder { SynthesizePinchGestureParamsBuilder::default() }
+    pub fn builder(x: f64, y: f64, scaleFactor: f64) -> SynthesizePinchGestureParamsBuilder {
+        SynthesizePinchGestureParamsBuilder {
+            x: x,
+            y: y,
+            scaleFactor: scaleFactor,
+            relativeSpeed: None,
+            gestureSourceType: None,
+        }
+    }
     pub fn x(&self) -> f64 { self.x }
     pub fn y(&self) -> f64 { self.y }
     pub fn scaleFactor(&self) -> f64 { self.scaleFactor }
@@ -1031,22 +1079,16 @@ impl SynthesizePinchGestureParams {
     pub fn gestureSourceType(&self) -> Option<&GestureSourceType> { self.gestureSourceType.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SynthesizePinchGestureParamsBuilder {
-    x: Option<f64>,
-    y: Option<f64>,
-    scaleFactor: Option<f64>,
+    x: f64,
+    y: f64,
+    scaleFactor: f64,
     relativeSpeed: Option<i64>,
     gestureSourceType: Option<GestureSourceType>,
 }
 
 impl SynthesizePinchGestureParamsBuilder {
-    /// X coordinate of the start of the gesture in CSS pixels.
-    pub fn x(mut self, x: f64) -> Self { self.x = Some(x); self }
-    /// Y coordinate of the start of the gesture in CSS pixels.
-    pub fn y(mut self, y: f64) -> Self { self.y = Some(y); self }
-    /// Relative scale factor after zooming (>1.0 zooms in, <1.0 zooms out).
-    pub fn scaleFactor(mut self, scaleFactor: f64) -> Self { self.scaleFactor = Some(scaleFactor); self }
     /// Relative pointer speed in pixels per second (default: 800).
     pub fn relativeSpeed(mut self, relativeSpeed: i64) -> Self { self.relativeSpeed = Some(relativeSpeed); self }
     /// Which type of input events to be generated (default: 'default', which queries the platform
@@ -1054,9 +1096,9 @@ impl SynthesizePinchGestureParamsBuilder {
     pub fn gestureSourceType(mut self, gestureSourceType: GestureSourceType) -> Self { self.gestureSourceType = Some(gestureSourceType); self }
     pub fn build(self) -> SynthesizePinchGestureParams {
         SynthesizePinchGestureParams {
-            x: self.x.unwrap_or_default(),
-            y: self.y.unwrap_or_default(),
-            scaleFactor: self.scaleFactor.unwrap_or_default(),
+            x: self.x,
+            y: self.y,
+            scaleFactor: self.scaleFactor,
             relativeSpeed: self.relativeSpeed,
             gestureSourceType: self.gestureSourceType,
         }
@@ -1115,7 +1157,22 @@ pub struct SynthesizeScrollGestureParams<'a> {
 }
 
 impl<'a> SynthesizeScrollGestureParams<'a> {
-    pub fn builder() -> SynthesizeScrollGestureParamsBuilder<'a> { SynthesizeScrollGestureParamsBuilder::default() }
+    pub fn builder(x: f64, y: f64) -> SynthesizeScrollGestureParamsBuilder<'a> {
+        SynthesizeScrollGestureParamsBuilder {
+            x: x,
+            y: y,
+            xDistance: None,
+            yDistance: None,
+            xOverscroll: None,
+            yOverscroll: None,
+            preventFling: None,
+            speed: None,
+            gestureSourceType: None,
+            repeatCount: None,
+            repeatDelayMs: None,
+            interactionMarkerName: None,
+        }
+    }
     pub fn x(&self) -> f64 { self.x }
     pub fn y(&self) -> f64 { self.y }
     pub fn xDistance(&self) -> Option<f64> { self.xDistance }
@@ -1130,10 +1187,10 @@ impl<'a> SynthesizeScrollGestureParams<'a> {
     pub fn interactionMarkerName(&self) -> Option<&str> { self.interactionMarkerName.as_deref() }
 }
 
-#[derive(Default)]
+
 pub struct SynthesizeScrollGestureParamsBuilder<'a> {
-    x: Option<f64>,
-    y: Option<f64>,
+    x: f64,
+    y: f64,
     xDistance: Option<f64>,
     yDistance: Option<f64>,
     xOverscroll: Option<f64>,
@@ -1147,10 +1204,6 @@ pub struct SynthesizeScrollGestureParamsBuilder<'a> {
 }
 
 impl<'a> SynthesizeScrollGestureParamsBuilder<'a> {
-    /// X coordinate of the start of the gesture in CSS pixels.
-    pub fn x(mut self, x: f64) -> Self { self.x = Some(x); self }
-    /// Y coordinate of the start of the gesture in CSS pixels.
-    pub fn y(mut self, y: f64) -> Self { self.y = Some(y); self }
     /// The distance to scroll along the X axis (positive to scroll left).
     pub fn xDistance(mut self, xDistance: f64) -> Self { self.xDistance = Some(xDistance); self }
     /// The distance to scroll along the Y axis (positive to scroll up).
@@ -1176,8 +1229,8 @@ impl<'a> SynthesizeScrollGestureParamsBuilder<'a> {
     pub fn interactionMarkerName(mut self, interactionMarkerName: impl Into<Cow<'a, str>>) -> Self { self.interactionMarkerName = Some(interactionMarkerName.into()); self }
     pub fn build(self) -> SynthesizeScrollGestureParams<'a> {
         SynthesizeScrollGestureParams {
-            x: self.x.unwrap_or_default(),
-            y: self.y.unwrap_or_default(),
+            x: self.x,
+            y: self.y,
             xDistance: self.xDistance,
             yDistance: self.yDistance,
             xOverscroll: self.xOverscroll,
@@ -1221,7 +1274,15 @@ pub struct SynthesizeTapGestureParams {
 }
 
 impl SynthesizeTapGestureParams {
-    pub fn builder() -> SynthesizeTapGestureParamsBuilder { SynthesizeTapGestureParamsBuilder::default() }
+    pub fn builder(x: f64, y: f64) -> SynthesizeTapGestureParamsBuilder {
+        SynthesizeTapGestureParamsBuilder {
+            x: x,
+            y: y,
+            duration: None,
+            tapCount: None,
+            gestureSourceType: None,
+        }
+    }
     pub fn x(&self) -> f64 { self.x }
     pub fn y(&self) -> f64 { self.y }
     pub fn duration(&self) -> Option<i64> { self.duration }
@@ -1229,20 +1290,16 @@ impl SynthesizeTapGestureParams {
     pub fn gestureSourceType(&self) -> Option<&GestureSourceType> { self.gestureSourceType.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct SynthesizeTapGestureParamsBuilder {
-    x: Option<f64>,
-    y: Option<f64>,
+    x: f64,
+    y: f64,
     duration: Option<i64>,
     tapCount: Option<u64>,
     gestureSourceType: Option<GestureSourceType>,
 }
 
 impl SynthesizeTapGestureParamsBuilder {
-    /// X coordinate of the start of the gesture in CSS pixels.
-    pub fn x(mut self, x: f64) -> Self { self.x = Some(x); self }
-    /// Y coordinate of the start of the gesture in CSS pixels.
-    pub fn y(mut self, y: f64) -> Self { self.y = Some(y); self }
     /// Duration between touchdown and touchup events in ms (default: 50).
     pub fn duration(mut self, duration: i64) -> Self { self.duration = Some(duration); self }
     /// Number of times to perform the tap (e.g. 2 for double tap, default: 1).
@@ -1252,8 +1309,8 @@ impl SynthesizeTapGestureParamsBuilder {
     pub fn gestureSourceType(mut self, gestureSourceType: GestureSourceType) -> Self { self.gestureSourceType = Some(gestureSourceType); self }
     pub fn build(self) -> SynthesizeTapGestureParams {
         SynthesizeTapGestureParams {
-            x: self.x.unwrap_or_default(),
-            y: self.y.unwrap_or_default(),
+            x: self.x,
+            y: self.y,
             duration: self.duration,
             tapCount: self.tapCount,
             gestureSourceType: self.gestureSourceType,

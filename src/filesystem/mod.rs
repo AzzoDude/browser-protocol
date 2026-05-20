@@ -16,34 +16,35 @@ pub struct File<'a> {
 }
 
 impl<'a> File<'a> {
-    pub fn builder() -> FileBuilder<'a> { FileBuilder::default() }
+    pub fn builder(name: impl Into<Cow<'a, str>>, lastModified: crate::network::TimeSinceEpoch, size: f64, type_: impl Into<Cow<'a, str>>) -> FileBuilder<'a> {
+        FileBuilder {
+            name: name.into(),
+            lastModified: lastModified,
+            size: size,
+            type_: type_.into(),
+        }
+    }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn lastModified(&self) -> &crate::network::TimeSinceEpoch { &self.lastModified }
     pub fn size(&self) -> f64 { self.size }
     pub fn type_(&self) -> &str { self.type_.as_ref() }
 }
 
-#[derive(Default)]
+
 pub struct FileBuilder<'a> {
-    name: Option<Cow<'a, str>>,
-    lastModified: Option<crate::network::TimeSinceEpoch>,
-    size: Option<f64>,
-    type_: Option<Cow<'a, str>>,
+    name: Cow<'a, str>,
+    lastModified: crate::network::TimeSinceEpoch,
+    size: f64,
+    type_: Cow<'a, str>,
 }
 
 impl<'a> FileBuilder<'a> {
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    /// Timestamp
-    pub fn lastModified(mut self, lastModified: crate::network::TimeSinceEpoch) -> Self { self.lastModified = Some(lastModified); self }
-    /// Size in bytes
-    pub fn size(mut self, size: f64) -> Self { self.size = Some(size); self }
-    pub fn type_(mut self, type_: impl Into<Cow<'a, str>>) -> Self { self.type_ = Some(type_.into()); self }
     pub fn build(self) -> File<'a> {
         File {
-            name: self.name.unwrap_or_default(),
-            lastModified: self.lastModified.unwrap_or_default(),
-            size: self.size.unwrap_or_default(),
-            type_: self.type_.unwrap_or_default(),
+            name: self.name,
+            lastModified: self.lastModified,
+            size: self.size,
+            type_: self.type_,
         }
     }
 }
@@ -59,29 +60,31 @@ pub struct Directory<'a> {
 }
 
 impl<'a> Directory<'a> {
-    pub fn builder() -> DirectoryBuilder<'a> { DirectoryBuilder::default() }
+    pub fn builder(name: impl Into<Cow<'a, str>>, nestedDirectories: Vec<Cow<'a, str>>, nestedFiles: Vec<File<'a>>) -> DirectoryBuilder<'a> {
+        DirectoryBuilder {
+            name: name.into(),
+            nestedDirectories: nestedDirectories,
+            nestedFiles: nestedFiles,
+        }
+    }
     pub fn name(&self) -> &str { self.name.as_ref() }
     pub fn nestedDirectories(&self) -> &[Cow<'a, str>] { &self.nestedDirectories }
     pub fn nestedFiles(&self) -> &[File<'a>] { &self.nestedFiles }
 }
 
-#[derive(Default)]
+
 pub struct DirectoryBuilder<'a> {
-    name: Option<Cow<'a, str>>,
-    nestedDirectories: Option<Vec<Cow<'a, str>>>,
-    nestedFiles: Option<Vec<File<'a>>>,
+    name: Cow<'a, str>,
+    nestedDirectories: Vec<Cow<'a, str>>,
+    nestedFiles: Vec<File<'a>>,
 }
 
 impl<'a> DirectoryBuilder<'a> {
-    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
-    pub fn nestedDirectories(mut self, nestedDirectories: Vec<Cow<'a, str>>) -> Self { self.nestedDirectories = Some(nestedDirectories); self }
-    /// Files that are directly nested under this directory.
-    pub fn nestedFiles(mut self, nestedFiles: Vec<File<'a>>) -> Self { self.nestedFiles = Some(nestedFiles); self }
     pub fn build(self) -> Directory<'a> {
         Directory {
-            name: self.name.unwrap_or_default(),
-            nestedDirectories: self.nestedDirectories.unwrap_or_default(),
-            nestedFiles: self.nestedFiles.unwrap_or_default(),
+            name: self.name,
+            nestedDirectories: self.nestedDirectories,
+            nestedFiles: self.nestedFiles,
         }
     }
 }
@@ -100,31 +103,33 @@ pub struct BucketFileSystemLocator<'a> {
 }
 
 impl<'a> BucketFileSystemLocator<'a> {
-    pub fn builder() -> BucketFileSystemLocatorBuilder<'a> { BucketFileSystemLocatorBuilder::default() }
+    pub fn builder(storageKey: crate::storage::SerializedStorageKey<'a>, pathComponents: Vec<Cow<'a, str>>) -> BucketFileSystemLocatorBuilder<'a> {
+        BucketFileSystemLocatorBuilder {
+            storageKey: storageKey,
+            bucketName: None,
+            pathComponents: pathComponents,
+        }
+    }
     pub fn storageKey(&self) -> &crate::storage::SerializedStorageKey<'a> { &self.storageKey }
     pub fn bucketName(&self) -> Option<&str> { self.bucketName.as_deref() }
     pub fn pathComponents(&self) -> &[Cow<'a, str>] { &self.pathComponents }
 }
 
-#[derive(Default)]
+
 pub struct BucketFileSystemLocatorBuilder<'a> {
-    storageKey: Option<crate::storage::SerializedStorageKey<'a>>,
+    storageKey: crate::storage::SerializedStorageKey<'a>,
     bucketName: Option<Cow<'a, str>>,
-    pathComponents: Option<Vec<Cow<'a, str>>>,
+    pathComponents: Vec<Cow<'a, str>>,
 }
 
 impl<'a> BucketFileSystemLocatorBuilder<'a> {
-    /// Storage key
-    pub fn storageKey(mut self, storageKey: crate::storage::SerializedStorageKey<'a>) -> Self { self.storageKey = Some(storageKey); self }
     /// Bucket name. Not passing a 'bucketName' will retrieve the default Bucket. (https://developer.mozilla.org/en-US/docs/Web/API/Storage_API#storage_buckets)
     pub fn bucketName(mut self, bucketName: impl Into<Cow<'a, str>>) -> Self { self.bucketName = Some(bucketName.into()); self }
-    /// Path to the directory using each path component as an array item.
-    pub fn pathComponents(mut self, pathComponents: Vec<Cow<'a, str>>) -> Self { self.pathComponents = Some(pathComponents); self }
     pub fn build(self) -> BucketFileSystemLocator<'a> {
         BucketFileSystemLocator {
-            storageKey: self.storageKey.unwrap_or_default(),
+            storageKey: self.storageKey,
             bucketName: self.bucketName,
-            pathComponents: self.pathComponents.unwrap_or_default(),
+            pathComponents: self.pathComponents,
         }
     }
 }
@@ -137,20 +142,23 @@ pub struct GetDirectoryParams<'a> {
 }
 
 impl<'a> GetDirectoryParams<'a> {
-    pub fn builder() -> GetDirectoryParamsBuilder<'a> { GetDirectoryParamsBuilder::default() }
+    pub fn builder(bucketFileSystemLocator: BucketFileSystemLocator<'a>) -> GetDirectoryParamsBuilder<'a> {
+        GetDirectoryParamsBuilder {
+            bucketFileSystemLocator: bucketFileSystemLocator,
+        }
+    }
     pub fn bucketFileSystemLocator(&self) -> &BucketFileSystemLocator<'a> { &self.bucketFileSystemLocator }
 }
 
-#[derive(Default)]
+
 pub struct GetDirectoryParamsBuilder<'a> {
-    bucketFileSystemLocator: Option<BucketFileSystemLocator<'a>>,
+    bucketFileSystemLocator: BucketFileSystemLocator<'a>,
 }
 
 impl<'a> GetDirectoryParamsBuilder<'a> {
-    pub fn bucketFileSystemLocator(mut self, bucketFileSystemLocator: BucketFileSystemLocator<'a>) -> Self { self.bucketFileSystemLocator = Some(bucketFileSystemLocator); self }
     pub fn build(self) -> GetDirectoryParams<'a> {
         GetDirectoryParams {
-            bucketFileSystemLocator: self.bucketFileSystemLocator.unwrap_or_default(),
+            bucketFileSystemLocator: self.bucketFileSystemLocator,
         }
     }
 }
@@ -164,21 +172,23 @@ pub struct GetDirectoryReturns<'a> {
 }
 
 impl<'a> GetDirectoryReturns<'a> {
-    pub fn builder() -> GetDirectoryReturnsBuilder<'a> { GetDirectoryReturnsBuilder::default() }
+    pub fn builder(directory: Directory<'a>) -> GetDirectoryReturnsBuilder<'a> {
+        GetDirectoryReturnsBuilder {
+            directory: directory,
+        }
+    }
     pub fn directory(&self) -> &Directory<'a> { &self.directory }
 }
 
-#[derive(Default)]
+
 pub struct GetDirectoryReturnsBuilder<'a> {
-    directory: Option<Directory<'a>>,
+    directory: Directory<'a>,
 }
 
 impl<'a> GetDirectoryReturnsBuilder<'a> {
-    /// Returns the directory object at the path.
-    pub fn directory(mut self, directory: Directory<'a>) -> Self { self.directory = Some(directory); self }
     pub fn build(self) -> GetDirectoryReturns<'a> {
         GetDirectoryReturns {
-            directory: self.directory.unwrap_or_default(),
+            directory: self.directory,
         }
     }
 }
