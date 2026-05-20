@@ -619,7 +619,7 @@ def generate_cdp_modules(project_name: str):
     with open(os.path.join(src_dir, "lib.rs"), "w", encoding="utf-8") as f:
         f.write("\n".join(lib_rs_content))
 
-def update_cargo_metadata(project_name):
+def update_cargo_metadata(project_name, version):
     project_path = PROJECT_ROOT
     path = os.path.join(project_path, "Cargo.toml")
     with open(path, "r", encoding="utf-8") as f:
@@ -633,7 +633,7 @@ def update_cargo_metadata(project_name):
         "readme": '"README.md"',
         "keywords": '["cdp", "browser", "automation", "protocol"]',
         "categories": '["development-tools", "web-programming"]',
-        "version": '"0.1.3"'
+        "version": f'"{version}"'
     }
 
     lines = content.splitlines()
@@ -692,7 +692,9 @@ def update_cargo_metadata(project_name):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--name", type=str, required=True)
+    parser.add_argument("--version", type=str, required=True, help="Crate version to bump in Cargo.toml")
     args = parser.parse_args()
-    update_cargo_metadata(args.name)
-    generate_cdp_modules(args.name)
+    
+    project_name = os.path.basename(PROJECT_ROOT)
+    update_cargo_metadata(project_name, args.version)
+    generate_cdp_modules(project_name)
