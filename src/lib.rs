@@ -6,20 +6,20 @@ use serde::{Serialize, Deserialize};
 use serde_json::Value as JsonValue;
 
 /// Trait for CDP commands that associate parameters with a method name and response type.
-pub trait CdpCommand: Serialize {
+pub trait CdpCommand<'a>: Serialize {
     const METHOD: &'static str;
-    type Response: for<'de> Deserialize<'de>;
+    type Response: Deserialize<'a>;
 }
 
 /// A generic CDP command envelope.
 #[derive(Serialize)]
-pub struct Command<'a, T: CdpCommand> {
+pub struct Command<'a, T: CdpCommand<'a>> {
     pub id: u64,
     pub method: &'static str,
     pub params: &'a T,
 }
 
-impl<'a, T: CdpCommand> Command<'a, T> {
+impl<'a, T: CdpCommand<'a>> Command<'a, T> {
     pub fn new(id: u64, params: &'a T) -> Self {
         Self { id, method: T::METHOD, params }
     }

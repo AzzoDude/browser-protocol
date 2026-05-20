@@ -1,20 +1,19 @@
 use serde::{Serialize, Deserialize};
 use serde_json::Value as JsonValue;
+use std::borrow::Cow;
 
 /// Unique id
 
-pub type RuleSetId = String;
+pub type RuleSetId<'a> = Cow<'a, str>;
 
 /// Corresponds to SpeculationRuleSet
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct RuleSet {
-
-    pub id: RuleSetId,
+pub struct RuleSet<'a> {
+    id: RuleSetId<'a>,
     /// Identifies a document which the rule set is associated with.
-
-    pub loaderId: crate::network::LoaderId,
+    loaderId: crate::network::LoaderId<'a>,
     /// Source text of JSON representing the rule set. If it comes from
     /// '<script>' tag, it is the textContent of the node. Note that it is
     /// a JSON for valid case.
@@ -22,8 +21,7 @@ pub struct RuleSet {
     /// See also:
     /// - https://wicg.github.io/nav-speculation/speculation-rules.html
     /// - https://github.com/WICG/nav-speculation/blob/main/triggers.md
-
-    pub sourceText: String,
+    sourceText: Cow<'a, str>,
     /// A speculation rule set is either added through an inline
     /// '<script>' tag or through an external resource via the
     /// 'Speculation-Rules' HTTP header. For the first case, we include
@@ -34,37 +32,108 @@ pub struct RuleSet {
     /// See also:
     /// - https://wicg.github.io/nav-speculation/speculation-rules.html#speculation-rules-script
     /// - https://wicg.github.io/nav-speculation/speculation-rules.html#speculation-rules-header
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub backendNodeId: Option<crate::dom::BackendNodeId>,
-
+    backendNodeId: Option<crate::dom::BackendNodeId>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub url: Option<String>,
-
+    url: Option<Cow<'a, str>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub requestId: Option<crate::network::RequestId>,
+    requestId: Option<crate::network::RequestId<'a>>,
     /// Error information
     /// 'errorMessage' is null iff 'errorType' is null.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub errorType: Option<RuleSetErrorType>,
+    errorType: Option<RuleSetErrorType>,
     /// TODO(https://crbug.com/1425354): Replace this property with structured error.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub errorMessage: Option<String>,
+    errorMessage: Option<Cow<'a, str>>,
     /// For more details, see:
     /// https://github.com/WICG/nav-speculation/blob/main/speculation-rules-tags.md
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub tag: Option<String>,
+    tag: Option<Cow<'a, str>>,
+}
+
+impl<'a> RuleSet<'a> {
+    pub fn builder() -> RuleSetBuilder<'a> { RuleSetBuilder::default() }
+    pub fn id(&self) -> &RuleSetId<'a> { &self.id }
+    pub fn loaderId(&self) -> &crate::network::LoaderId<'a> { &self.loaderId }
+    pub fn sourceText(&self) -> &str { self.sourceText.as_ref() }
+    pub fn backendNodeId(&self) -> Option<&crate::dom::BackendNodeId> { self.backendNodeId.as_ref() }
+    pub fn url(&self) -> Option<&str> { self.url.as_deref() }
+    pub fn requestId(&self) -> Option<&crate::network::RequestId<'a>> { self.requestId.as_ref() }
+    pub fn errorType(&self) -> Option<&RuleSetErrorType> { self.errorType.as_ref() }
+    pub fn errorMessage(&self) -> Option<&str> { self.errorMessage.as_deref() }
+    pub fn tag(&self) -> Option<&str> { self.tag.as_deref() }
+}
+
+#[derive(Default)]
+pub struct RuleSetBuilder<'a> {
+    id: Option<RuleSetId<'a>>,
+    loaderId: Option<crate::network::LoaderId<'a>>,
+    sourceText: Option<Cow<'a, str>>,
+    backendNodeId: Option<crate::dom::BackendNodeId>,
+    url: Option<Cow<'a, str>>,
+    requestId: Option<crate::network::RequestId<'a>>,
+    errorType: Option<RuleSetErrorType>,
+    errorMessage: Option<Cow<'a, str>>,
+    tag: Option<Cow<'a, str>>,
+}
+
+impl<'a> RuleSetBuilder<'a> {
+    pub fn id(mut self, id: RuleSetId<'a>) -> Self { self.id = Some(id); self }
+    /// Identifies a document which the rule set is associated with.
+    pub fn loaderId(mut self, loaderId: crate::network::LoaderId<'a>) -> Self { self.loaderId = Some(loaderId); self }
+    /// Source text of JSON representing the rule set. If it comes from
+    /// '<script>' tag, it is the textContent of the node. Note that it is
+    /// a JSON for valid case.
+    /// 
+    /// See also:
+    /// - https://wicg.github.io/nav-speculation/speculation-rules.html
+    /// - https://github.com/WICG/nav-speculation/blob/main/triggers.md
+    pub fn sourceText(mut self, sourceText: impl Into<Cow<'a, str>>) -> Self { self.sourceText = Some(sourceText.into()); self }
+    /// A speculation rule set is either added through an inline
+    /// '<script>' tag or through an external resource via the
+    /// 'Speculation-Rules' HTTP header. For the first case, we include
+    /// the BackendNodeId of the relevant '<script>' tag. For the second
+    /// case, we include the external URL where the rule set was loaded
+    /// from, and also RequestId if Network domain is enabled.
+    /// 
+    /// See also:
+    /// - https://wicg.github.io/nav-speculation/speculation-rules.html#speculation-rules-script
+    /// - https://wicg.github.io/nav-speculation/speculation-rules.html#speculation-rules-header
+    pub fn backendNodeId(mut self, backendNodeId: crate::dom::BackendNodeId) -> Self { self.backendNodeId = Some(backendNodeId); self }
+    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
+    pub fn requestId(mut self, requestId: crate::network::RequestId<'a>) -> Self { self.requestId = Some(requestId); self }
+    /// Error information
+    /// 'errorMessage' is null iff 'errorType' is null.
+    pub fn errorType(mut self, errorType: RuleSetErrorType) -> Self { self.errorType = Some(errorType); self }
+    /// TODO(https://crbug.com/1425354): Replace this property with structured error.
+    pub fn errorMessage(mut self, errorMessage: impl Into<Cow<'a, str>>) -> Self { self.errorMessage = Some(errorMessage.into()); self }
+    /// For more details, see:
+    /// https://github.com/WICG/nav-speculation/blob/main/speculation-rules-tags.md
+    pub fn tag(mut self, tag: impl Into<Cow<'a, str>>) -> Self { self.tag = Some(tag.into()); self }
+    pub fn build(self) -> RuleSet<'a> {
+        RuleSet {
+            id: self.id.unwrap_or_default(),
+            loaderId: self.loaderId.unwrap_or_default(),
+            sourceText: self.sourceText.unwrap_or_default(),
+            backendNodeId: self.backendNodeId,
+            url: self.url,
+            requestId: self.requestId,
+            errorType: self.errorType,
+            errorMessage: self.errorMessage,
+            tag: self.tag,
+        }
+    }
 }
 
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum RuleSetErrorType {
     #[default]
+    #[serde(rename = "SourceIsNotJsonObject")]
     SourceIsNotJsonObject,
+    #[serde(rename = "InvalidRulesSkipped")]
     InvalidRulesSkipped,
+    #[serde(rename = "InvalidRulesetLevelTag")]
     InvalidRulesetLevelTag,
 }
 
@@ -75,8 +144,11 @@ pub enum RuleSetErrorType {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum SpeculationAction {
     #[default]
+    #[serde(rename = "Prefetch")]
     Prefetch,
+    #[serde(rename = "Prerender")]
     Prerender,
+    #[serde(rename = "PrerenderUntilScript")]
     PrerenderUntilScript,
 }
 
@@ -86,7 +158,9 @@ pub enum SpeculationAction {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum SpeculationTargetHint {
     #[default]
+    #[serde(rename = "Blank")]
     Blank,
+    #[serde(rename = "Self")]
     SelfValue,
 }
 
@@ -99,19 +173,49 @@ pub enum SpeculationTargetHint {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct PreloadingAttemptKey {
-
-    pub loaderId: crate::network::LoaderId,
-
-    pub action: SpeculationAction,
-
-    pub url: String,
-
+pub struct PreloadingAttemptKey<'a> {
+    loaderId: crate::network::LoaderId<'a>,
+    action: SpeculationAction,
+    url: Cow<'a, str>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub formSubmission: Option<bool>,
-
+    formSubmission: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub targetHint: Option<SpeculationTargetHint>,
+    targetHint: Option<SpeculationTargetHint>,
+}
+
+impl<'a> PreloadingAttemptKey<'a> {
+    pub fn builder() -> PreloadingAttemptKeyBuilder<'a> { PreloadingAttemptKeyBuilder::default() }
+    pub fn loaderId(&self) -> &crate::network::LoaderId<'a> { &self.loaderId }
+    pub fn action(&self) -> &SpeculationAction { &self.action }
+    pub fn url(&self) -> &str { self.url.as_ref() }
+    pub fn formSubmission(&self) -> Option<bool> { self.formSubmission }
+    pub fn targetHint(&self) -> Option<&SpeculationTargetHint> { self.targetHint.as_ref() }
+}
+
+#[derive(Default)]
+pub struct PreloadingAttemptKeyBuilder<'a> {
+    loaderId: Option<crate::network::LoaderId<'a>>,
+    action: Option<SpeculationAction>,
+    url: Option<Cow<'a, str>>,
+    formSubmission: Option<bool>,
+    targetHint: Option<SpeculationTargetHint>,
+}
+
+impl<'a> PreloadingAttemptKeyBuilder<'a> {
+    pub fn loaderId(mut self, loaderId: crate::network::LoaderId<'a>) -> Self { self.loaderId = Some(loaderId); self }
+    pub fn action(mut self, action: SpeculationAction) -> Self { self.action = Some(action); self }
+    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
+    pub fn formSubmission(mut self, formSubmission: bool) -> Self { self.formSubmission = Some(formSubmission); self }
+    pub fn targetHint(mut self, targetHint: SpeculationTargetHint) -> Self { self.targetHint = Some(targetHint); self }
+    pub fn build(self) -> PreloadingAttemptKey<'a> {
+        PreloadingAttemptKey {
+            loaderId: self.loaderId.unwrap_or_default(),
+            action: self.action.unwrap_or_default(),
+            url: self.url.unwrap_or_default(),
+            formSubmission: self.formSubmission,
+            targetHint: self.targetHint,
+        }
+    }
 }
 
 /// Lists sources for a preloading attempt, specifically the ids of rule sets
@@ -122,13 +226,37 @@ pub struct PreloadingAttemptKey {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct PreloadingAttemptSource {
+pub struct PreloadingAttemptSource<'a> {
+    key: PreloadingAttemptKey<'a>,
+    ruleSetIds: Vec<RuleSetId<'a>>,
+    nodeIds: Vec<crate::dom::BackendNodeId>,
+}
 
-    pub key: PreloadingAttemptKey,
+impl<'a> PreloadingAttemptSource<'a> {
+    pub fn builder() -> PreloadingAttemptSourceBuilder<'a> { PreloadingAttemptSourceBuilder::default() }
+    pub fn key(&self) -> &PreloadingAttemptKey<'a> { &self.key }
+    pub fn ruleSetIds(&self) -> &[RuleSetId<'a>] { &self.ruleSetIds }
+    pub fn nodeIds(&self) -> &[crate::dom::BackendNodeId] { &self.nodeIds }
+}
 
-    pub ruleSetIds: Vec<RuleSetId>,
+#[derive(Default)]
+pub struct PreloadingAttemptSourceBuilder<'a> {
+    key: Option<PreloadingAttemptKey<'a>>,
+    ruleSetIds: Option<Vec<RuleSetId<'a>>>,
+    nodeIds: Option<Vec<crate::dom::BackendNodeId>>,
+}
 
-    pub nodeIds: Vec<crate::dom::BackendNodeId>,
+impl<'a> PreloadingAttemptSourceBuilder<'a> {
+    pub fn key(mut self, key: PreloadingAttemptKey<'a>) -> Self { self.key = Some(key); self }
+    pub fn ruleSetIds(mut self, ruleSetIds: Vec<RuleSetId<'a>>) -> Self { self.ruleSetIds = Some(ruleSetIds); self }
+    pub fn nodeIds(mut self, nodeIds: Vec<crate::dom::BackendNodeId>) -> Self { self.nodeIds = Some(nodeIds); self }
+    pub fn build(self) -> PreloadingAttemptSource<'a> {
+        PreloadingAttemptSource {
+            key: self.key.unwrap_or_default(),
+            ruleSetIds: self.ruleSetIds.unwrap_or_default(),
+            nodeIds: self.nodeIds.unwrap_or_default(),
+        }
+    }
 }
 
 /// Chrome manages different types of preloads together using a
@@ -139,87 +267,162 @@ pub struct PreloadingAttemptSource {
 /// CDP events for them are emitted separately but they share
 /// 'PreloadPipelineId'.
 
-pub type PreloadPipelineId = String;
+pub type PreloadPipelineId<'a> = Cow<'a, str>;
 
 /// List of FinalStatus reasons for Prerender2.
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum PrerenderFinalStatus {
     #[default]
+    #[serde(rename = "Activated")]
     Activated,
+    #[serde(rename = "Destroyed")]
     Destroyed,
+    #[serde(rename = "LowEndDevice")]
     LowEndDevice,
+    #[serde(rename = "InvalidSchemeRedirect")]
     InvalidSchemeRedirect,
+    #[serde(rename = "InvalidSchemeNavigation")]
     InvalidSchemeNavigation,
+    #[serde(rename = "NavigationRequestBlockedByCsp")]
     NavigationRequestBlockedByCsp,
+    #[serde(rename = "MojoBinderPolicy")]
     MojoBinderPolicy,
+    #[serde(rename = "RendererProcessCrashed")]
     RendererProcessCrashed,
+    #[serde(rename = "RendererProcessKilled")]
     RendererProcessKilled,
+    #[serde(rename = "Download")]
     Download,
+    #[serde(rename = "TriggerDestroyed")]
     TriggerDestroyed,
+    #[serde(rename = "NavigationNotCommitted")]
     NavigationNotCommitted,
+    #[serde(rename = "NavigationBadHttpStatus")]
     NavigationBadHttpStatus,
+    #[serde(rename = "ClientCertRequested")]
     ClientCertRequested,
+    #[serde(rename = "NavigationRequestNetworkError")]
     NavigationRequestNetworkError,
+    #[serde(rename = "CancelAllHostsForTesting")]
     CancelAllHostsForTesting,
+    #[serde(rename = "DidFailLoad")]
     DidFailLoad,
+    #[serde(rename = "Stop")]
     Stop,
+    #[serde(rename = "SslCertificateError")]
     SslCertificateError,
+    #[serde(rename = "LoginAuthRequested")]
     LoginAuthRequested,
+    #[serde(rename = "UaChangeRequiresReload")]
     UaChangeRequiresReload,
+    #[serde(rename = "BlockedByClient")]
     BlockedByClient,
+    #[serde(rename = "AudioOutputDeviceRequested")]
     AudioOutputDeviceRequested,
+    #[serde(rename = "MixedContent")]
     MixedContent,
+    #[serde(rename = "TriggerBackgrounded")]
     TriggerBackgrounded,
+    #[serde(rename = "MemoryLimitExceeded")]
     MemoryLimitExceeded,
+    #[serde(rename = "DataSaverEnabled")]
     DataSaverEnabled,
+    #[serde(rename = "TriggerUrlHasEffectiveUrl")]
     TriggerUrlHasEffectiveUrl,
+    #[serde(rename = "ActivatedBeforeStarted")]
     ActivatedBeforeStarted,
+    #[serde(rename = "InactivePageRestriction")]
     InactivePageRestriction,
+    #[serde(rename = "StartFailed")]
     StartFailed,
+    #[serde(rename = "TimeoutBackgrounded")]
     TimeoutBackgrounded,
+    #[serde(rename = "CrossSiteRedirectInInitialNavigation")]
     CrossSiteRedirectInInitialNavigation,
+    #[serde(rename = "CrossSiteNavigationInInitialNavigation")]
     CrossSiteNavigationInInitialNavigation,
+    #[serde(rename = "SameSiteCrossOriginRedirectNotOptInInInitialNavigation")]
     SameSiteCrossOriginRedirectNotOptInInInitialNavigation,
+    #[serde(rename = "SameSiteCrossOriginNavigationNotOptInInInitialNavigation")]
     SameSiteCrossOriginNavigationNotOptInInInitialNavigation,
+    #[serde(rename = "ActivationNavigationParameterMismatch")]
     ActivationNavigationParameterMismatch,
+    #[serde(rename = "ActivatedInBackground")]
     ActivatedInBackground,
+    #[serde(rename = "EmbedderHostDisallowed")]
     EmbedderHostDisallowed,
+    #[serde(rename = "ActivationNavigationDestroyedBeforeSuccess")]
     ActivationNavigationDestroyedBeforeSuccess,
+    #[serde(rename = "TabClosedByUserGesture")]
     TabClosedByUserGesture,
+    #[serde(rename = "TabClosedWithoutUserGesture")]
     TabClosedWithoutUserGesture,
+    #[serde(rename = "PrimaryMainFrameRendererProcessCrashed")]
     PrimaryMainFrameRendererProcessCrashed,
+    #[serde(rename = "PrimaryMainFrameRendererProcessKilled")]
     PrimaryMainFrameRendererProcessKilled,
+    #[serde(rename = "ActivationFramePolicyNotCompatible")]
     ActivationFramePolicyNotCompatible,
+    #[serde(rename = "PreloadingDisabled")]
     PreloadingDisabled,
+    #[serde(rename = "BatterySaverEnabled")]
     BatterySaverEnabled,
+    #[serde(rename = "ActivatedDuringMainFrameNavigation")]
     ActivatedDuringMainFrameNavigation,
+    #[serde(rename = "PreloadingUnsupportedByWebContents")]
     PreloadingUnsupportedByWebContents,
+    #[serde(rename = "CrossSiteRedirectInMainFrameNavigation")]
     CrossSiteRedirectInMainFrameNavigation,
+    #[serde(rename = "CrossSiteNavigationInMainFrameNavigation")]
     CrossSiteNavigationInMainFrameNavigation,
+    #[serde(rename = "SameSiteCrossOriginRedirectNotOptInInMainFrameNavigation")]
     SameSiteCrossOriginRedirectNotOptInInMainFrameNavigation,
+    #[serde(rename = "SameSiteCrossOriginNavigationNotOptInInMainFrameNavigation")]
     SameSiteCrossOriginNavigationNotOptInInMainFrameNavigation,
+    #[serde(rename = "MemoryPressureOnTrigger")]
     MemoryPressureOnTrigger,
+    #[serde(rename = "MemoryPressureAfterTriggered")]
     MemoryPressureAfterTriggered,
+    #[serde(rename = "PrerenderingDisabledByDevTools")]
     PrerenderingDisabledByDevTools,
+    #[serde(rename = "SpeculationRuleRemoved")]
     SpeculationRuleRemoved,
+    #[serde(rename = "ActivatedWithAuxiliaryBrowsingContexts")]
     ActivatedWithAuxiliaryBrowsingContexts,
+    #[serde(rename = "MaxNumOfRunningEagerPrerendersExceeded")]
     MaxNumOfRunningEagerPrerendersExceeded,
+    #[serde(rename = "MaxNumOfRunningNonEagerPrerendersExceeded")]
     MaxNumOfRunningNonEagerPrerendersExceeded,
+    #[serde(rename = "MaxNumOfRunningEmbedderPrerendersExceeded")]
     MaxNumOfRunningEmbedderPrerendersExceeded,
+    #[serde(rename = "PrerenderingUrlHasEffectiveUrl")]
     PrerenderingUrlHasEffectiveUrl,
+    #[serde(rename = "RedirectedPrerenderingUrlHasEffectiveUrl")]
     RedirectedPrerenderingUrlHasEffectiveUrl,
+    #[serde(rename = "ActivationUrlHasEffectiveUrl")]
     ActivationUrlHasEffectiveUrl,
+    #[serde(rename = "JavaScriptInterfaceAdded")]
     JavaScriptInterfaceAdded,
+    #[serde(rename = "JavaScriptInterfaceRemoved")]
     JavaScriptInterfaceRemoved,
+    #[serde(rename = "AllPrerenderingCanceled")]
     AllPrerenderingCanceled,
+    #[serde(rename = "WindowClosed")]
     WindowClosed,
+    #[serde(rename = "SlowNetwork")]
     SlowNetwork,
+    #[serde(rename = "OtherPrerenderedPageActivated")]
     OtherPrerenderedPageActivated,
+    #[serde(rename = "V8OptimizerDisabled")]
     V8OptimizerDisabled,
+    #[serde(rename = "PrerenderFailedDuringPrefetch")]
     PrerenderFailedDuringPrefetch,
+    #[serde(rename = "BrowsingDataRemoved")]
     BrowsingDataRemoved,
+    #[serde(rename = "PrerenderHostReused")]
     PrerenderHostReused,
+    #[serde(rename = "FormSubmitWhenPrerendering")]
     FormSubmitWhenPrerendering,
 }
 
@@ -229,11 +432,17 @@ pub enum PrerenderFinalStatus {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum PreloadingStatus {
     #[default]
+    #[serde(rename = "Pending")]
     Pending,
+    #[serde(rename = "Running")]
     Running,
+    #[serde(rename = "Ready")]
     Ready,
+    #[serde(rename = "Success")]
     Success,
+    #[serde(rename = "Failure")]
     Failure,
+    #[serde(rename = "NotSupported")]
     NotSupported,
 }
 
@@ -243,39 +452,73 @@ pub enum PreloadingStatus {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum PrefetchStatus {
     #[default]
+    #[serde(rename = "PrefetchAllowed")]
     PrefetchAllowed,
+    #[serde(rename = "PrefetchFailedIneligibleRedirect")]
     PrefetchFailedIneligibleRedirect,
+    #[serde(rename = "PrefetchFailedInvalidRedirect")]
     PrefetchFailedInvalidRedirect,
+    #[serde(rename = "PrefetchFailedMIMENotSupported")]
     PrefetchFailedMIMENotSupported,
+    #[serde(rename = "PrefetchFailedNetError")]
     PrefetchFailedNetError,
+    #[serde(rename = "PrefetchFailedNon2XX")]
     PrefetchFailedNon2XX,
+    #[serde(rename = "PrefetchEvictedAfterBrowsingDataRemoved")]
     PrefetchEvictedAfterBrowsingDataRemoved,
+    #[serde(rename = "PrefetchEvictedAfterCandidateRemoved")]
     PrefetchEvictedAfterCandidateRemoved,
+    #[serde(rename = "PrefetchEvictedForNewerPrefetch")]
     PrefetchEvictedForNewerPrefetch,
+    #[serde(rename = "PrefetchHeldback")]
     PrefetchHeldback,
+    #[serde(rename = "PrefetchIneligibleRetryAfter")]
     PrefetchIneligibleRetryAfter,
+    #[serde(rename = "PrefetchIsPrivacyDecoy")]
     PrefetchIsPrivacyDecoy,
+    #[serde(rename = "PrefetchIsStale")]
     PrefetchIsStale,
+    #[serde(rename = "PrefetchNotEligibleBrowserContextOffTheRecord")]
     PrefetchNotEligibleBrowserContextOffTheRecord,
+    #[serde(rename = "PrefetchNotEligibleDataSaverEnabled")]
     PrefetchNotEligibleDataSaverEnabled,
+    #[serde(rename = "PrefetchNotEligibleExistingProxy")]
     PrefetchNotEligibleExistingProxy,
+    #[serde(rename = "PrefetchNotEligibleHostIsNonUnique")]
     PrefetchNotEligibleHostIsNonUnique,
+    #[serde(rename = "PrefetchNotEligibleNonDefaultStoragePartition")]
     PrefetchNotEligibleNonDefaultStoragePartition,
+    #[serde(rename = "PrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy")]
     PrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy,
+    #[serde(rename = "PrefetchNotEligibleSchemeIsNotHttps")]
     PrefetchNotEligibleSchemeIsNotHttps,
+    #[serde(rename = "PrefetchNotEligibleUserHasCookies")]
     PrefetchNotEligibleUserHasCookies,
+    #[serde(rename = "PrefetchNotEligibleUserHasServiceWorker")]
     PrefetchNotEligibleUserHasServiceWorker,
+    #[serde(rename = "PrefetchNotEligibleUserHasServiceWorkerNoFetchHandler")]
     PrefetchNotEligibleUserHasServiceWorkerNoFetchHandler,
+    #[serde(rename = "PrefetchNotEligibleRedirectFromServiceWorker")]
     PrefetchNotEligibleRedirectFromServiceWorker,
+    #[serde(rename = "PrefetchNotEligibleRedirectToServiceWorker")]
     PrefetchNotEligibleRedirectToServiceWorker,
+    #[serde(rename = "PrefetchNotEligibleBatterySaverEnabled")]
     PrefetchNotEligibleBatterySaverEnabled,
+    #[serde(rename = "PrefetchNotEligiblePreloadingDisabled")]
     PrefetchNotEligiblePreloadingDisabled,
+    #[serde(rename = "PrefetchNotFinishedInTime")]
     PrefetchNotFinishedInTime,
+    #[serde(rename = "PrefetchNotStarted")]
     PrefetchNotStarted,
+    #[serde(rename = "PrefetchNotUsedCookiesChanged")]
     PrefetchNotUsedCookiesChanged,
+    #[serde(rename = "PrefetchProxyNotAvailable")]
     PrefetchProxyNotAvailable,
+    #[serde(rename = "PrefetchResponseUsed")]
     PrefetchResponseUsed,
+    #[serde(rename = "PrefetchSuccessfulButNotUsed")]
     PrefetchSuccessfulButNotUsed,
+    #[serde(rename = "PrefetchNotUsedProbeFailed")]
     PrefetchNotUsedProbeFailed,
 }
 
@@ -283,23 +526,62 @@ pub enum PrefetchStatus {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct PrerenderMismatchedHeaders {
-
-    pub headerName: String,
-
+pub struct PrerenderMismatchedHeaders<'a> {
+    headerName: Cow<'a, str>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub initialValue: Option<String>,
-
+    initialValue: Option<Cow<'a, str>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub activationValue: Option<String>,
+    activationValue: Option<Cow<'a, str>>,
+}
+
+impl<'a> PrerenderMismatchedHeaders<'a> {
+    pub fn builder() -> PrerenderMismatchedHeadersBuilder<'a> { PrerenderMismatchedHeadersBuilder::default() }
+    pub fn headerName(&self) -> &str { self.headerName.as_ref() }
+    pub fn initialValue(&self) -> Option<&str> { self.initialValue.as_deref() }
+    pub fn activationValue(&self) -> Option<&str> { self.activationValue.as_deref() }
+}
+
+#[derive(Default)]
+pub struct PrerenderMismatchedHeadersBuilder<'a> {
+    headerName: Option<Cow<'a, str>>,
+    initialValue: Option<Cow<'a, str>>,
+    activationValue: Option<Cow<'a, str>>,
+}
+
+impl<'a> PrerenderMismatchedHeadersBuilder<'a> {
+    pub fn headerName(mut self, headerName: impl Into<Cow<'a, str>>) -> Self { self.headerName = Some(headerName.into()); self }
+    pub fn initialValue(mut self, initialValue: impl Into<Cow<'a, str>>) -> Self { self.initialValue = Some(initialValue.into()); self }
+    pub fn activationValue(mut self, activationValue: impl Into<Cow<'a, str>>) -> Self { self.activationValue = Some(activationValue.into()); self }
+    pub fn build(self) -> PrerenderMismatchedHeaders<'a> {
+        PrerenderMismatchedHeaders {
+            headerName: self.headerName.unwrap_or_default(),
+            initialValue: self.initialValue,
+            activationValue: self.activationValue,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct EnableParams {}
 
+impl EnableParams {
+    pub fn builder() -> EnableParamsBuilder {
+        EnableParamsBuilder::default()
+    }
+}
+
+#[derive(Default)]
+pub struct EnableParamsBuilder {}
+
+impl EnableParamsBuilder {
+    pub fn build(self) -> EnableParams {
+        EnableParams {}
+    }
+}
+
 impl EnableParams { pub const METHOD: &'static str = "Preload.enable"; }
 
-impl crate::CdpCommand for EnableParams {
+impl<'a> crate::CdpCommand<'a> for EnableParams {
     const METHOD: &'static str = "Preload.enable";
     type Response = crate::EmptyReturns;
 }
@@ -307,9 +589,24 @@ impl crate::CdpCommand for EnableParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct DisableParams {}
 
+impl DisableParams {
+    pub fn builder() -> DisableParamsBuilder {
+        DisableParamsBuilder::default()
+    }
+}
+
+#[derive(Default)]
+pub struct DisableParamsBuilder {}
+
+impl DisableParamsBuilder {
+    pub fn build(self) -> DisableParams {
+        DisableParams {}
+    }
+}
+
 impl DisableParams { pub const METHOD: &'static str = "Preload.disable"; }
 
-impl crate::CdpCommand for DisableParams {
+impl<'a> crate::CdpCommand<'a> for DisableParams {
     const METHOD: &'static str = "Preload.disable";
     type Response = crate::EmptyReturns;
 }

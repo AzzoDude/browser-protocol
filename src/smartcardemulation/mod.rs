@@ -1,5 +1,6 @@
 use serde::{Serialize, Deserialize};
 use serde_json::Value as JsonValue;
+use std::borrow::Cow;
 
 /// Indicates the PC/SC error code.
 /// 
@@ -10,37 +11,69 @@ use serde_json::Value as JsonValue;
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum ResultCode {
     #[default]
+    #[serde(rename = "success")]
     Success,
+    #[serde(rename = "removed-card")]
     RemovedCard,
+    #[serde(rename = "reset-card")]
     ResetCard,
+    #[serde(rename = "unpowered-card")]
     UnpoweredCard,
+    #[serde(rename = "unresponsive-card")]
     UnresponsiveCard,
+    #[serde(rename = "unsupported-card")]
     UnsupportedCard,
+    #[serde(rename = "reader-unavailable")]
     ReaderUnavailable,
+    #[serde(rename = "sharing-violation")]
     SharingViolation,
+    #[serde(rename = "not-transacted")]
     NotTransacted,
+    #[serde(rename = "no-smartcard")]
     NoSmartcard,
+    #[serde(rename = "proto-mismatch")]
     ProtoMismatch,
+    #[serde(rename = "system-cancelled")]
     SystemCancelled,
+    #[serde(rename = "not-ready")]
     NotReady,
+    #[serde(rename = "cancelled")]
     Cancelled,
+    #[serde(rename = "insufficient-buffer")]
     InsufficientBuffer,
+    #[serde(rename = "invalid-handle")]
     InvalidHandle,
+    #[serde(rename = "invalid-parameter")]
     InvalidParameter,
+    #[serde(rename = "invalid-value")]
     InvalidValue,
+    #[serde(rename = "no-memory")]
     NoMemory,
+    #[serde(rename = "timeout")]
     Timeout,
+    #[serde(rename = "unknown-reader")]
     UnknownReader,
+    #[serde(rename = "unsupported-feature")]
     UnsupportedFeature,
+    #[serde(rename = "no-readers-available")]
     NoReadersAvailable,
+    #[serde(rename = "service-stopped")]
     ServiceStopped,
+    #[serde(rename = "no-service")]
     NoService,
+    #[serde(rename = "comm-error")]
     CommError,
+    #[serde(rename = "internal-error")]
     InternalError,
+    #[serde(rename = "server-too-busy")]
     ServerTooBusy,
+    #[serde(rename = "unexpected")]
     Unexpected,
+    #[serde(rename = "shutdown")]
     Shutdown,
+    #[serde(rename = "unknown-card")]
     UnknownCard,
+    #[serde(rename = "unknown")]
     Unknown,
 }
 
@@ -49,8 +82,11 @@ pub enum ResultCode {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum ShareMode {
     #[default]
+    #[serde(rename = "shared")]
     Shared,
+    #[serde(rename = "exclusive")]
     Exclusive,
+    #[serde(rename = "direct")]
     Direct,
 }
 
@@ -59,9 +95,13 @@ pub enum ShareMode {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum Disposition {
     #[default]
+    #[serde(rename = "leave-card")]
     LeaveCard,
+    #[serde(rename = "reset-card")]
     ResetCard,
+    #[serde(rename = "unpower-card")]
     UnpowerCard,
+    #[serde(rename = "eject-card")]
     EjectCard,
 }
 
@@ -70,11 +110,17 @@ pub enum Disposition {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum ConnectionState {
     #[default]
+    #[serde(rename = "absent")]
     Absent,
+    #[serde(rename = "present")]
     Present,
+    #[serde(rename = "swallowed")]
     Swallowed,
+    #[serde(rename = "powered")]
     Powered,
+    #[serde(rename = "negotiable")]
     Negotiable,
+    #[serde(rename = "specific")]
     Specific,
 }
 
@@ -83,39 +129,87 @@ pub enum ConnectionState {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ReaderStateFlags {
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub unaware: Option<bool>,
-
+    unaware: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub ignore: Option<bool>,
-
+    ignore: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub changed: Option<bool>,
-
+    changed: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub unknown: Option<bool>,
-
+    unknown: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub unavailable: Option<bool>,
-
+    unavailable: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub empty: Option<bool>,
-
+    empty: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub present: Option<bool>,
-
+    present: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub exclusive: Option<bool>,
-
+    exclusive: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub inuse: Option<bool>,
-
+    inuse: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub mute: Option<bool>,
-
+    mute: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub unpowered: Option<bool>,
+    unpowered: Option<bool>,
+}
+
+impl ReaderStateFlags {
+    pub fn builder() -> ReaderStateFlagsBuilder { ReaderStateFlagsBuilder::default() }
+    pub fn unaware(&self) -> Option<bool> { self.unaware }
+    pub fn ignore(&self) -> Option<bool> { self.ignore }
+    pub fn changed(&self) -> Option<bool> { self.changed }
+    pub fn unknown(&self) -> Option<bool> { self.unknown }
+    pub fn unavailable(&self) -> Option<bool> { self.unavailable }
+    pub fn empty(&self) -> Option<bool> { self.empty }
+    pub fn present(&self) -> Option<bool> { self.present }
+    pub fn exclusive(&self) -> Option<bool> { self.exclusive }
+    pub fn inuse(&self) -> Option<bool> { self.inuse }
+    pub fn mute(&self) -> Option<bool> { self.mute }
+    pub fn unpowered(&self) -> Option<bool> { self.unpowered }
+}
+
+#[derive(Default)]
+pub struct ReaderStateFlagsBuilder {
+    unaware: Option<bool>,
+    ignore: Option<bool>,
+    changed: Option<bool>,
+    unknown: Option<bool>,
+    unavailable: Option<bool>,
+    empty: Option<bool>,
+    present: Option<bool>,
+    exclusive: Option<bool>,
+    inuse: Option<bool>,
+    mute: Option<bool>,
+    unpowered: Option<bool>,
+}
+
+impl ReaderStateFlagsBuilder {
+    pub fn unaware(mut self, unaware: bool) -> Self { self.unaware = Some(unaware); self }
+    pub fn ignore(mut self, ignore: bool) -> Self { self.ignore = Some(ignore); self }
+    pub fn changed(mut self, changed: bool) -> Self { self.changed = Some(changed); self }
+    pub fn unknown(mut self, unknown: bool) -> Self { self.unknown = Some(unknown); self }
+    pub fn unavailable(mut self, unavailable: bool) -> Self { self.unavailable = Some(unavailable); self }
+    pub fn empty(mut self, empty: bool) -> Self { self.empty = Some(empty); self }
+    pub fn present(mut self, present: bool) -> Self { self.present = Some(present); self }
+    pub fn exclusive(mut self, exclusive: bool) -> Self { self.exclusive = Some(exclusive); self }
+    pub fn inuse(mut self, inuse: bool) -> Self { self.inuse = Some(inuse); self }
+    pub fn mute(mut self, mute: bool) -> Self { self.mute = Some(mute); self }
+    pub fn unpowered(mut self, unpowered: bool) -> Self { self.unpowered = Some(unpowered); self }
+    pub fn build(self) -> ReaderStateFlags {
+        ReaderStateFlags {
+            unaware: self.unaware,
+            ignore: self.ignore,
+            changed: self.changed,
+            unknown: self.unknown,
+            unavailable: self.unavailable,
+            empty: self.empty,
+            present: self.present,
+            exclusive: self.exclusive,
+            inuse: self.inuse,
+            mute: self.mute,
+            unpowered: self.unpowered,
+        }
+    }
 }
 
 /// Maps to the |SCARD_PROTOCOL_*| flags.
@@ -123,15 +217,39 @@ pub struct ReaderStateFlags {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ProtocolSet {
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub t0: Option<bool>,
-
+    t0: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub t1: Option<bool>,
-
+    t1: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub raw: Option<bool>,
+    raw: Option<bool>,
+}
+
+impl ProtocolSet {
+    pub fn builder() -> ProtocolSetBuilder { ProtocolSetBuilder::default() }
+    pub fn t0(&self) -> Option<bool> { self.t0 }
+    pub fn t1(&self) -> Option<bool> { self.t1 }
+    pub fn raw(&self) -> Option<bool> { self.raw }
+}
+
+#[derive(Default)]
+pub struct ProtocolSetBuilder {
+    t0: Option<bool>,
+    t1: Option<bool>,
+    raw: Option<bool>,
+}
+
+impl ProtocolSetBuilder {
+    pub fn t0(mut self, t0: bool) -> Self { self.t0 = Some(t0); self }
+    pub fn t1(mut self, t1: bool) -> Self { self.t1 = Some(t1); self }
+    pub fn raw(mut self, raw: bool) -> Self { self.raw = Some(raw); self }
+    pub fn build(self) -> ProtocolSet {
+        ProtocolSet {
+            t0: self.t0,
+            t1: self.t1,
+            raw: self.raw,
+        }
+    }
 }
 
 /// Maps to the |SCARD_PROTOCOL_*| values.
@@ -139,43 +257,112 @@ pub struct ProtocolSet {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum Protocol {
     #[default]
+    #[serde(rename = "t0")]
     T0,
+    #[serde(rename = "t1")]
     T1,
+    #[serde(rename = "raw")]
     Raw,
 }
 
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct ReaderStateIn {
+pub struct ReaderStateIn<'a> {
+    reader: Cow<'a, str>,
+    currentState: ReaderStateFlags,
+    currentInsertionCount: u64,
+}
 
-    pub reader: String,
+impl<'a> ReaderStateIn<'a> {
+    pub fn builder() -> ReaderStateInBuilder<'a> { ReaderStateInBuilder::default() }
+    pub fn reader(&self) -> &str { self.reader.as_ref() }
+    pub fn currentState(&self) -> &ReaderStateFlags { &self.currentState }
+    pub fn currentInsertionCount(&self) -> u64 { self.currentInsertionCount }
+}
 
-    pub currentState: ReaderStateFlags,
+#[derive(Default)]
+pub struct ReaderStateInBuilder<'a> {
+    reader: Option<Cow<'a, str>>,
+    currentState: Option<ReaderStateFlags>,
+    currentInsertionCount: Option<u64>,
+}
 
-    pub currentInsertionCount: u64,
+impl<'a> ReaderStateInBuilder<'a> {
+    pub fn reader(mut self, reader: impl Into<Cow<'a, str>>) -> Self { self.reader = Some(reader.into()); self }
+    pub fn currentState(mut self, currentState: ReaderStateFlags) -> Self { self.currentState = Some(currentState); self }
+    pub fn currentInsertionCount(mut self, currentInsertionCount: u64) -> Self { self.currentInsertionCount = Some(currentInsertionCount); self }
+    pub fn build(self) -> ReaderStateIn<'a> {
+        ReaderStateIn {
+            reader: self.reader.unwrap_or_default(),
+            currentState: self.currentState.unwrap_or_default(),
+            currentInsertionCount: self.currentInsertionCount.unwrap_or_default(),
+        }
+    }
 }
 
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct ReaderStateOut {
+pub struct ReaderStateOut<'a> {
+    reader: Cow<'a, str>,
+    eventState: ReaderStateFlags,
+    eventCount: u64,
+    atr: Cow<'a, str>,
+}
 
-    pub reader: String,
+impl<'a> ReaderStateOut<'a> {
+    pub fn builder() -> ReaderStateOutBuilder<'a> { ReaderStateOutBuilder::default() }
+    pub fn reader(&self) -> &str { self.reader.as_ref() }
+    pub fn eventState(&self) -> &ReaderStateFlags { &self.eventState }
+    pub fn eventCount(&self) -> u64 { self.eventCount }
+    pub fn atr(&self) -> &str { self.atr.as_ref() }
+}
 
-    pub eventState: ReaderStateFlags,
+#[derive(Default)]
+pub struct ReaderStateOutBuilder<'a> {
+    reader: Option<Cow<'a, str>>,
+    eventState: Option<ReaderStateFlags>,
+    eventCount: Option<u64>,
+    atr: Option<Cow<'a, str>>,
+}
 
-    pub eventCount: u64,
-
-    pub atr: String,
+impl<'a> ReaderStateOutBuilder<'a> {
+    pub fn reader(mut self, reader: impl Into<Cow<'a, str>>) -> Self { self.reader = Some(reader.into()); self }
+    pub fn eventState(mut self, eventState: ReaderStateFlags) -> Self { self.eventState = Some(eventState); self }
+    pub fn eventCount(mut self, eventCount: u64) -> Self { self.eventCount = Some(eventCount); self }
+    pub fn atr(mut self, atr: impl Into<Cow<'a, str>>) -> Self { self.atr = Some(atr.into()); self }
+    pub fn build(self) -> ReaderStateOut<'a> {
+        ReaderStateOut {
+            reader: self.reader.unwrap_or_default(),
+            eventState: self.eventState.unwrap_or_default(),
+            eventCount: self.eventCount.unwrap_or_default(),
+            atr: self.atr.unwrap_or_default(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct EnableParams {}
 
+impl EnableParams {
+    pub fn builder() -> EnableParamsBuilder {
+        EnableParamsBuilder::default()
+    }
+}
+
+#[derive(Default)]
+pub struct EnableParamsBuilder {}
+
+impl EnableParamsBuilder {
+    pub fn build(self) -> EnableParams {
+        EnableParams {}
+    }
+}
+
 impl EnableParams { pub const METHOD: &'static str = "SmartCardEmulation.enable"; }
 
-impl crate::CdpCommand for EnableParams {
+impl<'a> crate::CdpCommand<'a> for EnableParams {
     const METHOD: &'static str = "SmartCardEmulation.enable";
     type Response = crate::EmptyReturns;
 }
@@ -183,9 +370,24 @@ impl crate::CdpCommand for EnableParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct DisableParams {}
 
+impl DisableParams {
+    pub fn builder() -> DisableParamsBuilder {
+        DisableParamsBuilder::default()
+    }
+}
+
+#[derive(Default)]
+pub struct DisableParamsBuilder {}
+
+impl DisableParamsBuilder {
+    pub fn build(self) -> DisableParams {
+        DisableParams {}
+    }
+}
+
 impl DisableParams { pub const METHOD: &'static str = "SmartCardEmulation.disable"; }
 
-impl crate::CdpCommand for DisableParams {
+impl<'a> crate::CdpCommand<'a> for DisableParams {
     const METHOD: &'static str = "SmartCardEmulation.disable";
     type Response = crate::EmptyReturns;
 }
@@ -198,16 +400,37 @@ impl crate::CdpCommand for DisableParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct ReportEstablishContextResultParams {
-
-    pub requestId: String,
-
-    pub contextId: u64,
+pub struct ReportEstablishContextResultParams<'a> {
+    requestId: Cow<'a, str>,
+    contextId: u64,
 }
 
-impl ReportEstablishContextResultParams { pub const METHOD: &'static str = "SmartCardEmulation.reportEstablishContextResult"; }
+impl<'a> ReportEstablishContextResultParams<'a> {
+    pub fn builder() -> ReportEstablishContextResultParamsBuilder<'a> { ReportEstablishContextResultParamsBuilder::default() }
+    pub fn requestId(&self) -> &str { self.requestId.as_ref() }
+    pub fn contextId(&self) -> u64 { self.contextId }
+}
 
-impl crate::CdpCommand for ReportEstablishContextResultParams {
+#[derive(Default)]
+pub struct ReportEstablishContextResultParamsBuilder<'a> {
+    requestId: Option<Cow<'a, str>>,
+    contextId: Option<u64>,
+}
+
+impl<'a> ReportEstablishContextResultParamsBuilder<'a> {
+    pub fn requestId(mut self, requestId: impl Into<Cow<'a, str>>) -> Self { self.requestId = Some(requestId.into()); self }
+    pub fn contextId(mut self, contextId: u64) -> Self { self.contextId = Some(contextId); self }
+    pub fn build(self) -> ReportEstablishContextResultParams<'a> {
+        ReportEstablishContextResultParams {
+            requestId: self.requestId.unwrap_or_default(),
+            contextId: self.contextId.unwrap_or_default(),
+        }
+    }
+}
+
+impl<'a> ReportEstablishContextResultParams<'a> { pub const METHOD: &'static str = "SmartCardEmulation.reportEstablishContextResult"; }
+
+impl<'a> crate::CdpCommand<'a> for ReportEstablishContextResultParams<'a> {
     const METHOD: &'static str = "SmartCardEmulation.reportEstablishContextResult";
     type Response = crate::EmptyReturns;
 }
@@ -220,14 +443,32 @@ impl crate::CdpCommand for ReportEstablishContextResultParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct ReportReleaseContextResultParams {
-
-    pub requestId: String,
+pub struct ReportReleaseContextResultParams<'a> {
+    requestId: Cow<'a, str>,
 }
 
-impl ReportReleaseContextResultParams { pub const METHOD: &'static str = "SmartCardEmulation.reportReleaseContextResult"; }
+impl<'a> ReportReleaseContextResultParams<'a> {
+    pub fn builder() -> ReportReleaseContextResultParamsBuilder<'a> { ReportReleaseContextResultParamsBuilder::default() }
+    pub fn requestId(&self) -> &str { self.requestId.as_ref() }
+}
 
-impl crate::CdpCommand for ReportReleaseContextResultParams {
+#[derive(Default)]
+pub struct ReportReleaseContextResultParamsBuilder<'a> {
+    requestId: Option<Cow<'a, str>>,
+}
+
+impl<'a> ReportReleaseContextResultParamsBuilder<'a> {
+    pub fn requestId(mut self, requestId: impl Into<Cow<'a, str>>) -> Self { self.requestId = Some(requestId.into()); self }
+    pub fn build(self) -> ReportReleaseContextResultParams<'a> {
+        ReportReleaseContextResultParams {
+            requestId: self.requestId.unwrap_or_default(),
+        }
+    }
+}
+
+impl<'a> ReportReleaseContextResultParams<'a> { pub const METHOD: &'static str = "SmartCardEmulation.reportReleaseContextResult"; }
+
+impl<'a> crate::CdpCommand<'a> for ReportReleaseContextResultParams<'a> {
     const METHOD: &'static str = "SmartCardEmulation.reportReleaseContextResult";
     type Response = crate::EmptyReturns;
 }
@@ -240,16 +481,37 @@ impl crate::CdpCommand for ReportReleaseContextResultParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct ReportListReadersResultParams {
-
-    pub requestId: String,
-
-    pub readers: Vec<String>,
+pub struct ReportListReadersResultParams<'a> {
+    requestId: Cow<'a, str>,
+    readers: Vec<Cow<'a, str>>,
 }
 
-impl ReportListReadersResultParams { pub const METHOD: &'static str = "SmartCardEmulation.reportListReadersResult"; }
+impl<'a> ReportListReadersResultParams<'a> {
+    pub fn builder() -> ReportListReadersResultParamsBuilder<'a> { ReportListReadersResultParamsBuilder::default() }
+    pub fn requestId(&self) -> &str { self.requestId.as_ref() }
+    pub fn readers(&self) -> &[Cow<'a, str>] { &self.readers }
+}
 
-impl crate::CdpCommand for ReportListReadersResultParams {
+#[derive(Default)]
+pub struct ReportListReadersResultParamsBuilder<'a> {
+    requestId: Option<Cow<'a, str>>,
+    readers: Option<Vec<Cow<'a, str>>>,
+}
+
+impl<'a> ReportListReadersResultParamsBuilder<'a> {
+    pub fn requestId(mut self, requestId: impl Into<Cow<'a, str>>) -> Self { self.requestId = Some(requestId.into()); self }
+    pub fn readers(mut self, readers: Vec<Cow<'a, str>>) -> Self { self.readers = Some(readers); self }
+    pub fn build(self) -> ReportListReadersResultParams<'a> {
+        ReportListReadersResultParams {
+            requestId: self.requestId.unwrap_or_default(),
+            readers: self.readers.unwrap_or_default(),
+        }
+    }
+}
+
+impl<'a> ReportListReadersResultParams<'a> { pub const METHOD: &'static str = "SmartCardEmulation.reportListReadersResult"; }
+
+impl<'a> crate::CdpCommand<'a> for ReportListReadersResultParams<'a> {
     const METHOD: &'static str = "SmartCardEmulation.reportListReadersResult";
     type Response = crate::EmptyReturns;
 }
@@ -262,16 +524,37 @@ impl crate::CdpCommand for ReportListReadersResultParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct ReportGetStatusChangeResultParams {
-
-    pub requestId: String,
-
-    pub readerStates: Vec<ReaderStateOut>,
+pub struct ReportGetStatusChangeResultParams<'a> {
+    requestId: Cow<'a, str>,
+    readerStates: Vec<ReaderStateOut<'a>>,
 }
 
-impl ReportGetStatusChangeResultParams { pub const METHOD: &'static str = "SmartCardEmulation.reportGetStatusChangeResult"; }
+impl<'a> ReportGetStatusChangeResultParams<'a> {
+    pub fn builder() -> ReportGetStatusChangeResultParamsBuilder<'a> { ReportGetStatusChangeResultParamsBuilder::default() }
+    pub fn requestId(&self) -> &str { self.requestId.as_ref() }
+    pub fn readerStates(&self) -> &[ReaderStateOut<'a>] { &self.readerStates }
+}
 
-impl crate::CdpCommand for ReportGetStatusChangeResultParams {
+#[derive(Default)]
+pub struct ReportGetStatusChangeResultParamsBuilder<'a> {
+    requestId: Option<Cow<'a, str>>,
+    readerStates: Option<Vec<ReaderStateOut<'a>>>,
+}
+
+impl<'a> ReportGetStatusChangeResultParamsBuilder<'a> {
+    pub fn requestId(mut self, requestId: impl Into<Cow<'a, str>>) -> Self { self.requestId = Some(requestId.into()); self }
+    pub fn readerStates(mut self, readerStates: Vec<ReaderStateOut<'a>>) -> Self { self.readerStates = Some(readerStates); self }
+    pub fn build(self) -> ReportGetStatusChangeResultParams<'a> {
+        ReportGetStatusChangeResultParams {
+            requestId: self.requestId.unwrap_or_default(),
+            readerStates: self.readerStates.unwrap_or_default(),
+        }
+    }
+}
+
+impl<'a> ReportGetStatusChangeResultParams<'a> { pub const METHOD: &'static str = "SmartCardEmulation.reportGetStatusChangeResult"; }
+
+impl<'a> crate::CdpCommand<'a> for ReportGetStatusChangeResultParams<'a> {
     const METHOD: &'static str = "SmartCardEmulation.reportGetStatusChangeResult";
     type Response = crate::EmptyReturns;
 }
@@ -285,16 +568,37 @@ impl crate::CdpCommand for ReportGetStatusChangeResultParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct ReportBeginTransactionResultParams {
-
-    pub requestId: String,
-
-    pub handle: i64,
+pub struct ReportBeginTransactionResultParams<'a> {
+    requestId: Cow<'a, str>,
+    handle: i64,
 }
 
-impl ReportBeginTransactionResultParams { pub const METHOD: &'static str = "SmartCardEmulation.reportBeginTransactionResult"; }
+impl<'a> ReportBeginTransactionResultParams<'a> {
+    pub fn builder() -> ReportBeginTransactionResultParamsBuilder<'a> { ReportBeginTransactionResultParamsBuilder::default() }
+    pub fn requestId(&self) -> &str { self.requestId.as_ref() }
+    pub fn handle(&self) -> i64 { self.handle }
+}
 
-impl crate::CdpCommand for ReportBeginTransactionResultParams {
+#[derive(Default)]
+pub struct ReportBeginTransactionResultParamsBuilder<'a> {
+    requestId: Option<Cow<'a, str>>,
+    handle: Option<i64>,
+}
+
+impl<'a> ReportBeginTransactionResultParamsBuilder<'a> {
+    pub fn requestId(mut self, requestId: impl Into<Cow<'a, str>>) -> Self { self.requestId = Some(requestId.into()); self }
+    pub fn handle(mut self, handle: i64) -> Self { self.handle = Some(handle); self }
+    pub fn build(self) -> ReportBeginTransactionResultParams<'a> {
+        ReportBeginTransactionResultParams {
+            requestId: self.requestId.unwrap_or_default(),
+            handle: self.handle.unwrap_or_default(),
+        }
+    }
+}
+
+impl<'a> ReportBeginTransactionResultParams<'a> { pub const METHOD: &'static str = "SmartCardEmulation.reportBeginTransactionResult"; }
+
+impl<'a> crate::CdpCommand<'a> for ReportBeginTransactionResultParams<'a> {
     const METHOD: &'static str = "SmartCardEmulation.reportBeginTransactionResult";
     type Response = crate::EmptyReturns;
 }
@@ -321,14 +625,32 @@ impl crate::CdpCommand for ReportBeginTransactionResultParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct ReportPlainResultParams {
-
-    pub requestId: String,
+pub struct ReportPlainResultParams<'a> {
+    requestId: Cow<'a, str>,
 }
 
-impl ReportPlainResultParams { pub const METHOD: &'static str = "SmartCardEmulation.reportPlainResult"; }
+impl<'a> ReportPlainResultParams<'a> {
+    pub fn builder() -> ReportPlainResultParamsBuilder<'a> { ReportPlainResultParamsBuilder::default() }
+    pub fn requestId(&self) -> &str { self.requestId.as_ref() }
+}
 
-impl crate::CdpCommand for ReportPlainResultParams {
+#[derive(Default)]
+pub struct ReportPlainResultParamsBuilder<'a> {
+    requestId: Option<Cow<'a, str>>,
+}
+
+impl<'a> ReportPlainResultParamsBuilder<'a> {
+    pub fn requestId(mut self, requestId: impl Into<Cow<'a, str>>) -> Self { self.requestId = Some(requestId.into()); self }
+    pub fn build(self) -> ReportPlainResultParams<'a> {
+        ReportPlainResultParams {
+            requestId: self.requestId.unwrap_or_default(),
+        }
+    }
+}
+
+impl<'a> ReportPlainResultParams<'a> { pub const METHOD: &'static str = "SmartCardEmulation.reportPlainResult"; }
+
+impl<'a> crate::CdpCommand<'a> for ReportPlainResultParams<'a> {
     const METHOD: &'static str = "SmartCardEmulation.reportPlainResult";
     type Response = crate::EmptyReturns;
 }
@@ -341,19 +663,43 @@ impl crate::CdpCommand for ReportPlainResultParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct ReportConnectResultParams {
-
-    pub requestId: String,
-
-    pub handle: i64,
-
+pub struct ReportConnectResultParams<'a> {
+    requestId: Cow<'a, str>,
+    handle: i64,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub activeProtocol: Option<Protocol>,
+    activeProtocol: Option<Protocol>,
 }
 
-impl ReportConnectResultParams { pub const METHOD: &'static str = "SmartCardEmulation.reportConnectResult"; }
+impl<'a> ReportConnectResultParams<'a> {
+    pub fn builder() -> ReportConnectResultParamsBuilder<'a> { ReportConnectResultParamsBuilder::default() }
+    pub fn requestId(&self) -> &str { self.requestId.as_ref() }
+    pub fn handle(&self) -> i64 { self.handle }
+    pub fn activeProtocol(&self) -> Option<&Protocol> { self.activeProtocol.as_ref() }
+}
 
-impl crate::CdpCommand for ReportConnectResultParams {
+#[derive(Default)]
+pub struct ReportConnectResultParamsBuilder<'a> {
+    requestId: Option<Cow<'a, str>>,
+    handle: Option<i64>,
+    activeProtocol: Option<Protocol>,
+}
+
+impl<'a> ReportConnectResultParamsBuilder<'a> {
+    pub fn requestId(mut self, requestId: impl Into<Cow<'a, str>>) -> Self { self.requestId = Some(requestId.into()); self }
+    pub fn handle(mut self, handle: i64) -> Self { self.handle = Some(handle); self }
+    pub fn activeProtocol(mut self, activeProtocol: Protocol) -> Self { self.activeProtocol = Some(activeProtocol); self }
+    pub fn build(self) -> ReportConnectResultParams<'a> {
+        ReportConnectResultParams {
+            requestId: self.requestId.unwrap_or_default(),
+            handle: self.handle.unwrap_or_default(),
+            activeProtocol: self.activeProtocol,
+        }
+    }
+}
+
+impl<'a> ReportConnectResultParams<'a> { pub const METHOD: &'static str = "SmartCardEmulation.reportConnectResult"; }
+
+impl<'a> crate::CdpCommand<'a> for ReportConnectResultParams<'a> {
     const METHOD: &'static str = "SmartCardEmulation.reportConnectResult";
     type Response = crate::EmptyReturns;
 }
@@ -376,16 +722,37 @@ impl crate::CdpCommand for ReportConnectResultParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct ReportDataResultParams {
-
-    pub requestId: String,
-
-    pub data: String,
+pub struct ReportDataResultParams<'a> {
+    requestId: Cow<'a, str>,
+    data: Cow<'a, str>,
 }
 
-impl ReportDataResultParams { pub const METHOD: &'static str = "SmartCardEmulation.reportDataResult"; }
+impl<'a> ReportDataResultParams<'a> {
+    pub fn builder() -> ReportDataResultParamsBuilder<'a> { ReportDataResultParamsBuilder::default() }
+    pub fn requestId(&self) -> &str { self.requestId.as_ref() }
+    pub fn data(&self) -> &str { self.data.as_ref() }
+}
 
-impl crate::CdpCommand for ReportDataResultParams {
+#[derive(Default)]
+pub struct ReportDataResultParamsBuilder<'a> {
+    requestId: Option<Cow<'a, str>>,
+    data: Option<Cow<'a, str>>,
+}
+
+impl<'a> ReportDataResultParamsBuilder<'a> {
+    pub fn requestId(mut self, requestId: impl Into<Cow<'a, str>>) -> Self { self.requestId = Some(requestId.into()); self }
+    pub fn data(mut self, data: impl Into<Cow<'a, str>>) -> Self { self.data = Some(data.into()); self }
+    pub fn build(self) -> ReportDataResultParams<'a> {
+        ReportDataResultParams {
+            requestId: self.requestId.unwrap_or_default(),
+            data: self.data.unwrap_or_default(),
+        }
+    }
+}
+
+impl<'a> ReportDataResultParams<'a> { pub const METHOD: &'static str = "SmartCardEmulation.reportDataResult"; }
+
+impl<'a> crate::CdpCommand<'a> for ReportDataResultParams<'a> {
     const METHOD: &'static str = "SmartCardEmulation.reportDataResult";
     type Response = crate::EmptyReturns;
 }
@@ -398,23 +765,53 @@ impl crate::CdpCommand for ReportDataResultParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct ReportStatusResultParams {
-
-    pub requestId: String,
-
-    pub readerName: String,
-
-    pub state: ConnectionState,
-
-    pub atr: String,
-
+pub struct ReportStatusResultParams<'a> {
+    requestId: Cow<'a, str>,
+    readerName: Cow<'a, str>,
+    state: ConnectionState,
+    atr: Cow<'a, str>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub protocol: Option<Protocol>,
+    protocol: Option<Protocol>,
 }
 
-impl ReportStatusResultParams { pub const METHOD: &'static str = "SmartCardEmulation.reportStatusResult"; }
+impl<'a> ReportStatusResultParams<'a> {
+    pub fn builder() -> ReportStatusResultParamsBuilder<'a> { ReportStatusResultParamsBuilder::default() }
+    pub fn requestId(&self) -> &str { self.requestId.as_ref() }
+    pub fn readerName(&self) -> &str { self.readerName.as_ref() }
+    pub fn state(&self) -> &ConnectionState { &self.state }
+    pub fn atr(&self) -> &str { self.atr.as_ref() }
+    pub fn protocol(&self) -> Option<&Protocol> { self.protocol.as_ref() }
+}
 
-impl crate::CdpCommand for ReportStatusResultParams {
+#[derive(Default)]
+pub struct ReportStatusResultParamsBuilder<'a> {
+    requestId: Option<Cow<'a, str>>,
+    readerName: Option<Cow<'a, str>>,
+    state: Option<ConnectionState>,
+    atr: Option<Cow<'a, str>>,
+    protocol: Option<Protocol>,
+}
+
+impl<'a> ReportStatusResultParamsBuilder<'a> {
+    pub fn requestId(mut self, requestId: impl Into<Cow<'a, str>>) -> Self { self.requestId = Some(requestId.into()); self }
+    pub fn readerName(mut self, readerName: impl Into<Cow<'a, str>>) -> Self { self.readerName = Some(readerName.into()); self }
+    pub fn state(mut self, state: ConnectionState) -> Self { self.state = Some(state); self }
+    pub fn atr(mut self, atr: impl Into<Cow<'a, str>>) -> Self { self.atr = Some(atr.into()); self }
+    pub fn protocol(mut self, protocol: Protocol) -> Self { self.protocol = Some(protocol); self }
+    pub fn build(self) -> ReportStatusResultParams<'a> {
+        ReportStatusResultParams {
+            requestId: self.requestId.unwrap_or_default(),
+            readerName: self.readerName.unwrap_or_default(),
+            state: self.state.unwrap_or_default(),
+            atr: self.atr.unwrap_or_default(),
+            protocol: self.protocol,
+        }
+    }
+}
+
+impl<'a> ReportStatusResultParams<'a> { pub const METHOD: &'static str = "SmartCardEmulation.reportStatusResult"; }
+
+impl<'a> crate::CdpCommand<'a> for ReportStatusResultParams<'a> {
     const METHOD: &'static str = "SmartCardEmulation.reportStatusResult";
     type Response = crate::EmptyReturns;
 }
@@ -423,16 +820,37 @@ impl crate::CdpCommand for ReportStatusResultParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct ReportErrorParams {
-
-    pub requestId: String,
-
-    pub resultCode: ResultCode,
+pub struct ReportErrorParams<'a> {
+    requestId: Cow<'a, str>,
+    resultCode: ResultCode,
 }
 
-impl ReportErrorParams { pub const METHOD: &'static str = "SmartCardEmulation.reportError"; }
+impl<'a> ReportErrorParams<'a> {
+    pub fn builder() -> ReportErrorParamsBuilder<'a> { ReportErrorParamsBuilder::default() }
+    pub fn requestId(&self) -> &str { self.requestId.as_ref() }
+    pub fn resultCode(&self) -> &ResultCode { &self.resultCode }
+}
 
-impl crate::CdpCommand for ReportErrorParams {
+#[derive(Default)]
+pub struct ReportErrorParamsBuilder<'a> {
+    requestId: Option<Cow<'a, str>>,
+    resultCode: Option<ResultCode>,
+}
+
+impl<'a> ReportErrorParamsBuilder<'a> {
+    pub fn requestId(mut self, requestId: impl Into<Cow<'a, str>>) -> Self { self.requestId = Some(requestId.into()); self }
+    pub fn resultCode(mut self, resultCode: ResultCode) -> Self { self.resultCode = Some(resultCode); self }
+    pub fn build(self) -> ReportErrorParams<'a> {
+        ReportErrorParams {
+            requestId: self.requestId.unwrap_or_default(),
+            resultCode: self.resultCode.unwrap_or_default(),
+        }
+    }
+}
+
+impl<'a> ReportErrorParams<'a> { pub const METHOD: &'static str = "SmartCardEmulation.reportError"; }
+
+impl<'a> crate::CdpCommand<'a> for ReportErrorParams<'a> {
     const METHOD: &'static str = "SmartCardEmulation.reportError";
     type Response = crate::EmptyReturns;
 }

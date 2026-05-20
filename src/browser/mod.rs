@@ -1,10 +1,12 @@
-use serde::{Serialize, Deserialize};
-use serde_json::Value as JsonValue;
-
 //! The Browser domain defines methods and events for browser managing.
 
 
-pub type BrowserContextID = String;
+use serde::{Serialize, Deserialize};
+use serde_json::Value as JsonValue;
+use std::borrow::Cow;
+
+
+pub type BrowserContextID<'a> = Cow<'a, str>;
 
 
 pub type WindowID = i64;
@@ -14,9 +16,13 @@ pub type WindowID = i64;
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum WindowState {
     #[default]
+    #[serde(rename = "normal")]
     Normal,
+    #[serde(rename = "minimized")]
     Minimized,
+    #[serde(rename = "maximized")]
     Maximized,
+    #[serde(rename = "fullscreen")]
     Fullscreen,
 }
 
@@ -26,69 +32,143 @@ pub enum WindowState {
 #[serde(rename_all = "camelCase")]
 pub struct Bounds {
     /// The offset from the left edge of the screen to the window in pixels.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub left: Option<i64>,
+    left: Option<i64>,
     /// The offset from the top edge of the screen to the window in pixels.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub top: Option<i64>,
+    top: Option<i64>,
     /// The window width in pixels.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub width: Option<u64>,
+    width: Option<u64>,
     /// The window height in pixels.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub height: Option<i64>,
+    height: Option<i64>,
     /// The window state. Default to normal.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub windowState: Option<WindowState>,
+    windowState: Option<WindowState>,
+}
+
+impl Bounds {
+    pub fn builder() -> BoundsBuilder { BoundsBuilder::default() }
+    pub fn left(&self) -> Option<i64> { self.left }
+    pub fn top(&self) -> Option<i64> { self.top }
+    pub fn width(&self) -> Option<u64> { self.width }
+    pub fn height(&self) -> Option<i64> { self.height }
+    pub fn windowState(&self) -> Option<&WindowState> { self.windowState.as_ref() }
+}
+
+#[derive(Default)]
+pub struct BoundsBuilder {
+    left: Option<i64>,
+    top: Option<i64>,
+    width: Option<u64>,
+    height: Option<i64>,
+    windowState: Option<WindowState>,
+}
+
+impl BoundsBuilder {
+    /// The offset from the left edge of the screen to the window in pixels.
+    pub fn left(mut self, left: i64) -> Self { self.left = Some(left); self }
+    /// The offset from the top edge of the screen to the window in pixels.
+    pub fn top(mut self, top: i64) -> Self { self.top = Some(top); self }
+    /// The window width in pixels.
+    pub fn width(mut self, width: u64) -> Self { self.width = Some(width); self }
+    /// The window height in pixels.
+    pub fn height(mut self, height: i64) -> Self { self.height = Some(height); self }
+    /// The window state. Default to normal.
+    pub fn windowState(mut self, windowState: WindowState) -> Self { self.windowState = Some(windowState); self }
+    pub fn build(self) -> Bounds {
+        Bounds {
+            left: self.left,
+            top: self.top,
+            width: self.width,
+            height: self.height,
+            windowState: self.windowState,
+        }
+    }
 }
 
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum PermissionType {
     #[default]
+    #[serde(rename = "ar")]
     Ar,
+    #[serde(rename = "audioCapture")]
     AudioCapture,
+    #[serde(rename = "automaticFullscreen")]
     AutomaticFullscreen,
+    #[serde(rename = "backgroundFetch")]
     BackgroundFetch,
+    #[serde(rename = "backgroundSync")]
     BackgroundSync,
+    #[serde(rename = "cameraPanTiltZoom")]
     CameraPanTiltZoom,
+    #[serde(rename = "capturedSurfaceControl")]
     CapturedSurfaceControl,
+    #[serde(rename = "clipboardReadWrite")]
     ClipboardReadWrite,
+    #[serde(rename = "clipboardSanitizedWrite")]
     ClipboardSanitizedWrite,
+    #[serde(rename = "displayCapture")]
     DisplayCapture,
+    #[serde(rename = "durableStorage")]
     DurableStorage,
+    #[serde(rename = "geolocation")]
     Geolocation,
+    #[serde(rename = "handTracking")]
     HandTracking,
+    #[serde(rename = "idleDetection")]
     IdleDetection,
+    #[serde(rename = "keyboardLock")]
     KeyboardLock,
+    #[serde(rename = "localFonts")]
     LocalFonts,
+    #[serde(rename = "localNetwork")]
     LocalNetwork,
+    #[serde(rename = "localNetworkAccess")]
     LocalNetworkAccess,
+    #[serde(rename = "loopbackNetwork")]
     LoopbackNetwork,
+    #[serde(rename = "midi")]
     Midi,
+    #[serde(rename = "midiSysex")]
     MidiSysex,
+    #[serde(rename = "nfc")]
     Nfc,
+    #[serde(rename = "notifications")]
     Notifications,
+    #[serde(rename = "paymentHandler")]
     PaymentHandler,
+    #[serde(rename = "periodicBackgroundSync")]
     PeriodicBackgroundSync,
+    #[serde(rename = "pointerLock")]
     PointerLock,
+    #[serde(rename = "protectedMediaIdentifier")]
     ProtectedMediaIdentifier,
+    #[serde(rename = "sensors")]
     Sensors,
+    #[serde(rename = "smartCard")]
     SmartCard,
+    #[serde(rename = "speakerSelection")]
     SpeakerSelection,
+    #[serde(rename = "storageAccess")]
     StorageAccess,
+    #[serde(rename = "topLevelStorageAccess")]
     TopLevelStorageAccess,
+    #[serde(rename = "videoCapture")]
     VideoCapture,
+    #[serde(rename = "vr")]
     Vr,
+    #[serde(rename = "wakeLockScreen")]
     WakeLockScreen,
+    #[serde(rename = "wakeLockSystem")]
     WakeLockSystem,
+    #[serde(rename = "webAppInstallation")]
     WebAppInstallation,
+    #[serde(rename = "webPrinting")]
     WebPrinting,
+    #[serde(rename = "windowManagement")]
     WindowManagement,
 }
 
@@ -96,8 +176,11 @@ pub enum PermissionType {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum PermissionSetting {
     #[default]
+    #[serde(rename = "granted")]
     Granted,
+    #[serde(rename = "denied")]
     Denied,
+    #[serde(rename = "prompt")]
     Prompt,
 }
 
@@ -106,32 +189,73 @@ pub enum PermissionSetting {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct PermissionDescriptor {
+pub struct PermissionDescriptor<'a> {
     /// Name of permission.
     /// See https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/permissions/permission_descriptor.idl for valid permission names.
-
-    pub name: String,
+    name: Cow<'a, str>,
     /// For "midi" permission, may also specify sysex control.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub sysex: Option<bool>,
+    sysex: Option<bool>,
     /// For "push" permission, may specify userVisibleOnly.
     /// Note that userVisibleOnly = true is the only currently supported type.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub userVisibleOnly: Option<bool>,
+    userVisibleOnly: Option<bool>,
     /// For "clipboard" permission, may specify allowWithoutSanitization.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub allowWithoutSanitization: Option<bool>,
+    allowWithoutSanitization: Option<bool>,
     /// For "fullscreen" permission, must specify allowWithoutGesture:true.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub allowWithoutGesture: Option<bool>,
+    allowWithoutGesture: Option<bool>,
     /// For "camera" permission, may specify panTiltZoom.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub panTiltZoom: Option<bool>,
+    panTiltZoom: Option<bool>,
+}
+
+impl<'a> PermissionDescriptor<'a> {
+    pub fn builder() -> PermissionDescriptorBuilder<'a> { PermissionDescriptorBuilder::default() }
+    pub fn name(&self) -> &str { self.name.as_ref() }
+    pub fn sysex(&self) -> Option<bool> { self.sysex }
+    pub fn userVisibleOnly(&self) -> Option<bool> { self.userVisibleOnly }
+    pub fn allowWithoutSanitization(&self) -> Option<bool> { self.allowWithoutSanitization }
+    pub fn allowWithoutGesture(&self) -> Option<bool> { self.allowWithoutGesture }
+    pub fn panTiltZoom(&self) -> Option<bool> { self.panTiltZoom }
+}
+
+#[derive(Default)]
+pub struct PermissionDescriptorBuilder<'a> {
+    name: Option<Cow<'a, str>>,
+    sysex: Option<bool>,
+    userVisibleOnly: Option<bool>,
+    allowWithoutSanitization: Option<bool>,
+    allowWithoutGesture: Option<bool>,
+    panTiltZoom: Option<bool>,
+}
+
+impl<'a> PermissionDescriptorBuilder<'a> {
+    /// Name of permission.
+    /// See https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/permissions/permission_descriptor.idl for valid permission names.
+    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
+    /// For "midi" permission, may also specify sysex control.
+    pub fn sysex(mut self, sysex: bool) -> Self { self.sysex = Some(sysex); self }
+    /// For "push" permission, may specify userVisibleOnly.
+    /// Note that userVisibleOnly = true is the only currently supported type.
+    pub fn userVisibleOnly(mut self, userVisibleOnly: bool) -> Self { self.userVisibleOnly = Some(userVisibleOnly); self }
+    /// For "clipboard" permission, may specify allowWithoutSanitization.
+    pub fn allowWithoutSanitization(mut self, allowWithoutSanitization: bool) -> Self { self.allowWithoutSanitization = Some(allowWithoutSanitization); self }
+    /// For "fullscreen" permission, must specify allowWithoutGesture:true.
+    pub fn allowWithoutGesture(mut self, allowWithoutGesture: bool) -> Self { self.allowWithoutGesture = Some(allowWithoutGesture); self }
+    /// For "camera" permission, may specify panTiltZoom.
+    pub fn panTiltZoom(mut self, panTiltZoom: bool) -> Self { self.panTiltZoom = Some(panTiltZoom); self }
+    pub fn build(self) -> PermissionDescriptor<'a> {
+        PermissionDescriptor {
+            name: self.name.unwrap_or_default(),
+            sysex: self.sysex,
+            userVisibleOnly: self.userVisibleOnly,
+            allowWithoutSanitization: self.allowWithoutSanitization,
+            allowWithoutGesture: self.allowWithoutGesture,
+            panTiltZoom: self.panTiltZoom,
+        }
+    }
 }
 
 /// Browser command ids used by executeBrowserCommand.
@@ -139,8 +263,11 @@ pub struct PermissionDescriptor {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum BrowserCommandId {
     #[default]
+    #[serde(rename = "openTabSearch")]
     OpenTabSearch,
+    #[serde(rename = "closeTabSearch")]
     CloseTabSearch,
+    #[serde(rename = "openGlic")]
     OpenGlic,
 }
 
@@ -150,40 +277,100 @@ pub enum BrowserCommandId {
 #[serde(rename_all = "camelCase")]
 pub struct Bucket {
     /// Minimum value (inclusive).
-
-    pub low: i64,
+    low: i64,
     /// Maximum value (exclusive).
-
-    pub high: i64,
+    high: i64,
     /// Number of samples.
+    count: u64,
+}
 
-    pub count: u64,
+impl Bucket {
+    pub fn builder() -> BucketBuilder { BucketBuilder::default() }
+    pub fn low(&self) -> i64 { self.low }
+    pub fn high(&self) -> i64 { self.high }
+    pub fn count(&self) -> u64 { self.count }
+}
+
+#[derive(Default)]
+pub struct BucketBuilder {
+    low: Option<i64>,
+    high: Option<i64>,
+    count: Option<u64>,
+}
+
+impl BucketBuilder {
+    /// Minimum value (inclusive).
+    pub fn low(mut self, low: i64) -> Self { self.low = Some(low); self }
+    /// Maximum value (exclusive).
+    pub fn high(mut self, high: i64) -> Self { self.high = Some(high); self }
+    /// Number of samples.
+    pub fn count(mut self, count: u64) -> Self { self.count = Some(count); self }
+    pub fn build(self) -> Bucket {
+        Bucket {
+            low: self.low.unwrap_or_default(),
+            high: self.high.unwrap_or_default(),
+            count: self.count.unwrap_or_default(),
+        }
+    }
 }
 
 /// Chrome histogram.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct Histogram {
+pub struct Histogram<'a> {
     /// Name.
-
-    pub name: String,
+    name: Cow<'a, str>,
     /// Sum of sample values.
-
-    pub sum: i64,
+    sum: i64,
     /// Total number of samples.
-
-    pub count: u64,
+    count: u64,
     /// Buckets.
+    buckets: Vec<Bucket>,
+}
 
-    pub buckets: Vec<Bucket>,
+impl<'a> Histogram<'a> {
+    pub fn builder() -> HistogramBuilder<'a> { HistogramBuilder::default() }
+    pub fn name(&self) -> &str { self.name.as_ref() }
+    pub fn sum(&self) -> i64 { self.sum }
+    pub fn count(&self) -> u64 { self.count }
+    pub fn buckets(&self) -> &[Bucket] { &self.buckets }
+}
+
+#[derive(Default)]
+pub struct HistogramBuilder<'a> {
+    name: Option<Cow<'a, str>>,
+    sum: Option<i64>,
+    count: Option<u64>,
+    buckets: Option<Vec<Bucket>>,
+}
+
+impl<'a> HistogramBuilder<'a> {
+    /// Name.
+    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
+    /// Sum of sample values.
+    pub fn sum(mut self, sum: i64) -> Self { self.sum = Some(sum); self }
+    /// Total number of samples.
+    pub fn count(mut self, count: u64) -> Self { self.count = Some(count); self }
+    /// Buckets.
+    pub fn buckets(mut self, buckets: Vec<Bucket>) -> Self { self.buckets = Some(buckets); self }
+    pub fn build(self) -> Histogram<'a> {
+        Histogram {
+            name: self.name.unwrap_or_default(),
+            sum: self.sum.unwrap_or_default(),
+            count: self.count.unwrap_or_default(),
+            buckets: self.buckets.unwrap_or_default(),
+        }
+    }
 }
 
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub enum PrivacySandboxAPI {
     #[default]
+    #[serde(rename = "BiddingAndAuctionServices")]
     BiddingAndAuctionServices,
+    #[serde(rename = "TrustedKeyValue")]
     TrustedKeyValue,
 }
 
@@ -191,32 +378,69 @@ pub enum PrivacySandboxAPI {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct SetPermissionParams {
+pub struct SetPermissionParams<'a> {
     /// Descriptor of permission to override.
-
-    pub permission: PermissionDescriptor,
+    permission: PermissionDescriptor<'a>,
     /// Setting of the permission.
-
-    pub setting: PermissionSetting,
+    setting: PermissionSetting,
     /// Embedding origin the permission applies to, all origins if not specified.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub origin: Option<String>,
+    origin: Option<Cow<'a, str>>,
     /// Embedded origin the permission applies to. It is ignored unless the embedding origin is
     /// present and valid. If the embedding origin is provided but the embedded origin isn't, the
     /// embedding origin is used as the embedded origin.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub embeddedOrigin: Option<String>,
+    embeddedOrigin: Option<Cow<'a, str>>,
     /// Context to override. When omitted, default browser context is used.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub browserContextId: Option<BrowserContextID>,
+    browserContextId: Option<BrowserContextID<'a>>,
 }
 
-impl SetPermissionParams { pub const METHOD: &'static str = "Browser.setPermission"; }
+impl<'a> SetPermissionParams<'a> {
+    pub fn builder() -> SetPermissionParamsBuilder<'a> { SetPermissionParamsBuilder::default() }
+    pub fn permission(&self) -> &PermissionDescriptor<'a> { &self.permission }
+    pub fn setting(&self) -> &PermissionSetting { &self.setting }
+    pub fn origin(&self) -> Option<&str> { self.origin.as_deref() }
+    pub fn embeddedOrigin(&self) -> Option<&str> { self.embeddedOrigin.as_deref() }
+    pub fn browserContextId(&self) -> Option<&BrowserContextID<'a>> { self.browserContextId.as_ref() }
+}
 
-impl crate::CdpCommand for SetPermissionParams {
+#[derive(Default)]
+pub struct SetPermissionParamsBuilder<'a> {
+    permission: Option<PermissionDescriptor<'a>>,
+    setting: Option<PermissionSetting>,
+    origin: Option<Cow<'a, str>>,
+    embeddedOrigin: Option<Cow<'a, str>>,
+    browserContextId: Option<BrowserContextID<'a>>,
+}
+
+impl<'a> SetPermissionParamsBuilder<'a> {
+    /// Descriptor of permission to override.
+    pub fn permission(mut self, permission: PermissionDescriptor<'a>) -> Self { self.permission = Some(permission); self }
+    /// Setting of the permission.
+    pub fn setting(mut self, setting: PermissionSetting) -> Self { self.setting = Some(setting); self }
+    /// Embedding origin the permission applies to, all origins if not specified.
+    pub fn origin(mut self, origin: impl Into<Cow<'a, str>>) -> Self { self.origin = Some(origin.into()); self }
+    /// Embedded origin the permission applies to. It is ignored unless the embedding origin is
+    /// present and valid. If the embedding origin is provided but the embedded origin isn't, the
+    /// embedding origin is used as the embedded origin.
+    pub fn embeddedOrigin(mut self, embeddedOrigin: impl Into<Cow<'a, str>>) -> Self { self.embeddedOrigin = Some(embeddedOrigin.into()); self }
+    /// Context to override. When omitted, default browser context is used.
+    pub fn browserContextId(mut self, browserContextId: BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
+    pub fn build(self) -> SetPermissionParams<'a> {
+        SetPermissionParams {
+            permission: self.permission.unwrap_or_default(),
+            setting: self.setting.unwrap_or_default(),
+            origin: self.origin,
+            embeddedOrigin: self.embeddedOrigin,
+            browserContextId: self.browserContextId,
+        }
+    }
+}
+
+impl<'a> SetPermissionParams<'a> { pub const METHOD: &'static str = "Browser.setPermission"; }
+
+impl<'a> crate::CdpCommand<'a> for SetPermissionParams<'a> {
     const METHOD: &'static str = "Browser.setPermission";
     type Response = crate::EmptyReturns;
 }
@@ -226,22 +450,48 @@ impl crate::CdpCommand for SetPermissionParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct GrantPermissionsParams {
-
-    pub permissions: Vec<PermissionType>,
+pub struct GrantPermissionsParams<'a> {
+    permissions: Vec<PermissionType>,
     /// Origin the permission applies to, all origins if not specified.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub origin: Option<String>,
+    origin: Option<Cow<'a, str>>,
     /// BrowserContext to override permissions. When omitted, default browser context is used.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub browserContextId: Option<BrowserContextID>,
+    browserContextId: Option<BrowserContextID<'a>>,
 }
 
-impl GrantPermissionsParams { pub const METHOD: &'static str = "Browser.grantPermissions"; }
+impl<'a> GrantPermissionsParams<'a> {
+    pub fn builder() -> GrantPermissionsParamsBuilder<'a> { GrantPermissionsParamsBuilder::default() }
+    pub fn permissions(&self) -> &[PermissionType] { &self.permissions }
+    pub fn origin(&self) -> Option<&str> { self.origin.as_deref() }
+    pub fn browserContextId(&self) -> Option<&BrowserContextID<'a>> { self.browserContextId.as_ref() }
+}
 
-impl crate::CdpCommand for GrantPermissionsParams {
+#[derive(Default)]
+pub struct GrantPermissionsParamsBuilder<'a> {
+    permissions: Option<Vec<PermissionType>>,
+    origin: Option<Cow<'a, str>>,
+    browserContextId: Option<BrowserContextID<'a>>,
+}
+
+impl<'a> GrantPermissionsParamsBuilder<'a> {
+    pub fn permissions(mut self, permissions: Vec<PermissionType>) -> Self { self.permissions = Some(permissions); self }
+    /// Origin the permission applies to, all origins if not specified.
+    pub fn origin(mut self, origin: impl Into<Cow<'a, str>>) -> Self { self.origin = Some(origin.into()); self }
+    /// BrowserContext to override permissions. When omitted, default browser context is used.
+    pub fn browserContextId(mut self, browserContextId: BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
+    pub fn build(self) -> GrantPermissionsParams<'a> {
+        GrantPermissionsParams {
+            permissions: self.permissions.unwrap_or_default(),
+            origin: self.origin,
+            browserContextId: self.browserContextId,
+        }
+    }
+}
+
+impl<'a> GrantPermissionsParams<'a> { pub const METHOD: &'static str = "Browser.grantPermissions"; }
+
+impl<'a> crate::CdpCommand<'a> for GrantPermissionsParams<'a> {
     const METHOD: &'static str = "Browser.grantPermissions";
     type Response = crate::EmptyReturns;
 }
@@ -250,16 +500,35 @@ impl crate::CdpCommand for GrantPermissionsParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct ResetPermissionsParams {
+pub struct ResetPermissionsParams<'a> {
     /// BrowserContext to reset permissions. When omitted, default browser context is used.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub browserContextId: Option<BrowserContextID>,
+    browserContextId: Option<BrowserContextID<'a>>,
 }
 
-impl ResetPermissionsParams { pub const METHOD: &'static str = "Browser.resetPermissions"; }
+impl<'a> ResetPermissionsParams<'a> {
+    pub fn builder() -> ResetPermissionsParamsBuilder<'a> { ResetPermissionsParamsBuilder::default() }
+    pub fn browserContextId(&self) -> Option<&BrowserContextID<'a>> { self.browserContextId.as_ref() }
+}
 
-impl crate::CdpCommand for ResetPermissionsParams {
+#[derive(Default)]
+pub struct ResetPermissionsParamsBuilder<'a> {
+    browserContextId: Option<BrowserContextID<'a>>,
+}
+
+impl<'a> ResetPermissionsParamsBuilder<'a> {
+    /// BrowserContext to reset permissions. When omitted, default browser context is used.
+    pub fn browserContextId(mut self, browserContextId: BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
+    pub fn build(self) -> ResetPermissionsParams<'a> {
+        ResetPermissionsParams {
+            browserContextId: self.browserContextId,
+        }
+    }
+}
+
+impl<'a> ResetPermissionsParams<'a> { pub const METHOD: &'static str = "Browser.resetPermissions"; }
+
+impl<'a> crate::CdpCommand<'a> for ResetPermissionsParams<'a> {
     const METHOD: &'static str = "Browser.resetPermissions";
     type Response = crate::EmptyReturns;
 }
@@ -268,30 +537,64 @@ impl crate::CdpCommand for ResetPermissionsParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct SetDownloadBehaviorParams {
+pub struct SetDownloadBehaviorParams<'a> {
     /// Whether to allow all or deny all download requests, or use default Chrome behavior if
     /// available (otherwise deny). |allowAndName| allows download and names files according to
     /// their download guids.
-
-    pub behavior: String,
+    behavior: Cow<'a, str>,
     /// BrowserContext to set download behavior. When omitted, default browser context is used.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub browserContextId: Option<BrowserContextID>,
+    browserContextId: Option<BrowserContextID<'a>>,
     /// The default path to save downloaded files to. This is required if behavior is set to 'allow'
     /// or 'allowAndName'.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub downloadPath: Option<String>,
+    downloadPath: Option<Cow<'a, str>>,
     /// Whether to emit download events (defaults to false).
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub eventsEnabled: Option<bool>,
+    eventsEnabled: Option<bool>,
 }
 
-impl SetDownloadBehaviorParams { pub const METHOD: &'static str = "Browser.setDownloadBehavior"; }
+impl<'a> SetDownloadBehaviorParams<'a> {
+    pub fn builder() -> SetDownloadBehaviorParamsBuilder<'a> { SetDownloadBehaviorParamsBuilder::default() }
+    pub fn behavior(&self) -> &str { self.behavior.as_ref() }
+    pub fn browserContextId(&self) -> Option<&BrowserContextID<'a>> { self.browserContextId.as_ref() }
+    pub fn downloadPath(&self) -> Option<&str> { self.downloadPath.as_deref() }
+    pub fn eventsEnabled(&self) -> Option<bool> { self.eventsEnabled }
+}
 
-impl crate::CdpCommand for SetDownloadBehaviorParams {
+#[derive(Default)]
+pub struct SetDownloadBehaviorParamsBuilder<'a> {
+    behavior: Option<Cow<'a, str>>,
+    browserContextId: Option<BrowserContextID<'a>>,
+    downloadPath: Option<Cow<'a, str>>,
+    eventsEnabled: Option<bool>,
+}
+
+impl<'a> SetDownloadBehaviorParamsBuilder<'a> {
+    /// Whether to allow all or deny all download requests, or use default Chrome behavior if
+    /// available (otherwise deny). |allowAndName| allows download and names files according to
+    /// their download guids.
+    pub fn behavior(mut self, behavior: impl Into<Cow<'a, str>>) -> Self { self.behavior = Some(behavior.into()); self }
+    /// BrowserContext to set download behavior. When omitted, default browser context is used.
+    pub fn browserContextId(mut self, browserContextId: BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
+    /// The default path to save downloaded files to. This is required if behavior is set to 'allow'
+    /// or 'allowAndName'.
+    pub fn downloadPath(mut self, downloadPath: impl Into<Cow<'a, str>>) -> Self { self.downloadPath = Some(downloadPath.into()); self }
+    /// Whether to emit download events (defaults to false).
+    pub fn eventsEnabled(mut self, eventsEnabled: bool) -> Self { self.eventsEnabled = Some(eventsEnabled); self }
+    pub fn build(self) -> SetDownloadBehaviorParams<'a> {
+        SetDownloadBehaviorParams {
+            behavior: self.behavior.unwrap_or_default(),
+            browserContextId: self.browserContextId,
+            downloadPath: self.downloadPath,
+            eventsEnabled: self.eventsEnabled,
+        }
+    }
+}
+
+impl<'a> SetDownloadBehaviorParams<'a> { pub const METHOD: &'static str = "Browser.setDownloadBehavior"; }
+
+impl<'a> crate::CdpCommand<'a> for SetDownloadBehaviorParams<'a> {
     const METHOD: &'static str = "Browser.setDownloadBehavior";
     type Response = crate::EmptyReturns;
 }
@@ -300,19 +603,42 @@ impl crate::CdpCommand for SetDownloadBehaviorParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct CancelDownloadParams {
+pub struct CancelDownloadParams<'a> {
     /// Global unique identifier of the download.
-
-    pub guid: String,
+    guid: Cow<'a, str>,
     /// BrowserContext to perform the action in. When omitted, default browser context is used.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub browserContextId: Option<BrowserContextID>,
+    browserContextId: Option<BrowserContextID<'a>>,
 }
 
-impl CancelDownloadParams { pub const METHOD: &'static str = "Browser.cancelDownload"; }
+impl<'a> CancelDownloadParams<'a> {
+    pub fn builder() -> CancelDownloadParamsBuilder<'a> { CancelDownloadParamsBuilder::default() }
+    pub fn guid(&self) -> &str { self.guid.as_ref() }
+    pub fn browserContextId(&self) -> Option<&BrowserContextID<'a>> { self.browserContextId.as_ref() }
+}
 
-impl crate::CdpCommand for CancelDownloadParams {
+#[derive(Default)]
+pub struct CancelDownloadParamsBuilder<'a> {
+    guid: Option<Cow<'a, str>>,
+    browserContextId: Option<BrowserContextID<'a>>,
+}
+
+impl<'a> CancelDownloadParamsBuilder<'a> {
+    /// Global unique identifier of the download.
+    pub fn guid(mut self, guid: impl Into<Cow<'a, str>>) -> Self { self.guid = Some(guid.into()); self }
+    /// BrowserContext to perform the action in. When omitted, default browser context is used.
+    pub fn browserContextId(mut self, browserContextId: BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
+    pub fn build(self) -> CancelDownloadParams<'a> {
+        CancelDownloadParams {
+            guid: self.guid.unwrap_or_default(),
+            browserContextId: self.browserContextId,
+        }
+    }
+}
+
+impl<'a> CancelDownloadParams<'a> { pub const METHOD: &'static str = "Browser.cancelDownload"; }
+
+impl<'a> crate::CdpCommand<'a> for CancelDownloadParams<'a> {
     const METHOD: &'static str = "Browser.cancelDownload";
     type Response = crate::EmptyReturns;
 }
@@ -320,9 +646,24 @@ impl crate::CdpCommand for CancelDownloadParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct CloseParams {}
 
+impl CloseParams {
+    pub fn builder() -> CloseParamsBuilder {
+        CloseParamsBuilder::default()
+    }
+}
+
+#[derive(Default)]
+pub struct CloseParamsBuilder {}
+
+impl CloseParamsBuilder {
+    pub fn build(self) -> CloseParams {
+        CloseParams {}
+    }
+}
+
 impl CloseParams { pub const METHOD: &'static str = "Browser.close"; }
 
-impl crate::CdpCommand for CloseParams {
+impl<'a> crate::CdpCommand<'a> for CloseParams {
     const METHOD: &'static str = "Browser.close";
     type Response = crate::EmptyReturns;
 }
@@ -330,9 +671,24 @@ impl crate::CdpCommand for CloseParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct CrashParams {}
 
+impl CrashParams {
+    pub fn builder() -> CrashParamsBuilder {
+        CrashParamsBuilder::default()
+    }
+}
+
+#[derive(Default)]
+pub struct CrashParamsBuilder {}
+
+impl CrashParamsBuilder {
+    pub fn build(self) -> CrashParams {
+        CrashParams {}
+    }
+}
+
 impl CrashParams { pub const METHOD: &'static str = "Browser.crash"; }
 
-impl crate::CdpCommand for CrashParams {
+impl<'a> crate::CdpCommand<'a> for CrashParams {
     const METHOD: &'static str = "Browser.crash";
     type Response = crate::EmptyReturns;
 }
@@ -340,9 +696,24 @@ impl crate::CdpCommand for CrashParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct CrashGpuProcessParams {}
 
+impl CrashGpuProcessParams {
+    pub fn builder() -> CrashGpuProcessParamsBuilder {
+        CrashGpuProcessParamsBuilder::default()
+    }
+}
+
+#[derive(Default)]
+pub struct CrashGpuProcessParamsBuilder {}
+
+impl CrashGpuProcessParamsBuilder {
+    pub fn build(self) -> CrashGpuProcessParams {
+        CrashGpuProcessParams {}
+    }
+}
+
 impl CrashGpuProcessParams { pub const METHOD: &'static str = "Browser.crashGpuProcess"; }
 
-impl crate::CdpCommand for CrashGpuProcessParams {
+impl<'a> crate::CdpCommand<'a> for CrashGpuProcessParams {
     const METHOD: &'static str = "Browser.crashGpuProcess";
     type Response = crate::EmptyReturns;
 }
@@ -351,32 +722,82 @@ impl crate::CdpCommand for CrashGpuProcessParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct GetVersionReturns {
+pub struct GetVersionReturns<'a> {
     /// Protocol version.
-
-    pub protocolVersion: String,
+    protocolVersion: Cow<'a, str>,
     /// Product name.
-
-    pub product: String,
+    product: Cow<'a, str>,
     /// Product revision.
-
-    pub revision: String,
+    revision: Cow<'a, str>,
     /// User-Agent.
-
-    pub userAgent: String,
+    userAgent: Cow<'a, str>,
     /// V8 version.
+    jsVersion: Cow<'a, str>,
+}
 
-    pub jsVersion: String,
+impl<'a> GetVersionReturns<'a> {
+    pub fn builder() -> GetVersionReturnsBuilder<'a> { GetVersionReturnsBuilder::default() }
+    pub fn protocolVersion(&self) -> &str { self.protocolVersion.as_ref() }
+    pub fn product(&self) -> &str { self.product.as_ref() }
+    pub fn revision(&self) -> &str { self.revision.as_ref() }
+    pub fn userAgent(&self) -> &str { self.userAgent.as_ref() }
+    pub fn jsVersion(&self) -> &str { self.jsVersion.as_ref() }
+}
+
+#[derive(Default)]
+pub struct GetVersionReturnsBuilder<'a> {
+    protocolVersion: Option<Cow<'a, str>>,
+    product: Option<Cow<'a, str>>,
+    revision: Option<Cow<'a, str>>,
+    userAgent: Option<Cow<'a, str>>,
+    jsVersion: Option<Cow<'a, str>>,
+}
+
+impl<'a> GetVersionReturnsBuilder<'a> {
+    /// Protocol version.
+    pub fn protocolVersion(mut self, protocolVersion: impl Into<Cow<'a, str>>) -> Self { self.protocolVersion = Some(protocolVersion.into()); self }
+    /// Product name.
+    pub fn product(mut self, product: impl Into<Cow<'a, str>>) -> Self { self.product = Some(product.into()); self }
+    /// Product revision.
+    pub fn revision(mut self, revision: impl Into<Cow<'a, str>>) -> Self { self.revision = Some(revision.into()); self }
+    /// User-Agent.
+    pub fn userAgent(mut self, userAgent: impl Into<Cow<'a, str>>) -> Self { self.userAgent = Some(userAgent.into()); self }
+    /// V8 version.
+    pub fn jsVersion(mut self, jsVersion: impl Into<Cow<'a, str>>) -> Self { self.jsVersion = Some(jsVersion.into()); self }
+    pub fn build(self) -> GetVersionReturns<'a> {
+        GetVersionReturns {
+            protocolVersion: self.protocolVersion.unwrap_or_default(),
+            product: self.product.unwrap_or_default(),
+            revision: self.revision.unwrap_or_default(),
+            userAgent: self.userAgent.unwrap_or_default(),
+            jsVersion: self.jsVersion.unwrap_or_default(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetVersionParams {}
 
+impl GetVersionParams {
+    pub fn builder() -> GetVersionParamsBuilder {
+        GetVersionParamsBuilder::default()
+    }
+}
+
+#[derive(Default)]
+pub struct GetVersionParamsBuilder {}
+
+impl GetVersionParamsBuilder {
+    pub fn build(self) -> GetVersionParams {
+        GetVersionParams {}
+    }
+}
+
 impl GetVersionParams { pub const METHOD: &'static str = "Browser.getVersion"; }
 
-impl crate::CdpCommand for GetVersionParams {
+impl<'a> crate::CdpCommand<'a> for GetVersionParams {
     const METHOD: &'static str = "Browser.getVersion";
-    type Response = GetVersionReturns;
+    type Response = GetVersionReturns<'a>;
 }
 
 /// Returns the command line switches for the browser process if, and only if
@@ -384,85 +805,205 @@ impl crate::CdpCommand for GetVersionParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct GetBrowserCommandLineReturns {
+pub struct GetBrowserCommandLineReturns<'a> {
     /// Commandline parameters
+    arguments: Vec<Cow<'a, str>>,
+}
 
-    pub arguments: Vec<String>,
+impl<'a> GetBrowserCommandLineReturns<'a> {
+    pub fn builder() -> GetBrowserCommandLineReturnsBuilder<'a> { GetBrowserCommandLineReturnsBuilder::default() }
+    pub fn arguments(&self) -> &[Cow<'a, str>] { &self.arguments }
+}
+
+#[derive(Default)]
+pub struct GetBrowserCommandLineReturnsBuilder<'a> {
+    arguments: Option<Vec<Cow<'a, str>>>,
+}
+
+impl<'a> GetBrowserCommandLineReturnsBuilder<'a> {
+    /// Commandline parameters
+    pub fn arguments(mut self, arguments: Vec<Cow<'a, str>>) -> Self { self.arguments = Some(arguments); self }
+    pub fn build(self) -> GetBrowserCommandLineReturns<'a> {
+        GetBrowserCommandLineReturns {
+            arguments: self.arguments.unwrap_or_default(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GetBrowserCommandLineParams {}
 
+impl GetBrowserCommandLineParams {
+    pub fn builder() -> GetBrowserCommandLineParamsBuilder {
+        GetBrowserCommandLineParamsBuilder::default()
+    }
+}
+
+#[derive(Default)]
+pub struct GetBrowserCommandLineParamsBuilder {}
+
+impl GetBrowserCommandLineParamsBuilder {
+    pub fn build(self) -> GetBrowserCommandLineParams {
+        GetBrowserCommandLineParams {}
+    }
+}
+
 impl GetBrowserCommandLineParams { pub const METHOD: &'static str = "Browser.getBrowserCommandLine"; }
 
-impl crate::CdpCommand for GetBrowserCommandLineParams {
+impl<'a> crate::CdpCommand<'a> for GetBrowserCommandLineParams {
     const METHOD: &'static str = "Browser.getBrowserCommandLine";
-    type Response = GetBrowserCommandLineReturns;
+    type Response = GetBrowserCommandLineReturns<'a>;
 }
 
 /// Get Chrome histograms.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct GetHistogramsParams {
+pub struct GetHistogramsParams<'a> {
     /// Requested substring in name. Only histograms which have query as a
     /// substring in their name are extracted. An empty or absent query returns
     /// all histograms.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub query: Option<String>,
+    query: Option<Cow<'a, str>>,
     /// If true, retrieve delta since last delta call.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub delta: Option<bool>,
+    delta: Option<bool>,
+}
+
+impl<'a> GetHistogramsParams<'a> {
+    pub fn builder() -> GetHistogramsParamsBuilder<'a> { GetHistogramsParamsBuilder::default() }
+    pub fn query(&self) -> Option<&str> { self.query.as_deref() }
+    pub fn delta(&self) -> Option<bool> { self.delta }
+}
+
+#[derive(Default)]
+pub struct GetHistogramsParamsBuilder<'a> {
+    query: Option<Cow<'a, str>>,
+    delta: Option<bool>,
+}
+
+impl<'a> GetHistogramsParamsBuilder<'a> {
+    /// Requested substring in name. Only histograms which have query as a
+    /// substring in their name are extracted. An empty or absent query returns
+    /// all histograms.
+    pub fn query(mut self, query: impl Into<Cow<'a, str>>) -> Self { self.query = Some(query.into()); self }
+    /// If true, retrieve delta since last delta call.
+    pub fn delta(mut self, delta: bool) -> Self { self.delta = Some(delta); self }
+    pub fn build(self) -> GetHistogramsParams<'a> {
+        GetHistogramsParams {
+            query: self.query,
+            delta: self.delta,
+        }
+    }
 }
 
 /// Get Chrome histograms.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct GetHistogramsReturns {
+pub struct GetHistogramsReturns<'a> {
     /// Histograms.
-
-    pub histograms: Vec<Histogram>,
+    histograms: Vec<Histogram<'a>>,
 }
 
-impl GetHistogramsParams { pub const METHOD: &'static str = "Browser.getHistograms"; }
+impl<'a> GetHistogramsReturns<'a> {
+    pub fn builder() -> GetHistogramsReturnsBuilder<'a> { GetHistogramsReturnsBuilder::default() }
+    pub fn histograms(&self) -> &[Histogram<'a>] { &self.histograms }
+}
 
-impl crate::CdpCommand for GetHistogramsParams {
+#[derive(Default)]
+pub struct GetHistogramsReturnsBuilder<'a> {
+    histograms: Option<Vec<Histogram<'a>>>,
+}
+
+impl<'a> GetHistogramsReturnsBuilder<'a> {
+    /// Histograms.
+    pub fn histograms(mut self, histograms: Vec<Histogram<'a>>) -> Self { self.histograms = Some(histograms); self }
+    pub fn build(self) -> GetHistogramsReturns<'a> {
+        GetHistogramsReturns {
+            histograms: self.histograms.unwrap_or_default(),
+        }
+    }
+}
+
+impl<'a> GetHistogramsParams<'a> { pub const METHOD: &'static str = "Browser.getHistograms"; }
+
+impl<'a> crate::CdpCommand<'a> for GetHistogramsParams<'a> {
     const METHOD: &'static str = "Browser.getHistograms";
-    type Response = GetHistogramsReturns;
+    type Response = GetHistogramsReturns<'a>;
 }
 
 /// Get a Chrome histogram by name.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct GetHistogramParams {
+pub struct GetHistogramParams<'a> {
     /// Requested histogram name.
-
-    pub name: String,
+    name: Cow<'a, str>,
     /// If true, retrieve delta since last delta call.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub delta: Option<bool>,
+    delta: Option<bool>,
+}
+
+impl<'a> GetHistogramParams<'a> {
+    pub fn builder() -> GetHistogramParamsBuilder<'a> { GetHistogramParamsBuilder::default() }
+    pub fn name(&self) -> &str { self.name.as_ref() }
+    pub fn delta(&self) -> Option<bool> { self.delta }
+}
+
+#[derive(Default)]
+pub struct GetHistogramParamsBuilder<'a> {
+    name: Option<Cow<'a, str>>,
+    delta: Option<bool>,
+}
+
+impl<'a> GetHistogramParamsBuilder<'a> {
+    /// Requested histogram name.
+    pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
+    /// If true, retrieve delta since last delta call.
+    pub fn delta(mut self, delta: bool) -> Self { self.delta = Some(delta); self }
+    pub fn build(self) -> GetHistogramParams<'a> {
+        GetHistogramParams {
+            name: self.name.unwrap_or_default(),
+            delta: self.delta,
+        }
+    }
 }
 
 /// Get a Chrome histogram by name.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct GetHistogramReturns {
+pub struct GetHistogramReturns<'a> {
     /// Histogram.
-
-    pub histogram: Histogram,
+    histogram: Histogram<'a>,
 }
 
-impl GetHistogramParams { pub const METHOD: &'static str = "Browser.getHistogram"; }
+impl<'a> GetHistogramReturns<'a> {
+    pub fn builder() -> GetHistogramReturnsBuilder<'a> { GetHistogramReturnsBuilder::default() }
+    pub fn histogram(&self) -> &Histogram<'a> { &self.histogram }
+}
 
-impl crate::CdpCommand for GetHistogramParams {
+#[derive(Default)]
+pub struct GetHistogramReturnsBuilder<'a> {
+    histogram: Option<Histogram<'a>>,
+}
+
+impl<'a> GetHistogramReturnsBuilder<'a> {
+    /// Histogram.
+    pub fn histogram(mut self, histogram: Histogram<'a>) -> Self { self.histogram = Some(histogram); self }
+    pub fn build(self) -> GetHistogramReturns<'a> {
+        GetHistogramReturns {
+            histogram: self.histogram.unwrap_or_default(),
+        }
+    }
+}
+
+impl<'a> GetHistogramParams<'a> { pub const METHOD: &'static str = "Browser.getHistogram"; }
+
+impl<'a> crate::CdpCommand<'a> for GetHistogramParams<'a> {
     const METHOD: &'static str = "Browser.getHistogram";
-    type Response = GetHistogramReturns;
+    type Response = GetHistogramReturns<'a>;
 }
 
 /// Get position and size of the browser window.
@@ -471,8 +1012,27 @@ impl crate::CdpCommand for GetHistogramParams {
 #[serde(rename_all = "camelCase")]
 pub struct GetWindowBoundsParams {
     /// Browser window id.
+    windowId: WindowID,
+}
 
-    pub windowId: WindowID,
+impl GetWindowBoundsParams {
+    pub fn builder() -> GetWindowBoundsParamsBuilder { GetWindowBoundsParamsBuilder::default() }
+    pub fn windowId(&self) -> &WindowID { &self.windowId }
+}
+
+#[derive(Default)]
+pub struct GetWindowBoundsParamsBuilder {
+    windowId: Option<WindowID>,
+}
+
+impl GetWindowBoundsParamsBuilder {
+    /// Browser window id.
+    pub fn windowId(mut self, windowId: WindowID) -> Self { self.windowId = Some(windowId); self }
+    pub fn build(self) -> GetWindowBoundsParams {
+        GetWindowBoundsParams {
+            windowId: self.windowId.unwrap_or_default(),
+        }
+    }
 }
 
 /// Get position and size of the browser window.
@@ -482,13 +1042,33 @@ pub struct GetWindowBoundsParams {
 pub struct GetWindowBoundsReturns {
     /// Bounds information of the window. When window state is 'minimized', the restored window
     /// position and size are returned.
+    bounds: Bounds,
+}
 
-    pub bounds: Bounds,
+impl GetWindowBoundsReturns {
+    pub fn builder() -> GetWindowBoundsReturnsBuilder { GetWindowBoundsReturnsBuilder::default() }
+    pub fn bounds(&self) -> &Bounds { &self.bounds }
+}
+
+#[derive(Default)]
+pub struct GetWindowBoundsReturnsBuilder {
+    bounds: Option<Bounds>,
+}
+
+impl GetWindowBoundsReturnsBuilder {
+    /// Bounds information of the window. When window state is 'minimized', the restored window
+    /// position and size are returned.
+    pub fn bounds(mut self, bounds: Bounds) -> Self { self.bounds = Some(bounds); self }
+    pub fn build(self) -> GetWindowBoundsReturns {
+        GetWindowBoundsReturns {
+            bounds: self.bounds.unwrap_or_default(),
+        }
+    }
 }
 
 impl GetWindowBoundsParams { pub const METHOD: &'static str = "Browser.getWindowBounds"; }
 
-impl crate::CdpCommand for GetWindowBoundsParams {
+impl<'a> crate::CdpCommand<'a> for GetWindowBoundsParams {
     const METHOD: &'static str = "Browser.getWindowBounds";
     type Response = GetWindowBoundsReturns;
 }
@@ -497,11 +1077,30 @@ impl crate::CdpCommand for GetWindowBoundsParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct GetWindowForTargetParams {
+pub struct GetWindowForTargetParams<'a> {
     /// Devtools agent host id. If called as a part of the session, associated targetId is used.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub targetId: Option<crate::target::TargetID>,
+    targetId: Option<crate::target::TargetID<'a>>,
+}
+
+impl<'a> GetWindowForTargetParams<'a> {
+    pub fn builder() -> GetWindowForTargetParamsBuilder<'a> { GetWindowForTargetParamsBuilder::default() }
+    pub fn targetId(&self) -> Option<&crate::target::TargetID<'a>> { self.targetId.as_ref() }
+}
+
+#[derive(Default)]
+pub struct GetWindowForTargetParamsBuilder<'a> {
+    targetId: Option<crate::target::TargetID<'a>>,
+}
+
+impl<'a> GetWindowForTargetParamsBuilder<'a> {
+    /// Devtools agent host id. If called as a part of the session, associated targetId is used.
+    pub fn targetId(mut self, targetId: crate::target::TargetID<'a>) -> Self { self.targetId = Some(targetId); self }
+    pub fn build(self) -> GetWindowForTargetParams<'a> {
+        GetWindowForTargetParams {
+            targetId: self.targetId,
+        }
+    }
 }
 
 /// Get the browser window that contains the devtools target.
@@ -510,17 +1109,41 @@ pub struct GetWindowForTargetParams {
 #[serde(rename_all = "camelCase")]
 pub struct GetWindowForTargetReturns {
     /// Browser window id.
-
-    pub windowId: WindowID,
+    windowId: WindowID,
     /// Bounds information of the window. When window state is 'minimized', the restored window
     /// position and size are returned.
-
-    pub bounds: Bounds,
+    bounds: Bounds,
 }
 
-impl GetWindowForTargetParams { pub const METHOD: &'static str = "Browser.getWindowForTarget"; }
+impl GetWindowForTargetReturns {
+    pub fn builder() -> GetWindowForTargetReturnsBuilder { GetWindowForTargetReturnsBuilder::default() }
+    pub fn windowId(&self) -> &WindowID { &self.windowId }
+    pub fn bounds(&self) -> &Bounds { &self.bounds }
+}
 
-impl crate::CdpCommand for GetWindowForTargetParams {
+#[derive(Default)]
+pub struct GetWindowForTargetReturnsBuilder {
+    windowId: Option<WindowID>,
+    bounds: Option<Bounds>,
+}
+
+impl GetWindowForTargetReturnsBuilder {
+    /// Browser window id.
+    pub fn windowId(mut self, windowId: WindowID) -> Self { self.windowId = Some(windowId); self }
+    /// Bounds information of the window. When window state is 'minimized', the restored window
+    /// position and size are returned.
+    pub fn bounds(mut self, bounds: Bounds) -> Self { self.bounds = Some(bounds); self }
+    pub fn build(self) -> GetWindowForTargetReturns {
+        GetWindowForTargetReturns {
+            windowId: self.windowId.unwrap_or_default(),
+            bounds: self.bounds.unwrap_or_default(),
+        }
+    }
+}
+
+impl<'a> GetWindowForTargetParams<'a> { pub const METHOD: &'static str = "Browser.getWindowForTarget"; }
+
+impl<'a> crate::CdpCommand<'a> for GetWindowForTargetParams<'a> {
     const METHOD: &'static str = "Browser.getWindowForTarget";
     type Response = GetWindowForTargetReturns;
 }
@@ -531,17 +1154,41 @@ impl crate::CdpCommand for GetWindowForTargetParams {
 #[serde(rename_all = "camelCase")]
 pub struct SetWindowBoundsParams {
     /// Browser window id.
-
-    pub windowId: WindowID,
+    windowId: WindowID,
     /// New window bounds. The 'minimized', 'maximized' and 'fullscreen' states cannot be combined
     /// with 'left', 'top', 'width' or 'height'. Leaves unspecified fields unchanged.
+    bounds: Bounds,
+}
 
-    pub bounds: Bounds,
+impl SetWindowBoundsParams {
+    pub fn builder() -> SetWindowBoundsParamsBuilder { SetWindowBoundsParamsBuilder::default() }
+    pub fn windowId(&self) -> &WindowID { &self.windowId }
+    pub fn bounds(&self) -> &Bounds { &self.bounds }
+}
+
+#[derive(Default)]
+pub struct SetWindowBoundsParamsBuilder {
+    windowId: Option<WindowID>,
+    bounds: Option<Bounds>,
+}
+
+impl SetWindowBoundsParamsBuilder {
+    /// Browser window id.
+    pub fn windowId(mut self, windowId: WindowID) -> Self { self.windowId = Some(windowId); self }
+    /// New window bounds. The 'minimized', 'maximized' and 'fullscreen' states cannot be combined
+    /// with 'left', 'top', 'width' or 'height'. Leaves unspecified fields unchanged.
+    pub fn bounds(mut self, bounds: Bounds) -> Self { self.bounds = Some(bounds); self }
+    pub fn build(self) -> SetWindowBoundsParams {
+        SetWindowBoundsParams {
+            windowId: self.windowId.unwrap_or_default(),
+            bounds: self.bounds.unwrap_or_default(),
+        }
+    }
 }
 
 impl SetWindowBoundsParams { pub const METHOD: &'static str = "Browser.setWindowBounds"; }
 
-impl crate::CdpCommand for SetWindowBoundsParams {
+impl<'a> crate::CdpCommand<'a> for SetWindowBoundsParams {
     const METHOD: &'static str = "Browser.setWindowBounds";
     type Response = crate::EmptyReturns;
 }
@@ -552,23 +1199,52 @@ impl crate::CdpCommand for SetWindowBoundsParams {
 #[serde(rename_all = "camelCase")]
 pub struct SetContentsSizeParams {
     /// Browser window id.
-
-    pub windowId: WindowID,
+    windowId: WindowID,
     /// The window contents width in DIP. Assumes current width if omitted.
     /// Must be specified if 'height' is omitted.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub width: Option<u64>,
+    width: Option<u64>,
     /// The window contents height in DIP. Assumes current height if omitted.
     /// Must be specified if 'width' is omitted.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub height: Option<i64>,
+    height: Option<i64>,
+}
+
+impl SetContentsSizeParams {
+    pub fn builder() -> SetContentsSizeParamsBuilder { SetContentsSizeParamsBuilder::default() }
+    pub fn windowId(&self) -> &WindowID { &self.windowId }
+    pub fn width(&self) -> Option<u64> { self.width }
+    pub fn height(&self) -> Option<i64> { self.height }
+}
+
+#[derive(Default)]
+pub struct SetContentsSizeParamsBuilder {
+    windowId: Option<WindowID>,
+    width: Option<u64>,
+    height: Option<i64>,
+}
+
+impl SetContentsSizeParamsBuilder {
+    /// Browser window id.
+    pub fn windowId(mut self, windowId: WindowID) -> Self { self.windowId = Some(windowId); self }
+    /// The window contents width in DIP. Assumes current width if omitted.
+    /// Must be specified if 'height' is omitted.
+    pub fn width(mut self, width: u64) -> Self { self.width = Some(width); self }
+    /// The window contents height in DIP. Assumes current height if omitted.
+    /// Must be specified if 'width' is omitted.
+    pub fn height(mut self, height: i64) -> Self { self.height = Some(height); self }
+    pub fn build(self) -> SetContentsSizeParams {
+        SetContentsSizeParams {
+            windowId: self.windowId.unwrap_or_default(),
+            width: self.width,
+            height: self.height,
+        }
+    }
 }
 
 impl SetContentsSizeParams { pub const METHOD: &'static str = "Browser.setContentsSize"; }
 
-impl crate::CdpCommand for SetContentsSizeParams {
+impl<'a> crate::CdpCommand<'a> for SetContentsSizeParams {
     const METHOD: &'static str = "Browser.setContentsSize";
     type Response = crate::EmptyReturns;
 }
@@ -577,19 +1253,41 @@ impl crate::CdpCommand for SetContentsSizeParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct SetDockTileParams {
-
+pub struct SetDockTileParams<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub badgeLabel: Option<String>,
+    badgeLabel: Option<Cow<'a, str>>,
     /// Png encoded image. (Encoded as a base64 string when passed over JSON)
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub image: Option<String>,
+    image: Option<Cow<'a, str>>,
 }
 
-impl SetDockTileParams { pub const METHOD: &'static str = "Browser.setDockTile"; }
+impl<'a> SetDockTileParams<'a> {
+    pub fn builder() -> SetDockTileParamsBuilder<'a> { SetDockTileParamsBuilder::default() }
+    pub fn badgeLabel(&self) -> Option<&str> { self.badgeLabel.as_deref() }
+    pub fn image(&self) -> Option<&str> { self.image.as_deref() }
+}
 
-impl crate::CdpCommand for SetDockTileParams {
+#[derive(Default)]
+pub struct SetDockTileParamsBuilder<'a> {
+    badgeLabel: Option<Cow<'a, str>>,
+    image: Option<Cow<'a, str>>,
+}
+
+impl<'a> SetDockTileParamsBuilder<'a> {
+    pub fn badgeLabel(mut self, badgeLabel: impl Into<Cow<'a, str>>) -> Self { self.badgeLabel = Some(badgeLabel.into()); self }
+    /// Png encoded image. (Encoded as a base64 string when passed over JSON)
+    pub fn image(mut self, image: impl Into<Cow<'a, str>>) -> Self { self.image = Some(image.into()); self }
+    pub fn build(self) -> SetDockTileParams<'a> {
+        SetDockTileParams {
+            badgeLabel: self.badgeLabel,
+            image: self.image,
+        }
+    }
+}
+
+impl<'a> SetDockTileParams<'a> { pub const METHOD: &'static str = "Browser.setDockTile"; }
+
+impl<'a> crate::CdpCommand<'a> for SetDockTileParams<'a> {
     const METHOD: &'static str = "Browser.setDockTile";
     type Response = crate::EmptyReturns;
 }
@@ -599,13 +1297,31 @@ impl crate::CdpCommand for SetDockTileParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct ExecuteBrowserCommandParams {
+    commandId: BrowserCommandId,
+}
 
-    pub commandId: BrowserCommandId,
+impl ExecuteBrowserCommandParams {
+    pub fn builder() -> ExecuteBrowserCommandParamsBuilder { ExecuteBrowserCommandParamsBuilder::default() }
+    pub fn commandId(&self) -> &BrowserCommandId { &self.commandId }
+}
+
+#[derive(Default)]
+pub struct ExecuteBrowserCommandParamsBuilder {
+    commandId: Option<BrowserCommandId>,
+}
+
+impl ExecuteBrowserCommandParamsBuilder {
+    pub fn commandId(mut self, commandId: BrowserCommandId) -> Self { self.commandId = Some(commandId); self }
+    pub fn build(self) -> ExecuteBrowserCommandParams {
+        ExecuteBrowserCommandParams {
+            commandId: self.commandId.unwrap_or_default(),
+        }
+    }
 }
 
 impl ExecuteBrowserCommandParams { pub const METHOD: &'static str = "Browser.executeBrowserCommand"; }
 
-impl crate::CdpCommand for ExecuteBrowserCommandParams {
+impl<'a> crate::CdpCommand<'a> for ExecuteBrowserCommandParams {
     const METHOD: &'static str = "Browser.executeBrowserCommand";
     type Response = crate::EmptyReturns;
 }
@@ -615,14 +1331,32 @@ impl crate::CdpCommand for ExecuteBrowserCommandParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct AddPrivacySandboxEnrollmentOverrideParams {
-
-    pub url: String,
+pub struct AddPrivacySandboxEnrollmentOverrideParams<'a> {
+    url: Cow<'a, str>,
 }
 
-impl AddPrivacySandboxEnrollmentOverrideParams { pub const METHOD: &'static str = "Browser.addPrivacySandboxEnrollmentOverride"; }
+impl<'a> AddPrivacySandboxEnrollmentOverrideParams<'a> {
+    pub fn builder() -> AddPrivacySandboxEnrollmentOverrideParamsBuilder<'a> { AddPrivacySandboxEnrollmentOverrideParamsBuilder::default() }
+    pub fn url(&self) -> &str { self.url.as_ref() }
+}
 
-impl crate::CdpCommand for AddPrivacySandboxEnrollmentOverrideParams {
+#[derive(Default)]
+pub struct AddPrivacySandboxEnrollmentOverrideParamsBuilder<'a> {
+    url: Option<Cow<'a, str>>,
+}
+
+impl<'a> AddPrivacySandboxEnrollmentOverrideParamsBuilder<'a> {
+    pub fn url(mut self, url: impl Into<Cow<'a, str>>) -> Self { self.url = Some(url.into()); self }
+    pub fn build(self) -> AddPrivacySandboxEnrollmentOverrideParams<'a> {
+        AddPrivacySandboxEnrollmentOverrideParams {
+            url: self.url.unwrap_or_default(),
+        }
+    }
+}
+
+impl<'a> AddPrivacySandboxEnrollmentOverrideParams<'a> { pub const METHOD: &'static str = "Browser.addPrivacySandboxEnrollmentOverride"; }
+
+impl<'a> crate::CdpCommand<'a> for AddPrivacySandboxEnrollmentOverrideParams<'a> {
     const METHOD: &'static str = "Browser.addPrivacySandboxEnrollmentOverride";
     type Response = crate::EmptyReturns;
 }
@@ -634,23 +1368,52 @@ impl crate::CdpCommand for AddPrivacySandboxEnrollmentOverrideParams {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct AddPrivacySandboxCoordinatorKeyConfigParams {
-
-    pub api: PrivacySandboxAPI,
-
-    pub coordinatorOrigin: String,
-
-    pub keyConfig: String,
+pub struct AddPrivacySandboxCoordinatorKeyConfigParams<'a> {
+    api: PrivacySandboxAPI,
+    coordinatorOrigin: Cow<'a, str>,
+    keyConfig: Cow<'a, str>,
     /// BrowserContext to perform the action in. When omitted, default browser
     /// context is used.
-
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub browserContextId: Option<BrowserContextID>,
+    browserContextId: Option<BrowserContextID<'a>>,
 }
 
-impl AddPrivacySandboxCoordinatorKeyConfigParams { pub const METHOD: &'static str = "Browser.addPrivacySandboxCoordinatorKeyConfig"; }
+impl<'a> AddPrivacySandboxCoordinatorKeyConfigParams<'a> {
+    pub fn builder() -> AddPrivacySandboxCoordinatorKeyConfigParamsBuilder<'a> { AddPrivacySandboxCoordinatorKeyConfigParamsBuilder::default() }
+    pub fn api(&self) -> &PrivacySandboxAPI { &self.api }
+    pub fn coordinatorOrigin(&self) -> &str { self.coordinatorOrigin.as_ref() }
+    pub fn keyConfig(&self) -> &str { self.keyConfig.as_ref() }
+    pub fn browserContextId(&self) -> Option<&BrowserContextID<'a>> { self.browserContextId.as_ref() }
+}
 
-impl crate::CdpCommand for AddPrivacySandboxCoordinatorKeyConfigParams {
+#[derive(Default)]
+pub struct AddPrivacySandboxCoordinatorKeyConfigParamsBuilder<'a> {
+    api: Option<PrivacySandboxAPI>,
+    coordinatorOrigin: Option<Cow<'a, str>>,
+    keyConfig: Option<Cow<'a, str>>,
+    browserContextId: Option<BrowserContextID<'a>>,
+}
+
+impl<'a> AddPrivacySandboxCoordinatorKeyConfigParamsBuilder<'a> {
+    pub fn api(mut self, api: PrivacySandboxAPI) -> Self { self.api = Some(api); self }
+    pub fn coordinatorOrigin(mut self, coordinatorOrigin: impl Into<Cow<'a, str>>) -> Self { self.coordinatorOrigin = Some(coordinatorOrigin.into()); self }
+    pub fn keyConfig(mut self, keyConfig: impl Into<Cow<'a, str>>) -> Self { self.keyConfig = Some(keyConfig.into()); self }
+    /// BrowserContext to perform the action in. When omitted, default browser
+    /// context is used.
+    pub fn browserContextId(mut self, browserContextId: BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
+    pub fn build(self) -> AddPrivacySandboxCoordinatorKeyConfigParams<'a> {
+        AddPrivacySandboxCoordinatorKeyConfigParams {
+            api: self.api.unwrap_or_default(),
+            coordinatorOrigin: self.coordinatorOrigin.unwrap_or_default(),
+            keyConfig: self.keyConfig.unwrap_or_default(),
+            browserContextId: self.browserContextId,
+        }
+    }
+}
+
+impl<'a> AddPrivacySandboxCoordinatorKeyConfigParams<'a> { pub const METHOD: &'static str = "Browser.addPrivacySandboxCoordinatorKeyConfig"; }
+
+impl<'a> crate::CdpCommand<'a> for AddPrivacySandboxCoordinatorKeyConfigParams<'a> {
     const METHOD: &'static str = "Browser.addPrivacySandboxCoordinatorKeyConfig";
     type Response = crate::EmptyReturns;
 }
