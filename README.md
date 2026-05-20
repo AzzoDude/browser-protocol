@@ -41,7 +41,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-browser-protocol = { version = "0.1.3", features = ["full"] }
+browser-protocol = { version = "0.1.4", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 ```
@@ -104,7 +104,7 @@ The code is dynamically compiled using a custom Python script that performs adva
 3. **Domain-Specific Feature Flags**: Every CDP domain is represented by a Rust feature flag. You can optimize compile times by only compiling the domains your project needs:
    ```toml
    # Compile only the page and dom domains
-   browser-protocol = { version = "0.1.3", default-features = false, features = ["page", "dom"] }
+   browser-protocol = { version = "0.1.4", default-features = false, features = ["page", "dom"] }
    ```
 
 ### Regenerating the Code
