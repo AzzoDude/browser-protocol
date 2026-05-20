@@ -733,7 +733,7 @@ impl<'a> DispatchMouseEventParamsBuilder<'a> {
     /// Time at which the event occurred.
     pub fn timestamp(mut self, timestamp: TimeSinceEpoch) -> Self { self.timestamp = Some(timestamp); self }
     /// Mouse button (default: "none").
-    pub fn button(mut self, button: MouseButton) -> Self { self.button = Some(button); self }
+    pub fn button(mut self, button: impl Into<MouseButton>) -> Self { self.button = Some(button.into()); self }
     /// A number indicating which buttons are pressed on the mouse when a mouse event is triggered.
     /// Left=1, Right=2, Middle=4, Back=8, Forward=16, None=0.
     pub fn buttons(mut self, buttons: i64) -> Self { self.buttons = Some(buttons); self }
@@ -895,12 +895,12 @@ pub struct EmulateTouchFromMouseEventParams<'a> {
 }
 
 impl<'a> EmulateTouchFromMouseEventParams<'a> {
-    pub fn builder(type_: impl Into<Cow<'a, str>>, x: i32, y: i32, button: MouseButton) -> EmulateTouchFromMouseEventParamsBuilder<'a> {
+    pub fn builder(type_: impl Into<Cow<'a, str>>, x: i32, y: i32, button: impl Into<MouseButton>) -> EmulateTouchFromMouseEventParamsBuilder<'a> {
         EmulateTouchFromMouseEventParamsBuilder {
             type_: type_.into(),
             x: x,
             y: y,
-            button: button,
+            button: button.into(),
             timestamp: None,
             deltaX: None,
             deltaY: None,
@@ -1093,7 +1093,7 @@ impl SynthesizePinchGestureParamsBuilder {
     pub fn relativeSpeed(mut self, relativeSpeed: i64) -> Self { self.relativeSpeed = Some(relativeSpeed); self }
     /// Which type of input events to be generated (default: 'default', which queries the platform
     /// for the preferred input type).
-    pub fn gestureSourceType(mut self, gestureSourceType: GestureSourceType) -> Self { self.gestureSourceType = Some(gestureSourceType); self }
+    pub fn gestureSourceType(mut self, gestureSourceType: impl Into<GestureSourceType>) -> Self { self.gestureSourceType = Some(gestureSourceType.into()); self }
     pub fn build(self) -> SynthesizePinchGestureParams {
         SynthesizePinchGestureParams {
             x: self.x,
@@ -1220,7 +1220,7 @@ impl<'a> SynthesizeScrollGestureParamsBuilder<'a> {
     pub fn speed(mut self, speed: i64) -> Self { self.speed = Some(speed); self }
     /// Which type of input events to be generated (default: 'default', which queries the platform
     /// for the preferred input type).
-    pub fn gestureSourceType(mut self, gestureSourceType: GestureSourceType) -> Self { self.gestureSourceType = Some(gestureSourceType); self }
+    pub fn gestureSourceType(mut self, gestureSourceType: impl Into<GestureSourceType>) -> Self { self.gestureSourceType = Some(gestureSourceType.into()); self }
     /// The number of times to repeat the gesture (default: 0).
     pub fn repeatCount(mut self, repeatCount: u64) -> Self { self.repeatCount = Some(repeatCount); self }
     /// The number of milliseconds delay between each repeat. (default: 250).
@@ -1306,7 +1306,7 @@ impl SynthesizeTapGestureParamsBuilder {
     pub fn tapCount(mut self, tapCount: u64) -> Self { self.tapCount = Some(tapCount); self }
     /// Which type of input events to be generated (default: 'default', which queries the platform
     /// for the preferred input type).
-    pub fn gestureSourceType(mut self, gestureSourceType: GestureSourceType) -> Self { self.gestureSourceType = Some(gestureSourceType); self }
+    pub fn gestureSourceType(mut self, gestureSourceType: impl Into<GestureSourceType>) -> Self { self.gestureSourceType = Some(gestureSourceType.into()); self }
     pub fn build(self) -> SynthesizeTapGestureParams {
         SynthesizeTapGestureParams {
             x: self.x,

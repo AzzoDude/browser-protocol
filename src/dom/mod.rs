@@ -85,8 +85,8 @@ pub enum PseudoType {
     ExpandIcon,
     #[serde(rename = "picker-icon")]
     PickerIcon,
-    #[serde(rename = "interest-hint")]
-    InterestHint,
+    #[serde(rename = "interest-button")]
+    InterestButton,
     #[serde(rename = "marker")]
     Marker,
     #[serde(rename = "backdrop")]
@@ -466,12 +466,12 @@ impl<'a> NodeBuilder<'a> {
     /// 'Attr''s value.
     pub fn value(mut self, value: impl Into<Cow<'a, str>>) -> Self { self.value = Some(value.into()); self }
     /// Pseudo element type for this node.
-    pub fn pseudoType(mut self, pseudoType: PseudoType) -> Self { self.pseudoType = Some(pseudoType); self }
+    pub fn pseudoType(mut self, pseudoType: impl Into<PseudoType>) -> Self { self.pseudoType = Some(pseudoType.into()); self }
     /// Pseudo element identifier for this node. Only present if there is a
     /// valid pseudoType.
     pub fn pseudoIdentifier(mut self, pseudoIdentifier: impl Into<Cow<'a, str>>) -> Self { self.pseudoIdentifier = Some(pseudoIdentifier.into()); self }
     /// Shadow root type.
-    pub fn shadowRootType(mut self, shadowRootType: ShadowRootType) -> Self { self.shadowRootType = Some(shadowRootType); self }
+    pub fn shadowRootType(mut self, shadowRootType: impl Into<ShadowRootType>) -> Self { self.shadowRootType = Some(shadowRootType.into()); self }
     /// Frame ID for frame owner elements.
     pub fn frameId(mut self, frameId: crate::page::FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
     /// Content document for frame owner elements.
@@ -490,7 +490,7 @@ impl<'a> NodeBuilder<'a> {
     pub fn distributedNodes(mut self, distributedNodes: Vec<BackendNode<'a>>) -> Self { self.distributedNodes = Some(distributedNodes); self }
     /// Whether the node is SVG.
     pub fn isSVG(mut self, isSVG: bool) -> Self { self.isSVG = Some(isSVG); self }
-    pub fn compatibilityMode(mut self, compatibilityMode: CompatibilityMode) -> Self { self.compatibilityMode = Some(compatibilityMode); self }
+    pub fn compatibilityMode(mut self, compatibilityMode: impl Into<CompatibilityMode>) -> Self { self.compatibilityMode = Some(compatibilityMode.into()); self }
     pub fn assignedSlot(mut self, assignedSlot: BackendNode<'a>) -> Self { self.assignedSlot = Some(assignedSlot); self }
     pub fn isScrollable(mut self, isScrollable: bool) -> Self { self.isScrollable = Some(isScrollable); self }
     pub fn affectedByStartingStyles(mut self, affectedByStartingStyles: bool) -> Self { self.affectedByStartingStyles = Some(affectedByStartingStyles); self }
@@ -3871,8 +3871,8 @@ pub struct GetContainerForNodeParamsBuilder<'a> {
 
 impl<'a> GetContainerForNodeParamsBuilder<'a> {
     pub fn containerName(mut self, containerName: impl Into<Cow<'a, str>>) -> Self { self.containerName = Some(containerName.into()); self }
-    pub fn physicalAxes(mut self, physicalAxes: PhysicalAxes) -> Self { self.physicalAxes = Some(physicalAxes); self }
-    pub fn logicalAxes(mut self, logicalAxes: LogicalAxes) -> Self { self.logicalAxes = Some(logicalAxes); self }
+    pub fn physicalAxes(mut self, physicalAxes: impl Into<PhysicalAxes>) -> Self { self.physicalAxes = Some(physicalAxes.into()); self }
+    pub fn logicalAxes(mut self, logicalAxes: impl Into<LogicalAxes>) -> Self { self.logicalAxes = Some(logicalAxes.into()); self }
     pub fn queriesScrollState(mut self, queriesScrollState: bool) -> Self { self.queriesScrollState = Some(queriesScrollState); self }
     pub fn queriesAnchored(mut self, queriesAnchored: bool) -> Self { self.queriesAnchored = Some(queriesAnchored); self }
     pub fn build(self) -> GetContainerForNodeParams<'a> {

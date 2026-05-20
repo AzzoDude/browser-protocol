@@ -209,9 +209,9 @@ pub struct CookieIssueInsight<'a> {
 }
 
 impl<'a> CookieIssueInsight<'a> {
-    pub fn builder(type_: InsightType) -> CookieIssueInsightBuilder<'a> {
+    pub fn builder(type_: impl Into<InsightType>) -> CookieIssueInsightBuilder<'a> {
         CookieIssueInsightBuilder {
-            type_: type_,
+            type_: type_.into(),
             tableEntryUrl: None,
         }
     }
@@ -268,13 +268,13 @@ pub struct CookieIssueDetails<'a> {
 }
 
 impl<'a> CookieIssueDetails<'a> {
-    pub fn builder(cookieWarningReasons: Vec<CookieWarningReason>, cookieExclusionReasons: Vec<CookieExclusionReason>, operation: CookieOperation) -> CookieIssueDetailsBuilder<'a> {
+    pub fn builder(cookieWarningReasons: Vec<CookieWarningReason>, cookieExclusionReasons: Vec<CookieExclusionReason>, operation: impl Into<CookieOperation>) -> CookieIssueDetailsBuilder<'a> {
         CookieIssueDetailsBuilder {
             cookie: None,
             rawCookieLine: None,
             cookieWarningReasons: cookieWarningReasons,
             cookieExclusionReasons: cookieExclusionReasons,
-            operation: operation,
+            operation: operation.into(),
             siteForCookies: None,
             cookieUrl: None,
             request: None,
@@ -351,9 +351,9 @@ pub struct PerformanceIssueDetails<'a> {
 }
 
 impl<'a> PerformanceIssueDetails<'a> {
-    pub fn builder(performanceIssueType: PerformanceIssueType) -> PerformanceIssueDetailsBuilder<'a> {
+    pub fn builder(performanceIssueType: impl Into<PerformanceIssueType>) -> PerformanceIssueDetailsBuilder<'a> {
         PerformanceIssueDetailsBuilder {
-            performanceIssueType: performanceIssueType,
+            performanceIssueType: performanceIssueType.into(),
             sourceCodeLocation: None,
         }
     }
@@ -479,10 +479,10 @@ pub struct MixedContentIssueDetails<'a> {
 }
 
 impl<'a> MixedContentIssueDetails<'a> {
-    pub fn builder(resolutionStatus: MixedContentResolutionStatus, insecureURL: impl Into<Cow<'a, str>>, mainResourceURL: impl Into<Cow<'a, str>>) -> MixedContentIssueDetailsBuilder<'a> {
+    pub fn builder(resolutionStatus: impl Into<MixedContentResolutionStatus>, insecureURL: impl Into<Cow<'a, str>>, mainResourceURL: impl Into<Cow<'a, str>>) -> MixedContentIssueDetailsBuilder<'a> {
         MixedContentIssueDetailsBuilder {
             resourceType: None,
-            resolutionStatus: resolutionStatus,
+            resolutionStatus: resolutionStatus.into(),
             insecureURL: insecureURL.into(),
             mainResourceURL: mainResourceURL.into(),
             request: None,
@@ -512,7 +512,7 @@ impl<'a> MixedContentIssueDetailsBuilder<'a> {
     /// form,...). Marked as optional because it is mapped to from
     /// blink::mojom::RequestContextType, which will be replaced
     /// by network::mojom::RequestDestination
-    pub fn resourceType(mut self, resourceType: MixedContentResourceType) -> Self { self.resourceType = Some(resourceType); self }
+    pub fn resourceType(mut self, resourceType: impl Into<MixedContentResourceType>) -> Self { self.resourceType = Some(resourceType.into()); self }
     /// The mixed content request.
     /// Does not always exist (e.g. for unsafe form submission urls).
     pub fn request(mut self, request: AffectedRequest<'a>) -> Self { self.request = Some(request); self }
@@ -570,12 +570,12 @@ pub struct BlockedByResponseIssueDetails<'a> {
 }
 
 impl<'a> BlockedByResponseIssueDetails<'a> {
-    pub fn builder(request: AffectedRequest<'a>, reason: BlockedByResponseReason) -> BlockedByResponseIssueDetailsBuilder<'a> {
+    pub fn builder(request: AffectedRequest<'a>, reason: impl Into<BlockedByResponseReason>) -> BlockedByResponseIssueDetailsBuilder<'a> {
         BlockedByResponseIssueDetailsBuilder {
             request: request,
             parentFrame: None,
             blockedFrame: None,
-            reason: reason,
+            reason: reason.into(),
         }
     }
     pub fn request(&self) -> &AffectedRequest<'a> { &self.request }
@@ -640,10 +640,10 @@ pub struct HeavyAdIssueDetails<'a> {
 }
 
 impl<'a> HeavyAdIssueDetails<'a> {
-    pub fn builder(resolution: HeavyAdResolutionStatus, reason: HeavyAdReason, frame: AffectedFrame<'a>) -> HeavyAdIssueDetailsBuilder<'a> {
+    pub fn builder(resolution: impl Into<HeavyAdResolutionStatus>, reason: impl Into<HeavyAdReason>, frame: AffectedFrame<'a>) -> HeavyAdIssueDetailsBuilder<'a> {
         HeavyAdIssueDetailsBuilder {
-            resolution: resolution,
-            reason: reason,
+            resolution: resolution.into(),
+            reason: reason.into(),
             frame: frame,
         }
     }
@@ -755,12 +755,12 @@ pub struct ContentSecurityPolicyIssueDetails<'a> {
 }
 
 impl<'a> ContentSecurityPolicyIssueDetails<'a> {
-    pub fn builder(violatedDirective: impl Into<Cow<'a, str>>, isReportOnly: bool, contentSecurityPolicyViolationType: ContentSecurityPolicyViolationType) -> ContentSecurityPolicyIssueDetailsBuilder<'a> {
+    pub fn builder(violatedDirective: impl Into<Cow<'a, str>>, isReportOnly: bool, contentSecurityPolicyViolationType: impl Into<ContentSecurityPolicyViolationType>) -> ContentSecurityPolicyIssueDetailsBuilder<'a> {
         ContentSecurityPolicyIssueDetailsBuilder {
             blockedURL: None,
             violatedDirective: violatedDirective.into(),
             isReportOnly: isReportOnly,
-            contentSecurityPolicyViolationType: contentSecurityPolicyViolationType,
+            contentSecurityPolicyViolationType: contentSecurityPolicyViolationType.into(),
             frameAncestor: None,
             sourceCodeLocation: None,
             violatingNodeId: None,
@@ -828,11 +828,11 @@ pub struct SharedArrayBufferIssueDetails<'a> {
 }
 
 impl<'a> SharedArrayBufferIssueDetails<'a> {
-    pub fn builder(sourceCodeLocation: SourceCodeLocation<'a>, isWarning: bool, type_: SharedArrayBufferIssueType) -> SharedArrayBufferIssueDetailsBuilder<'a> {
+    pub fn builder(sourceCodeLocation: SourceCodeLocation<'a>, isWarning: bool, type_: impl Into<SharedArrayBufferIssueType>) -> SharedArrayBufferIssueDetailsBuilder<'a> {
         SharedArrayBufferIssueDetailsBuilder {
             sourceCodeLocation: sourceCodeLocation,
             isWarning: isWarning,
-            type_: type_,
+            type_: type_.into(),
         }
     }
     pub fn sourceCodeLocation(&self) -> &SourceCodeLocation<'a> { &self.sourceCodeLocation }
@@ -1076,6 +1076,14 @@ pub enum SRIMessageSignatureError {
     ValidationFailedSignatureMismatch,
     #[serde(rename = "ValidationFailedIntegrityMismatch")]
     ValidationFailedIntegrityMismatch,
+    #[serde(rename = "SignatureBaseUnknownDerivedComponent")]
+    SignatureBaseUnknownDerivedComponent,
+    #[serde(rename = "SignatureBaseMissingHeader")]
+    SignatureBaseMissingHeader,
+    #[serde(rename = "SignatureBaseInvalidUnencodedDigest")]
+    SignatureBaseInvalidUnencodedDigest,
+    #[serde(rename = "SignatureBaseUnsupportedComponent")]
+    SignatureBaseUnsupportedComponent,
 }
 
 
@@ -1126,9 +1134,9 @@ pub struct AttributionReportingIssueDetails<'a> {
 }
 
 impl<'a> AttributionReportingIssueDetails<'a> {
-    pub fn builder(violationType: AttributionReportingIssueType) -> AttributionReportingIssueDetailsBuilder<'a> {
+    pub fn builder(violationType: impl Into<AttributionReportingIssueType>) -> AttributionReportingIssueDetailsBuilder<'a> {
         AttributionReportingIssueDetailsBuilder {
-            violationType: violationType,
+            violationType: violationType.into(),
             request: None,
             violatingNodeId: None,
             invalidParameter: None,
@@ -1260,9 +1268,9 @@ pub struct SharedDictionaryIssueDetails<'a> {
 }
 
 impl<'a> SharedDictionaryIssueDetails<'a> {
-    pub fn builder(sharedDictionaryError: SharedDictionaryError, request: AffectedRequest<'a>) -> SharedDictionaryIssueDetailsBuilder<'a> {
+    pub fn builder(sharedDictionaryError: impl Into<SharedDictionaryError>, request: AffectedRequest<'a>) -> SharedDictionaryIssueDetailsBuilder<'a> {
         SharedDictionaryIssueDetailsBuilder {
-            sharedDictionaryError: sharedDictionaryError,
+            sharedDictionaryError: sharedDictionaryError.into(),
             request: request,
         }
     }
@@ -1296,9 +1304,9 @@ pub struct SRIMessageSignatureIssueDetails<'a> {
 }
 
 impl<'a> SRIMessageSignatureIssueDetails<'a> {
-    pub fn builder(error: SRIMessageSignatureError, signatureBase: impl Into<Cow<'a, str>>, integrityAssertions: Vec<Cow<'a, str>>, request: AffectedRequest<'a>) -> SRIMessageSignatureIssueDetailsBuilder<'a> {
+    pub fn builder(error: impl Into<SRIMessageSignatureError>, signatureBase: impl Into<Cow<'a, str>>, integrityAssertions: Vec<Cow<'a, str>>, request: AffectedRequest<'a>) -> SRIMessageSignatureIssueDetailsBuilder<'a> {
         SRIMessageSignatureIssueDetailsBuilder {
-            error: error,
+            error: error.into(),
             signatureBase: signatureBase.into(),
             integrityAssertions: integrityAssertions,
             request: request,
@@ -1338,9 +1346,9 @@ pub struct UnencodedDigestIssueDetails<'a> {
 }
 
 impl<'a> UnencodedDigestIssueDetails<'a> {
-    pub fn builder(error: UnencodedDigestError, request: AffectedRequest<'a>) -> UnencodedDigestIssueDetailsBuilder<'a> {
+    pub fn builder(error: impl Into<UnencodedDigestError>, request: AffectedRequest<'a>) -> UnencodedDigestIssueDetailsBuilder<'a> {
         UnencodedDigestIssueDetailsBuilder {
-            error: error,
+            error: error.into(),
             request: request,
         }
     }
@@ -1372,9 +1380,9 @@ pub struct ConnectionAllowlistIssueDetails<'a> {
 }
 
 impl<'a> ConnectionAllowlistIssueDetails<'a> {
-    pub fn builder(error: ConnectionAllowlistError, request: AffectedRequest<'a>) -> ConnectionAllowlistIssueDetailsBuilder<'a> {
+    pub fn builder(error: impl Into<ConnectionAllowlistError>, request: AffectedRequest<'a>) -> ConnectionAllowlistIssueDetailsBuilder<'a> {
         ConnectionAllowlistIssueDetailsBuilder {
-            error: error,
+            error: error.into(),
             request: request,
         }
     }
@@ -1425,6 +1433,8 @@ pub enum GenericIssueErrorType {
     ResponseWasBlockedByORB,
     #[serde(rename = "NavigationEntryMarkedSkippable")]
     NavigationEntryMarkedSkippable,
+    #[serde(rename = "BackUINavigationWouldSkipAd")]
+    BackUINavigationWouldSkipAd,
     #[serde(rename = "AutofillAndManualTextPolicyControlledFeaturesInfo")]
     AutofillAndManualTextPolicyControlledFeaturesInfo,
     #[serde(rename = "AutofillPolicyControlledFeatureInfo")]
@@ -1461,9 +1471,9 @@ pub struct GenericIssueDetails<'a> {
 }
 
 impl<'a> GenericIssueDetails<'a> {
-    pub fn builder(errorType: GenericIssueErrorType) -> GenericIssueDetailsBuilder<'a> {
+    pub fn builder(errorType: impl Into<GenericIssueErrorType>) -> GenericIssueDetailsBuilder<'a> {
         GenericIssueDetailsBuilder {
-            errorType: errorType,
+            errorType: errorType.into(),
             frameId: None,
             violatingNodeId: None,
             violatingNodeAttribute: None,
@@ -1597,12 +1607,12 @@ pub struct CookieDeprecationMetadataIssueDetails<'a> {
 }
 
 impl<'a> CookieDeprecationMetadataIssueDetails<'a> {
-    pub fn builder(allowedSites: Vec<Cow<'a, str>>, optOutPercentage: f64, isOptOutTopLevel: bool, operation: CookieOperation) -> CookieDeprecationMetadataIssueDetailsBuilder<'a> {
+    pub fn builder(allowedSites: Vec<Cow<'a, str>>, optOutPercentage: f64, isOptOutTopLevel: bool, operation: impl Into<CookieOperation>) -> CookieDeprecationMetadataIssueDetailsBuilder<'a> {
         CookieDeprecationMetadataIssueDetailsBuilder {
             allowedSites: allowedSites,
             optOutPercentage: optOutPercentage,
             isOptOutTopLevel: isOptOutTopLevel,
-            operation: operation,
+            operation: operation.into(),
         }
     }
     pub fn allowedSites(&self) -> &[Cow<'a, str>] { &self.allowedSites }
@@ -1648,9 +1658,9 @@ pub struct FederatedAuthRequestIssueDetails {
 }
 
 impl FederatedAuthRequestIssueDetails {
-    pub fn builder(federatedAuthRequestIssueReason: FederatedAuthRequestIssueReason) -> FederatedAuthRequestIssueDetailsBuilder {
+    pub fn builder(federatedAuthRequestIssueReason: impl Into<FederatedAuthRequestIssueReason>) -> FederatedAuthRequestIssueDetailsBuilder {
         FederatedAuthRequestIssueDetailsBuilder {
-            federatedAuthRequestIssueReason: federatedAuthRequestIssueReason,
+            federatedAuthRequestIssueReason: federatedAuthRequestIssueReason.into(),
         }
     }
     pub fn federatedAuthRequestIssueReason(&self) -> &FederatedAuthRequestIssueReason { &self.federatedAuthRequestIssueReason }
@@ -1771,9 +1781,9 @@ pub struct FederatedAuthUserInfoRequestIssueDetails {
 }
 
 impl FederatedAuthUserInfoRequestIssueDetails {
-    pub fn builder(federatedAuthUserInfoRequestIssueReason: FederatedAuthUserInfoRequestIssueReason) -> FederatedAuthUserInfoRequestIssueDetailsBuilder {
+    pub fn builder(federatedAuthUserInfoRequestIssueReason: impl Into<FederatedAuthUserInfoRequestIssueReason>) -> FederatedAuthUserInfoRequestIssueDetailsBuilder {
         FederatedAuthUserInfoRequestIssueDetailsBuilder {
-            federatedAuthUserInfoRequestIssueReason: federatedAuthUserInfoRequestIssueReason,
+            federatedAuthUserInfoRequestIssueReason: federatedAuthUserInfoRequestIssueReason.into(),
         }
     }
     pub fn federatedAuthUserInfoRequestIssueReason(&self) -> &FederatedAuthUserInfoRequestIssueReason { &self.federatedAuthUserInfoRequestIssueReason }
@@ -1830,10 +1840,10 @@ pub struct ClientHintIssueDetails<'a> {
 }
 
 impl<'a> ClientHintIssueDetails<'a> {
-    pub fn builder(sourceCodeLocation: SourceCodeLocation<'a>, clientHintIssueReason: ClientHintIssueReason) -> ClientHintIssueDetailsBuilder<'a> {
+    pub fn builder(sourceCodeLocation: SourceCodeLocation<'a>, clientHintIssueReason: impl Into<ClientHintIssueReason>) -> ClientHintIssueDetailsBuilder<'a> {
         ClientHintIssueDetailsBuilder {
             sourceCodeLocation: sourceCodeLocation,
-            clientHintIssueReason: clientHintIssueReason,
+            clientHintIssueReason: clientHintIssueReason.into(),
         }
     }
     pub fn sourceCodeLocation(&self) -> &SourceCodeLocation<'a> { &self.sourceCodeLocation }
@@ -1919,10 +1929,10 @@ pub struct PartitioningBlobURLIssueDetails<'a> {
 }
 
 impl<'a> PartitioningBlobURLIssueDetails<'a> {
-    pub fn builder(url: impl Into<Cow<'a, str>>, partitioningBlobURLInfo: PartitioningBlobURLInfo) -> PartitioningBlobURLIssueDetailsBuilder<'a> {
+    pub fn builder(url: impl Into<Cow<'a, str>>, partitioningBlobURLInfo: impl Into<PartitioningBlobURLInfo>) -> PartitioningBlobURLIssueDetailsBuilder<'a> {
         PartitioningBlobURLIssueDetailsBuilder {
             url: url.into(),
-            partitioningBlobURLInfo: partitioningBlobURLInfo,
+            partitioningBlobURLInfo: partitioningBlobURLInfo.into(),
         }
     }
     pub fn url(&self) -> &str { self.url.as_ref() }
@@ -1973,10 +1983,10 @@ pub struct ElementAccessibilityIssueDetails {
 }
 
 impl ElementAccessibilityIssueDetails {
-    pub fn builder(nodeId: crate::dom::BackendNodeId, elementAccessibilityIssueReason: ElementAccessibilityIssueReason, hasDisallowedAttributes: bool) -> ElementAccessibilityIssueDetailsBuilder {
+    pub fn builder(nodeId: crate::dom::BackendNodeId, elementAccessibilityIssueReason: impl Into<ElementAccessibilityIssueReason>, hasDisallowedAttributes: bool) -> ElementAccessibilityIssueDetailsBuilder {
         ElementAccessibilityIssueDetailsBuilder {
             nodeId: nodeId,
-            elementAccessibilityIssueReason: elementAccessibilityIssueReason,
+            elementAccessibilityIssueReason: elementAccessibilityIssueReason.into(),
             hasDisallowedAttributes: hasDisallowedAttributes,
         }
     }
@@ -2027,10 +2037,10 @@ pub struct StylesheetLoadingIssueDetails<'a> {
 }
 
 impl<'a> StylesheetLoadingIssueDetails<'a> {
-    pub fn builder(sourceCodeLocation: SourceCodeLocation<'a>, styleSheetLoadingIssueReason: StyleSheetLoadingIssueReason) -> StylesheetLoadingIssueDetailsBuilder<'a> {
+    pub fn builder(sourceCodeLocation: SourceCodeLocation<'a>, styleSheetLoadingIssueReason: impl Into<StyleSheetLoadingIssueReason>) -> StylesheetLoadingIssueDetailsBuilder<'a> {
         StylesheetLoadingIssueDetailsBuilder {
             sourceCodeLocation: sourceCodeLocation,
-            styleSheetLoadingIssueReason: styleSheetLoadingIssueReason,
+            styleSheetLoadingIssueReason: styleSheetLoadingIssueReason.into(),
             failedRequestInfo: None,
         }
     }
@@ -2088,10 +2098,10 @@ pub struct PropertyRuleIssueDetails<'a> {
 }
 
 impl<'a> PropertyRuleIssueDetails<'a> {
-    pub fn builder(sourceCodeLocation: SourceCodeLocation<'a>, propertyRuleIssueReason: PropertyRuleIssueReason) -> PropertyRuleIssueDetailsBuilder<'a> {
+    pub fn builder(sourceCodeLocation: SourceCodeLocation<'a>, propertyRuleIssueReason: impl Into<PropertyRuleIssueReason>) -> PropertyRuleIssueDetailsBuilder<'a> {
         PropertyRuleIssueDetailsBuilder {
             sourceCodeLocation: sourceCodeLocation,
-            propertyRuleIssueReason: propertyRuleIssueReason,
+            propertyRuleIssueReason: propertyRuleIssueReason.into(),
             propertyValue: None,
         }
     }
@@ -2148,9 +2158,9 @@ pub struct UserReidentificationIssueDetails<'a> {
 }
 
 impl<'a> UserReidentificationIssueDetails<'a> {
-    pub fn builder(type_: UserReidentificationIssueType) -> UserReidentificationIssueDetailsBuilder<'a> {
+    pub fn builder(type_: impl Into<UserReidentificationIssueType>) -> UserReidentificationIssueDetailsBuilder<'a> {
         UserReidentificationIssueDetailsBuilder {
-            type_: type_,
+            type_: type_.into(),
             request: None,
             sourceCodeLocation: None,
         }
@@ -2260,9 +2270,9 @@ pub struct PermissionElementIssueDetails<'a> {
 }
 
 impl<'a> PermissionElementIssueDetails<'a> {
-    pub fn builder(issueType: PermissionElementIssueType) -> PermissionElementIssueDetailsBuilder<'a> {
+    pub fn builder(issueType: impl Into<PermissionElementIssueType>) -> PermissionElementIssueDetailsBuilder<'a> {
         PermissionElementIssueDetailsBuilder {
-            issueType: issueType,
+            issueType: issueType.into(),
             type_: None,
             nodeId: None,
             isWarning: None,
@@ -2687,9 +2697,9 @@ pub struct InspectorIssue<'a> {
 }
 
 impl<'a> InspectorIssue<'a> {
-    pub fn builder(code: InspectorIssueCode, details: InspectorIssueDetails<'a>) -> InspectorIssueBuilder<'a> {
+    pub fn builder(code: impl Into<InspectorIssueCode>, details: InspectorIssueDetails<'a>) -> InspectorIssueBuilder<'a> {
         InspectorIssueBuilder {
-            code: code,
+            code: code.into(),
             details: details,
             issueId: None,
         }
@@ -2709,7 +2719,7 @@ pub struct InspectorIssueBuilder<'a> {
 impl<'a> InspectorIssueBuilder<'a> {
     /// A unique id for this issue. May be omitted if no other entity (e.g.
     /// exception, CDP message, etc.) is referencing this issue.
-    pub fn issueId(mut self, issueId: IssueId<'a>) -> Self { self.issueId = Some(issueId); self }
+    pub fn issueId(mut self, issueId: impl Into<IssueId<'a>>) -> Self { self.issueId = Some(issueId.into()); self }
     pub fn build(self) -> InspectorIssue<'a> {
         InspectorIssue {
             code: self.code,

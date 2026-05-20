@@ -654,7 +654,7 @@ impl<'a> HighlightConfigBuilder<'a> {
     /// The grid layout color (default: transparent).
     pub fn cssGridColor(mut self, cssGridColor: crate::dom::RGBA) -> Self { self.cssGridColor = Some(cssGridColor); self }
     /// The color format used to format color styles (default: hex).
-    pub fn colorFormat(mut self, colorFormat: ColorFormat) -> Self { self.colorFormat = Some(colorFormat); self }
+    pub fn colorFormat(mut self, colorFormat: impl Into<ColorFormat>) -> Self { self.colorFormat = Some(colorFormat.into()); self }
     /// The grid layout highlight configuration (default: all transparent).
     pub fn gridHighlightConfig(mut self, gridHighlightConfig: GridHighlightConfig) -> Self { self.gridHighlightConfig = Some(gridHighlightConfig); self }
     /// The flex container highlight configuration (default: all transparent).
@@ -662,7 +662,7 @@ impl<'a> HighlightConfigBuilder<'a> {
     /// The flex item highlight configuration (default: all transparent).
     pub fn flexItemHighlightConfig(mut self, flexItemHighlightConfig: FlexItemHighlightConfig<'a>) -> Self { self.flexItemHighlightConfig = Some(flexItemHighlightConfig); self }
     /// The contrast algorithm to use for the contrast ratio (default: aa).
-    pub fn contrastAlgorithm(mut self, contrastAlgorithm: ContrastAlgorithm) -> Self { self.contrastAlgorithm = Some(contrastAlgorithm); self }
+    pub fn contrastAlgorithm(mut self, contrastAlgorithm: impl Into<ContrastAlgorithm>) -> Self { self.contrastAlgorithm = Some(contrastAlgorithm.into()); self }
     /// The container query container highlight configuration (default: all transparent).
     pub fn containerQueryContainerHighlightConfig(mut self, containerQueryContainerHighlightConfig: ContainerQueryContainerHighlightConfig<'a>) -> Self { self.containerQueryContainerHighlightConfig = Some(containerQueryContainerHighlightConfig); self }
     pub fn build(self) -> HighlightConfig<'a> {
@@ -1259,7 +1259,7 @@ impl GetHighlightObjectForTestParamsBuilder {
     /// Whether to include style info.
     pub fn includeStyle(mut self, includeStyle: bool) -> Self { self.includeStyle = Some(includeStyle); self }
     /// The color format to get config with (default: hex).
-    pub fn colorFormat(mut self, colorFormat: ColorFormat) -> Self { self.colorFormat = Some(colorFormat); self }
+    pub fn colorFormat(mut self, colorFormat: impl Into<ColorFormat>) -> Self { self.colorFormat = Some(colorFormat.into()); self }
     /// Whether to show accessibility info (default: true).
     pub fn showAccessibilityInfo(mut self, showAccessibilityInfo: bool) -> Self { self.showAccessibilityInfo = Some(showAccessibilityInfo); self }
     pub fn build(self) -> GetHighlightObjectForTestParams {
@@ -1807,9 +1807,9 @@ pub struct SetInspectModeParams<'a> {
 }
 
 impl<'a> SetInspectModeParams<'a> {
-    pub fn builder(mode: InspectMode) -> SetInspectModeParamsBuilder<'a> {
+    pub fn builder(mode: impl Into<InspectMode>) -> SetInspectModeParamsBuilder<'a> {
         SetInspectModeParamsBuilder {
-            mode: mode,
+            mode: mode.into(),
             highlightConfig: None,
         }
     }

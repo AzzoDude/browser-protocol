@@ -16,9 +16,9 @@ pub struct ServiceWorkerRegistration<'a> {
 }
 
 impl<'a> ServiceWorkerRegistration<'a> {
-    pub fn builder(registrationId: RegistrationID<'a>, scopeURL: impl Into<Cow<'a, str>>, isDeleted: bool) -> ServiceWorkerRegistrationBuilder<'a> {
+    pub fn builder(registrationId: impl Into<RegistrationID<'a>>, scopeURL: impl Into<Cow<'a, str>>, isDeleted: bool) -> ServiceWorkerRegistrationBuilder<'a> {
         ServiceWorkerRegistrationBuilder {
-            registrationId: registrationId,
+            registrationId: registrationId.into(),
             scopeURL: scopeURL.into(),
             isDeleted: isDeleted,
         }
@@ -103,13 +103,13 @@ pub struct ServiceWorkerVersion<'a> {
 }
 
 impl<'a> ServiceWorkerVersion<'a> {
-    pub fn builder(versionId: impl Into<Cow<'a, str>>, registrationId: RegistrationID<'a>, scriptURL: impl Into<Cow<'a, str>>, runningStatus: ServiceWorkerVersionRunningStatus, status: ServiceWorkerVersionStatus) -> ServiceWorkerVersionBuilder<'a> {
+    pub fn builder(versionId: impl Into<Cow<'a, str>>, registrationId: impl Into<RegistrationID<'a>>, scriptURL: impl Into<Cow<'a, str>>, runningStatus: impl Into<ServiceWorkerVersionRunningStatus>, status: impl Into<ServiceWorkerVersionStatus>) -> ServiceWorkerVersionBuilder<'a> {
         ServiceWorkerVersionBuilder {
             versionId: versionId.into(),
-            registrationId: registrationId,
+            registrationId: registrationId.into(),
             scriptURL: scriptURL.into(),
-            runningStatus: runningStatus,
-            status: status,
+            runningStatus: runningStatus.into(),
+            status: status.into(),
             scriptLastModified: None,
             scriptResponseTime: None,
             controlledClients: None,
@@ -182,10 +182,10 @@ pub struct ServiceWorkerErrorMessage<'a> {
 }
 
 impl<'a> ServiceWorkerErrorMessage<'a> {
-    pub fn builder(errorMessage: impl Into<Cow<'a, str>>, registrationId: RegistrationID<'a>, versionId: impl Into<Cow<'a, str>>, sourceURL: impl Into<Cow<'a, str>>, lineNumber: i64, columnNumber: i64) -> ServiceWorkerErrorMessageBuilder<'a> {
+    pub fn builder(errorMessage: impl Into<Cow<'a, str>>, registrationId: impl Into<RegistrationID<'a>>, versionId: impl Into<Cow<'a, str>>, sourceURL: impl Into<Cow<'a, str>>, lineNumber: i64, columnNumber: i64) -> ServiceWorkerErrorMessageBuilder<'a> {
         ServiceWorkerErrorMessageBuilder {
             errorMessage: errorMessage.into(),
-            registrationId: registrationId,
+            registrationId: registrationId.into(),
             versionId: versionId.into(),
             sourceURL: sourceURL.into(),
             lineNumber: lineNumber,
@@ -233,10 +233,10 @@ pub struct DeliverPushMessageParams<'a> {
 }
 
 impl<'a> DeliverPushMessageParams<'a> {
-    pub fn builder(origin: impl Into<Cow<'a, str>>, registrationId: RegistrationID<'a>, data: impl Into<Cow<'a, str>>) -> DeliverPushMessageParamsBuilder<'a> {
+    pub fn builder(origin: impl Into<Cow<'a, str>>, registrationId: impl Into<RegistrationID<'a>>, data: impl Into<Cow<'a, str>>) -> DeliverPushMessageParamsBuilder<'a> {
         DeliverPushMessageParamsBuilder {
             origin: origin.into(),
-            registrationId: registrationId,
+            registrationId: registrationId.into(),
             data: data.into(),
         }
     }
@@ -290,10 +290,10 @@ pub struct DispatchSyncEventParams<'a> {
 }
 
 impl<'a> DispatchSyncEventParams<'a> {
-    pub fn builder(origin: impl Into<Cow<'a, str>>, registrationId: RegistrationID<'a>, tag: impl Into<Cow<'a, str>>, lastChance: bool) -> DispatchSyncEventParamsBuilder<'a> {
+    pub fn builder(origin: impl Into<Cow<'a, str>>, registrationId: impl Into<RegistrationID<'a>>, tag: impl Into<Cow<'a, str>>, lastChance: bool) -> DispatchSyncEventParamsBuilder<'a> {
         DispatchSyncEventParamsBuilder {
             origin: origin.into(),
-            registrationId: registrationId,
+            registrationId: registrationId.into(),
             tag: tag.into(),
             lastChance: lastChance,
         }
@@ -340,10 +340,10 @@ pub struct DispatchPeriodicSyncEventParams<'a> {
 }
 
 impl<'a> DispatchPeriodicSyncEventParams<'a> {
-    pub fn builder(origin: impl Into<Cow<'a, str>>, registrationId: RegistrationID<'a>, tag: impl Into<Cow<'a, str>>) -> DispatchPeriodicSyncEventParamsBuilder<'a> {
+    pub fn builder(origin: impl Into<Cow<'a, str>>, registrationId: impl Into<RegistrationID<'a>>, tag: impl Into<Cow<'a, str>>) -> DispatchPeriodicSyncEventParamsBuilder<'a> {
         DispatchPeriodicSyncEventParamsBuilder {
             origin: origin.into(),
-            registrationId: registrationId,
+            registrationId: registrationId.into(),
             tag: tag.into(),
         }
     }

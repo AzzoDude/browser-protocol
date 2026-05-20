@@ -450,13 +450,13 @@ pub struct CSSStyleSheetHeader<'a> {
 }
 
 impl<'a> CSSStyleSheetHeader<'a> {
-    pub fn builder(styleSheetId: crate::dom::StyleSheetId<'a>, frameId: crate::page::FrameId<'a>, sourceURL: impl Into<Cow<'a, str>>, origin: StyleSheetOrigin, title: impl Into<Cow<'a, str>>, disabled: bool, isInline: bool, isMutable: bool, isConstructed: bool, startLine: f64, startColumn: f64, length: f64, endLine: f64, endColumn: f64) -> CSSStyleSheetHeaderBuilder<'a> {
+    pub fn builder(styleSheetId: crate::dom::StyleSheetId<'a>, frameId: crate::page::FrameId<'a>, sourceURL: impl Into<Cow<'a, str>>, origin: impl Into<StyleSheetOrigin>, title: impl Into<Cow<'a, str>>, disabled: bool, isInline: bool, isMutable: bool, isConstructed: bool, startLine: f64, startColumn: f64, length: f64, endLine: f64, endColumn: f64) -> CSSStyleSheetHeaderBuilder<'a> {
         CSSStyleSheetHeaderBuilder {
             styleSheetId: styleSheetId,
             frameId: frameId,
             sourceURL: sourceURL.into(),
             sourceMapURL: None,
-            origin: origin,
+            origin: origin.into(),
             title: title.into(),
             ownerNode: None,
             disabled: disabled,
@@ -602,12 +602,12 @@ pub struct CSSRule<'a> {
 }
 
 impl<'a> CSSRule<'a> {
-    pub fn builder(selectorList: SelectorList<'a>, origin: StyleSheetOrigin, style: CSSStyle<'a>) -> CSSRuleBuilder<'a> {
+    pub fn builder(selectorList: SelectorList<'a>, origin: impl Into<StyleSheetOrigin>, style: CSSStyle<'a>) -> CSSRuleBuilder<'a> {
         CSSRuleBuilder {
             styleSheetId: None,
             selectorList: selectorList,
             nestingSelectors: None,
-            origin: origin,
+            origin: origin.into(),
             style: style,
             originTreeScopeNodeId: None,
             media: None,
@@ -1291,6 +1291,9 @@ impl<'a> MediaQueryExpressionBuilder<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct CSSContainerQuery<'a> {
     /// Container query text.
+    /// Contains the query part without the container name for a single query.
+    /// Deprecated in favor of conditionText which contains the full prelude
+    /// after @container.
     text: Cow<'a, str>,
     /// The associated rule header range in the enclosing stylesheet (if
     /// available).
@@ -1314,10 +1317,12 @@ pub struct CSSContainerQuery<'a> {
     /// true if the query contains anchored() queries.
     #[serde(skip_serializing_if = "Option::is_none")]
     queriesAnchored: Option<bool>,
+    /// CSSContainerRule.conditionText
+    conditionText: Cow<'a, str>,
 }
 
 impl<'a> CSSContainerQuery<'a> {
-    pub fn builder(text: impl Into<Cow<'a, str>>) -> CSSContainerQueryBuilder<'a> {
+    pub fn builder(text: impl Into<Cow<'a, str>>, conditionText: impl Into<Cow<'a, str>>) -> CSSContainerQueryBuilder<'a> {
         CSSContainerQueryBuilder {
             text: text.into(),
             range: None,
@@ -1327,6 +1332,7 @@ impl<'a> CSSContainerQuery<'a> {
             logicalAxes: None,
             queriesScrollState: None,
             queriesAnchored: None,
+            conditionText: conditionText.into(),
         }
     }
     pub fn text(&self) -> &str { self.text.as_ref() }
@@ -1337,6 +1343,7 @@ impl<'a> CSSContainerQuery<'a> {
     pub fn logicalAxes(&self) -> Option<&crate::dom::LogicalAxes> { self.logicalAxes.as_ref() }
     pub fn queriesScrollState(&self) -> Option<bool> { self.queriesScrollState }
     pub fn queriesAnchored(&self) -> Option<bool> { self.queriesAnchored }
+    pub fn conditionText(&self) -> &str { self.conditionText.as_ref() }
 }
 
 
@@ -1349,6 +1356,7 @@ pub struct CSSContainerQueryBuilder<'a> {
     logicalAxes: Option<crate::dom::LogicalAxes>,
     queriesScrollState: Option<bool>,
     queriesAnchored: Option<bool>,
+    conditionText: Cow<'a, str>,
 }
 
 impl<'a> CSSContainerQueryBuilder<'a> {
@@ -1377,6 +1385,7 @@ impl<'a> CSSContainerQueryBuilder<'a> {
             logicalAxes: self.logicalAxes,
             queriesScrollState: self.queriesScrollState,
             queriesAnchored: self.queriesAnchored,
+            conditionText: self.conditionText,
         }
     }
 }
@@ -1901,10 +1910,10 @@ pub struct CSSTryRule<'a> {
 }
 
 impl<'a> CSSTryRule<'a> {
-    pub fn builder(origin: StyleSheetOrigin, style: CSSStyle<'a>) -> CSSTryRuleBuilder<'a> {
+    pub fn builder(origin: impl Into<StyleSheetOrigin>, style: CSSStyle<'a>) -> CSSTryRuleBuilder<'a> {
         CSSTryRuleBuilder {
             styleSheetId: None,
-            origin: origin,
+            origin: origin.into(),
             style: style,
         }
     }
@@ -1952,11 +1961,11 @@ pub struct CSSPositionTryRule<'a> {
 }
 
 impl<'a> CSSPositionTryRule<'a> {
-    pub fn builder(name: ProtocolValue<'a>, origin: StyleSheetOrigin, style: CSSStyle<'a>, active: bool) -> CSSPositionTryRuleBuilder<'a> {
+    pub fn builder(name: ProtocolValue<'a>, origin: impl Into<StyleSheetOrigin>, style: CSSStyle<'a>, active: bool) -> CSSPositionTryRuleBuilder<'a> {
         CSSPositionTryRuleBuilder {
             name: name,
             styleSheetId: None,
-            origin: origin,
+            origin: origin.into(),
             style: style,
             active: active,
         }
@@ -2102,13 +2111,13 @@ pub struct CSSAtRule<'a> {
 }
 
 impl<'a> CSSAtRule<'a> {
-    pub fn builder(type_: impl Into<Cow<'a, str>>, origin: StyleSheetOrigin, style: CSSStyle<'a>) -> CSSAtRuleBuilder<'a> {
+    pub fn builder(type_: impl Into<Cow<'a, str>>, origin: impl Into<StyleSheetOrigin>, style: CSSStyle<'a>) -> CSSAtRuleBuilder<'a> {
         CSSAtRuleBuilder {
             type_: type_.into(),
             subsection: None,
             name: None,
             styleSheetId: None,
-            origin: origin,
+            origin: origin.into(),
             style: style,
         }
     }
@@ -2169,10 +2178,10 @@ pub struct CSSPropertyRule<'a> {
 }
 
 impl<'a> CSSPropertyRule<'a> {
-    pub fn builder(origin: StyleSheetOrigin, propertyName: ProtocolValue<'a>, style: CSSStyle<'a>) -> CSSPropertyRuleBuilder<'a> {
+    pub fn builder(origin: impl Into<StyleSheetOrigin>, propertyName: ProtocolValue<'a>, style: CSSStyle<'a>) -> CSSPropertyRuleBuilder<'a> {
         CSSPropertyRuleBuilder {
             styleSheetId: None,
-            origin: origin,
+            origin: origin.into(),
             propertyName: propertyName,
             style: style,
         }
@@ -2382,11 +2391,11 @@ pub struct CSSFunctionRule<'a> {
 }
 
 impl<'a> CSSFunctionRule<'a> {
-    pub fn builder(name: ProtocolValue<'a>, origin: StyleSheetOrigin, parameters: Vec<CSSFunctionParameter<'a>>, children: Vec<CSSFunctionNode<'a>>) -> CSSFunctionRuleBuilder<'a> {
+    pub fn builder(name: ProtocolValue<'a>, origin: impl Into<StyleSheetOrigin>, parameters: Vec<CSSFunctionParameter<'a>>, children: Vec<CSSFunctionNode<'a>>) -> CSSFunctionRuleBuilder<'a> {
         CSSFunctionRuleBuilder {
             name: name,
             styleSheetId: None,
-            origin: origin,
+            origin: origin.into(),
             parameters: parameters,
             children: children,
             originTreeScopeNodeId: None,
@@ -2446,10 +2455,10 @@ pub struct CSSKeyframeRule<'a> {
 }
 
 impl<'a> CSSKeyframeRule<'a> {
-    pub fn builder(origin: StyleSheetOrigin, keyText: ProtocolValue<'a>, style: CSSStyle<'a>) -> CSSKeyframeRuleBuilder<'a> {
+    pub fn builder(origin: impl Into<StyleSheetOrigin>, keyText: ProtocolValue<'a>, style: CSSStyle<'a>) -> CSSKeyframeRuleBuilder<'a> {
         CSSKeyframeRuleBuilder {
             styleSheetId: None,
-            origin: origin,
+            origin: origin.into(),
             keyText: keyText,
             style: style,
         }
@@ -4389,6 +4398,7 @@ impl<'a> crate::CdpCommand<'a> for SetMediaTextParams<'a> {
 }
 
 /// Modifies the expression of a container query.
+/// Deprecated. Use setContainerQueryConditionText instead.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -4429,6 +4439,7 @@ impl<'a> SetContainerQueryTextParamsBuilder<'a> {
 }
 
 /// Modifies the expression of a container query.
+/// Deprecated. Use setContainerQueryConditionText instead.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -4464,6 +4475,82 @@ impl<'a> SetContainerQueryTextParams<'a> { pub const METHOD: &'static str = "CSS
 impl<'a> crate::CdpCommand<'a> for SetContainerQueryTextParams<'a> {
     const METHOD: &'static str = "CSS.setContainerQueryText";
     type Response = SetContainerQueryTextReturns<'a>;
+}
+
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct SetContainerQueryConditionTextParams<'a> {
+    styleSheetId: crate::dom::StyleSheetId<'a>,
+    range: SourceRange,
+    text: Cow<'a, str>,
+}
+
+impl<'a> SetContainerQueryConditionTextParams<'a> {
+    pub fn builder(styleSheetId: crate::dom::StyleSheetId<'a>, range: SourceRange, text: impl Into<Cow<'a, str>>) -> SetContainerQueryConditionTextParamsBuilder<'a> {
+        SetContainerQueryConditionTextParamsBuilder {
+            styleSheetId: styleSheetId,
+            range: range,
+            text: text.into(),
+        }
+    }
+    pub fn styleSheetId(&self) -> &crate::dom::StyleSheetId<'a> { &self.styleSheetId }
+    pub fn range(&self) -> &SourceRange { &self.range }
+    pub fn text(&self) -> &str { self.text.as_ref() }
+}
+
+
+pub struct SetContainerQueryConditionTextParamsBuilder<'a> {
+    styleSheetId: crate::dom::StyleSheetId<'a>,
+    range: SourceRange,
+    text: Cow<'a, str>,
+}
+
+impl<'a> SetContainerQueryConditionTextParamsBuilder<'a> {
+    pub fn build(self) -> SetContainerQueryConditionTextParams<'a> {
+        SetContainerQueryConditionTextParams {
+            styleSheetId: self.styleSheetId,
+            range: self.range,
+            text: self.text,
+        }
+    }
+}
+
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct SetContainerQueryConditionTextReturns<'a> {
+    /// The resulting CSS container query rule after modification.
+    containerQuery: CSSContainerQuery<'a>,
+}
+
+impl<'a> SetContainerQueryConditionTextReturns<'a> {
+    pub fn builder(containerQuery: CSSContainerQuery<'a>) -> SetContainerQueryConditionTextReturnsBuilder<'a> {
+        SetContainerQueryConditionTextReturnsBuilder {
+            containerQuery: containerQuery,
+        }
+    }
+    pub fn containerQuery(&self) -> &CSSContainerQuery<'a> { &self.containerQuery }
+}
+
+
+pub struct SetContainerQueryConditionTextReturnsBuilder<'a> {
+    containerQuery: CSSContainerQuery<'a>,
+}
+
+impl<'a> SetContainerQueryConditionTextReturnsBuilder<'a> {
+    pub fn build(self) -> SetContainerQueryConditionTextReturns<'a> {
+        SetContainerQueryConditionTextReturns {
+            containerQuery: self.containerQuery,
+        }
+    }
+}
+
+impl<'a> SetContainerQueryConditionTextParams<'a> { pub const METHOD: &'static str = "CSS.setContainerQueryConditionText"; }
+
+impl<'a> crate::CdpCommand<'a> for SetContainerQueryConditionTextParams<'a> {
+    const METHOD: &'static str = "CSS.setContainerQueryConditionText";
+    type Response = SetContainerQueryConditionTextReturns<'a>;
 }
 
 /// Modifies the expression of a supports at-rule.

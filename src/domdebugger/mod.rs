@@ -229,10 +229,10 @@ pub struct RemoveDOMBreakpointParams {
 }
 
 impl RemoveDOMBreakpointParams {
-    pub fn builder(nodeId: crate::dom::NodeId, type_: DOMBreakpointType) -> RemoveDOMBreakpointParamsBuilder {
+    pub fn builder(nodeId: crate::dom::NodeId, type_: impl Into<DOMBreakpointType>) -> RemoveDOMBreakpointParamsBuilder {
         RemoveDOMBreakpointParamsBuilder {
             nodeId: nodeId,
-            type_: type_,
+            type_: type_.into(),
         }
     }
     pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }
@@ -435,10 +435,10 @@ pub struct SetDOMBreakpointParams {
 }
 
 impl SetDOMBreakpointParams {
-    pub fn builder(nodeId: crate::dom::NodeId, type_: DOMBreakpointType) -> SetDOMBreakpointParamsBuilder {
+    pub fn builder(nodeId: crate::dom::NodeId, type_: impl Into<DOMBreakpointType>) -> SetDOMBreakpointParamsBuilder {
         SetDOMBreakpointParamsBuilder {
             nodeId: nodeId,
-            type_: type_,
+            type_: type_.into(),
         }
     }
     pub fn nodeId(&self) -> &crate::dom::NodeId { &self.nodeId }

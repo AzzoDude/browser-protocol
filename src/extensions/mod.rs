@@ -76,8 +76,6 @@ impl<'a> ExtensionInfoBuilder<'a> {
 }
 
 /// Runs an extension default action.
-/// Available if the client is connected using the --remote-debugging-pipe
-/// flag and the --enable-unsafe-extension-debugging flag is set.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -123,9 +121,7 @@ impl<'a> crate::CdpCommand<'a> for TriggerActionParams<'a> {
 
 /// Installs an unpacked extension from the filesystem similar to
 /// --load-extension CLI flags. Returns extension ID once the extension
-/// has been installed. Available if the client is connected using the
-/// --remote-debugging-pipe flag and the --enable-unsafe-extension-debugging
-/// flag is set.
+/// has been installed.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -167,9 +163,7 @@ impl<'a> LoadUnpackedParamsBuilder<'a> {
 
 /// Installs an unpacked extension from the filesystem similar to
 /// --load-extension CLI flags. Returns extension ID once the extension
-/// has been installed. Available if the client is connected using the
-/// --remote-debugging-pipe flag and the --enable-unsafe-extension-debugging
-/// flag is set.
+/// has been installed.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -208,8 +202,6 @@ impl<'a> crate::CdpCommand<'a> for LoadUnpackedParams<'a> {
 }
 
 /// Gets a list of all unpacked extensions.
-/// Available if the client is connected using the --remote-debugging-pipe flag
-/// and the --enable-unsafe-extension-debugging flag is set.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -250,8 +242,6 @@ impl<'a> crate::CdpCommand<'a> for GetExtensionsParams {
 }
 
 /// Uninstalls an unpacked extension (others not supported) from the profile.
-/// Available if the client is connected using the --remote-debugging-pipe flag
-/// and the --enable-unsafe-extension-debugging.
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -305,10 +295,10 @@ pub struct GetStorageItemsParams<'a> {
 }
 
 impl<'a> GetStorageItemsParams<'a> {
-    pub fn builder(id: impl Into<Cow<'a, str>>, storageArea: StorageArea) -> GetStorageItemsParamsBuilder<'a> {
+    pub fn builder(id: impl Into<Cow<'a, str>>, storageArea: impl Into<StorageArea>) -> GetStorageItemsParamsBuilder<'a> {
         GetStorageItemsParamsBuilder {
             id: id.into(),
-            storageArea: storageArea,
+            storageArea: storageArea.into(),
             keys: None,
         }
     }
@@ -388,10 +378,10 @@ pub struct RemoveStorageItemsParams<'a> {
 }
 
 impl<'a> RemoveStorageItemsParams<'a> {
-    pub fn builder(id: impl Into<Cow<'a, str>>, storageArea: StorageArea, keys: Vec<Cow<'a, str>>) -> RemoveStorageItemsParamsBuilder<'a> {
+    pub fn builder(id: impl Into<Cow<'a, str>>, storageArea: impl Into<StorageArea>, keys: Vec<Cow<'a, str>>) -> RemoveStorageItemsParamsBuilder<'a> {
         RemoveStorageItemsParamsBuilder {
             id: id.into(),
-            storageArea: storageArea,
+            storageArea: storageArea.into(),
             keys: keys,
         }
     }
@@ -436,10 +426,10 @@ pub struct ClearStorageItemsParams<'a> {
 }
 
 impl<'a> ClearStorageItemsParams<'a> {
-    pub fn builder(id: impl Into<Cow<'a, str>>, storageArea: StorageArea) -> ClearStorageItemsParamsBuilder<'a> {
+    pub fn builder(id: impl Into<Cow<'a, str>>, storageArea: impl Into<StorageArea>) -> ClearStorageItemsParamsBuilder<'a> {
         ClearStorageItemsParamsBuilder {
             id: id.into(),
-            storageArea: storageArea,
+            storageArea: storageArea.into(),
         }
     }
     pub fn id(&self) -> &str { self.id.as_ref() }
@@ -483,10 +473,10 @@ pub struct SetStorageItemsParams<'a> {
 }
 
 impl<'a> SetStorageItemsParams<'a> {
-    pub fn builder(id: impl Into<Cow<'a, str>>, storageArea: StorageArea, values: serde_json::Map<String, JsonValue>) -> SetStorageItemsParamsBuilder<'a> {
+    pub fn builder(id: impl Into<Cow<'a, str>>, storageArea: impl Into<StorageArea>, values: serde_json::Map<String, JsonValue>) -> SetStorageItemsParamsBuilder<'a> {
         SetStorageItemsParamsBuilder {
             id: id.into(),
-            storageArea: storageArea,
+            storageArea: storageArea.into(),
             values: values,
         }
     }

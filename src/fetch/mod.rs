@@ -67,7 +67,7 @@ impl<'a> RequestPatternBuilder<'a> {
     /// If set, only requests for matching resource types will be intercepted.
     pub fn resourceType(mut self, resourceType: crate::network::ResourceType) -> Self { self.resourceType = Some(resourceType); self }
     /// Stage at which to begin intercepting requests. Default is Request.
-    pub fn requestStage(mut self, requestStage: RequestStage) -> Self { self.requestStage = Some(requestStage); self }
+    pub fn requestStage(mut self, requestStage: impl Into<RequestStage>) -> Self { self.requestStage = Some(requestStage.into()); self }
     pub fn build(self) -> RequestPattern<'a> {
         RequestPattern {
             urlPattern: self.urlPattern,
@@ -298,9 +298,9 @@ pub struct FailRequestParams<'a> {
 }
 
 impl<'a> FailRequestParams<'a> {
-    pub fn builder(requestId: RequestId<'a>, errorReason: crate::network::ErrorReason) -> FailRequestParamsBuilder<'a> {
+    pub fn builder(requestId: impl Into<RequestId<'a>>, errorReason: crate::network::ErrorReason) -> FailRequestParamsBuilder<'a> {
         FailRequestParamsBuilder {
-            requestId: requestId,
+            requestId: requestId.into(),
             errorReason: errorReason,
         }
     }
@@ -360,9 +360,9 @@ pub struct FulfillRequestParams<'a> {
 }
 
 impl<'a> FulfillRequestParams<'a> {
-    pub fn builder(requestId: RequestId<'a>, responseCode: i64) -> FulfillRequestParamsBuilder<'a> {
+    pub fn builder(requestId: impl Into<RequestId<'a>>, responseCode: i64) -> FulfillRequestParamsBuilder<'a> {
         FulfillRequestParamsBuilder {
-            requestId: requestId,
+            requestId: requestId.into(),
             responseCode: responseCode,
             responseHeaders: None,
             binaryResponseHeaders: None,
@@ -449,9 +449,9 @@ pub struct ContinueRequestParams<'a> {
 }
 
 impl<'a> ContinueRequestParams<'a> {
-    pub fn builder(requestId: RequestId<'a>) -> ContinueRequestParamsBuilder<'a> {
+    pub fn builder(requestId: impl Into<RequestId<'a>>) -> ContinueRequestParamsBuilder<'a> {
         ContinueRequestParamsBuilder {
-            requestId: requestId,
+            requestId: requestId.into(),
             url: None,
             method: None,
             postData: None,
@@ -521,9 +521,9 @@ pub struct ContinueWithAuthParams<'a> {
 }
 
 impl<'a> ContinueWithAuthParams<'a> {
-    pub fn builder(requestId: RequestId<'a>, authChallengeResponse: AuthChallengeResponse<'a>) -> ContinueWithAuthParamsBuilder<'a> {
+    pub fn builder(requestId: impl Into<RequestId<'a>>, authChallengeResponse: AuthChallengeResponse<'a>) -> ContinueWithAuthParamsBuilder<'a> {
         ContinueWithAuthParamsBuilder {
-            requestId: requestId,
+            requestId: requestId.into(),
             authChallengeResponse: authChallengeResponse,
         }
     }
@@ -581,9 +581,9 @@ pub struct ContinueResponseParams<'a> {
 }
 
 impl<'a> ContinueResponseParams<'a> {
-    pub fn builder(requestId: RequestId<'a>) -> ContinueResponseParamsBuilder<'a> {
+    pub fn builder(requestId: impl Into<RequestId<'a>>) -> ContinueResponseParamsBuilder<'a> {
         ContinueResponseParamsBuilder {
-            requestId: requestId,
+            requestId: requestId.into(),
             responseCode: None,
             responsePhrase: None,
             responseHeaders: None,
@@ -656,9 +656,9 @@ pub struct GetResponseBodyParams<'a> {
 }
 
 impl<'a> GetResponseBodyParams<'a> {
-    pub fn builder(requestId: RequestId<'a>) -> GetResponseBodyParamsBuilder<'a> {
+    pub fn builder(requestId: impl Into<RequestId<'a>>) -> GetResponseBodyParamsBuilder<'a> {
         GetResponseBodyParamsBuilder {
-            requestId: requestId,
+            requestId: requestId.into(),
         }
     }
     pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
@@ -748,9 +748,9 @@ pub struct TakeResponseBodyAsStreamParams<'a> {
 }
 
 impl<'a> TakeResponseBodyAsStreamParams<'a> {
-    pub fn builder(requestId: RequestId<'a>) -> TakeResponseBodyAsStreamParamsBuilder<'a> {
+    pub fn builder(requestId: impl Into<RequestId<'a>>) -> TakeResponseBodyAsStreamParamsBuilder<'a> {
         TakeResponseBodyAsStreamParamsBuilder {
-            requestId: requestId,
+            requestId: requestId.into(),
         }
     }
     pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }

@@ -228,14 +228,14 @@ pub struct FilledField<'a> {
 }
 
 impl<'a> FilledField<'a> {
-    pub fn builder(htmlType: impl Into<Cow<'a, str>>, id: impl Into<Cow<'a, str>>, name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>, autofillType: impl Into<Cow<'a, str>>, fillingStrategy: FillingStrategy, frameId: crate::page::FrameId<'a>, fieldId: crate::dom::BackendNodeId) -> FilledFieldBuilder<'a> {
+    pub fn builder(htmlType: impl Into<Cow<'a, str>>, id: impl Into<Cow<'a, str>>, name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>, autofillType: impl Into<Cow<'a, str>>, fillingStrategy: impl Into<FillingStrategy>, frameId: crate::page::FrameId<'a>, fieldId: crate::dom::BackendNodeId) -> FilledFieldBuilder<'a> {
         FilledFieldBuilder {
             htmlType: htmlType.into(),
             id: id.into(),
             name: name.into(),
             value: value.into(),
             autofillType: autofillType.into(),
-            fillingStrategy: fillingStrategy,
+            fillingStrategy: fillingStrategy.into(),
             frameId: frameId,
             fieldId: fieldId,
         }

@@ -1592,7 +1592,11 @@
                         "ValidationFailedSignatureExpired",
                         "ValidationFailedInvalidLength",
                         "ValidationFailedSignatureMismatch",
-                        "ValidationFailedIntegrityMismatch"
+                        "ValidationFailedIntegrityMismatch",
+                        "SignatureBaseUnknownDerivedComponent",
+                        "SignatureBaseMissingHeader",
+                        "SignatureBaseInvalidUnencodedDigest",
+                        "SignatureBaseUnsupportedComponent"
                     ]
                 },
                 {
@@ -1770,6 +1774,7 @@
                         "FormInputHasWrongButWellIntendedAutocompleteValueError",
                         "ResponseWasBlockedByORB",
                         "NavigationEntryMarkedSkippable",
+                        "BackUINavigationWouldSkipAd",
                         "AutofillAndManualTextPolicyControlledFeaturesInfo",
                         "AutofillPolicyControlledFeatureInfo",
                         "ManualTextPolicyControlledFeatureInfo",
@@ -4891,7 +4896,8 @@
                     "properties": [
                         {
                             "name": "text",
-                            "description": "Container query text.",
+                            "description": "Container query text.\nContains the query part without the container name for a single query.\nDeprecated in favor of conditionText which contains the full prelude\nafter @container.",
+                            "deprecated": true,
                             "type": "string"
                         },
                         {
@@ -4935,6 +4941,11 @@
                             "description": "true if the query contains anchored() queries.",
                             "optional": true,
                             "type": "boolean"
+                        },
+                        {
+                            "name": "conditionText",
+                            "description": "CSSContainerRule.conditionText",
+                            "type": "string"
                         }
                     ]
                 },
@@ -5327,7 +5338,8 @@
                             "enum": [
                                 "font-face",
                                 "font-feature-values",
-                                "font-palette-values"
+                                "font-palette-values",
+                                "counter-style"
                             ]
                         },
                         {
@@ -6253,7 +6265,33 @@
                 },
                 {
                     "name": "setContainerQueryText",
-                    "description": "Modifies the expression of a container query.",
+                    "description": "Modifies the expression of a container query.\nDeprecated. Use setContainerQueryConditionText instead.",
+                    "experimental": true,
+                    "deprecated": true,
+                    "parameters": [
+                        {
+                            "name": "styleSheetId",
+                            "$ref": "DOM.StyleSheetId"
+                        },
+                        {
+                            "name": "range",
+                            "$ref": "SourceRange"
+                        },
+                        {
+                            "name": "text",
+                            "type": "string"
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "name": "containerQuery",
+                            "description": "The resulting CSS container query rule after modification.",
+                            "$ref": "CSSContainerQuery"
+                        }
+                    ]
+                },
+                {
+                    "name": "setContainerQueryConditionText",
                     "experimental": true,
                     "parameters": [
                         {
@@ -7029,7 +7067,7 @@
                         "after",
                         "expand-icon",
                         "picker-icon",
-                        "interest-hint",
+                        "interest-button",
                         "marker",
                         "backdrop",
                         "column",
@@ -11939,7 +11977,7 @@
             "commands": [
                 {
                     "name": "triggerAction",
-                    "description": "Runs an extension default action.\nAvailable if the client is connected using the --remote-debugging-pipe\nflag and the --enable-unsafe-extension-debugging flag is set.",
+                    "description": "Runs an extension default action.",
                     "parameters": [
                         {
                             "name": "id",
@@ -11955,7 +11993,7 @@
                 },
                 {
                     "name": "loadUnpacked",
-                    "description": "Installs an unpacked extension from the filesystem similar to\n--load-extension CLI flags. Returns extension ID once the extension\nhas been installed. Available if the client is connected using the\n--remote-debugging-pipe flag and the --enable-unsafe-extension-debugging\nflag is set.",
+                    "description": "Installs an unpacked extension from the filesystem similar to\n--load-extension CLI flags. Returns extension ID once the extension\nhas been installed.",
                     "parameters": [
                         {
                             "name": "path",
@@ -11979,7 +12017,7 @@
                 },
                 {
                     "name": "getExtensions",
-                    "description": "Gets a list of all unpacked extensions.\nAvailable if the client is connected using the --remote-debugging-pipe flag\nand the --enable-unsafe-extension-debugging flag is set.",
+                    "description": "Gets a list of all unpacked extensions.",
                     "returns": [
                         {
                             "name": "extensions",
@@ -11992,7 +12030,7 @@
                 },
                 {
                     "name": "uninstall",
-                    "description": "Uninstalls an unpacked extension (others not supported) from the profile.\nAvailable if the client is connected using the --remote-debugging-pipe flag\nand the --enable-unsafe-extension-debugging.",
+                    "description": "Uninstalls an unpacked extension (others not supported) from the profile.",
                     "parameters": [
                         {
                             "name": "id",
@@ -17786,6 +17824,7 @@
                         "Success",
                         "KeyError",
                         "SigningError",
+                        "TransientSigningError",
                         "ServerRequestedTermination",
                         "InvalidSessionId",
                         "InvalidChallenge",
@@ -17921,13 +17960,14 @@
                             "type": "string",
                             "enum": [
                                 "Refreshed",
-                                "RefreshedAsWaiter",
                                 "InitializedService",
                                 "Unreachable",
                                 "ServerError",
                                 "RefreshQuotaExceeded",
                                 "FatalError",
-                                "SigningQuotaExceeded"
+                                "SigningQuotaExceeded",
+                                "RefreshedAsWaiter",
+                                "TransientSigningError"
                             ]
                         },
                         {
@@ -21707,6 +21747,7 @@
                         "sub-apps",
                         "summarizer",
                         "sync-xhr",
+                        "tools",
                         "translator",
                         "unload",
                         "usb",
@@ -23067,6 +23108,7 @@
                         "EmbedderExtensionMessaging",
                         "EmbedderExtensionMessagingForOpenPort",
                         "EmbedderExtensionSentMessageToCachedFrame",
+                        "EmbedderExtensionFrame",
                         "RequestedByWebViewClient",
                         "PostMessageByWebViewClient",
                         "CacheControlNoStoreDeviceBoundSessionTerminated",
@@ -25501,7 +25543,8 @@
                         "PrerenderFailedDuringPrefetch",
                         "BrowsingDataRemoved",
                         "PrerenderHostReused",
-                        "FormSubmitWhenPrerendering"
+                        "FormSubmitWhenPrerendering",
+                        "CrossDocumentRestart"
                     ]
                 },
                 {
@@ -28666,6 +28709,12 @@
                             "type": "boolean"
                         },
                         {
+                            "name": "parentId",
+                            "description": "Id of the parent target, if any. For example, \"iframe\" target may have a \"page\" parent.",
+                            "optional": true,
+                            "$ref": "TargetID"
+                        },
+                        {
                             "name": "openerId",
                             "description": "Opener target Id",
                             "optional": true,
@@ -30695,6 +30744,12 @@
                             "type": "boolean"
                         },
                         {
+                            "name": "untrustedContent",
+                            "description": "A hint indicating that the tool output may contain untrusted content, ex: UGC, 3rd party data.",
+                            "optional": true,
+                            "type": "boolean"
+                        },
+                        {
                             "name": "autosubmit",
                             "description": "If the declarative tool was declared with the autosubmit attribute.",
                             "optional": true,
@@ -30755,6 +30810,23 @@
                             "description": "The stack trace at the time of the registration.",
                             "optional": true,
                             "$ref": "Runtime.StackTrace"
+                        }
+                    ]
+                },
+                {
+                    "id": "RemovedTool",
+                    "description": "Definition of a tool that was removed.",
+                    "type": "object",
+                    "properties": [
+                        {
+                            "name": "name",
+                            "description": "Tool name.",
+                            "type": "string"
+                        },
+                        {
+                            "name": "frameId",
+                            "description": "Frame identifier associated with the tool registration.",
+                            "$ref": "Page.FrameId"
                         }
                     ]
                 }
@@ -30832,7 +30904,7 @@
                             "description": "Array of tools that were removed.",
                             "type": "array",
                             "items": {
-                                "$ref": "Tool"
+                                "$ref": "RemovedTool"
                             }
                         }
                     ]

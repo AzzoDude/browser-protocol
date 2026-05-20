@@ -557,7 +557,7 @@ impl<'a> ChangeAppUserSettingsParamsBuilder<'a> {
     /// TODO(crbug.com/339453269): Setting this value on ChromeOS is not
     /// supported yet.
     pub fn linkCapturing(mut self, linkCapturing: bool) -> Self { self.linkCapturing = Some(linkCapturing); self }
-    pub fn displayMode(mut self, displayMode: DisplayMode) -> Self { self.displayMode = Some(displayMode); self }
+    pub fn displayMode(mut self, displayMode: impl Into<DisplayMode>) -> Self { self.displayMode = Some(displayMode.into()); self }
     pub fn build(self) -> ChangeAppUserSettingsParams<'a> {
         ChangeAppUserSettingsParams {
             manifestId: self.manifestId,

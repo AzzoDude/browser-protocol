@@ -84,7 +84,7 @@ impl BoundsBuilder {
     /// The window height in pixels.
     pub fn height(mut self, height: i64) -> Self { self.height = Some(height); self }
     /// The window state. Default to normal.
-    pub fn windowState(mut self, windowState: WindowState) -> Self { self.windowState = Some(windowState); self }
+    pub fn windowState(mut self, windowState: impl Into<WindowState>) -> Self { self.windowState = Some(windowState.into()); self }
     pub fn build(self) -> Bounds {
         Bounds {
             left: self.left,
@@ -410,10 +410,10 @@ pub struct SetPermissionParams<'a> {
 }
 
 impl<'a> SetPermissionParams<'a> {
-    pub fn builder(permission: PermissionDescriptor<'a>, setting: PermissionSetting) -> SetPermissionParamsBuilder<'a> {
+    pub fn builder(permission: PermissionDescriptor<'a>, setting: impl Into<PermissionSetting>) -> SetPermissionParamsBuilder<'a> {
         SetPermissionParamsBuilder {
             permission: permission,
-            setting: setting,
+            setting: setting.into(),
             origin: None,
             embeddedOrigin: None,
             browserContextId: None,
@@ -443,7 +443,7 @@ impl<'a> SetPermissionParamsBuilder<'a> {
     /// embedding origin is used as the embedded origin.
     pub fn embeddedOrigin(mut self, embeddedOrigin: impl Into<Cow<'a, str>>) -> Self { self.embeddedOrigin = Some(embeddedOrigin.into()); self }
     /// Context to override. When omitted, default browser context is used.
-    pub fn browserContextId(mut self, browserContextId: BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
+    pub fn browserContextId(mut self, browserContextId: impl Into<BrowserContextID<'a>>) -> Self { self.browserContextId = Some(browserContextId.into()); self }
     pub fn build(self) -> SetPermissionParams<'a> {
         SetPermissionParams {
             permission: self.permission,
@@ -501,7 +501,7 @@ impl<'a> GrantPermissionsParamsBuilder<'a> {
     /// Origin the permission applies to, all origins if not specified.
     pub fn origin(mut self, origin: impl Into<Cow<'a, str>>) -> Self { self.origin = Some(origin.into()); self }
     /// BrowserContext to override permissions. When omitted, default browser context is used.
-    pub fn browserContextId(mut self, browserContextId: BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
+    pub fn browserContextId(mut self, browserContextId: impl Into<BrowserContextID<'a>>) -> Self { self.browserContextId = Some(browserContextId.into()); self }
     pub fn build(self) -> GrantPermissionsParams<'a> {
         GrantPermissionsParams {
             permissions: self.permissions,
@@ -544,7 +544,7 @@ pub struct ResetPermissionsParamsBuilder<'a> {
 
 impl<'a> ResetPermissionsParamsBuilder<'a> {
     /// BrowserContext to reset permissions. When omitted, default browser context is used.
-    pub fn browserContextId(mut self, browserContextId: BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
+    pub fn browserContextId(mut self, browserContextId: impl Into<BrowserContextID<'a>>) -> Self { self.browserContextId = Some(browserContextId.into()); self }
     pub fn build(self) -> ResetPermissionsParams<'a> {
         ResetPermissionsParams {
             browserContextId: self.browserContextId,
@@ -605,7 +605,7 @@ pub struct SetDownloadBehaviorParamsBuilder<'a> {
 
 impl<'a> SetDownloadBehaviorParamsBuilder<'a> {
     /// BrowserContext to set download behavior. When omitted, default browser context is used.
-    pub fn browserContextId(mut self, browserContextId: BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
+    pub fn browserContextId(mut self, browserContextId: impl Into<BrowserContextID<'a>>) -> Self { self.browserContextId = Some(browserContextId.into()); self }
     /// The default path to save downloaded files to. This is required if behavior is set to 'allow'
     /// or 'allowAndName'.
     pub fn downloadPath(mut self, downloadPath: impl Into<Cow<'a, str>>) -> Self { self.downloadPath = Some(downloadPath.into()); self }
@@ -659,7 +659,7 @@ pub struct CancelDownloadParamsBuilder<'a> {
 
 impl<'a> CancelDownloadParamsBuilder<'a> {
     /// BrowserContext to perform the action in. When omitted, default browser context is used.
-    pub fn browserContextId(mut self, browserContextId: BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
+    pub fn browserContextId(mut self, browserContextId: impl Into<BrowserContextID<'a>>) -> Self { self.browserContextId = Some(browserContextId.into()); self }
     pub fn build(self) -> CancelDownloadParams<'a> {
         CancelDownloadParams {
             guid: self.guid,
@@ -1286,9 +1286,9 @@ pub struct ExecuteBrowserCommandParams {
 }
 
 impl ExecuteBrowserCommandParams {
-    pub fn builder(commandId: BrowserCommandId) -> ExecuteBrowserCommandParamsBuilder {
+    pub fn builder(commandId: impl Into<BrowserCommandId>) -> ExecuteBrowserCommandParamsBuilder {
         ExecuteBrowserCommandParamsBuilder {
-            commandId: commandId,
+            commandId: commandId.into(),
         }
     }
     pub fn commandId(&self) -> &BrowserCommandId { &self.commandId }
@@ -1370,9 +1370,9 @@ pub struct AddPrivacySandboxCoordinatorKeyConfigParams<'a> {
 }
 
 impl<'a> AddPrivacySandboxCoordinatorKeyConfigParams<'a> {
-    pub fn builder(api: PrivacySandboxAPI, coordinatorOrigin: impl Into<Cow<'a, str>>, keyConfig: impl Into<Cow<'a, str>>) -> AddPrivacySandboxCoordinatorKeyConfigParamsBuilder<'a> {
+    pub fn builder(api: impl Into<PrivacySandboxAPI>, coordinatorOrigin: impl Into<Cow<'a, str>>, keyConfig: impl Into<Cow<'a, str>>) -> AddPrivacySandboxCoordinatorKeyConfigParamsBuilder<'a> {
         AddPrivacySandboxCoordinatorKeyConfigParamsBuilder {
-            api: api,
+            api: api.into(),
             coordinatorOrigin: coordinatorOrigin.into(),
             keyConfig: keyConfig.into(),
             browserContextId: None,
@@ -1395,7 +1395,7 @@ pub struct AddPrivacySandboxCoordinatorKeyConfigParamsBuilder<'a> {
 impl<'a> AddPrivacySandboxCoordinatorKeyConfigParamsBuilder<'a> {
     /// BrowserContext to perform the action in. When omitted, default browser
     /// context is used.
-    pub fn browserContextId(mut self, browserContextId: BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
+    pub fn browserContextId(mut self, browserContextId: impl Into<BrowserContextID<'a>>) -> Self { self.browserContextId = Some(browserContextId.into()); self }
     pub fn build(self) -> AddPrivacySandboxCoordinatorKeyConfigParams<'a> {
         AddPrivacySandboxCoordinatorKeyConfigParams {
             api: self.api,

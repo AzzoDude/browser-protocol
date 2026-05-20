@@ -310,9 +310,9 @@ pub struct EnableParams {
 }
 
 impl EnableParams {
-    pub fn builder(state: CentralState, leSupported: bool) -> EnableParamsBuilder {
+    pub fn builder(state: impl Into<CentralState>, leSupported: bool) -> EnableParamsBuilder {
         EnableParamsBuilder {
-            state: state,
+            state: state.into(),
             leSupported: leSupported,
         }
     }
@@ -352,9 +352,9 @@ pub struct SetSimulatedCentralStateParams {
 }
 
 impl SetSimulatedCentralStateParams {
-    pub fn builder(state: CentralState) -> SetSimulatedCentralStateParamsBuilder {
+    pub fn builder(state: impl Into<CentralState>) -> SetSimulatedCentralStateParamsBuilder {
         SetSimulatedCentralStateParamsBuilder {
-            state: state,
+            state: state.into(),
         }
     }
     pub fn state(&self) -> &CentralState { &self.state }
@@ -495,10 +495,10 @@ pub struct SimulateGATTOperationResponseParams<'a> {
 }
 
 impl<'a> SimulateGATTOperationResponseParams<'a> {
-    pub fn builder(address: impl Into<Cow<'a, str>>, type_: GATTOperationType, code: i64) -> SimulateGATTOperationResponseParamsBuilder<'a> {
+    pub fn builder(address: impl Into<Cow<'a, str>>, type_: impl Into<GATTOperationType>, code: i64) -> SimulateGATTOperationResponseParamsBuilder<'a> {
         SimulateGATTOperationResponseParamsBuilder {
             address: address.into(),
-            type_: type_,
+            type_: type_.into(),
             code: code,
         }
     }
@@ -549,10 +549,10 @@ pub struct SimulateCharacteristicOperationResponseParams<'a> {
 }
 
 impl<'a> SimulateCharacteristicOperationResponseParams<'a> {
-    pub fn builder(characteristicId: impl Into<Cow<'a, str>>, type_: CharacteristicOperationType, code: i64) -> SimulateCharacteristicOperationResponseParamsBuilder<'a> {
+    pub fn builder(characteristicId: impl Into<Cow<'a, str>>, type_: impl Into<CharacteristicOperationType>, code: i64) -> SimulateCharacteristicOperationResponseParamsBuilder<'a> {
         SimulateCharacteristicOperationResponseParamsBuilder {
             characteristicId: characteristicId.into(),
-            type_: type_,
+            type_: type_.into(),
             code: code,
             data: None,
         }
@@ -608,10 +608,10 @@ pub struct SimulateDescriptorOperationResponseParams<'a> {
 }
 
 impl<'a> SimulateDescriptorOperationResponseParams<'a> {
-    pub fn builder(descriptorId: impl Into<Cow<'a, str>>, type_: DescriptorOperationType, code: i64) -> SimulateDescriptorOperationResponseParamsBuilder<'a> {
+    pub fn builder(descriptorId: impl Into<Cow<'a, str>>, type_: impl Into<DescriptorOperationType>, code: i64) -> SimulateDescriptorOperationResponseParamsBuilder<'a> {
         SimulateDescriptorOperationResponseParamsBuilder {
             descriptorId: descriptorId.into(),
-            type_: type_,
+            type_: type_.into(),
             code: code,
             data: None,
         }

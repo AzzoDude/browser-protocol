@@ -149,11 +149,11 @@ pub struct BaseAudioContext<'a> {
 }
 
 impl<'a> BaseAudioContext<'a> {
-    pub fn builder(contextId: GraphObjectId<'a>, contextType: ContextType, contextState: ContextState, callbackBufferSize: f64, maxOutputChannelCount: f64, sampleRate: f64) -> BaseAudioContextBuilder<'a> {
+    pub fn builder(contextId: impl Into<GraphObjectId<'a>>, contextType: impl Into<ContextType>, contextState: impl Into<ContextState>, callbackBufferSize: f64, maxOutputChannelCount: f64, sampleRate: f64) -> BaseAudioContextBuilder<'a> {
         BaseAudioContextBuilder {
-            contextId: contextId,
-            contextType: contextType,
-            contextState: contextState,
+            contextId: contextId.into(),
+            contextType: contextType.into(),
+            contextState: contextState.into(),
             realtimeData: None,
             callbackBufferSize: callbackBufferSize,
             maxOutputChannelCount: maxOutputChannelCount,
@@ -205,10 +205,10 @@ pub struct AudioListener<'a> {
 }
 
 impl<'a> AudioListener<'a> {
-    pub fn builder(listenerId: GraphObjectId<'a>, contextId: GraphObjectId<'a>) -> AudioListenerBuilder<'a> {
+    pub fn builder(listenerId: impl Into<GraphObjectId<'a>>, contextId: impl Into<GraphObjectId<'a>>) -> AudioListenerBuilder<'a> {
         AudioListenerBuilder {
-            listenerId: listenerId,
-            contextId: contextId,
+            listenerId: listenerId.into(),
+            contextId: contextId.into(),
         }
     }
     pub fn listenerId(&self) -> &GraphObjectId<'a> { &self.listenerId }
@@ -246,16 +246,16 @@ pub struct AudioNode<'a> {
 }
 
 impl<'a> AudioNode<'a> {
-    pub fn builder(nodeId: GraphObjectId<'a>, contextId: GraphObjectId<'a>, nodeType: NodeType<'a>, numberOfInputs: f64, numberOfOutputs: f64, channelCount: f64, channelCountMode: ChannelCountMode, channelInterpretation: ChannelInterpretation) -> AudioNodeBuilder<'a> {
+    pub fn builder(nodeId: impl Into<GraphObjectId<'a>>, contextId: impl Into<GraphObjectId<'a>>, nodeType: impl Into<NodeType<'a>>, numberOfInputs: f64, numberOfOutputs: f64, channelCount: f64, channelCountMode: impl Into<ChannelCountMode>, channelInterpretation: impl Into<ChannelInterpretation>) -> AudioNodeBuilder<'a> {
         AudioNodeBuilder {
-            nodeId: nodeId,
-            contextId: contextId,
-            nodeType: nodeType,
+            nodeId: nodeId.into(),
+            contextId: contextId.into(),
+            nodeType: nodeType.into(),
             numberOfInputs: numberOfInputs,
             numberOfOutputs: numberOfOutputs,
             channelCount: channelCount,
-            channelCountMode: channelCountMode,
-            channelInterpretation: channelInterpretation,
+            channelCountMode: channelCountMode.into(),
+            channelInterpretation: channelInterpretation.into(),
         }
     }
     pub fn nodeId(&self) -> &GraphObjectId<'a> { &self.nodeId }
@@ -311,13 +311,13 @@ pub struct AudioParam<'a> {
 }
 
 impl<'a> AudioParam<'a> {
-    pub fn builder(paramId: GraphObjectId<'a>, nodeId: GraphObjectId<'a>, contextId: GraphObjectId<'a>, paramType: ParamType<'a>, rate: AutomationRate, defaultValue: f64, minValue: f64, maxValue: f64) -> AudioParamBuilder<'a> {
+    pub fn builder(paramId: impl Into<GraphObjectId<'a>>, nodeId: impl Into<GraphObjectId<'a>>, contextId: impl Into<GraphObjectId<'a>>, paramType: impl Into<ParamType<'a>>, rate: impl Into<AutomationRate>, defaultValue: f64, minValue: f64, maxValue: f64) -> AudioParamBuilder<'a> {
         AudioParamBuilder {
-            paramId: paramId,
-            nodeId: nodeId,
-            contextId: contextId,
-            paramType: paramType,
-            rate: rate,
+            paramId: paramId.into(),
+            nodeId: nodeId.into(),
+            contextId: contextId.into(),
+            paramType: paramType.into(),
+            rate: rate.into(),
             defaultValue: defaultValue,
             minValue: minValue,
             maxValue: maxValue,
@@ -389,9 +389,9 @@ pub struct GetRealtimeDataParams<'a> {
 }
 
 impl<'a> GetRealtimeDataParams<'a> {
-    pub fn builder(contextId: GraphObjectId<'a>) -> GetRealtimeDataParamsBuilder<'a> {
+    pub fn builder(contextId: impl Into<GraphObjectId<'a>>) -> GetRealtimeDataParamsBuilder<'a> {
         GetRealtimeDataParamsBuilder {
-            contextId: contextId,
+            contextId: contextId.into(),
         }
     }
     pub fn contextId(&self) -> &GraphObjectId<'a> { &self.contextId }

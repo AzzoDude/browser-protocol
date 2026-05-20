@@ -24,6 +24,9 @@ pub struct TargetInfo<'a> {
     url: Cow<'a, str>,
     /// Whether the target has an attached client.
     attached: bool,
+    /// Id of the parent target, if any. For example, "iframe" target may have a "page" parent.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    parentId: Option<TargetID<'a>>,
     /// Opener target Id
     #[serde(skip_serializing_if = "Option::is_none")]
     openerId: Option<TargetID<'a>>,
@@ -45,13 +48,14 @@ pub struct TargetInfo<'a> {
 }
 
 impl<'a> TargetInfo<'a> {
-    pub fn builder(targetId: TargetID<'a>, type_: impl Into<Cow<'a, str>>, title: impl Into<Cow<'a, str>>, url: impl Into<Cow<'a, str>>, attached: bool, canAccessOpener: bool) -> TargetInfoBuilder<'a> {
+    pub fn builder(targetId: impl Into<TargetID<'a>>, type_: impl Into<Cow<'a, str>>, title: impl Into<Cow<'a, str>>, url: impl Into<Cow<'a, str>>, attached: bool, canAccessOpener: bool) -> TargetInfoBuilder<'a> {
         TargetInfoBuilder {
-            targetId: targetId,
+            targetId: targetId.into(),
             type_: type_.into(),
             title: title.into(),
             url: url.into(),
             attached: attached,
+            parentId: None,
             openerId: None,
             canAccessOpener: canAccessOpener,
             openerFrameId: None,
@@ -65,6 +69,7 @@ impl<'a> TargetInfo<'a> {
     pub fn title(&self) -> &str { self.title.as_ref() }
     pub fn url(&self) -> &str { self.url.as_ref() }
     pub fn attached(&self) -> bool { self.attached }
+    pub fn parentId(&self) -> Option<&TargetID<'a>> { self.parentId.as_ref() }
     pub fn openerId(&self) -> Option<&TargetID<'a>> { self.openerId.as_ref() }
     pub fn canAccessOpener(&self) -> bool { self.canAccessOpener }
     pub fn openerFrameId(&self) -> Option<&crate::page::FrameId<'a>> { self.openerFrameId.as_ref() }
@@ -80,6 +85,7 @@ pub struct TargetInfoBuilder<'a> {
     title: Cow<'a, str>,
     url: Cow<'a, str>,
     attached: bool,
+    parentId: Option<TargetID<'a>>,
     openerId: Option<TargetID<'a>>,
     canAccessOpener: bool,
     openerFrameId: Option<crate::page::FrameId<'a>>,
@@ -89,8 +95,10 @@ pub struct TargetInfoBuilder<'a> {
 }
 
 impl<'a> TargetInfoBuilder<'a> {
+    /// Id of the parent target, if any. For example, "iframe" target may have a "page" parent.
+    pub fn parentId(mut self, parentId: impl Into<TargetID<'a>>) -> Self { self.parentId = Some(parentId.into()); self }
     /// Opener target Id
-    pub fn openerId(mut self, openerId: TargetID<'a>) -> Self { self.openerId = Some(openerId); self }
+    pub fn openerId(mut self, openerId: impl Into<TargetID<'a>>) -> Self { self.openerId = Some(openerId.into()); self }
     /// Frame id of originating window (is only set if target has an opener).
     pub fn openerFrameId(mut self, openerFrameId: crate::page::FrameId<'a>) -> Self { self.openerFrameId = Some(openerFrameId); self }
     /// Id of the parent frame, present for "iframe" and "worker" targets. For nested workers,
@@ -107,6 +115,7 @@ impl<'a> TargetInfoBuilder<'a> {
             title: self.title,
             url: self.url,
             attached: self.attached,
+            parentId: self.parentId,
             openerId: self.openerId,
             canAccessOpener: self.canAccessOpener,
             openerFrameId: self.openerFrameId,
@@ -227,9 +236,9 @@ pub struct ActivateTargetParams<'a> {
 }
 
 impl<'a> ActivateTargetParams<'a> {
-    pub fn builder(targetId: TargetID<'a>) -> ActivateTargetParamsBuilder<'a> {
+    pub fn builder(targetId: impl Into<TargetID<'a>>) -> ActivateTargetParamsBuilder<'a> {
         ActivateTargetParamsBuilder {
-            targetId: targetId,
+            targetId: targetId.into(),
         }
     }
     pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }
@@ -269,9 +278,9 @@ pub struct AttachToTargetParams<'a> {
 }
 
 impl<'a> AttachToTargetParams<'a> {
-    pub fn builder(targetId: TargetID<'a>) -> AttachToTargetParamsBuilder<'a> {
+    pub fn builder(targetId: impl Into<TargetID<'a>>) -> AttachToTargetParamsBuilder<'a> {
         AttachToTargetParamsBuilder {
-            targetId: targetId,
+            targetId: targetId.into(),
             flatten: None,
         }
     }
@@ -308,9 +317,9 @@ pub struct AttachToTargetReturns<'a> {
 }
 
 impl<'a> AttachToTargetReturns<'a> {
-    pub fn builder(sessionId: SessionID<'a>) -> AttachToTargetReturnsBuilder<'a> {
+    pub fn builder(sessionId: impl Into<SessionID<'a>>) -> AttachToTargetReturnsBuilder<'a> {
         AttachToTargetReturnsBuilder {
-            sessionId: sessionId,
+            sessionId: sessionId.into(),
         }
     }
     pub fn sessionId(&self) -> &SessionID<'a> { &self.sessionId }
@@ -346,9 +355,9 @@ pub struct AttachToBrowserTargetReturns<'a> {
 }
 
 impl<'a> AttachToBrowserTargetReturns<'a> {
-    pub fn builder(sessionId: SessionID<'a>) -> AttachToBrowserTargetReturnsBuilder<'a> {
+    pub fn builder(sessionId: impl Into<SessionID<'a>>) -> AttachToBrowserTargetReturnsBuilder<'a> {
         AttachToBrowserTargetReturnsBuilder {
-            sessionId: sessionId,
+            sessionId: sessionId.into(),
         }
     }
     pub fn sessionId(&self) -> &SessionID<'a> { &self.sessionId }
@@ -386,9 +395,9 @@ pub struct CloseTargetParams<'a> {
 }
 
 impl<'a> CloseTargetParams<'a> {
-    pub fn builder(targetId: TargetID<'a>) -> CloseTargetParamsBuilder<'a> {
+    pub fn builder(targetId: impl Into<TargetID<'a>>) -> CloseTargetParamsBuilder<'a> {
         CloseTargetParamsBuilder {
-            targetId: targetId,
+            targetId: targetId.into(),
         }
     }
     pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }
@@ -467,9 +476,9 @@ pub struct ExposeDevToolsProtocolParams<'a> {
 }
 
 impl<'a> ExposeDevToolsProtocolParams<'a> {
-    pub fn builder(targetId: TargetID<'a>) -> ExposeDevToolsProtocolParamsBuilder<'a> {
+    pub fn builder(targetId: impl Into<TargetID<'a>>) -> ExposeDevToolsProtocolParamsBuilder<'a> {
         ExposeDevToolsProtocolParamsBuilder {
-            targetId: targetId,
+            targetId: targetId.into(),
             bindingName: None,
             inheritPermissions: None,
         }
@@ -777,7 +786,7 @@ impl<'a> CreateTargetParamsBuilder<'a> {
     pub fn height(mut self, height: i64) -> Self { self.height = Some(height); self }
     /// Frame window state (requires newWindow to be true or headless shell).
     /// Default is normal.
-    pub fn windowState(mut self, windowState: WindowState) -> Self { self.windowState = Some(windowState); self }
+    pub fn windowState(mut self, windowState: impl Into<WindowState>) -> Self { self.windowState = Some(windowState.into()); self }
     /// The browser context to create the page in.
     pub fn browserContextId(mut self, browserContextId: crate::browser::BrowserContextID<'a>) -> Self { self.browserContextId = Some(browserContextId); self }
     /// Whether BeginFrames for this target will be controlled via DevTools (headless shell only,
@@ -831,9 +840,9 @@ pub struct CreateTargetReturns<'a> {
 }
 
 impl<'a> CreateTargetReturns<'a> {
-    pub fn builder(targetId: TargetID<'a>) -> CreateTargetReturnsBuilder<'a> {
+    pub fn builder(targetId: impl Into<TargetID<'a>>) -> CreateTargetReturnsBuilder<'a> {
         CreateTargetReturnsBuilder {
-            targetId: targetId,
+            targetId: targetId.into(),
         }
     }
     pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }
@@ -891,9 +900,9 @@ pub struct DetachFromTargetParamsBuilder<'a> {
 
 impl<'a> DetachFromTargetParamsBuilder<'a> {
     /// Session to detach.
-    pub fn sessionId(mut self, sessionId: SessionID<'a>) -> Self { self.sessionId = Some(sessionId); self }
+    pub fn sessionId(mut self, sessionId: impl Into<SessionID<'a>>) -> Self { self.sessionId = Some(sessionId.into()); self }
     /// Deprecated.
-    pub fn targetId(mut self, targetId: TargetID<'a>) -> Self { self.targetId = Some(targetId); self }
+    pub fn targetId(mut self, targetId: impl Into<TargetID<'a>>) -> Self { self.targetId = Some(targetId.into()); self }
     pub fn build(self) -> DetachFromTargetParams<'a> {
         DetachFromTargetParams {
             sessionId: self.sessionId,
@@ -971,7 +980,7 @@ pub struct GetTargetInfoParamsBuilder<'a> {
 }
 
 impl<'a> GetTargetInfoParamsBuilder<'a> {
-    pub fn targetId(mut self, targetId: TargetID<'a>) -> Self { self.targetId = Some(targetId); self }
+    pub fn targetId(mut self, targetId: impl Into<TargetID<'a>>) -> Self { self.targetId = Some(targetId.into()); self }
     pub fn build(self) -> GetTargetInfoParams<'a> {
         GetTargetInfoParams {
             targetId: self.targetId,
@@ -1130,9 +1139,9 @@ pub struct SendMessageToTargetParamsBuilder<'a> {
 
 impl<'a> SendMessageToTargetParamsBuilder<'a> {
     /// Identifier of the session.
-    pub fn sessionId(mut self, sessionId: SessionID<'a>) -> Self { self.sessionId = Some(sessionId); self }
+    pub fn sessionId(mut self, sessionId: impl Into<SessionID<'a>>) -> Self { self.sessionId = Some(sessionId.into()); self }
     /// Deprecated.
-    pub fn targetId(mut self, targetId: TargetID<'a>) -> Self { self.targetId = Some(targetId); self }
+    pub fn targetId(mut self, targetId: impl Into<TargetID<'a>>) -> Self { self.targetId = Some(targetId.into()); self }
     pub fn build(self) -> SendMessageToTargetParams<'a> {
         SendMessageToTargetParams {
             message: self.message,
@@ -1242,9 +1251,9 @@ pub struct AutoAttachRelatedParams<'a> {
 }
 
 impl<'a> AutoAttachRelatedParams<'a> {
-    pub fn builder(targetId: TargetID<'a>, waitForDebuggerOnStart: bool) -> AutoAttachRelatedParamsBuilder<'a> {
+    pub fn builder(targetId: impl Into<TargetID<'a>>, waitForDebuggerOnStart: bool) -> AutoAttachRelatedParamsBuilder<'a> {
         AutoAttachRelatedParamsBuilder {
-            targetId: targetId,
+            targetId: targetId.into(),
             waitForDebuggerOnStart: waitForDebuggerOnStart,
             filter: None,
         }
@@ -1380,9 +1389,9 @@ pub struct GetDevToolsTargetParams<'a> {
 }
 
 impl<'a> GetDevToolsTargetParams<'a> {
-    pub fn builder(targetId: TargetID<'a>) -> GetDevToolsTargetParamsBuilder<'a> {
+    pub fn builder(targetId: impl Into<TargetID<'a>>) -> GetDevToolsTargetParamsBuilder<'a> {
         GetDevToolsTargetParamsBuilder {
-            targetId: targetId,
+            targetId: targetId.into(),
         }
     }
     pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }
@@ -1428,7 +1437,7 @@ pub struct GetDevToolsTargetReturnsBuilder<'a> {
 
 impl<'a> GetDevToolsTargetReturnsBuilder<'a> {
     /// The targetId of DevTools page target if exists.
-    pub fn targetId(mut self, targetId: TargetID<'a>) -> Self { self.targetId = Some(targetId); self }
+    pub fn targetId(mut self, targetId: impl Into<TargetID<'a>>) -> Self { self.targetId = Some(targetId.into()); self }
     pub fn build(self) -> GetDevToolsTargetReturns<'a> {
         GetDevToolsTargetReturns {
             targetId: self.targetId,
@@ -1458,9 +1467,9 @@ pub struct OpenDevToolsParams<'a> {
 }
 
 impl<'a> OpenDevToolsParams<'a> {
-    pub fn builder(targetId: TargetID<'a>) -> OpenDevToolsParamsBuilder<'a> {
+    pub fn builder(targetId: impl Into<TargetID<'a>>) -> OpenDevToolsParamsBuilder<'a> {
         OpenDevToolsParamsBuilder {
-            targetId: targetId,
+            targetId: targetId.into(),
             panelId: None,
         }
     }
@@ -1497,9 +1506,9 @@ pub struct OpenDevToolsReturns<'a> {
 }
 
 impl<'a> OpenDevToolsReturns<'a> {
-    pub fn builder(targetId: TargetID<'a>) -> OpenDevToolsReturnsBuilder<'a> {
+    pub fn builder(targetId: impl Into<TargetID<'a>>) -> OpenDevToolsReturnsBuilder<'a> {
         OpenDevToolsReturnsBuilder {
-            targetId: targetId,
+            targetId: targetId.into(),
         }
     }
     pub fn targetId(&self) -> &TargetID<'a> { &self.targetId }

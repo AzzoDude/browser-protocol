@@ -49,7 +49,7 @@ pub struct DataEntry<'a> {
 }
 
 impl<'a> DataEntry<'a> {
-    pub fn builder(requestURL: impl Into<Cow<'a, str>>, requestMethod: impl Into<Cow<'a, str>>, requestHeaders: Vec<Header<'a>>, responseTime: f64, responseStatus: i64, responseStatusText: impl Into<Cow<'a, str>>, responseType: CachedResponseType, responseHeaders: Vec<Header<'a>>) -> DataEntryBuilder<'a> {
+    pub fn builder(requestURL: impl Into<Cow<'a, str>>, requestMethod: impl Into<Cow<'a, str>>, requestHeaders: Vec<Header<'a>>, responseTime: f64, responseStatus: i64, responseStatusText: impl Into<Cow<'a, str>>, responseType: impl Into<CachedResponseType>, responseHeaders: Vec<Header<'a>>) -> DataEntryBuilder<'a> {
         DataEntryBuilder {
             requestURL: requestURL.into(),
             requestMethod: requestMethod.into(),
@@ -57,7 +57,7 @@ impl<'a> DataEntry<'a> {
             responseTime: responseTime,
             responseStatus: responseStatus,
             responseStatusText: responseStatusText.into(),
-            responseType: responseType,
+            responseType: responseType.into(),
             responseHeaders: responseHeaders,
         }
     }
@@ -117,9 +117,9 @@ pub struct Cache<'a> {
 }
 
 impl<'a> Cache<'a> {
-    pub fn builder(cacheId: CacheId<'a>, securityOrigin: impl Into<Cow<'a, str>>, storageKey: impl Into<Cow<'a, str>>, cacheName: impl Into<Cow<'a, str>>) -> CacheBuilder<'a> {
+    pub fn builder(cacheId: impl Into<CacheId<'a>>, securityOrigin: impl Into<Cow<'a, str>>, storageKey: impl Into<Cow<'a, str>>, cacheName: impl Into<Cow<'a, str>>) -> CacheBuilder<'a> {
         CacheBuilder {
-            cacheId: cacheId,
+            cacheId: cacheId.into(),
             securityOrigin: securityOrigin.into(),
             storageKey: storageKey.into(),
             storageBucket: None,
@@ -231,9 +231,9 @@ pub struct DeleteCacheParams<'a> {
 }
 
 impl<'a> DeleteCacheParams<'a> {
-    pub fn builder(cacheId: CacheId<'a>) -> DeleteCacheParamsBuilder<'a> {
+    pub fn builder(cacheId: impl Into<CacheId<'a>>) -> DeleteCacheParamsBuilder<'a> {
         DeleteCacheParamsBuilder {
-            cacheId: cacheId,
+            cacheId: cacheId.into(),
         }
     }
     pub fn cacheId(&self) -> &CacheId<'a> { &self.cacheId }
@@ -271,9 +271,9 @@ pub struct DeleteEntryParams<'a> {
 }
 
 impl<'a> DeleteEntryParams<'a> {
-    pub fn builder(cacheId: CacheId<'a>, request: impl Into<Cow<'a, str>>) -> DeleteEntryParamsBuilder<'a> {
+    pub fn builder(cacheId: impl Into<CacheId<'a>>, request: impl Into<Cow<'a, str>>) -> DeleteEntryParamsBuilder<'a> {
         DeleteEntryParamsBuilder {
-            cacheId: cacheId,
+            cacheId: cacheId.into(),
             request: request.into(),
         }
     }
@@ -409,9 +409,9 @@ pub struct RequestCachedResponseParams<'a> {
 }
 
 impl<'a> RequestCachedResponseParams<'a> {
-    pub fn builder(cacheId: CacheId<'a>, requestURL: impl Into<Cow<'a, str>>, requestHeaders: Vec<Header<'a>>) -> RequestCachedResponseParamsBuilder<'a> {
+    pub fn builder(cacheId: impl Into<CacheId<'a>>, requestURL: impl Into<Cow<'a, str>>, requestHeaders: Vec<Header<'a>>) -> RequestCachedResponseParamsBuilder<'a> {
         RequestCachedResponseParamsBuilder {
-            cacheId: cacheId,
+            cacheId: cacheId.into(),
             requestURL: requestURL.into(),
             requestHeaders: requestHeaders,
         }
@@ -495,9 +495,9 @@ pub struct RequestEntriesParams<'a> {
 }
 
 impl<'a> RequestEntriesParams<'a> {
-    pub fn builder(cacheId: CacheId<'a>) -> RequestEntriesParamsBuilder<'a> {
+    pub fn builder(cacheId: impl Into<CacheId<'a>>) -> RequestEntriesParamsBuilder<'a> {
         RequestEntriesParamsBuilder {
-            cacheId: cacheId,
+            cacheId: cacheId.into(),
             skipCount: None,
             pageSize: None,
             pathFilter: None,

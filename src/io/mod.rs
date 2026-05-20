@@ -20,9 +20,9 @@ pub struct CloseParams<'a> {
 }
 
 impl<'a> CloseParams<'a> {
-    pub fn builder(handle: StreamHandle<'a>) -> CloseParamsBuilder<'a> {
+    pub fn builder(handle: impl Into<StreamHandle<'a>>) -> CloseParamsBuilder<'a> {
         CloseParamsBuilder {
-            handle: handle,
+            handle: handle.into(),
         }
     }
     pub fn handle(&self) -> &StreamHandle<'a> { &self.handle }
@@ -65,9 +65,9 @@ pub struct ReadParams<'a> {
 }
 
 impl<'a> ReadParams<'a> {
-    pub fn builder(handle: StreamHandle<'a>) -> ReadParamsBuilder<'a> {
+    pub fn builder(handle: impl Into<StreamHandle<'a>>) -> ReadParamsBuilder<'a> {
         ReadParamsBuilder {
-            handle: handle,
+            handle: handle.into(),
             offset: None,
             size: None,
         }

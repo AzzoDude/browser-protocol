@@ -452,7 +452,7 @@ pub struct Request<'a> {
 }
 
 impl<'a> Request<'a> {
-    pub fn builder(url: impl Into<Cow<'a, str>>, method: impl Into<Cow<'a, str>>, headers: Headers, initialPriority: ResourcePriority, referrerPolicy: impl Into<Cow<'a, str>>) -> RequestBuilder<'a> {
+    pub fn builder(url: impl Into<Cow<'a, str>>, method: impl Into<Cow<'a, str>>, headers: Headers, initialPriority: impl Into<ResourcePriority>, referrerPolicy: impl Into<Cow<'a, str>>) -> RequestBuilder<'a> {
         RequestBuilder {
             url: url.into(),
             urlFragment: None,
@@ -462,7 +462,7 @@ impl<'a> Request<'a> {
             hasPostData: None,
             postDataEntries: None,
             mixedContentType: None,
-            initialPriority: initialPriority,
+            initialPriority: initialPriority.into(),
             referrerPolicy: referrerPolicy.into(),
             isLinkPreload: None,
             trustTokenParams: None,
@@ -663,7 +663,7 @@ pub struct SecurityDetails<'a> {
 }
 
 impl<'a> SecurityDetails<'a> {
-    pub fn builder(protocol: impl Into<Cow<'a, str>>, keyExchange: impl Into<Cow<'a, str>>, cipher: impl Into<Cow<'a, str>>, certificateId: crate::security::CertificateId, subjectName: impl Into<Cow<'a, str>>, sanList: Vec<Cow<'a, str>>, issuer: impl Into<Cow<'a, str>>, validFrom: TimeSinceEpoch, validTo: TimeSinceEpoch, signedCertificateTimestampList: Vec<SignedCertificateTimestamp<'a>>, certificateTransparencyCompliance: CertificateTransparencyCompliance, encryptedClientHello: bool) -> SecurityDetailsBuilder<'a> {
+    pub fn builder(protocol: impl Into<Cow<'a, str>>, keyExchange: impl Into<Cow<'a, str>>, cipher: impl Into<Cow<'a, str>>, certificateId: crate::security::CertificateId, subjectName: impl Into<Cow<'a, str>>, sanList: Vec<Cow<'a, str>>, issuer: impl Into<Cow<'a, str>>, validFrom: TimeSinceEpoch, validTo: TimeSinceEpoch, signedCertificateTimestampList: Vec<SignedCertificateTimestamp<'a>>, certificateTransparencyCompliance: impl Into<CertificateTransparencyCompliance>, encryptedClientHello: bool) -> SecurityDetailsBuilder<'a> {
         SecurityDetailsBuilder {
             protocol: protocol.into(),
             keyExchange: keyExchange.into(),
@@ -677,7 +677,7 @@ impl<'a> SecurityDetails<'a> {
             validFrom: validFrom,
             validTo: validTo,
             signedCertificateTimestampList: signedCertificateTimestampList,
-            certificateTransparencyCompliance: certificateTransparencyCompliance,
+            certificateTransparencyCompliance: certificateTransparencyCompliance.into(),
             serverSignatureAlgorithm: None,
             encryptedClientHello: encryptedClientHello,
         }
@@ -872,9 +872,9 @@ pub struct CorsErrorStatus<'a> {
 }
 
 impl<'a> CorsErrorStatus<'a> {
-    pub fn builder(corsError: CorsError, failedParameter: impl Into<Cow<'a, str>>) -> CorsErrorStatusBuilder<'a> {
+    pub fn builder(corsError: impl Into<CorsError>, failedParameter: impl Into<Cow<'a, str>>) -> CorsErrorStatusBuilder<'a> {
         CorsErrorStatusBuilder {
-            corsError: corsError,
+            corsError: corsError.into(),
             failedParameter: failedParameter.into(),
         }
     }
@@ -930,9 +930,9 @@ pub struct TrustTokenParams<'a> {
 }
 
 impl<'a> TrustTokenParams<'a> {
-    pub fn builder(operation: TrustTokenOperationType, refreshPolicy: impl Into<Cow<'a, str>>) -> TrustTokenParamsBuilder<'a> {
+    pub fn builder(operation: impl Into<TrustTokenOperationType>, refreshPolicy: impl Into<Cow<'a, str>>) -> TrustTokenParamsBuilder<'a> {
         TrustTokenParamsBuilder {
-            operation: operation,
+            operation: operation.into(),
             refreshPolicy: refreshPolicy.into(),
             issuers: None,
         }
@@ -1057,9 +1057,9 @@ impl ServiceWorkerRouterInfoBuilder {
     pub fn ruleIdMatched(mut self, ruleIdMatched: u64) -> Self { self.ruleIdMatched = Some(ruleIdMatched); self }
     /// The router source of the matched rule. If there is a matched rule, this
     /// field will be set, otherwise no value will be set.
-    pub fn matchedSourceType(mut self, matchedSourceType: ServiceWorkerRouterSource) -> Self { self.matchedSourceType = Some(matchedSourceType); self }
+    pub fn matchedSourceType(mut self, matchedSourceType: impl Into<ServiceWorkerRouterSource>) -> Self { self.matchedSourceType = Some(matchedSourceType.into()); self }
     /// The actual router source used.
-    pub fn actualSourceType(mut self, actualSourceType: ServiceWorkerRouterSource) -> Self { self.actualSourceType = Some(actualSourceType); self }
+    pub fn actualSourceType(mut self, actualSourceType: impl Into<ServiceWorkerRouterSource>) -> Self { self.actualSourceType = Some(actualSourceType.into()); self }
     pub fn build(self) -> ServiceWorkerRouterInfo {
         ServiceWorkerRouterInfo {
             ruleIdMatched: self.ruleIdMatched,
@@ -1269,7 +1269,7 @@ impl<'a> ResponseBuilder<'a> {
     /// Timing information for the given request.
     pub fn timing(mut self, timing: ResourceTiming) -> Self { self.timing = Some(timing); self }
     /// Response source of response from ServiceWorker.
-    pub fn serviceWorkerResponseSource(mut self, serviceWorkerResponseSource: ServiceWorkerResponseSource) -> Self { self.serviceWorkerResponseSource = Some(serviceWorkerResponseSource); self }
+    pub fn serviceWorkerResponseSource(mut self, serviceWorkerResponseSource: impl Into<ServiceWorkerResponseSource>) -> Self { self.serviceWorkerResponseSource = Some(serviceWorkerResponseSource.into()); self }
     /// The time at which the returned response was generated.
     pub fn responseTime(mut self, responseTime: TimeSinceEpoch) -> Self { self.responseTime = Some(responseTime); self }
     /// Cache Storage Cache Name.
@@ -1277,7 +1277,7 @@ impl<'a> ResponseBuilder<'a> {
     /// Protocol used to fetch this request.
     pub fn protocol(mut self, protocol: impl Into<Cow<'a, str>>) -> Self { self.protocol = Some(protocol.into()); self }
     /// The reason why Chrome uses a specific transport protocol for HTTP semantics.
-    pub fn alternateProtocolUsage(mut self, alternateProtocolUsage: AlternateProtocolUsage) -> Self { self.alternateProtocolUsage = Some(alternateProtocolUsage); self }
+    pub fn alternateProtocolUsage(mut self, alternateProtocolUsage: impl Into<AlternateProtocolUsage>) -> Self { self.alternateProtocolUsage = Some(alternateProtocolUsage.into()); self }
     /// Security details for the request.
     pub fn securityDetails(mut self, securityDetails: SecurityDetails<'a>) -> Self { self.securityDetails = Some(securityDetails); self }
     pub fn build(self) -> Response<'a> {
@@ -1477,10 +1477,10 @@ pub struct CachedResource<'a> {
 }
 
 impl<'a> CachedResource<'a> {
-    pub fn builder(url: impl Into<Cow<'a, str>>, type_: ResourceType, bodySize: f64) -> CachedResourceBuilder<'a> {
+    pub fn builder(url: impl Into<Cow<'a, str>>, type_: impl Into<ResourceType>, bodySize: f64) -> CachedResourceBuilder<'a> {
         CachedResourceBuilder {
             url: url.into(),
-            type_: type_,
+            type_: type_.into(),
             response: None,
             bodySize: bodySize,
         }
@@ -1582,7 +1582,7 @@ impl<'a> InitiatorBuilder<'a> {
     /// module) (0-based).
     pub fn columnNumber(mut self, columnNumber: f64) -> Self { self.columnNumber = Some(columnNumber); self }
     /// Set if another request triggered this request (e.g. preflight).
-    pub fn requestId(mut self, requestId: RequestId<'a>) -> Self { self.requestId = Some(requestId); self }
+    pub fn requestId(mut self, requestId: impl Into<RequestId<'a>>) -> Self { self.requestId = Some(requestId.into()); self }
     pub fn build(self) -> Initiator<'a> {
         Initiator {
             type_: self.type_,
@@ -1680,7 +1680,7 @@ pub struct Cookie<'a> {
 }
 
 impl<'a> Cookie<'a> {
-    pub fn builder(name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>, domain: impl Into<Cow<'a, str>>, path: impl Into<Cow<'a, str>>, expires: f64, size: u64, httpOnly: bool, secure: bool, session: bool, priority: CookiePriority, sourceScheme: CookieSourceScheme, sourcePort: i64) -> CookieBuilder<'a> {
+    pub fn builder(name: impl Into<Cow<'a, str>>, value: impl Into<Cow<'a, str>>, domain: impl Into<Cow<'a, str>>, path: impl Into<Cow<'a, str>>, expires: f64, size: u64, httpOnly: bool, secure: bool, session: bool, priority: impl Into<CookiePriority>, sourceScheme: impl Into<CookieSourceScheme>, sourcePort: i64) -> CookieBuilder<'a> {
         CookieBuilder {
             name: name.into(),
             value: value.into(),
@@ -1692,8 +1692,8 @@ impl<'a> Cookie<'a> {
             secure: secure,
             session: session,
             sameSite: None,
-            priority: priority,
-            sourceScheme: sourceScheme,
+            priority: priority.into(),
+            sourceScheme: sourceScheme.into(),
             sourcePort: sourcePort,
             partitionKey: None,
             partitionKeyOpaque: None,
@@ -1737,7 +1737,7 @@ pub struct CookieBuilder<'a> {
 
 impl<'a> CookieBuilder<'a> {
     /// Cookie SameSite type.
-    pub fn sameSite(mut self, sameSite: CookieSameSite) -> Self { self.sameSite = Some(sameSite); self }
+    pub fn sameSite(mut self, sameSite: impl Into<CookieSameSite>) -> Self { self.sameSite = Some(sameSite.into()); self }
     /// Cookie partition key.
     pub fn partitionKey(mut self, partitionKey: CookiePartitionKey<'a>) -> Self { self.partitionKey = Some(partitionKey); self }
     /// True if cookie partition key is opaque.
@@ -1948,9 +1948,9 @@ pub struct ExemptedSetCookieWithReason<'a> {
 }
 
 impl<'a> ExemptedSetCookieWithReason<'a> {
-    pub fn builder(exemptionReason: CookieExemptionReason, cookieLine: impl Into<Cow<'a, str>>, cookie: Cookie<'a>) -> ExemptedSetCookieWithReasonBuilder<'a> {
+    pub fn builder(exemptionReason: impl Into<CookieExemptionReason>, cookieLine: impl Into<Cow<'a, str>>, cookie: Cookie<'a>) -> ExemptedSetCookieWithReasonBuilder<'a> {
         ExemptedSetCookieWithReasonBuilder {
-            exemptionReason: exemptionReason,
+            exemptionReason: exemptionReason.into(),
             cookieLine: cookieLine.into(),
             cookie: cookie,
         }
@@ -2016,7 +2016,7 @@ pub struct AssociatedCookieBuilder<'a> {
 impl<'a> AssociatedCookieBuilder<'a> {
     /// The reason the cookie should have been blocked by 3PCD but is exempted. A cookie could
     /// only have at most one exemption reason.
-    pub fn exemptionReason(mut self, exemptionReason: CookieExemptionReason) -> Self { self.exemptionReason = Some(exemptionReason); self }
+    pub fn exemptionReason(mut self, exemptionReason: impl Into<CookieExemptionReason>) -> Self { self.exemptionReason = Some(exemptionReason.into()); self }
     pub fn build(self) -> AssociatedCookie<'a> {
         AssociatedCookie {
             cookie: self.cookie,
@@ -2136,13 +2136,13 @@ impl<'a> CookieParamBuilder<'a> {
     /// True if cookie is http-only.
     pub fn httpOnly(mut self, httpOnly: bool) -> Self { self.httpOnly = Some(httpOnly); self }
     /// Cookie SameSite type.
-    pub fn sameSite(mut self, sameSite: CookieSameSite) -> Self { self.sameSite = Some(sameSite); self }
+    pub fn sameSite(mut self, sameSite: impl Into<CookieSameSite>) -> Self { self.sameSite = Some(sameSite.into()); self }
     /// Cookie expiration date, session cookie if not set
     pub fn expires(mut self, expires: TimeSinceEpoch) -> Self { self.expires = Some(expires); self }
     /// Cookie Priority.
-    pub fn priority(mut self, priority: CookiePriority) -> Self { self.priority = Some(priority); self }
+    pub fn priority(mut self, priority: impl Into<CookiePriority>) -> Self { self.priority = Some(priority.into()); self }
     /// Cookie source scheme type.
-    pub fn sourceScheme(mut self, sourceScheme: CookieSourceScheme) -> Self { self.sourceScheme = Some(sourceScheme); self }
+    pub fn sourceScheme(mut self, sourceScheme: impl Into<CookieSourceScheme>) -> Self { self.sourceScheme = Some(sourceScheme.into()); self }
     /// Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port.
     /// An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
     /// This is a temporary ability and it will be removed in the future.
@@ -2329,9 +2329,9 @@ impl<'a> RequestPatternBuilder<'a> {
     /// backslash. Omitting is equivalent to '"*"'.
     pub fn urlPattern(mut self, urlPattern: impl Into<Cow<'a, str>>) -> Self { self.urlPattern = Some(urlPattern.into()); self }
     /// If set, only requests for matching resource types will be intercepted.
-    pub fn resourceType(mut self, resourceType: ResourceType) -> Self { self.resourceType = Some(resourceType); self }
+    pub fn resourceType(mut self, resourceType: impl Into<ResourceType>) -> Self { self.resourceType = Some(resourceType.into()); self }
     /// Stage at which to begin intercepting requests. Default is Request.
-    pub fn interceptionStage(mut self, interceptionStage: InterceptionStage) -> Self { self.interceptionStage = Some(interceptionStage); self }
+    pub fn interceptionStage(mut self, interceptionStage: impl Into<InterceptionStage>) -> Self { self.interceptionStage = Some(interceptionStage.into()); self }
     pub fn build(self) -> RequestPattern<'a> {
         RequestPattern {
             urlPattern: self.urlPattern,
@@ -2544,7 +2544,7 @@ impl<'a> SignedExchangeErrorBuilder<'a> {
     /// The index of the signature which caused the error.
     pub fn signatureIndex(mut self, signatureIndex: u64) -> Self { self.signatureIndex = Some(signatureIndex); self }
     /// The field which caused the error.
-    pub fn errorField(mut self, errorField: SignedExchangeErrorField) -> Self { self.errorField = Some(errorField); self }
+    pub fn errorField(mut self, errorField: impl Into<SignedExchangeErrorField>) -> Self { self.errorField = Some(errorField.into()); self }
     pub fn build(self) -> SignedExchangeError<'a> {
         SignedExchangeError {
             message: self.message,
@@ -2705,7 +2705,7 @@ pub struct NetworkConditionsBuilder<'a> {
 
 impl<'a> NetworkConditionsBuilder<'a> {
     /// Connection type if known.
-    pub fn connectionType(mut self, connectionType: ConnectionType) -> Self { self.connectionType = Some(connectionType); self }
+    pub fn connectionType(mut self, connectionType: impl Into<ConnectionType>) -> Self { self.connectionType = Some(connectionType.into()); self }
     /// WebRTC packet loss (percent, 0-100). 0 disables packet loss emulation, 100 drops all the packets.
     pub fn packetLoss(mut self, packetLoss: f64) -> Self { self.packetLoss = Some(packetLoss); self }
     /// WebRTC packet queue length (packet). 0 removes any queue length limitations.
@@ -2829,7 +2829,7 @@ impl DirectTCPSocketOptionsBuilder {
     pub fn sendBufferSize(mut self, sendBufferSize: f64) -> Self { self.sendBufferSize = Some(sendBufferSize); self }
     /// Expected to be unsigned integer.
     pub fn receiveBufferSize(mut self, receiveBufferSize: f64) -> Self { self.receiveBufferSize = Some(receiveBufferSize); self }
-    pub fn dnsQueryType(mut self, dnsQueryType: DirectSocketDnsQueryType) -> Self { self.dnsQueryType = Some(dnsQueryType); self }
+    pub fn dnsQueryType(mut self, dnsQueryType: impl Into<DirectSocketDnsQueryType>) -> Self { self.dnsQueryType = Some(dnsQueryType.into()); self }
     pub fn build(self) -> DirectTCPSocketOptions {
         DirectTCPSocketOptions {
             noDelay: self.noDelay,
@@ -2920,7 +2920,7 @@ impl<'a> DirectUDPSocketOptionsBuilder<'a> {
     pub fn localAddr(mut self, localAddr: impl Into<Cow<'a, str>>) -> Self { self.localAddr = Some(localAddr.into()); self }
     /// Unsigned int 16.
     pub fn localPort(mut self, localPort: i64) -> Self { self.localPort = Some(localPort); self }
-    pub fn dnsQueryType(mut self, dnsQueryType: DirectSocketDnsQueryType) -> Self { self.dnsQueryType = Some(dnsQueryType); self }
+    pub fn dnsQueryType(mut self, dnsQueryType: impl Into<DirectSocketDnsQueryType>) -> Self { self.dnsQueryType = Some(dnsQueryType.into()); self }
     /// Expected to be unsigned integer.
     pub fn sendBufferSize(mut self, sendBufferSize: f64) -> Self { self.sendBufferSize = Some(sendBufferSize); self }
     /// Expected to be unsigned integer.
@@ -3066,11 +3066,11 @@ pub struct ClientSecurityState {
 }
 
 impl ClientSecurityState {
-    pub fn builder(initiatorIsSecureContext: bool, initiatorIPAddressSpace: IPAddressSpace, localNetworkAccessRequestPolicy: LocalNetworkAccessRequestPolicy) -> ClientSecurityStateBuilder {
+    pub fn builder(initiatorIsSecureContext: bool, initiatorIPAddressSpace: impl Into<IPAddressSpace>, localNetworkAccessRequestPolicy: impl Into<LocalNetworkAccessRequestPolicy>) -> ClientSecurityStateBuilder {
         ClientSecurityStateBuilder {
             initiatorIsSecureContext: initiatorIsSecureContext,
-            initiatorIPAddressSpace: initiatorIPAddressSpace,
-            localNetworkAccessRequestPolicy: localNetworkAccessRequestPolicy,
+            initiatorIPAddressSpace: initiatorIPAddressSpace.into(),
+            localNetworkAccessRequestPolicy: localNetworkAccessRequestPolicy.into(),
         }
     }
     pub fn initiatorIsSecureContext(&self) -> bool { self.initiatorIsSecureContext }
@@ -3268,10 +3268,10 @@ pub struct CrossOriginOpenerPolicyStatus<'a> {
 }
 
 impl<'a> CrossOriginOpenerPolicyStatus<'a> {
-    pub fn builder(value: CrossOriginOpenerPolicyValue, reportOnlyValue: CrossOriginOpenerPolicyValue) -> CrossOriginOpenerPolicyStatusBuilder<'a> {
+    pub fn builder(value: impl Into<CrossOriginOpenerPolicyValue>, reportOnlyValue: impl Into<CrossOriginOpenerPolicyValue>) -> CrossOriginOpenerPolicyStatusBuilder<'a> {
         CrossOriginOpenerPolicyStatusBuilder {
-            value: value,
-            reportOnlyValue: reportOnlyValue,
+            value: value.into(),
+            reportOnlyValue: reportOnlyValue.into(),
             reportingEndpoint: None,
             reportOnlyReportingEndpoint: None,
         }
@@ -3328,10 +3328,10 @@ pub struct CrossOriginEmbedderPolicyStatus<'a> {
 }
 
 impl<'a> CrossOriginEmbedderPolicyStatus<'a> {
-    pub fn builder(value: CrossOriginEmbedderPolicyValue, reportOnlyValue: CrossOriginEmbedderPolicyValue) -> CrossOriginEmbedderPolicyStatusBuilder<'a> {
+    pub fn builder(value: impl Into<CrossOriginEmbedderPolicyValue>, reportOnlyValue: impl Into<CrossOriginEmbedderPolicyValue>) -> CrossOriginEmbedderPolicyStatusBuilder<'a> {
         CrossOriginEmbedderPolicyStatusBuilder {
-            value: value,
-            reportOnlyValue: reportOnlyValue,
+            value: value.into(),
+            reportOnlyValue: reportOnlyValue.into(),
             reportingEndpoint: None,
             reportOnlyReportingEndpoint: None,
         }
@@ -3383,11 +3383,11 @@ pub struct ContentSecurityPolicyStatus<'a> {
 }
 
 impl<'a> ContentSecurityPolicyStatus<'a> {
-    pub fn builder(effectiveDirectives: impl Into<Cow<'a, str>>, isEnforced: bool, source: ContentSecurityPolicySource) -> ContentSecurityPolicyStatusBuilder<'a> {
+    pub fn builder(effectiveDirectives: impl Into<Cow<'a, str>>, isEnforced: bool, source: impl Into<ContentSecurityPolicySource>) -> ContentSecurityPolicyStatusBuilder<'a> {
         ContentSecurityPolicyStatusBuilder {
             effectiveDirectives: effectiveDirectives.into(),
             isEnforced: isEnforced,
-            source: source,
+            source: source.into(),
         }
     }
     pub fn effectiveDirectives(&self) -> &str { self.effectiveDirectives.as_ref() }
@@ -3499,9 +3499,9 @@ pub struct ReportingApiReport<'a> {
 }
 
 impl<'a> ReportingApiReport<'a> {
-    pub fn builder(id: ReportId<'a>, initiatorUrl: impl Into<Cow<'a, str>>, destination: impl Into<Cow<'a, str>>, type_: impl Into<Cow<'a, str>>, timestamp: crate::network::TimeSinceEpoch, depth: i64, completedAttempts: i64, body: serde_json::Map<String, JsonValue>, status: ReportStatus) -> ReportingApiReportBuilder<'a> {
+    pub fn builder(id: impl Into<ReportId<'a>>, initiatorUrl: impl Into<Cow<'a, str>>, destination: impl Into<Cow<'a, str>>, type_: impl Into<Cow<'a, str>>, timestamp: crate::network::TimeSinceEpoch, depth: i64, completedAttempts: i64, body: serde_json::Map<String, JsonValue>, status: impl Into<ReportStatus>) -> ReportingApiReportBuilder<'a> {
         ReportingApiReportBuilder {
-            id: id,
+            id: id.into(),
             initiatorUrl: initiatorUrl.into(),
             destination: destination.into(),
             type_: type_.into(),
@@ -3509,7 +3509,7 @@ impl<'a> ReportingApiReport<'a> {
             depth: depth,
             completedAttempts: completedAttempts,
             body: body,
-            status: status,
+            status: status.into(),
         }
     }
     pub fn id(&self) -> &ReportId<'a> { &self.id }
@@ -3713,7 +3713,7 @@ pub struct DeviceBoundSessionCookieCravingBuilder<'a> {
 
 impl<'a> DeviceBoundSessionCookieCravingBuilder<'a> {
     /// The 'SameSite' attribute of the craving attributes.
-    pub fn sameSite(mut self, sameSite: CookieSameSite) -> Self { self.sameSite = Some(sameSite); self }
+    pub fn sameSite(mut self, sameSite: impl Into<CookieSameSite>) -> Self { self.sameSite = Some(sameSite.into()); self }
     pub fn build(self) -> DeviceBoundSessionCookieCraving<'a> {
         DeviceBoundSessionCookieCraving {
             name: self.name,
@@ -3899,6 +3899,8 @@ pub enum DeviceBoundSessionFetchResult {
     KeyError,
     #[serde(rename = "SigningError")]
     SigningError,
+    #[serde(rename = "TransientSigningError")]
+    TransientSigningError,
     #[serde(rename = "ServerRequestedTermination")]
     ServerRequestedTermination,
     #[serde(rename = "InvalidSessionId")]
@@ -4111,9 +4113,9 @@ pub struct CreationEventDetails<'a> {
 }
 
 impl<'a> CreationEventDetails<'a> {
-    pub fn builder(fetchResult: DeviceBoundSessionFetchResult) -> CreationEventDetailsBuilder<'a> {
+    pub fn builder(fetchResult: impl Into<DeviceBoundSessionFetchResult>) -> CreationEventDetailsBuilder<'a> {
         CreationEventDetailsBuilder {
-            fetchResult: fetchResult,
+            fetchResult: fetchResult.into(),
             newSession: None,
             failedRequest: None,
         }
@@ -4196,7 +4198,7 @@ pub struct RefreshEventDetailsBuilder<'a> {
 
 impl<'a> RefreshEventDetailsBuilder<'a> {
     /// If there was a fetch attempt, the result of that.
-    pub fn fetchResult(mut self, fetchResult: DeviceBoundSessionFetchResult) -> Self { self.fetchResult = Some(fetchResult); self }
+    pub fn fetchResult(mut self, fetchResult: impl Into<DeviceBoundSessionFetchResult>) -> Self { self.fetchResult = Some(fetchResult.into()); self }
     /// The session display if there was a newly created session. This is populated
     /// for any refresh event that modifies the session config.
     pub fn newSession(mut self, newSession: DeviceBoundSession<'a>) -> Self { self.newSession = Some(newSession); self }
@@ -4620,9 +4622,9 @@ pub struct ContinueInterceptedRequestParams<'a> {
 }
 
 impl<'a> ContinueInterceptedRequestParams<'a> {
-    pub fn builder(interceptionId: InterceptionId<'a>) -> ContinueInterceptedRequestParamsBuilder<'a> {
+    pub fn builder(interceptionId: impl Into<InterceptionId<'a>>) -> ContinueInterceptedRequestParamsBuilder<'a> {
         ContinueInterceptedRequestParamsBuilder {
-            interceptionId: interceptionId,
+            interceptionId: interceptionId.into(),
             errorReason: None,
             rawResponse: None,
             url: None,
@@ -4658,7 +4660,7 @@ impl<'a> ContinueInterceptedRequestParamsBuilder<'a> {
     /// If set this causes the request to fail with the given reason. Passing 'Aborted' for requests
     /// marked with 'isNavigationRequest' also cancels the navigation. Must not be set in response
     /// to an authChallenge.
-    pub fn errorReason(mut self, errorReason: ErrorReason) -> Self { self.errorReason = Some(errorReason); self }
+    pub fn errorReason(mut self, errorReason: impl Into<ErrorReason>) -> Self { self.errorReason = Some(errorReason.into()); self }
     /// If set the requests completes using with the provided base64 encoded raw response, including
     /// HTTP status line and headers etc... Must not be set in response to an authChallenge. (Encoded as a base64 string when passed over JSON)
     pub fn rawResponse(mut self, rawResponse: impl Into<Cow<'a, str>>) -> Self { self.rawResponse = Some(rawResponse.into()); self }
@@ -4849,7 +4851,7 @@ pub struct EmulateNetworkConditionsParamsBuilder {
 
 impl EmulateNetworkConditionsParamsBuilder {
     /// Connection type if known.
-    pub fn connectionType(mut self, connectionType: ConnectionType) -> Self { self.connectionType = Some(connectionType); self }
+    pub fn connectionType(mut self, connectionType: impl Into<ConnectionType>) -> Self { self.connectionType = Some(connectionType.into()); self }
     /// WebRTC packet loss (percent, 0-100). 0 disables packet loss emulation, 100 drops all the packets.
     pub fn packetLoss(mut self, packetLoss: f64) -> Self { self.packetLoss = Some(packetLoss); self }
     /// WebRTC packet queue length (packet). 0 removes any queue length limitations.
@@ -5019,7 +5021,7 @@ pub struct OverrideNetworkStateParamsBuilder {
 
 impl OverrideNetworkStateParamsBuilder {
     /// Connection type if known.
-    pub fn connectionType(mut self, connectionType: ConnectionType) -> Self { self.connectionType = Some(connectionType); self }
+    pub fn connectionType(mut self, connectionType: impl Into<ConnectionType>) -> Self { self.connectionType = Some(connectionType.into()); self }
     pub fn build(self) -> OverrideNetworkStateParams {
         OverrideNetworkStateParams {
             offline: self.offline,
@@ -5378,9 +5380,9 @@ pub struct GetResponseBodyParams<'a> {
 }
 
 impl<'a> GetResponseBodyParams<'a> {
-    pub fn builder(requestId: RequestId<'a>) -> GetResponseBodyParamsBuilder<'a> {
+    pub fn builder(requestId: impl Into<RequestId<'a>>) -> GetResponseBodyParamsBuilder<'a> {
         GetResponseBodyParamsBuilder {
-            requestId: requestId,
+            requestId: requestId.into(),
         }
     }
     pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
@@ -5453,9 +5455,9 @@ pub struct GetRequestPostDataParams<'a> {
 }
 
 impl<'a> GetRequestPostDataParams<'a> {
-    pub fn builder(requestId: RequestId<'a>) -> GetRequestPostDataParamsBuilder<'a> {
+    pub fn builder(requestId: impl Into<RequestId<'a>>) -> GetRequestPostDataParamsBuilder<'a> {
         GetRequestPostDataParamsBuilder {
-            requestId: requestId,
+            requestId: requestId.into(),
         }
     }
     pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
@@ -5528,9 +5530,9 @@ pub struct GetResponseBodyForInterceptionParams<'a> {
 }
 
 impl<'a> GetResponseBodyForInterceptionParams<'a> {
-    pub fn builder(interceptionId: InterceptionId<'a>) -> GetResponseBodyForInterceptionParamsBuilder<'a> {
+    pub fn builder(interceptionId: impl Into<InterceptionId<'a>>) -> GetResponseBodyForInterceptionParamsBuilder<'a> {
         GetResponseBodyForInterceptionParamsBuilder {
-            interceptionId: interceptionId,
+            interceptionId: interceptionId.into(),
         }
     }
     pub fn interceptionId(&self) -> &InterceptionId<'a> { &self.interceptionId }
@@ -5605,9 +5607,9 @@ pub struct TakeResponseBodyForInterceptionAsStreamParams<'a> {
 }
 
 impl<'a> TakeResponseBodyForInterceptionAsStreamParams<'a> {
-    pub fn builder(interceptionId: InterceptionId<'a>) -> TakeResponseBodyForInterceptionAsStreamParamsBuilder<'a> {
+    pub fn builder(interceptionId: impl Into<InterceptionId<'a>>) -> TakeResponseBodyForInterceptionAsStreamParamsBuilder<'a> {
         TakeResponseBodyForInterceptionAsStreamParamsBuilder {
-            interceptionId: interceptionId,
+            interceptionId: interceptionId.into(),
         }
     }
     pub fn interceptionId(&self) -> &InterceptionId<'a> { &self.interceptionId }
@@ -5678,9 +5680,9 @@ pub struct ReplayXHRParams<'a> {
 }
 
 impl<'a> ReplayXHRParams<'a> {
-    pub fn builder(requestId: RequestId<'a>) -> ReplayXHRParamsBuilder<'a> {
+    pub fn builder(requestId: impl Into<RequestId<'a>>) -> ReplayXHRParamsBuilder<'a> {
         ReplayXHRParamsBuilder {
-            requestId: requestId,
+            requestId: requestId.into(),
         }
     }
     pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }
@@ -5724,9 +5726,9 @@ pub struct SearchInResponseBodyParams<'a> {
 }
 
 impl<'a> SearchInResponseBodyParams<'a> {
-    pub fn builder(requestId: RequestId<'a>, query: impl Into<Cow<'a, str>>) -> SearchInResponseBodyParamsBuilder<'a> {
+    pub fn builder(requestId: impl Into<RequestId<'a>>, query: impl Into<Cow<'a, str>>) -> SearchInResponseBodyParamsBuilder<'a> {
         SearchInResponseBodyParamsBuilder {
-            requestId: requestId,
+            requestId: requestId.into(),
             query: query.into(),
             caseSensitive: None,
             isRegex: None,
@@ -6037,13 +6039,13 @@ impl<'a> SetCookieParamsBuilder<'a> {
     /// True if cookie is http-only.
     pub fn httpOnly(mut self, httpOnly: bool) -> Self { self.httpOnly = Some(httpOnly); self }
     /// Cookie SameSite type.
-    pub fn sameSite(mut self, sameSite: CookieSameSite) -> Self { self.sameSite = Some(sameSite); self }
+    pub fn sameSite(mut self, sameSite: impl Into<CookieSameSite>) -> Self { self.sameSite = Some(sameSite.into()); self }
     /// Cookie expiration date, session cookie if not set
     pub fn expires(mut self, expires: TimeSinceEpoch) -> Self { self.expires = Some(expires); self }
     /// Cookie Priority type.
-    pub fn priority(mut self, priority: CookiePriority) -> Self { self.priority = Some(priority); self }
+    pub fn priority(mut self, priority: impl Into<CookiePriority>) -> Self { self.priority = Some(priority.into()); self }
     /// Cookie source scheme type.
-    pub fn sourceScheme(mut self, sourceScheme: CookieSourceScheme) -> Self { self.sourceScheme = Some(sourceScheme); self }
+    pub fn sourceScheme(mut self, sourceScheme: impl Into<CookieSourceScheme>) -> Self { self.sourceScheme = Some(sourceScheme.into()); self }
     /// Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port.
     /// An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
     /// This is a temporary ability and it will be removed in the future.
@@ -6337,9 +6339,9 @@ pub struct StreamResourceContentParams<'a> {
 }
 
 impl<'a> StreamResourceContentParams<'a> {
-    pub fn builder(requestId: RequestId<'a>) -> StreamResourceContentParamsBuilder<'a> {
+    pub fn builder(requestId: impl Into<RequestId<'a>>) -> StreamResourceContentParamsBuilder<'a> {
         StreamResourceContentParamsBuilder {
-            requestId: requestId,
+            requestId: requestId.into(),
         }
     }
     pub fn requestId(&self) -> &RequestId<'a> { &self.requestId }

@@ -338,9 +338,9 @@ pub struct SimulatePressureNotificationParams {
 }
 
 impl SimulatePressureNotificationParams {
-    pub fn builder(level: PressureLevel) -> SimulatePressureNotificationParamsBuilder {
+    pub fn builder(level: impl Into<PressureLevel>) -> SimulatePressureNotificationParamsBuilder {
         SimulatePressureNotificationParamsBuilder {
-            level: level,
+            level: level.into(),
         }
     }
     pub fn level(&self) -> &PressureLevel { &self.level }

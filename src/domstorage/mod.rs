@@ -47,7 +47,7 @@ impl<'a> StorageIdBuilder<'a> {
     /// Security origin for the storage.
     pub fn securityOrigin(mut self, securityOrigin: impl Into<Cow<'a, str>>) -> Self { self.securityOrigin = Some(securityOrigin.into()); self }
     /// Represents a key by which DOM Storage keys its CachedStorageAreas
-    pub fn storageKey(mut self, storageKey: SerializedStorageKey<'a>) -> Self { self.storageKey = Some(storageKey); self }
+    pub fn storageKey(mut self, storageKey: impl Into<SerializedStorageKey<'a>>) -> Self { self.storageKey = Some(storageKey.into()); self }
     pub fn build(self) -> StorageId<'a> {
         StorageId {
             securityOrigin: self.securityOrigin,

@@ -705,7 +705,7 @@ pub struct ReportConnectResultParamsBuilder<'a> {
 }
 
 impl<'a> ReportConnectResultParamsBuilder<'a> {
-    pub fn activeProtocol(mut self, activeProtocol: Protocol) -> Self { self.activeProtocol = Some(activeProtocol); self }
+    pub fn activeProtocol(mut self, activeProtocol: impl Into<Protocol>) -> Self { self.activeProtocol = Some(activeProtocol.into()); self }
     pub fn build(self) -> ReportConnectResultParams<'a> {
         ReportConnectResultParams {
             requestId: self.requestId,
@@ -796,11 +796,11 @@ pub struct ReportStatusResultParams<'a> {
 }
 
 impl<'a> ReportStatusResultParams<'a> {
-    pub fn builder(requestId: impl Into<Cow<'a, str>>, readerName: impl Into<Cow<'a, str>>, state: ConnectionState, atr: impl Into<Cow<'a, str>>) -> ReportStatusResultParamsBuilder<'a> {
+    pub fn builder(requestId: impl Into<Cow<'a, str>>, readerName: impl Into<Cow<'a, str>>, state: impl Into<ConnectionState>, atr: impl Into<Cow<'a, str>>) -> ReportStatusResultParamsBuilder<'a> {
         ReportStatusResultParamsBuilder {
             requestId: requestId.into(),
             readerName: readerName.into(),
-            state: state,
+            state: state.into(),
             atr: atr.into(),
             protocol: None,
         }
@@ -822,7 +822,7 @@ pub struct ReportStatusResultParamsBuilder<'a> {
 }
 
 impl<'a> ReportStatusResultParamsBuilder<'a> {
-    pub fn protocol(mut self, protocol: Protocol) -> Self { self.protocol = Some(protocol); self }
+    pub fn protocol(mut self, protocol: impl Into<Protocol>) -> Self { self.protocol = Some(protocol.into()); self }
     pub fn build(self) -> ReportStatusResultParams<'a> {
         ReportStatusResultParams {
             requestId: self.requestId,
@@ -851,10 +851,10 @@ pub struct ReportErrorParams<'a> {
 }
 
 impl<'a> ReportErrorParams<'a> {
-    pub fn builder(requestId: impl Into<Cow<'a, str>>, resultCode: ResultCode) -> ReportErrorParamsBuilder<'a> {
+    pub fn builder(requestId: impl Into<Cow<'a, str>>, resultCode: impl Into<ResultCode>) -> ReportErrorParamsBuilder<'a> {
         ReportErrorParamsBuilder {
             requestId: requestId.into(),
-            resultCode: resultCode,
+            resultCode: resultCode.into(),
         }
     }
     pub fn requestId(&self) -> &str { self.requestId.as_ref() }

@@ -21,9 +21,9 @@ pub struct PromptDevice<'a> {
 }
 
 impl<'a> PromptDevice<'a> {
-    pub fn builder(id: DeviceId<'a>, name: impl Into<Cow<'a, str>>) -> PromptDeviceBuilder<'a> {
+    pub fn builder(id: impl Into<DeviceId<'a>>, name: impl Into<Cow<'a, str>>) -> PromptDeviceBuilder<'a> {
         PromptDeviceBuilder {
-            id: id,
+            id: id.into(),
             name: name.into(),
         }
     }
@@ -76,10 +76,10 @@ pub struct SelectPromptParams<'a> {
 }
 
 impl<'a> SelectPromptParams<'a> {
-    pub fn builder(id: RequestId<'a>, deviceId: DeviceId<'a>) -> SelectPromptParamsBuilder<'a> {
+    pub fn builder(id: impl Into<RequestId<'a>>, deviceId: impl Into<DeviceId<'a>>) -> SelectPromptParamsBuilder<'a> {
         SelectPromptParamsBuilder {
-            id: id,
-            deviceId: deviceId,
+            id: id.into(),
+            deviceId: deviceId.into(),
         }
     }
     pub fn id(&self) -> &RequestId<'a> { &self.id }
@@ -117,9 +117,9 @@ pub struct CancelPromptParams<'a> {
 }
 
 impl<'a> CancelPromptParams<'a> {
-    pub fn builder(id: RequestId<'a>) -> CancelPromptParamsBuilder<'a> {
+    pub fn builder(id: impl Into<RequestId<'a>>) -> CancelPromptParamsBuilder<'a> {
         CancelPromptParamsBuilder {
-            id: id,
+            id: id.into(),
         }
     }
     pub fn id(&self) -> &RequestId<'a> { &self.id }

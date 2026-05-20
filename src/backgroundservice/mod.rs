@@ -84,12 +84,12 @@ pub struct BackgroundServiceEvent<'a> {
 }
 
 impl<'a> BackgroundServiceEvent<'a> {
-    pub fn builder(timestamp: crate::network::TimeSinceEpoch, origin: impl Into<Cow<'a, str>>, serviceWorkerRegistrationId: crate::serviceworker::RegistrationID<'a>, service: ServiceName, eventName: impl Into<Cow<'a, str>>, instanceId: impl Into<Cow<'a, str>>, eventMetadata: Vec<EventMetadata<'a>>, storageKey: impl Into<Cow<'a, str>>) -> BackgroundServiceEventBuilder<'a> {
+    pub fn builder(timestamp: crate::network::TimeSinceEpoch, origin: impl Into<Cow<'a, str>>, serviceWorkerRegistrationId: crate::serviceworker::RegistrationID<'a>, service: impl Into<ServiceName>, eventName: impl Into<Cow<'a, str>>, instanceId: impl Into<Cow<'a, str>>, eventMetadata: Vec<EventMetadata<'a>>, storageKey: impl Into<Cow<'a, str>>) -> BackgroundServiceEventBuilder<'a> {
         BackgroundServiceEventBuilder {
             timestamp: timestamp,
             origin: origin.into(),
             serviceWorkerRegistrationId: serviceWorkerRegistrationId,
-            service: service,
+            service: service.into(),
             eventName: eventName.into(),
             instanceId: instanceId.into(),
             eventMetadata: eventMetadata,
@@ -142,9 +142,9 @@ pub struct StartObservingParams {
 }
 
 impl StartObservingParams {
-    pub fn builder(service: ServiceName) -> StartObservingParamsBuilder {
+    pub fn builder(service: impl Into<ServiceName>) -> StartObservingParamsBuilder {
         StartObservingParamsBuilder {
-            service: service,
+            service: service.into(),
         }
     }
     pub fn service(&self) -> &ServiceName { &self.service }
@@ -179,9 +179,9 @@ pub struct StopObservingParams {
 }
 
 impl StopObservingParams {
-    pub fn builder(service: ServiceName) -> StopObservingParamsBuilder {
+    pub fn builder(service: impl Into<ServiceName>) -> StopObservingParamsBuilder {
         StopObservingParamsBuilder {
-            service: service,
+            service: service.into(),
         }
     }
     pub fn service(&self) -> &ServiceName { &self.service }
@@ -217,10 +217,10 @@ pub struct SetRecordingParams {
 }
 
 impl SetRecordingParams {
-    pub fn builder(shouldRecord: bool, service: ServiceName) -> SetRecordingParamsBuilder {
+    pub fn builder(shouldRecord: bool, service: impl Into<ServiceName>) -> SetRecordingParamsBuilder {
         SetRecordingParamsBuilder {
             shouldRecord: shouldRecord,
-            service: service,
+            service: service.into(),
         }
     }
     pub fn shouldRecord(&self) -> bool { self.shouldRecord }
@@ -258,9 +258,9 @@ pub struct ClearEventsParams {
 }
 
 impl ClearEventsParams {
-    pub fn builder(service: ServiceName) -> ClearEventsParamsBuilder {
+    pub fn builder(service: impl Into<ServiceName>) -> ClearEventsParamsBuilder {
         ClearEventsParamsBuilder {
-            service: service,
+            service: service.into(),
         }
     }
     pub fn service(&self) -> &ServiceName { &self.service }

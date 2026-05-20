@@ -77,7 +77,7 @@ pub struct Account<'a> {
 }
 
 impl<'a> Account<'a> {
-    pub fn builder(accountId: impl Into<Cow<'a, str>>, email: impl Into<Cow<'a, str>>, name: impl Into<Cow<'a, str>>, givenName: impl Into<Cow<'a, str>>, pictureUrl: impl Into<Cow<'a, str>>, idpConfigUrl: impl Into<Cow<'a, str>>, idpLoginUrl: impl Into<Cow<'a, str>>, loginState: LoginState) -> AccountBuilder<'a> {
+    pub fn builder(accountId: impl Into<Cow<'a, str>>, email: impl Into<Cow<'a, str>>, name: impl Into<Cow<'a, str>>, givenName: impl Into<Cow<'a, str>>, pictureUrl: impl Into<Cow<'a, str>>, idpConfigUrl: impl Into<Cow<'a, str>>, idpLoginUrl: impl Into<Cow<'a, str>>, loginState: impl Into<LoginState>) -> AccountBuilder<'a> {
         AccountBuilder {
             accountId: accountId.into(),
             email: email.into(),
@@ -86,7 +86,7 @@ impl<'a> Account<'a> {
             pictureUrl: pictureUrl.into(),
             idpConfigUrl: idpConfigUrl.into(),
             idpLoginUrl: idpLoginUrl.into(),
-            loginState: loginState,
+            loginState: loginState.into(),
             termsOfServiceUrl: None,
             privacyPolicyUrl: None,
         }
@@ -241,10 +241,10 @@ pub struct ClickDialogButtonParams<'a> {
 }
 
 impl<'a> ClickDialogButtonParams<'a> {
-    pub fn builder(dialogId: impl Into<Cow<'a, str>>, dialogButton: DialogButton) -> ClickDialogButtonParamsBuilder<'a> {
+    pub fn builder(dialogId: impl Into<Cow<'a, str>>, dialogButton: impl Into<DialogButton>) -> ClickDialogButtonParamsBuilder<'a> {
         ClickDialogButtonParamsBuilder {
             dialogId: dialogId.into(),
-            dialogButton: dialogButton,
+            dialogButton: dialogButton.into(),
         }
     }
     pub fn dialogId(&self) -> &str { self.dialogId.as_ref() }
@@ -283,11 +283,11 @@ pub struct OpenUrlParams<'a> {
 }
 
 impl<'a> OpenUrlParams<'a> {
-    pub fn builder(dialogId: impl Into<Cow<'a, str>>, accountIndex: u64, accountUrlType: AccountUrlType) -> OpenUrlParamsBuilder<'a> {
+    pub fn builder(dialogId: impl Into<Cow<'a, str>>, accountIndex: u64, accountUrlType: impl Into<AccountUrlType>) -> OpenUrlParamsBuilder<'a> {
         OpenUrlParamsBuilder {
             dialogId: dialogId.into(),
             accountIndex: accountIndex,
-            accountUrlType: accountUrlType,
+            accountUrlType: accountUrlType.into(),
         }
     }
     pub fn dialogId(&self) -> &str { self.dialogId.as_ref() }

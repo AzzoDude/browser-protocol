@@ -203,9 +203,9 @@ pub struct SafetyTipInfo<'a> {
 }
 
 impl<'a> SafetyTipInfo<'a> {
-    pub fn builder(safetyTipStatus: SafetyTipStatus) -> SafetyTipInfoBuilder<'a> {
+    pub fn builder(safetyTipStatus: impl Into<SafetyTipStatus>) -> SafetyTipInfoBuilder<'a> {
         SafetyTipInfoBuilder {
-            safetyTipStatus: safetyTipStatus,
+            safetyTipStatus: safetyTipStatus.into(),
             safeUrl: None,
         }
     }
@@ -248,9 +248,9 @@ pub struct VisibleSecurityState<'a> {
 }
 
 impl<'a> VisibleSecurityState<'a> {
-    pub fn builder(securityState: SecurityState, securityStateIssueIds: Vec<Cow<'a, str>>) -> VisibleSecurityStateBuilder<'a> {
+    pub fn builder(securityState: impl Into<SecurityState>, securityStateIssueIds: Vec<Cow<'a, str>>) -> VisibleSecurityStateBuilder<'a> {
         VisibleSecurityStateBuilder {
-            securityState: securityState,
+            securityState: securityState.into(),
             certificateSecurityState: None,
             safetyTipInfo: None,
             securityStateIssueIds: securityStateIssueIds,
@@ -308,13 +308,13 @@ pub struct SecurityStateExplanation<'a> {
 }
 
 impl<'a> SecurityStateExplanation<'a> {
-    pub fn builder(securityState: SecurityState, title: impl Into<Cow<'a, str>>, summary: impl Into<Cow<'a, str>>, description: impl Into<Cow<'a, str>>, mixedContentType: MixedContentType, certificate: Vec<Cow<'a, str>>) -> SecurityStateExplanationBuilder<'a> {
+    pub fn builder(securityState: impl Into<SecurityState>, title: impl Into<Cow<'a, str>>, summary: impl Into<Cow<'a, str>>, description: impl Into<Cow<'a, str>>, mixedContentType: impl Into<MixedContentType>, certificate: Vec<Cow<'a, str>>) -> SecurityStateExplanationBuilder<'a> {
         SecurityStateExplanationBuilder {
-            securityState: securityState,
+            securityState: securityState.into(),
             title: title.into(),
             summary: summary.into(),
             description: description.into(),
-            mixedContentType: mixedContentType,
+            mixedContentType: mixedContentType.into(),
             certificate: certificate,
             recommendations: None,
         }
@@ -377,15 +377,15 @@ pub struct InsecureContentStatus {
 }
 
 impl InsecureContentStatus {
-    pub fn builder(ranMixedContent: bool, displayedMixedContent: bool, containedMixedForm: bool, ranContentWithCertErrors: bool, displayedContentWithCertErrors: bool, ranInsecureContentStyle: SecurityState, displayedInsecureContentStyle: SecurityState) -> InsecureContentStatusBuilder {
+    pub fn builder(ranMixedContent: bool, displayedMixedContent: bool, containedMixedForm: bool, ranContentWithCertErrors: bool, displayedContentWithCertErrors: bool, ranInsecureContentStyle: impl Into<SecurityState>, displayedInsecureContentStyle: impl Into<SecurityState>) -> InsecureContentStatusBuilder {
         InsecureContentStatusBuilder {
             ranMixedContent: ranMixedContent,
             displayedMixedContent: displayedMixedContent,
             containedMixedForm: containedMixedForm,
             ranContentWithCertErrors: ranContentWithCertErrors,
             displayedContentWithCertErrors: displayedContentWithCertErrors,
-            ranInsecureContentStyle: ranInsecureContentStyle,
-            displayedInsecureContentStyle: displayedInsecureContentStyle,
+            ranInsecureContentStyle: ranInsecureContentStyle.into(),
+            displayedInsecureContentStyle: displayedInsecureContentStyle.into(),
         }
     }
     pub fn ranMixedContent(&self) -> bool { self.ranMixedContent }
@@ -504,10 +504,10 @@ pub struct HandleCertificateErrorParams {
 }
 
 impl HandleCertificateErrorParams {
-    pub fn builder(eventId: u64, action: CertificateErrorAction) -> HandleCertificateErrorParamsBuilder {
+    pub fn builder(eventId: u64, action: impl Into<CertificateErrorAction>) -> HandleCertificateErrorParamsBuilder {
         HandleCertificateErrorParamsBuilder {
             eventId: eventId,
-            action: action,
+            action: action.into(),
         }
     }
     pub fn eventId(&self) -> u64 { self.eventId }

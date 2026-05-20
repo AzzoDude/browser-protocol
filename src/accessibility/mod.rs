@@ -128,9 +128,9 @@ pub struct AXValueSource<'a> {
 }
 
 impl<'a> AXValueSource<'a> {
-    pub fn builder(type_: AXValueSourceType) -> AXValueSourceBuilder<'a> {
+    pub fn builder(type_: impl Into<AXValueSourceType>) -> AXValueSourceBuilder<'a> {
         AXValueSourceBuilder {
-            type_: type_,
+            type_: type_.into(),
             value: None,
             attribute: None,
             attributeValue: None,
@@ -175,7 +175,7 @@ impl<'a> AXValueSourceBuilder<'a> {
     /// Whether this source is superseded by a higher priority source.
     pub fn superseded(mut self, superseded: bool) -> Self { self.superseded = Some(superseded); self }
     /// The native markup source for this value, e.g. a '<label>' element.
-    pub fn nativeSource(mut self, nativeSource: AXValueNativeSourceType) -> Self { self.nativeSource = Some(nativeSource); self }
+    pub fn nativeSource(mut self, nativeSource: impl Into<AXValueNativeSourceType>) -> Self { self.nativeSource = Some(nativeSource.into()); self }
     /// The value, such as a node or node list, of the native source.
     pub fn nativeSourceValue(mut self, nativeSourceValue: AXValue<'a>) -> Self { self.nativeSourceValue = Some(nativeSourceValue); self }
     /// Whether the value for this property is invalid.
@@ -256,9 +256,9 @@ pub struct AXProperty<'a> {
 }
 
 impl<'a> AXProperty<'a> {
-    pub fn builder(name: AXPropertyName, value: AXValue<'a>) -> AXPropertyBuilder<'a> {
+    pub fn builder(name: impl Into<AXPropertyName>, value: AXValue<'a>) -> AXPropertyBuilder<'a> {
         AXPropertyBuilder {
-            name: name,
+            name: name.into(),
             value: value,
         }
     }
@@ -301,9 +301,9 @@ pub struct AXValue<'a> {
 }
 
 impl<'a> AXValue<'a> {
-    pub fn builder(type_: AXValueType) -> AXValueBuilder<'a> {
+    pub fn builder(type_: impl Into<AXValueType>) -> AXValueBuilder<'a> {
         AXValueBuilder {
-            type_: type_,
+            type_: type_.into(),
             value: None,
             relatedNodes: None,
             sources: None,
@@ -514,9 +514,9 @@ pub struct AXNode<'a> {
 }
 
 impl<'a> AXNode<'a> {
-    pub fn builder(nodeId: AXNodeId<'a>, ignored: bool) -> AXNodeBuilder<'a> {
+    pub fn builder(nodeId: impl Into<AXNodeId<'a>>, ignored: bool) -> AXNodeBuilder<'a> {
         AXNodeBuilder {
-            nodeId: nodeId,
+            nodeId: nodeId.into(),
             ignored: ignored,
             ignoredReasons: None,
             role: None,
@@ -579,7 +579,7 @@ impl<'a> AXNodeBuilder<'a> {
     /// All other properties
     pub fn properties(mut self, properties: Vec<AXProperty<'a>>) -> Self { self.properties = Some(properties); self }
     /// ID for this node's parent.
-    pub fn parentId(mut self, parentId: AXNodeId<'a>) -> Self { self.parentId = Some(parentId); self }
+    pub fn parentId(mut self, parentId: impl Into<AXNodeId<'a>>) -> Self { self.parentId = Some(parentId.into()); self }
     /// IDs for each of this node's child nodes.
     pub fn childIds(mut self, childIds: Vec<AXNodeId<'a>>) -> Self { self.childIds = Some(childIds); self }
     /// The backend ID for the associated DOM node, if any.
@@ -989,9 +989,9 @@ pub struct GetChildAXNodesParams<'a> {
 }
 
 impl<'a> GetChildAXNodesParams<'a> {
-    pub fn builder(id: AXNodeId<'a>) -> GetChildAXNodesParamsBuilder<'a> {
+    pub fn builder(id: impl Into<AXNodeId<'a>>) -> GetChildAXNodesParamsBuilder<'a> {
         GetChildAXNodesParamsBuilder {
-            id: id,
+            id: id.into(),
             frameId: None,
         }
     }

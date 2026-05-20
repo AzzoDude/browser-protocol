@@ -90,9 +90,9 @@ pub struct StickyPositionConstraintBuilder<'a> {
 
 impl<'a> StickyPositionConstraintBuilder<'a> {
     /// The nearest sticky layer that shifts the sticky box
-    pub fn nearestLayerShiftingStickyBox(mut self, nearestLayerShiftingStickyBox: LayerId<'a>) -> Self { self.nearestLayerShiftingStickyBox = Some(nearestLayerShiftingStickyBox); self }
+    pub fn nearestLayerShiftingStickyBox(mut self, nearestLayerShiftingStickyBox: impl Into<LayerId<'a>>) -> Self { self.nearestLayerShiftingStickyBox = Some(nearestLayerShiftingStickyBox.into()); self }
     /// The nearest sticky layer that shifts the containing block
-    pub fn nearestLayerShiftingContainingBlock(mut self, nearestLayerShiftingContainingBlock: LayerId<'a>) -> Self { self.nearestLayerShiftingContainingBlock = Some(nearestLayerShiftingContainingBlock); self }
+    pub fn nearestLayerShiftingContainingBlock(mut self, nearestLayerShiftingContainingBlock: impl Into<LayerId<'a>>) -> Self { self.nearestLayerShiftingContainingBlock = Some(nearestLayerShiftingContainingBlock.into()); self }
     pub fn build(self) -> StickyPositionConstraint<'a> {
         StickyPositionConstraint {
             stickyBoxRect: self.stickyBoxRect,
@@ -196,9 +196,9 @@ pub struct Layer<'a> {
 }
 
 impl<'a> Layer<'a> {
-    pub fn builder(layerId: LayerId<'a>, offsetX: f64, offsetY: f64, width: f64, height: f64, paintCount: u64, drawsContent: bool) -> LayerBuilder<'a> {
+    pub fn builder(layerId: impl Into<LayerId<'a>>, offsetX: f64, offsetY: f64, width: f64, height: f64, paintCount: u64, drawsContent: bool) -> LayerBuilder<'a> {
         LayerBuilder {
-            layerId: layerId,
+            layerId: layerId.into(),
             parentLayerId: None,
             backendNodeId: None,
             offsetX: offsetX,
@@ -256,7 +256,7 @@ pub struct LayerBuilder<'a> {
 
 impl<'a> LayerBuilder<'a> {
     /// The id of parent (not present for root).
-    pub fn parentLayerId(mut self, parentLayerId: LayerId<'a>) -> Self { self.parentLayerId = Some(parentLayerId); self }
+    pub fn parentLayerId(mut self, parentLayerId: impl Into<LayerId<'a>>) -> Self { self.parentLayerId = Some(parentLayerId.into()); self }
     /// The backend id for the node associated with this layer.
     pub fn backendNodeId(mut self, backendNodeId: crate::dom::BackendNodeId) -> Self { self.backendNodeId = Some(backendNodeId); self }
     /// Transformation matrix for layer, default is identity matrix
@@ -309,9 +309,9 @@ pub struct CompositingReasonsParams<'a> {
 }
 
 impl<'a> CompositingReasonsParams<'a> {
-    pub fn builder(layerId: LayerId<'a>) -> CompositingReasonsParamsBuilder<'a> {
+    pub fn builder(layerId: impl Into<LayerId<'a>>) -> CompositingReasonsParamsBuilder<'a> {
         CompositingReasonsParamsBuilder {
-            layerId: layerId,
+            layerId: layerId.into(),
         }
     }
     pub fn layerId(&self) -> &LayerId<'a> { &self.layerId }
@@ -435,9 +435,9 @@ pub struct LoadSnapshotReturns<'a> {
 }
 
 impl<'a> LoadSnapshotReturns<'a> {
-    pub fn builder(snapshotId: SnapshotId<'a>) -> LoadSnapshotReturnsBuilder<'a> {
+    pub fn builder(snapshotId: impl Into<SnapshotId<'a>>) -> LoadSnapshotReturnsBuilder<'a> {
         LoadSnapshotReturnsBuilder {
-            snapshotId: snapshotId,
+            snapshotId: snapshotId.into(),
         }
     }
     pub fn snapshotId(&self) -> &SnapshotId<'a> { &self.snapshotId }
@@ -473,9 +473,9 @@ pub struct MakeSnapshotParams<'a> {
 }
 
 impl<'a> MakeSnapshotParams<'a> {
-    pub fn builder(layerId: LayerId<'a>) -> MakeSnapshotParamsBuilder<'a> {
+    pub fn builder(layerId: impl Into<LayerId<'a>>) -> MakeSnapshotParamsBuilder<'a> {
         MakeSnapshotParamsBuilder {
-            layerId: layerId,
+            layerId: layerId.into(),
         }
     }
     pub fn layerId(&self) -> &LayerId<'a> { &self.layerId }
@@ -504,9 +504,9 @@ pub struct MakeSnapshotReturns<'a> {
 }
 
 impl<'a> MakeSnapshotReturns<'a> {
-    pub fn builder(snapshotId: SnapshotId<'a>) -> MakeSnapshotReturnsBuilder<'a> {
+    pub fn builder(snapshotId: impl Into<SnapshotId<'a>>) -> MakeSnapshotReturnsBuilder<'a> {
         MakeSnapshotReturnsBuilder {
-            snapshotId: snapshotId,
+            snapshotId: snapshotId.into(),
         }
     }
     pub fn snapshotId(&self) -> &SnapshotId<'a> { &self.snapshotId }
@@ -550,9 +550,9 @@ pub struct ProfileSnapshotParams<'a> {
 }
 
 impl<'a> ProfileSnapshotParams<'a> {
-    pub fn builder(snapshotId: SnapshotId<'a>) -> ProfileSnapshotParamsBuilder<'a> {
+    pub fn builder(snapshotId: impl Into<SnapshotId<'a>>) -> ProfileSnapshotParamsBuilder<'a> {
         ProfileSnapshotParamsBuilder {
-            snapshotId: snapshotId,
+            snapshotId: snapshotId.into(),
             minRepeatCount: None,
             minDuration: None,
             clipRect: None,
@@ -636,9 +636,9 @@ pub struct ReleaseSnapshotParams<'a> {
 }
 
 impl<'a> ReleaseSnapshotParams<'a> {
-    pub fn builder(snapshotId: SnapshotId<'a>) -> ReleaseSnapshotParamsBuilder<'a> {
+    pub fn builder(snapshotId: impl Into<SnapshotId<'a>>) -> ReleaseSnapshotParamsBuilder<'a> {
         ReleaseSnapshotParamsBuilder {
-            snapshotId: snapshotId,
+            snapshotId: snapshotId.into(),
         }
     }
     pub fn snapshotId(&self) -> &SnapshotId<'a> { &self.snapshotId }
@@ -683,9 +683,9 @@ pub struct ReplaySnapshotParams<'a> {
 }
 
 impl<'a> ReplaySnapshotParams<'a> {
-    pub fn builder(snapshotId: SnapshotId<'a>) -> ReplaySnapshotParamsBuilder<'a> {
+    pub fn builder(snapshotId: impl Into<SnapshotId<'a>>) -> ReplaySnapshotParamsBuilder<'a> {
         ReplaySnapshotParamsBuilder {
-            snapshotId: snapshotId,
+            snapshotId: snapshotId.into(),
             fromStep: None,
             toStep: None,
             scale: None,
@@ -770,9 +770,9 @@ pub struct SnapshotCommandLogParams<'a> {
 }
 
 impl<'a> SnapshotCommandLogParams<'a> {
-    pub fn builder(snapshotId: SnapshotId<'a>) -> SnapshotCommandLogParamsBuilder<'a> {
+    pub fn builder(snapshotId: impl Into<SnapshotId<'a>>) -> SnapshotCommandLogParamsBuilder<'a> {
         SnapshotCommandLogParamsBuilder {
-            snapshotId: snapshotId,
+            snapshotId: snapshotId.into(),
         }
     }
     pub fn snapshotId(&self) -> &SnapshotId<'a> { &self.snapshotId }

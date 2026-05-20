@@ -50,9 +50,9 @@ pub struct UsageForType {
 }
 
 impl UsageForType {
-    pub fn builder(storageType: StorageType, usage: f64) -> UsageForTypeBuilder {
+    pub fn builder(storageType: impl Into<StorageType>, usage: f64) -> UsageForTypeBuilder {
         UsageForTypeBuilder {
-            storageType: storageType,
+            storageType: storageType.into(),
             usage: usage,
         }
     }
@@ -700,9 +700,9 @@ pub struct StorageBucket<'a> {
 }
 
 impl<'a> StorageBucket<'a> {
-    pub fn builder(storageKey: SerializedStorageKey<'a>) -> StorageBucketBuilder<'a> {
+    pub fn builder(storageKey: impl Into<SerializedStorageKey<'a>>) -> StorageBucketBuilder<'a> {
         StorageBucketBuilder {
-            storageKey: storageKey,
+            storageKey: storageKey.into(),
             name: None,
         }
     }
@@ -741,14 +741,14 @@ pub struct StorageBucketInfo<'a> {
 }
 
 impl<'a> StorageBucketInfo<'a> {
-    pub fn builder(bucket: StorageBucket<'a>, id: impl Into<Cow<'a, str>>, expiration: crate::network::TimeSinceEpoch, quota: f64, persistent: bool, durability: StorageBucketsDurability) -> StorageBucketInfoBuilder<'a> {
+    pub fn builder(bucket: StorageBucket<'a>, id: impl Into<Cow<'a, str>>, expiration: crate::network::TimeSinceEpoch, quota: f64, persistent: bool, durability: impl Into<StorageBucketsDurability>) -> StorageBucketInfoBuilder<'a> {
         StorageBucketInfoBuilder {
             bucket: bucket,
             id: id.into(),
             expiration: expiration,
             quota: quota,
             persistent: persistent,
-            durability: durability,
+            durability: durability.into(),
         }
     }
     pub fn bucket(&self) -> &StorageBucket<'a> { &self.bucket }
@@ -866,9 +866,9 @@ pub struct GetStorageKeyForFrameReturns<'a> {
 }
 
 impl<'a> GetStorageKeyForFrameReturns<'a> {
-    pub fn builder(storageKey: SerializedStorageKey<'a>) -> GetStorageKeyForFrameReturnsBuilder<'a> {
+    pub fn builder(storageKey: impl Into<SerializedStorageKey<'a>>) -> GetStorageKeyForFrameReturnsBuilder<'a> {
         GetStorageKeyForFrameReturnsBuilder {
-            storageKey: storageKey,
+            storageKey: storageKey.into(),
         }
     }
     pub fn storageKey(&self) -> &SerializedStorageKey<'a> { &self.storageKey }
@@ -937,9 +937,9 @@ pub struct GetStorageKeyReturns<'a> {
 }
 
 impl<'a> GetStorageKeyReturns<'a> {
-    pub fn builder(storageKey: SerializedStorageKey<'a>) -> GetStorageKeyReturnsBuilder<'a> {
+    pub fn builder(storageKey: impl Into<SerializedStorageKey<'a>>) -> GetStorageKeyReturnsBuilder<'a> {
         GetStorageKeyReturnsBuilder {
-            storageKey: storageKey,
+            storageKey: storageKey.into(),
         }
     }
     pub fn storageKey(&self) -> &SerializedStorageKey<'a> { &self.storageKey }

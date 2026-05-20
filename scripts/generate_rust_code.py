@@ -13,6 +13,9 @@ dependencies_rs: dict[str, str] = {
     "serde_json": ""
 }
 
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+
 def to_camel_case(snake_str):
     components = snake_str.replace('-', '_').split('_')
     return "".join(x[:1].upper() + x[1:] for x in components if x)
@@ -120,7 +123,29 @@ def generate_getter_method(rust_name, r_type):
     else:
         return f"    pub fn {rust_name}(&self) -> &{r_type} {{ &self.{rust_name} }}"
 
-def generate_struct_with_builder(struct_name, props, current_domain, lifetime_keys):
+def is_string_type(t_name, current_domain, string_types):
+    clean = t_name
+    if clean.startswith("Option<"):
+        clean = clean[7:-1]
+    if clean.startswith("Box<"):
+        clean = clean[4:-1]
+    if clean.endswith("<'a>"):
+        clean = clean[:-4]
+    
+    if clean == "Cow<'a, str>" or clean == "std::borrow::Cow<'a, str>":
+        return True
+        
+    if clean.startswith("crate::"):
+        parts = clean.split("::")
+        if len(parts) == 4:
+            key = (parts[2].lower(), parts[3])
+            return key in string_types
+    else:
+        key = (current_domain.lower(), clean)
+        return key in string_types
+    return False
+
+def generate_struct_with_builder(struct_name, props, current_domain, lifetime_keys, string_types):
     if not props:
         return f"""#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct {struct_name} {{}}
@@ -165,9 +190,9 @@ pub struct {struct_name} {{}}
             builder_inits.append(f"            {rust_name}: None,")
             
             inner_type = r_type[7:-1]
-            is_string = (inner_type == "Cow<'a, str>" or inner_type == "std::borrow::Cow<'a, str>")
+            is_string = is_string_type(inner_type, current_domain, string_types)
             if is_string:
-                arg_type = "impl Into<Cow<'a, str>>"
+                arg_type = f"impl Into<{inner_type}>"
                 setter_val = f"{rust_name}.into()"
             else:
                 arg_type = inner_type
@@ -180,9 +205,9 @@ pub struct {struct_name} {{}}
             b_type = r_type
             builder_fields_def.append(f"    {rust_name}: {b_type},")
             
-            is_string = (r_type == "Cow<'a, str>" or r_type == "std::borrow::Cow<'a, str>")
+            is_string = is_string_type(r_type, current_domain, string_types)
             if is_string:
-                arg_type = "impl Into<Cow<'a, str>>"
+                arg_type = f"impl Into<{r_type}>"
                 init_val = f"{rust_name}.into()"
             else:
                 arg_type = r_type
@@ -240,14 +265,14 @@ pub struct {struct_name} {{}}
     return "\n".join(body)
 
 def generate_cdp_modules(project_name: str):
-    json_path = "browser_protocol.json"
-    parent_json = os.path.join("..", "browser_protocol.json")
-    if os.path.exists(parent_json): json_path = parent_json
+    json_path = os.path.join(PROJECT_ROOT, "js_protocol.json")
+    if not os.path.exists(json_path):
+        json_path = os.path.join(PROJECT_ROOT, "browser_protocol.json")
     
     with open(json_path, "r", encoding="utf-8") as f:
         schema = json.load(f)
 
-    project_path = ".."
+    project_path = PROJECT_ROOT
     src_dir = os.path.join(project_path, "src")
     lib_rs_content = [
         "#![allow(non_snake_case)]", "#![allow(unused_imports)]", "#![allow(dead_code)]", "",
@@ -270,7 +295,7 @@ def generate_cdp_modules(project_name: str):
     # ----------------------------------------------------
     all_types = {}
     
-    # Pre-populate stub types
+    # Pre-populate stub types if they are missing
     for stub in ["runtime", "debugger", "heapprofiler", "profiler"]:
         all_types[(stub, "RemoteObjectId")] = {"kind": "type", "def": {"type": "string"}}
         all_types[(stub, "RemoteObject")] = {"kind": "type", "def": {"type": "any"}}
@@ -304,7 +329,7 @@ def generate_cdp_modules(project_name: str):
                     "props": cmd.get("returns")
                 }
 
-    # Run fixed-point iteration
+    # Run fixed-point iteration for lifetimes
     lifetime_keys = set()
     changed = True
     while changed:
@@ -330,6 +355,46 @@ def generate_cdp_modules(project_name: str):
             if has_lifetime:
                 lifetime_keys.add(key)
                 changed = True
+
+    # ----------------------------------------------------
+    # String Type Alias Resolution Pass
+    # ----------------------------------------------------
+    string_types = set()
+    for stub in ["runtime", "debugger", "heapprofiler", "profiler"]:
+        string_types.add((stub, "RemoteObjectId"))
+        string_types.add((stub, "ScriptId"))
+        string_types.add((stub, "UniqueDebuggerId"))
+
+    changed = True
+    while changed:
+        changed = False
+        for domain in schema.get("domains", []):
+            d_name = domain.get("domain").lower()
+            for t in domain.get("types", []):
+                t_id = t.get("id")
+                safe_t_id = f"Protocol{t_id}" if t_id == "Value" else t_id
+                key = (d_name, safe_t_id)
+                if key in string_types:
+                    continue
+                
+                is_str = False
+                if t.get("type") == "string":
+                    is_str = True
+                elif "$ref" in t:
+                    ref = t["$ref"]
+                    if "." in ref:
+                        ref_domain, ref_name = ref.split(".")
+                        if ref_name == "Value": ref_name = "ProtocolValue"
+                        ref_key = (ref_domain.lower(), ref_name)
+                    else:
+                        ref_name = ref
+                        if ref_name == "Value": ref_name = "ProtocolValue"
+                        ref_key = (d_name, ref_name)
+                    is_str = ref_key in string_types
+                
+                if is_str:
+                    string_types.add(key)
+                    changed = True
     # ----------------------------------------------------
 
     # Write stub mods
@@ -371,7 +436,7 @@ def generate_cdp_modules(project_name: str):
                     mod_body.append(f"    {var},")
                 mod_body.append("}\n")
             elif t.get("type") == "object" and "properties" in t:
-                mod_body.append(generate_struct_with_builder(safe_t_id, t["properties"], d_name, lifetime_keys))
+                mod_body.append(generate_struct_with_builder(safe_t_id, t["properties"], d_name, lifetime_keys, string_types))
             else:
                 r_type = get_rust_type(t, d_name, safe_t_id, lifetime_keys)
                 has_lifetime = (d_name.lower(), safe_t_id) in lifetime_keys
@@ -385,10 +450,10 @@ def generate_cdp_modules(project_name: str):
                 props = cmd.get(key, [])
                 if props:
                     mod_body.append(format_rustdoc(cmd.get("description"), 0))
-                    mod_body.append(generate_struct_with_builder(f"{c_name}{suffix}", props, d_name, lifetime_keys))
+                    mod_body.append(generate_struct_with_builder(f"{c_name}{suffix}", props, d_name, lifetime_keys, string_types))
 
             if not cmd.get("parameters"):
-                mod_body.append(generate_struct_with_builder(f"{c_name}Params", [], d_name, lifetime_keys))
+                mod_body.append(generate_struct_with_builder(f"{c_name}Params", [], d_name, lifetime_keys, string_types))
             
             # CdpCommand impl
             has_lifetime_params = (d_name.lower(), f"{c_name}Params") in lifetime_keys
@@ -427,7 +492,7 @@ def generate_cdp_modules(project_name: str):
         f.write("\n".join(lib_rs_content))
 
 def update_cargo_metadata(project_name):
-    project_path = ".."
+    project_path = PROJECT_ROOT
     path = os.path.join(project_path, "Cargo.toml")
     with open(path, "r", encoding="utf-8") as f:
         content = f.read()
@@ -440,7 +505,7 @@ def update_cargo_metadata(project_name):
         "readme": '"README.md"',
         "keywords": '["cdp", "browser", "automation", "protocol"]',
         "categories": '["development-tools", "web-programming"]',
-        "version": '"0.1.2"'
+        "version": '"0.1.3"'
     }
 
     lines = content.splitlines()
@@ -470,8 +535,11 @@ def update_cargo_metadata(project_name):
         for key, value in metadata.items():
             if key not in added_metadata: new_lines.append(f"{key} = {value}")
 
-    # Feature generation logic
-    json_path = os.path.join("..", "browser_protocol.json")
+    # Feature generation logic (specifically for js_protocol.json or browser_protocol.json)
+    json_path = os.path.join(PROJECT_ROOT, "js_protocol.json")
+    if not os.path.exists(json_path):
+        json_path = os.path.join(PROJECT_ROOT, "browser_protocol.json")
+    
     if os.path.exists(json_path):
         with open(json_path, "r", encoding="utf-8") as f: schema = json.load(f)
         domains = [d.get("domain").lower() for d in schema.get("domains", [])]
@@ -496,7 +564,7 @@ def update_cargo_metadata(project_name):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--name", type=str, required=True)
+    parser.add_argument("--name", type=str, required="browser-protocol")
     args = parser.parse_args()
     update_cargo_metadata(args.name)
     generate_cdp_modules(args.name)

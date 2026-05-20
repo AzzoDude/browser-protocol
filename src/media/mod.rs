@@ -229,9 +229,9 @@ pub struct Player<'a> {
 }
 
 impl<'a> Player<'a> {
-    pub fn builder(playerId: PlayerId<'a>) -> PlayerBuilder<'a> {
+    pub fn builder(playerId: impl Into<PlayerId<'a>>) -> PlayerBuilder<'a> {
         PlayerBuilder {
-            playerId: playerId,
+            playerId: playerId.into(),
             domNodeId: None,
         }
     }

@@ -113,11 +113,11 @@ pub struct VirtualAuthenticatorOptions {
 }
 
 impl VirtualAuthenticatorOptions {
-    pub fn builder(protocol: AuthenticatorProtocol, transport: AuthenticatorTransport) -> VirtualAuthenticatorOptionsBuilder {
+    pub fn builder(protocol: impl Into<AuthenticatorProtocol>, transport: impl Into<AuthenticatorTransport>) -> VirtualAuthenticatorOptionsBuilder {
         VirtualAuthenticatorOptionsBuilder {
-            protocol: protocol,
+            protocol: protocol.into(),
             ctap2Version: None,
-            transport: transport,
+            transport: transport.into(),
             hasResidentKey: None,
             hasUserVerification: None,
             hasLargeBlob: None,
@@ -170,7 +170,7 @@ pub struct VirtualAuthenticatorOptionsBuilder {
 
 impl VirtualAuthenticatorOptionsBuilder {
     /// Defaults to ctap2_0. Ignored if |protocol| == u2f.
-    pub fn ctap2Version(mut self, ctap2Version: Ctap2Version) -> Self { self.ctap2Version = Some(ctap2Version); self }
+    pub fn ctap2Version(mut self, ctap2Version: impl Into<Ctap2Version>) -> Self { self.ctap2Version = Some(ctap2Version.into()); self }
     /// Defaults to false.
     pub fn hasResidentKey(mut self, hasResidentKey: bool) -> Self { self.hasResidentKey = Some(hasResidentKey); self }
     /// Defaults to false.
@@ -464,9 +464,9 @@ pub struct AddVirtualAuthenticatorReturns<'a> {
 }
 
 impl<'a> AddVirtualAuthenticatorReturns<'a> {
-    pub fn builder(authenticatorId: AuthenticatorId<'a>) -> AddVirtualAuthenticatorReturnsBuilder<'a> {
+    pub fn builder(authenticatorId: impl Into<AuthenticatorId<'a>>) -> AddVirtualAuthenticatorReturnsBuilder<'a> {
         AddVirtualAuthenticatorReturnsBuilder {
-            authenticatorId: authenticatorId,
+            authenticatorId: authenticatorId.into(),
         }
     }
     pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
@@ -513,9 +513,9 @@ pub struct SetResponseOverrideBitsParams<'a> {
 }
 
 impl<'a> SetResponseOverrideBitsParams<'a> {
-    pub fn builder(authenticatorId: AuthenticatorId<'a>) -> SetResponseOverrideBitsParamsBuilder<'a> {
+    pub fn builder(authenticatorId: impl Into<AuthenticatorId<'a>>) -> SetResponseOverrideBitsParamsBuilder<'a> {
         SetResponseOverrideBitsParamsBuilder {
-            authenticatorId: authenticatorId,
+            authenticatorId: authenticatorId.into(),
             isBogusSignature: None,
             isBadUV: None,
             isBadUP: None,
@@ -571,9 +571,9 @@ pub struct RemoveVirtualAuthenticatorParams<'a> {
 }
 
 impl<'a> RemoveVirtualAuthenticatorParams<'a> {
-    pub fn builder(authenticatorId: AuthenticatorId<'a>) -> RemoveVirtualAuthenticatorParamsBuilder<'a> {
+    pub fn builder(authenticatorId: impl Into<AuthenticatorId<'a>>) -> RemoveVirtualAuthenticatorParamsBuilder<'a> {
         RemoveVirtualAuthenticatorParamsBuilder {
-            authenticatorId: authenticatorId,
+            authenticatorId: authenticatorId.into(),
         }
     }
     pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
@@ -609,9 +609,9 @@ pub struct AddCredentialParams<'a> {
 }
 
 impl<'a> AddCredentialParams<'a> {
-    pub fn builder(authenticatorId: AuthenticatorId<'a>, credential: Credential<'a>) -> AddCredentialParamsBuilder<'a> {
+    pub fn builder(authenticatorId: impl Into<AuthenticatorId<'a>>, credential: Credential<'a>) -> AddCredentialParamsBuilder<'a> {
         AddCredentialParamsBuilder {
-            authenticatorId: authenticatorId,
+            authenticatorId: authenticatorId.into(),
             credential: credential,
         }
     }
@@ -652,9 +652,9 @@ pub struct GetCredentialParams<'a> {
 }
 
 impl<'a> GetCredentialParams<'a> {
-    pub fn builder(authenticatorId: AuthenticatorId<'a>, credentialId: impl Into<Cow<'a, str>>) -> GetCredentialParamsBuilder<'a> {
+    pub fn builder(authenticatorId: impl Into<AuthenticatorId<'a>>, credentialId: impl Into<Cow<'a, str>>) -> GetCredentialParamsBuilder<'a> {
         GetCredentialParamsBuilder {
-            authenticatorId: authenticatorId,
+            authenticatorId: authenticatorId.into(),
             credentialId: credentialId.into(),
         }
     }
@@ -724,9 +724,9 @@ pub struct GetCredentialsParams<'a> {
 }
 
 impl<'a> GetCredentialsParams<'a> {
-    pub fn builder(authenticatorId: AuthenticatorId<'a>) -> GetCredentialsParamsBuilder<'a> {
+    pub fn builder(authenticatorId: impl Into<AuthenticatorId<'a>>) -> GetCredentialsParamsBuilder<'a> {
         GetCredentialsParamsBuilder {
-            authenticatorId: authenticatorId,
+            authenticatorId: authenticatorId.into(),
         }
     }
     pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
@@ -792,9 +792,9 @@ pub struct RemoveCredentialParams<'a> {
 }
 
 impl<'a> RemoveCredentialParams<'a> {
-    pub fn builder(authenticatorId: AuthenticatorId<'a>, credentialId: impl Into<Cow<'a, str>>) -> RemoveCredentialParamsBuilder<'a> {
+    pub fn builder(authenticatorId: impl Into<AuthenticatorId<'a>>, credentialId: impl Into<Cow<'a, str>>) -> RemoveCredentialParamsBuilder<'a> {
         RemoveCredentialParamsBuilder {
-            authenticatorId: authenticatorId,
+            authenticatorId: authenticatorId.into(),
             credentialId: credentialId.into(),
         }
     }
@@ -833,9 +833,9 @@ pub struct ClearCredentialsParams<'a> {
 }
 
 impl<'a> ClearCredentialsParams<'a> {
-    pub fn builder(authenticatorId: AuthenticatorId<'a>) -> ClearCredentialsParamsBuilder<'a> {
+    pub fn builder(authenticatorId: impl Into<AuthenticatorId<'a>>) -> ClearCredentialsParamsBuilder<'a> {
         ClearCredentialsParamsBuilder {
-            authenticatorId: authenticatorId,
+            authenticatorId: authenticatorId.into(),
         }
     }
     pub fn authenticatorId(&self) -> &AuthenticatorId<'a> { &self.authenticatorId }
@@ -872,9 +872,9 @@ pub struct SetUserVerifiedParams<'a> {
 }
 
 impl<'a> SetUserVerifiedParams<'a> {
-    pub fn builder(authenticatorId: AuthenticatorId<'a>, isUserVerified: bool) -> SetUserVerifiedParamsBuilder<'a> {
+    pub fn builder(authenticatorId: impl Into<AuthenticatorId<'a>>, isUserVerified: bool) -> SetUserVerifiedParamsBuilder<'a> {
         SetUserVerifiedParamsBuilder {
-            authenticatorId: authenticatorId,
+            authenticatorId: authenticatorId.into(),
             isUserVerified: isUserVerified,
         }
     }
@@ -915,9 +915,9 @@ pub struct SetAutomaticPresenceSimulationParams<'a> {
 }
 
 impl<'a> SetAutomaticPresenceSimulationParams<'a> {
-    pub fn builder(authenticatorId: AuthenticatorId<'a>, enabled: bool) -> SetAutomaticPresenceSimulationParamsBuilder<'a> {
+    pub fn builder(authenticatorId: impl Into<AuthenticatorId<'a>>, enabled: bool) -> SetAutomaticPresenceSimulationParamsBuilder<'a> {
         SetAutomaticPresenceSimulationParamsBuilder {
-            authenticatorId: authenticatorId,
+            authenticatorId: authenticatorId.into(),
             enabled: enabled,
         }
     }
@@ -962,9 +962,9 @@ pub struct SetCredentialPropertiesParams<'a> {
 }
 
 impl<'a> SetCredentialPropertiesParams<'a> {
-    pub fn builder(authenticatorId: AuthenticatorId<'a>, credentialId: impl Into<Cow<'a, str>>) -> SetCredentialPropertiesParamsBuilder<'a> {
+    pub fn builder(authenticatorId: impl Into<AuthenticatorId<'a>>, credentialId: impl Into<Cow<'a, str>>) -> SetCredentialPropertiesParamsBuilder<'a> {
         SetCredentialPropertiesParamsBuilder {
-            authenticatorId: authenticatorId,
+            authenticatorId: authenticatorId.into(),
             credentialId: credentialId.into(),
             backupEligibility: None,
             backupState: None,

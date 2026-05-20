@@ -332,7 +332,7 @@ impl RequestMemoryDumpParamsBuilder {
     /// Enables more deterministic results by forcing garbage collection
     pub fn deterministic(mut self, deterministic: bool) -> Self { self.deterministic = Some(deterministic); self }
     /// Specifies level of details in memory dump. Defaults to "detailed".
-    pub fn levelOfDetail(mut self, levelOfDetail: MemoryDumpLevelOfDetail) -> Self { self.levelOfDetail = Some(levelOfDetail); self }
+    pub fn levelOfDetail(mut self, levelOfDetail: impl Into<MemoryDumpLevelOfDetail>) -> Self { self.levelOfDetail = Some(levelOfDetail.into()); self }
     pub fn build(self) -> RequestMemoryDumpParams {
         RequestMemoryDumpParams {
             deterministic: self.deterministic,
@@ -473,17 +473,17 @@ impl<'a> StartParamsBuilder<'a> {
     pub fn transferMode(mut self, transferMode: impl Into<Cow<'a, str>>) -> Self { self.transferMode = Some(transferMode.into()); self }
     /// Trace data format to use. This only applies when using 'ReturnAsStream'
     /// transfer mode (defaults to 'json').
-    pub fn streamFormat(mut self, streamFormat: StreamFormat) -> Self { self.streamFormat = Some(streamFormat); self }
+    pub fn streamFormat(mut self, streamFormat: impl Into<StreamFormat>) -> Self { self.streamFormat = Some(streamFormat.into()); self }
     /// Compression format to use. This only applies when using 'ReturnAsStream'
     /// transfer mode (defaults to 'none')
-    pub fn streamCompression(mut self, streamCompression: StreamCompression) -> Self { self.streamCompression = Some(streamCompression); self }
+    pub fn streamCompression(mut self, streamCompression: impl Into<StreamCompression>) -> Self { self.streamCompression = Some(streamCompression.into()); self }
     pub fn traceConfig(mut self, traceConfig: TraceConfig<'a>) -> Self { self.traceConfig = Some(traceConfig); self }
     /// Base64-encoded serialized perfetto.protos.TraceConfig protobuf message
     /// When specified, the parameters 'categories', 'options', 'traceConfig'
     /// are ignored. (Encoded as a base64 string when passed over JSON)
     pub fn perfettoConfig(mut self, perfettoConfig: impl Into<Cow<'a, str>>) -> Self { self.perfettoConfig = Some(perfettoConfig.into()); self }
     /// Backend type (defaults to 'auto')
-    pub fn tracingBackend(mut self, tracingBackend: TracingBackend) -> Self { self.tracingBackend = Some(tracingBackend); self }
+    pub fn tracingBackend(mut self, tracingBackend: impl Into<TracingBackend>) -> Self { self.tracingBackend = Some(tracingBackend.into()); self }
     pub fn build(self) -> StartParams<'a> {
         StartParams {
             categories: self.categories,

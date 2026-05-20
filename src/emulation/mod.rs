@@ -784,7 +784,7 @@ pub struct ScreenInfo<'a> {
 }
 
 impl<'a> ScreenInfo<'a> {
-    pub fn builder(left: i64, top: i64, width: u64, height: i64, availLeft: i64, availTop: i64, availWidth: u64, availHeight: i64, devicePixelRatio: f64, orientation: ScreenOrientation<'a>, colorDepth: i64, isExtended: bool, isInternal: bool, isPrimary: bool, label: impl Into<Cow<'a, str>>, id: ScreenId<'a>) -> ScreenInfoBuilder<'a> {
+    pub fn builder(left: i64, top: i64, width: u64, height: i64, availLeft: i64, availTop: i64, availWidth: u64, availHeight: i64, devicePixelRatio: f64, orientation: ScreenOrientation<'a>, colorDepth: i64, isExtended: bool, isInternal: bool, isPrimary: bool, label: impl Into<Cow<'a, str>>, id: impl Into<ScreenId<'a>>) -> ScreenInfoBuilder<'a> {
         ScreenInfoBuilder {
             left: left,
             top: top,
@@ -801,7 +801,7 @@ impl<'a> ScreenInfo<'a> {
             isInternal: isInternal,
             isPrimary: isPrimary,
             label: label.into(),
-            id: id,
+            id: id.into(),
         }
     }
     pub fn left(&self) -> i64 { self.left }
@@ -1785,9 +1785,9 @@ pub struct GetOverriddenSensorInformationParams {
 }
 
 impl GetOverriddenSensorInformationParams {
-    pub fn builder(type_: SensorType) -> GetOverriddenSensorInformationParamsBuilder {
+    pub fn builder(type_: impl Into<SensorType>) -> GetOverriddenSensorInformationParamsBuilder {
         GetOverriddenSensorInformationParamsBuilder {
-            type_: type_,
+            type_: type_.into(),
         }
     }
     pub fn type_(&self) -> &SensorType { &self.type_ }
@@ -1859,10 +1859,10 @@ pub struct SetSensorOverrideEnabledParams {
 }
 
 impl SetSensorOverrideEnabledParams {
-    pub fn builder(enabled: bool, type_: SensorType) -> SetSensorOverrideEnabledParamsBuilder {
+    pub fn builder(enabled: bool, type_: impl Into<SensorType>) -> SetSensorOverrideEnabledParamsBuilder {
         SetSensorOverrideEnabledParamsBuilder {
             enabled: enabled,
-            type_: type_,
+            type_: type_.into(),
             metadata: None,
         }
     }
@@ -1908,9 +1908,9 @@ pub struct SetSensorOverrideReadingsParams {
 }
 
 impl SetSensorOverrideReadingsParams {
-    pub fn builder(type_: SensorType, reading: SensorReading) -> SetSensorOverrideReadingsParamsBuilder {
+    pub fn builder(type_: impl Into<SensorType>, reading: SensorReading) -> SetSensorOverrideReadingsParamsBuilder {
         SetSensorOverrideReadingsParamsBuilder {
-            type_: type_,
+            type_: type_.into(),
             reading: reading,
         }
     }
@@ -1955,10 +1955,10 @@ pub struct SetPressureSourceOverrideEnabledParams {
 }
 
 impl SetPressureSourceOverrideEnabledParams {
-    pub fn builder(enabled: bool, source: PressureSource) -> SetPressureSourceOverrideEnabledParamsBuilder {
+    pub fn builder(enabled: bool, source: impl Into<PressureSource>) -> SetPressureSourceOverrideEnabledParamsBuilder {
         SetPressureSourceOverrideEnabledParamsBuilder {
             enabled: enabled,
-            source: source,
+            source: source.into(),
             metadata: None,
         }
     }
@@ -2005,10 +2005,10 @@ pub struct SetPressureStateOverrideParams {
 }
 
 impl SetPressureStateOverrideParams {
-    pub fn builder(source: PressureSource, state: PressureState) -> SetPressureStateOverrideParamsBuilder {
+    pub fn builder(source: impl Into<PressureSource>, state: impl Into<PressureState>) -> SetPressureStateOverrideParamsBuilder {
         SetPressureStateOverrideParamsBuilder {
-            source: source,
-            state: state,
+            source: source.into(),
+            state: state.into(),
         }
     }
     pub fn source(&self) -> &PressureSource { &self.source }
@@ -2051,10 +2051,10 @@ pub struct SetPressureDataOverrideParams {
 }
 
 impl SetPressureDataOverrideParams {
-    pub fn builder(source: PressureSource, state: PressureState) -> SetPressureDataOverrideParamsBuilder {
+    pub fn builder(source: impl Into<PressureSource>, state: impl Into<PressureState>) -> SetPressureDataOverrideParamsBuilder {
         SetPressureDataOverrideParamsBuilder {
-            source: source,
-            state: state,
+            source: source.into(),
+            state: state.into(),
             ownContributionEstimate: None,
         }
     }
@@ -2324,9 +2324,9 @@ pub struct SetVirtualTimePolicyParams {
 }
 
 impl SetVirtualTimePolicyParams {
-    pub fn builder(policy: VirtualTimePolicy) -> SetVirtualTimePolicyParamsBuilder {
+    pub fn builder(policy: impl Into<VirtualTimePolicy>) -> SetVirtualTimePolicyParamsBuilder {
         SetVirtualTimePolicyParamsBuilder {
-            policy: policy,
+            policy: policy.into(),
             budget: None,
             maxVirtualTimeTaskStarvationCount: None,
             initialVirtualTime: None,
@@ -3013,9 +3013,9 @@ pub struct UpdateScreenParams<'a> {
 }
 
 impl<'a> UpdateScreenParams<'a> {
-    pub fn builder(screenId: ScreenId<'a>) -> UpdateScreenParamsBuilder<'a> {
+    pub fn builder(screenId: impl Into<ScreenId<'a>>) -> UpdateScreenParamsBuilder<'a> {
         UpdateScreenParamsBuilder {
-            screenId: screenId,
+            screenId: screenId.into(),
             left: None,
             top: None,
             width: None,
@@ -3140,9 +3140,9 @@ pub struct RemoveScreenParams<'a> {
 }
 
 impl<'a> RemoveScreenParams<'a> {
-    pub fn builder(screenId: ScreenId<'a>) -> RemoveScreenParamsBuilder<'a> {
+    pub fn builder(screenId: impl Into<ScreenId<'a>>) -> RemoveScreenParamsBuilder<'a> {
         RemoveScreenParamsBuilder {
-            screenId: screenId,
+            screenId: screenId.into(),
         }
     }
     pub fn screenId(&self) -> &ScreenId<'a> { &self.screenId }
@@ -3180,9 +3180,9 @@ pub struct SetPrimaryScreenParams<'a> {
 }
 
 impl<'a> SetPrimaryScreenParams<'a> {
-    pub fn builder(screenId: ScreenId<'a>) -> SetPrimaryScreenParamsBuilder<'a> {
+    pub fn builder(screenId: impl Into<ScreenId<'a>>) -> SetPrimaryScreenParamsBuilder<'a> {
         SetPrimaryScreenParamsBuilder {
-            screenId: screenId,
+            screenId: screenId.into(),
         }
     }
     pub fn screenId(&self) -> &ScreenId<'a> { &self.screenId }

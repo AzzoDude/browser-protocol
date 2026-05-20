@@ -45,9 +45,9 @@ pub struct AdFrameStatus {
 }
 
 impl AdFrameStatus {
-    pub fn builder(adFrameType: AdFrameType) -> AdFrameStatusBuilder {
+    pub fn builder(adFrameType: impl Into<AdFrameType>) -> AdFrameStatusBuilder {
         AdFrameStatusBuilder {
-            adFrameType: adFrameType,
+            adFrameType: adFrameType.into(),
             explanations: None,
         }
     }
@@ -316,6 +316,8 @@ pub enum PermissionsPolicyFeature {
     Summarizer,
     #[serde(rename = "sync-xhr")]
     SyncXhr,
+    #[serde(rename = "tools")]
+    Tools,
     #[serde(rename = "translator")]
     Translator,
     #[serde(rename = "unload")]
@@ -364,10 +366,10 @@ pub struct PermissionsPolicyBlockLocator<'a> {
 }
 
 impl<'a> PermissionsPolicyBlockLocator<'a> {
-    pub fn builder(frameId: FrameId<'a>, blockReason: PermissionsPolicyBlockReason) -> PermissionsPolicyBlockLocatorBuilder<'a> {
+    pub fn builder(frameId: impl Into<FrameId<'a>>, blockReason: impl Into<PermissionsPolicyBlockReason>) -> PermissionsPolicyBlockLocatorBuilder<'a> {
         PermissionsPolicyBlockLocatorBuilder {
-            frameId: frameId,
-            blockReason: blockReason,
+            frameId: frameId.into(),
+            blockReason: blockReason.into(),
         }
     }
     pub fn frameId(&self) -> &FrameId<'a> { &self.frameId }
@@ -400,9 +402,9 @@ pub struct PermissionsPolicyFeatureState<'a> {
 }
 
 impl<'a> PermissionsPolicyFeatureState<'a> {
-    pub fn builder(feature: PermissionsPolicyFeature, allowed: bool) -> PermissionsPolicyFeatureStateBuilder<'a> {
+    pub fn builder(feature: impl Into<PermissionsPolicyFeature>, allowed: bool) -> PermissionsPolicyFeatureStateBuilder<'a> {
         PermissionsPolicyFeatureStateBuilder {
-            feature: feature,
+            feature: feature.into(),
             allowed: allowed,
             locator: None,
         }
@@ -500,14 +502,14 @@ pub struct OriginTrialToken<'a> {
 }
 
 impl<'a> OriginTrialToken<'a> {
-    pub fn builder(origin: impl Into<Cow<'a, str>>, matchSubDomains: bool, trialName: impl Into<Cow<'a, str>>, expiryTime: crate::network::TimeSinceEpoch, isThirdParty: bool, usageRestriction: OriginTrialUsageRestriction) -> OriginTrialTokenBuilder<'a> {
+    pub fn builder(origin: impl Into<Cow<'a, str>>, matchSubDomains: bool, trialName: impl Into<Cow<'a, str>>, expiryTime: crate::network::TimeSinceEpoch, isThirdParty: bool, usageRestriction: impl Into<OriginTrialUsageRestriction>) -> OriginTrialTokenBuilder<'a> {
         OriginTrialTokenBuilder {
             origin: origin.into(),
             matchSubDomains: matchSubDomains,
             trialName: trialName.into(),
             expiryTime: expiryTime,
             isThirdParty: isThirdParty,
-            usageRestriction: usageRestriction,
+            usageRestriction: usageRestriction.into(),
         }
     }
     pub fn origin(&self) -> &str { self.origin.as_ref() }
@@ -554,11 +556,11 @@ pub struct OriginTrialTokenWithStatus<'a> {
 }
 
 impl<'a> OriginTrialTokenWithStatus<'a> {
-    pub fn builder(rawTokenText: impl Into<Cow<'a, str>>, status: OriginTrialTokenStatus) -> OriginTrialTokenWithStatusBuilder<'a> {
+    pub fn builder(rawTokenText: impl Into<Cow<'a, str>>, status: impl Into<OriginTrialTokenStatus>) -> OriginTrialTokenWithStatusBuilder<'a> {
         OriginTrialTokenWithStatusBuilder {
             rawTokenText: rawTokenText.into(),
             parsedToken: None,
-            status: status,
+            status: status.into(),
         }
     }
     pub fn rawTokenText(&self) -> &str { self.rawTokenText.as_ref() }
@@ -596,10 +598,10 @@ pub struct OriginTrial<'a> {
 }
 
 impl<'a> OriginTrial<'a> {
-    pub fn builder(trialName: impl Into<Cow<'a, str>>, status: OriginTrialStatus, tokensWithStatus: Vec<OriginTrialTokenWithStatus<'a>>) -> OriginTrialBuilder<'a> {
+    pub fn builder(trialName: impl Into<Cow<'a, str>>, status: impl Into<OriginTrialStatus>, tokensWithStatus: Vec<OriginTrialTokenWithStatus<'a>>) -> OriginTrialBuilder<'a> {
         OriginTrialBuilder {
             trialName: trialName.into(),
-            status: status,
+            status: status.into(),
             tokensWithStatus: tokensWithStatus,
         }
     }
@@ -705,9 +707,9 @@ pub struct Frame<'a> {
 }
 
 impl<'a> Frame<'a> {
-    pub fn builder(id: FrameId<'a>, loaderId: crate::network::LoaderId<'a>, url: impl Into<Cow<'a, str>>, domainAndRegistry: impl Into<Cow<'a, str>>, securityOrigin: impl Into<Cow<'a, str>>, mimeType: impl Into<Cow<'a, str>>, secureContextType: SecureContextType, crossOriginIsolatedContextType: CrossOriginIsolatedContextType, gatedAPIFeatures: Vec<GatedAPIFeatures>) -> FrameBuilder<'a> {
+    pub fn builder(id: impl Into<FrameId<'a>>, loaderId: crate::network::LoaderId<'a>, url: impl Into<Cow<'a, str>>, domainAndRegistry: impl Into<Cow<'a, str>>, securityOrigin: impl Into<Cow<'a, str>>, mimeType: impl Into<Cow<'a, str>>, secureContextType: impl Into<SecureContextType>, crossOriginIsolatedContextType: impl Into<CrossOriginIsolatedContextType>, gatedAPIFeatures: Vec<GatedAPIFeatures>) -> FrameBuilder<'a> {
         FrameBuilder {
-            id: id,
+            id: id.into(),
             parentId: None,
             loaderId: loaderId,
             name: None,
@@ -719,8 +721,8 @@ impl<'a> Frame<'a> {
             mimeType: mimeType.into(),
             unreachableUrl: None,
             adFrameStatus: None,
-            secureContextType: secureContextType,
-            crossOriginIsolatedContextType: crossOriginIsolatedContextType,
+            secureContextType: secureContextType.into(),
+            crossOriginIsolatedContextType: crossOriginIsolatedContextType.into(),
             gatedAPIFeatures: gatedAPIFeatures,
         }
     }
@@ -762,7 +764,7 @@ pub struct FrameBuilder<'a> {
 
 impl<'a> FrameBuilder<'a> {
     /// Parent frame identifier.
-    pub fn parentId(mut self, parentId: FrameId<'a>) -> Self { self.parentId = Some(parentId); self }
+    pub fn parentId(mut self, parentId: impl Into<FrameId<'a>>) -> Self { self.parentId = Some(parentId.into()); self }
     /// Frame's name as specified in the tag.
     pub fn name(mut self, name: impl Into<Cow<'a, str>>) -> Self { self.name = Some(name.into()); self }
     /// Frame document's URL fragment including the '#'.
@@ -1015,13 +1017,13 @@ pub struct NavigationEntry<'a> {
 }
 
 impl<'a> NavigationEntry<'a> {
-    pub fn builder(id: u64, url: impl Into<Cow<'a, str>>, userTypedURL: impl Into<Cow<'a, str>>, title: impl Into<Cow<'a, str>>, transitionType: TransitionType) -> NavigationEntryBuilder<'a> {
+    pub fn builder(id: u64, url: impl Into<Cow<'a, str>>, userTypedURL: impl Into<Cow<'a, str>>, title: impl Into<Cow<'a, str>>, transitionType: impl Into<TransitionType>) -> NavigationEntryBuilder<'a> {
         NavigationEntryBuilder {
             id: id,
             url: url.into(),
             userTypedURL: userTypedURL.into(),
             title: title.into(),
-            transitionType: transitionType,
+            transitionType: transitionType.into(),
         }
     }
     pub fn id(&self) -> u64 { self.id }
@@ -2668,6 +2670,8 @@ pub enum BackForwardCacheNotRestoredReason {
     EmbedderExtensionMessagingForOpenPort,
     #[serde(rename = "EmbedderExtensionSentMessageToCachedFrame")]
     EmbedderExtensionSentMessageToCachedFrame,
+    #[serde(rename = "EmbedderExtensionFrame")]
+    EmbedderExtensionFrame,
     #[serde(rename = "RequestedByWebViewClient")]
     RequestedByWebViewClient,
     #[serde(rename = "PostMessageByWebViewClient")]
@@ -2766,10 +2770,10 @@ pub struct BackForwardCacheNotRestoredExplanation<'a> {
 }
 
 impl<'a> BackForwardCacheNotRestoredExplanation<'a> {
-    pub fn builder(type_: BackForwardCacheNotRestoredReasonType, reason: BackForwardCacheNotRestoredReason) -> BackForwardCacheNotRestoredExplanationBuilder<'a> {
+    pub fn builder(type_: impl Into<BackForwardCacheNotRestoredReasonType>, reason: impl Into<BackForwardCacheNotRestoredReason>) -> BackForwardCacheNotRestoredExplanationBuilder<'a> {
         BackForwardCacheNotRestoredExplanationBuilder {
-            type_: type_,
-            reason: reason,
+            type_: type_.into(),
+            reason: reason.into(),
             context: None,
             details: None,
         }
@@ -2886,9 +2890,9 @@ pub struct AddScriptToEvaluateOnLoadReturns<'a> {
 }
 
 impl<'a> AddScriptToEvaluateOnLoadReturns<'a> {
-    pub fn builder(identifier: ScriptIdentifier<'a>) -> AddScriptToEvaluateOnLoadReturnsBuilder<'a> {
+    pub fn builder(identifier: impl Into<ScriptIdentifier<'a>>) -> AddScriptToEvaluateOnLoadReturnsBuilder<'a> {
         AddScriptToEvaluateOnLoadReturnsBuilder {
-            identifier: identifier,
+            identifier: identifier.into(),
         }
     }
     pub fn identifier(&self) -> &ScriptIdentifier<'a> { &self.identifier }
@@ -2989,9 +2993,9 @@ pub struct AddScriptToEvaluateOnNewDocumentReturns<'a> {
 }
 
 impl<'a> AddScriptToEvaluateOnNewDocumentReturns<'a> {
-    pub fn builder(identifier: ScriptIdentifier<'a>) -> AddScriptToEvaluateOnNewDocumentReturnsBuilder<'a> {
+    pub fn builder(identifier: impl Into<ScriptIdentifier<'a>>) -> AddScriptToEvaluateOnNewDocumentReturnsBuilder<'a> {
         AddScriptToEvaluateOnNewDocumentReturnsBuilder {
-            identifier: identifier,
+            identifier: identifier.into(),
         }
     }
     pub fn identifier(&self) -> &ScriptIdentifier<'a> { &self.identifier }
@@ -3265,9 +3269,9 @@ pub struct CreateIsolatedWorldParams<'a> {
 }
 
 impl<'a> CreateIsolatedWorldParams<'a> {
-    pub fn builder(frameId: FrameId<'a>) -> CreateIsolatedWorldParamsBuilder<'a> {
+    pub fn builder(frameId: impl Into<FrameId<'a>>) -> CreateIsolatedWorldParamsBuilder<'a> {
         CreateIsolatedWorldParamsBuilder {
-            frameId: frameId,
+            frameId: frameId.into(),
             worldName: None,
             grantUniveralAccess: None,
         }
@@ -3683,9 +3687,9 @@ pub struct GetAdScriptAncestryParams<'a> {
 }
 
 impl<'a> GetAdScriptAncestryParams<'a> {
-    pub fn builder(frameId: FrameId<'a>) -> GetAdScriptAncestryParamsBuilder<'a> {
+    pub fn builder(frameId: impl Into<FrameId<'a>>) -> GetAdScriptAncestryParamsBuilder<'a> {
         GetAdScriptAncestryParamsBuilder {
-            frameId: frameId,
+            frameId: frameId.into(),
         }
     }
     pub fn frameId(&self) -> &FrameId<'a> { &self.frameId }
@@ -3933,9 +3937,9 @@ pub struct GetResourceContentParams<'a> {
 }
 
 impl<'a> GetResourceContentParams<'a> {
-    pub fn builder(frameId: FrameId<'a>, url: impl Into<Cow<'a, str>>) -> GetResourceContentParamsBuilder<'a> {
+    pub fn builder(frameId: impl Into<FrameId<'a>>, url: impl Into<Cow<'a, str>>) -> GetResourceContentParamsBuilder<'a> {
         GetResourceContentParamsBuilder {
-            frameId: frameId,
+            frameId: frameId.into(),
             url: url.into(),
         }
     }
@@ -4143,11 +4147,11 @@ impl<'a> NavigateParamsBuilder<'a> {
     /// Referrer URL.
     pub fn referrer(mut self, referrer: impl Into<Cow<'a, str>>) -> Self { self.referrer = Some(referrer.into()); self }
     /// Intended transition type.
-    pub fn transitionType(mut self, transitionType: TransitionType) -> Self { self.transitionType = Some(transitionType); self }
+    pub fn transitionType(mut self, transitionType: impl Into<TransitionType>) -> Self { self.transitionType = Some(transitionType.into()); self }
     /// Frame id to navigate, if not specified navigates the top frame.
-    pub fn frameId(mut self, frameId: FrameId<'a>) -> Self { self.frameId = Some(frameId); self }
+    pub fn frameId(mut self, frameId: impl Into<FrameId<'a>>) -> Self { self.frameId = Some(frameId.into()); self }
     /// Referrer-policy used for the navigation.
-    pub fn referrerPolicy(mut self, referrerPolicy: ReferrerPolicy) -> Self { self.referrerPolicy = Some(referrerPolicy); self }
+    pub fn referrerPolicy(mut self, referrerPolicy: impl Into<ReferrerPolicy>) -> Self { self.referrerPolicy = Some(referrerPolicy.into()); self }
     pub fn build(self) -> NavigateParams<'a> {
         NavigateParams {
             url: self.url,
@@ -4179,9 +4183,9 @@ pub struct NavigateReturns<'a> {
 }
 
 impl<'a> NavigateReturns<'a> {
-    pub fn builder(frameId: FrameId<'a>) -> NavigateReturnsBuilder<'a> {
+    pub fn builder(frameId: impl Into<FrameId<'a>>) -> NavigateReturnsBuilder<'a> {
         NavigateReturnsBuilder {
-            frameId: frameId,
+            frameId: frameId.into(),
             loaderId: None,
             errorText: None,
             isDownload: None,
@@ -4595,9 +4599,9 @@ pub struct RemoveScriptToEvaluateOnLoadParams<'a> {
 }
 
 impl<'a> RemoveScriptToEvaluateOnLoadParams<'a> {
-    pub fn builder(identifier: ScriptIdentifier<'a>) -> RemoveScriptToEvaluateOnLoadParamsBuilder<'a> {
+    pub fn builder(identifier: impl Into<ScriptIdentifier<'a>>) -> RemoveScriptToEvaluateOnLoadParamsBuilder<'a> {
         RemoveScriptToEvaluateOnLoadParamsBuilder {
-            identifier: identifier,
+            identifier: identifier.into(),
         }
     }
     pub fn identifier(&self) -> &ScriptIdentifier<'a> { &self.identifier }
@@ -4632,9 +4636,9 @@ pub struct RemoveScriptToEvaluateOnNewDocumentParams<'a> {
 }
 
 impl<'a> RemoveScriptToEvaluateOnNewDocumentParams<'a> {
-    pub fn builder(identifier: ScriptIdentifier<'a>) -> RemoveScriptToEvaluateOnNewDocumentParamsBuilder<'a> {
+    pub fn builder(identifier: impl Into<ScriptIdentifier<'a>>) -> RemoveScriptToEvaluateOnNewDocumentParamsBuilder<'a> {
         RemoveScriptToEvaluateOnNewDocumentParamsBuilder {
-            identifier: identifier,
+            identifier: identifier.into(),
         }
     }
     pub fn identifier(&self) -> &ScriptIdentifier<'a> { &self.identifier }
@@ -4718,9 +4722,9 @@ pub struct SearchInResourceParams<'a> {
 }
 
 impl<'a> SearchInResourceParams<'a> {
-    pub fn builder(frameId: FrameId<'a>, url: impl Into<Cow<'a, str>>, query: impl Into<Cow<'a, str>>) -> SearchInResourceParamsBuilder<'a> {
+    pub fn builder(frameId: impl Into<FrameId<'a>>, url: impl Into<Cow<'a, str>>, query: impl Into<Cow<'a, str>>) -> SearchInResourceParamsBuilder<'a> {
         SearchInResourceParamsBuilder {
-            frameId: frameId,
+            frameId: frameId.into(),
             url: url.into(),
             query: query.into(),
             caseSensitive: None,
@@ -4882,9 +4886,9 @@ pub struct GetPermissionsPolicyStateParams<'a> {
 }
 
 impl<'a> GetPermissionsPolicyStateParams<'a> {
-    pub fn builder(frameId: FrameId<'a>) -> GetPermissionsPolicyStateParamsBuilder<'a> {
+    pub fn builder(frameId: impl Into<FrameId<'a>>) -> GetPermissionsPolicyStateParamsBuilder<'a> {
         GetPermissionsPolicyStateParamsBuilder {
-            frameId: frameId,
+            frameId: frameId.into(),
         }
     }
     pub fn frameId(&self) -> &FrameId<'a> { &self.frameId }
@@ -4949,9 +4953,9 @@ pub struct GetOriginTrialsParams<'a> {
 }
 
 impl<'a> GetOriginTrialsParams<'a> {
-    pub fn builder(frameId: FrameId<'a>) -> GetOriginTrialsParamsBuilder<'a> {
+    pub fn builder(frameId: impl Into<FrameId<'a>>) -> GetOriginTrialsParamsBuilder<'a> {
         GetOriginTrialsParamsBuilder {
-            frameId: frameId,
+            frameId: frameId.into(),
         }
     }
     pub fn frameId(&self) -> &FrameId<'a> { &self.frameId }
@@ -5285,9 +5289,9 @@ pub struct SetDocumentContentParams<'a> {
 }
 
 impl<'a> SetDocumentContentParams<'a> {
-    pub fn builder(frameId: FrameId<'a>, html: impl Into<Cow<'a, str>>) -> SetDocumentContentParamsBuilder<'a> {
+    pub fn builder(frameId: impl Into<FrameId<'a>>, html: impl Into<Cow<'a, str>>) -> SetDocumentContentParamsBuilder<'a> {
         SetDocumentContentParamsBuilder {
-            frameId: frameId,
+            frameId: frameId.into(),
             html: html.into(),
         }
     }

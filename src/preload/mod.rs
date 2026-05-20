@@ -52,9 +52,9 @@ pub struct RuleSet<'a> {
 }
 
 impl<'a> RuleSet<'a> {
-    pub fn builder(id: RuleSetId<'a>, loaderId: crate::network::LoaderId<'a>, sourceText: impl Into<Cow<'a, str>>) -> RuleSetBuilder<'a> {
+    pub fn builder(id: impl Into<RuleSetId<'a>>, loaderId: crate::network::LoaderId<'a>, sourceText: impl Into<Cow<'a, str>>) -> RuleSetBuilder<'a> {
         RuleSetBuilder {
-            id: id,
+            id: id.into(),
             loaderId: loaderId,
             sourceText: sourceText.into(),
             backendNodeId: None,
@@ -105,7 +105,7 @@ impl<'a> RuleSetBuilder<'a> {
     pub fn requestId(mut self, requestId: crate::network::RequestId<'a>) -> Self { self.requestId = Some(requestId); self }
     /// Error information
     /// 'errorMessage' is null iff 'errorType' is null.
-    pub fn errorType(mut self, errorType: RuleSetErrorType) -> Self { self.errorType = Some(errorType); self }
+    pub fn errorType(mut self, errorType: impl Into<RuleSetErrorType>) -> Self { self.errorType = Some(errorType.into()); self }
     /// TODO(https://crbug.com/1425354): Replace this property with structured error.
     pub fn errorMessage(mut self, errorMessage: impl Into<Cow<'a, str>>) -> Self { self.errorMessage = Some(errorMessage.into()); self }
     /// For more details, see:
@@ -185,10 +185,10 @@ pub struct PreloadingAttemptKey<'a> {
 }
 
 impl<'a> PreloadingAttemptKey<'a> {
-    pub fn builder(loaderId: crate::network::LoaderId<'a>, action: SpeculationAction, url: impl Into<Cow<'a, str>>) -> PreloadingAttemptKeyBuilder<'a> {
+    pub fn builder(loaderId: crate::network::LoaderId<'a>, action: impl Into<SpeculationAction>, url: impl Into<Cow<'a, str>>) -> PreloadingAttemptKeyBuilder<'a> {
         PreloadingAttemptKeyBuilder {
             loaderId: loaderId,
-            action: action,
+            action: action.into(),
             url: url.into(),
             formSubmission: None,
             targetHint: None,
@@ -212,7 +212,7 @@ pub struct PreloadingAttemptKeyBuilder<'a> {
 
 impl<'a> PreloadingAttemptKeyBuilder<'a> {
     pub fn formSubmission(mut self, formSubmission: bool) -> Self { self.formSubmission = Some(formSubmission); self }
-    pub fn targetHint(mut self, targetHint: SpeculationTargetHint) -> Self { self.targetHint = Some(targetHint); self }
+    pub fn targetHint(mut self, targetHint: impl Into<SpeculationTargetHint>) -> Self { self.targetHint = Some(targetHint.into()); self }
     pub fn build(self) -> PreloadingAttemptKey<'a> {
         PreloadingAttemptKey {
             loaderId: self.loaderId,
@@ -433,6 +433,8 @@ pub enum PrerenderFinalStatus {
     PrerenderHostReused,
     #[serde(rename = "FormSubmitWhenPrerendering")]
     FormSubmitWhenPrerendering,
+    #[serde(rename = "CrossDocumentRestart")]
+    CrossDocumentRestart,
 }
 
 /// Preloading status values, see also PreloadingTriggeringOutcome. This
