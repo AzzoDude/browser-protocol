@@ -57,6 +57,47 @@ def current_version() -> str:
                 return line.split("=", 1)[1].strip().strip('"')
     return "0.0.0"
 
+
+def _set_package_version(cargo_toml: str, version: str) -> None:
+    """Replace the first (package) `version = "..."` line in a Cargo.toml."""
+    if not os.path.exists(cargo_toml):
+        return
+    with open(cargo_toml, "r", encoding="utf-8") as f:
+        content = f.read()
+    content = re.sub(r'(?m)^version = "[^"]*"', f'version = "{version}"', content, count=1)
+    with open(cargo_toml, "w", encoding="utf-8") as f:
+        f.write(content)
+
+
+def sync_versions(version: str) -> None:
+    """Keep every version reference in the workspace in lockstep.
+
+    Updates the macros crate, the main crate's dependency pin on it, and the
+    version strings in the README. The main crate's own `version` is handled by
+    `update_cargo_metadata`.
+    """
+    _set_package_version(os.path.join(PROJECT_ROOT, "macros", "Cargo.toml"), version)
+
+    root_manifest = os.path.join(PROJECT_ROOT, "Cargo.toml")
+    with open(root_manifest, "r", encoding="utf-8") as f:
+        content = f.read()
+    content = re.sub(
+        r'(browser-protocol-macros = \{ version = ")[^"]*(")',
+        rf'\g<1>{version}\g<2>',
+        content,
+    )
+    with open(root_manifest, "w", encoding="utf-8") as f:
+        f.write(content)
+
+    readme = os.path.join(PROJECT_ROOT, "README.md")
+    if os.path.exists(readme):
+        with open(readme, "r", encoding="utf-8") as f:
+            content = f.read()
+        content = re.sub(r'(browser-protocol = \{ version = ")[^"]*(")', rf'\g<1>{version}\g<2>', content)
+        content = re.sub(r'(--version )[0-9]+\.[0-9]+\.[0-9]+', rf'\g<1>{version}', content)
+        with open(readme, "w", encoding="utf-8") as f:
+            f.write(content)
+
 def to_camel_case(snake_str):
     components = snake_str.replace('-', '_').split('_')
     return "".join(x[:1].upper() + x[1:] for x in components if x)
@@ -588,5 +629,7 @@ if __name__ == "__main__":
         print("Downloaded an updated browser_protocol.json." if sync_protocol() else "browser_protocol.json is already up to date.")
 
     project_name = os.path.basename(PROJECT_ROOT)
-    update_cargo_metadata(project_name, args.version or current_version())
+    version = args.version or current_version()
+    sync_versions(version)
+    update_cargo_metadata(project_name, version)
     generate_cdp_modules(project_name)

@@ -1,6 +1,6 @@
 [package]
 name = "browser-protocol"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2024"
 rust-version = "1.85"
 authors = ["AzzoDude"]
@@ -30,7 +30,8 @@ workspace = true
 [dependencies]
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.151"
-browser-protocol-macros = { version = "0.1.5", path = "macros" }
+browser-protocol-macros = { version = "0.1.6", path = "macros" }
+
 
 
 [features]
