@@ -2,12 +2,16 @@
 name = "browser-protocol-macros"
 version = "0.1.5"
 edition = "2021"
+rust-version = "1.85"
 authors = ["AzzoDude"]
 description = "Derive macros for browser-protocol (CDP builder and getter generation)"
 license = "MIT"
 repository = "https://github.com/AzzoDude/browser-protocol"
 keywords = ["cdp", "browser", "protocol", "macros"]
 categories = ["development-tools", "web-programming"]
+
+[lints]
+workspace = true
 
 [lib]
 proc-macro = true

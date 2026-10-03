@@ -2,6 +2,7 @@
 name = "browser-protocol"
 version = "0.1.5"
 edition = "2024"
+rust-version = "1.85"
 authors = ["AzzoDude"]
 description = "Generated Rust types and commands for the Chrome DevTools Protocol (browser-protocol)"
 license = "MIT"
@@ -13,10 +14,24 @@ categories = ["development-tools", "web-programming"]
 [workspace]
 members = ["macros"]
 
+# Shared lint policy for every crate in the workspace.
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+# Allow lints that are meaningless for generated code; keep everything else strict.
+[workspace.lints.clippy]
+empty_line_after_doc_comments = "allow"
+doc_lazy_continuation = "allow"
+vec_box = "allow"
+
+[lints]
+workspace = true
+
 [dependencies]
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.151"
 browser-protocol-macros = { version = "0.1.5", path = "macros" }
+
 
 [features]
 default = ["full"]

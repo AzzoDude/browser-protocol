@@ -1,0 +1,8 @@
+# Clippy configuration for the browser-protocol workspace.
+
+# Minimum supported Rust version (matches the crates' `rust-version`).
+msrv = "1.85"
+
+# Generated CDP builders take every required field as a positional argument,
+# which routinely exceeds Clippy's default threshold of 7.
+too-many-arguments-threshold = 32
