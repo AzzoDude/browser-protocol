@@ -6,6 +6,7 @@ import sys
 import argparse
 import json
 import re
+import urllib.request
 
 dependencies_rs: dict[str, str] = {
     "serde": "derive",
@@ -14,6 +15,47 @@ dependencies_rs: dict[str, str] = {
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+
+PROTOCOL_URL = "https://raw.githubusercontent.com/ChromeDevTools/devtools-protocol/refs/heads/master/json/browser_protocol.json"
+PROTOCOL_FILE = os.path.join(PROJECT_ROOT, "browser_protocol.json")
+
+
+def fetch_protocol() -> bytes:
+    """Download the latest browser protocol JSON into memory."""
+    request = urllib.request.Request(PROTOCOL_URL, headers={"User-Agent": "browser-protocol-generator"})
+    with urllib.request.urlopen(request, timeout=60) as response:
+        return response.read()
+
+
+def protocol_is_current() -> bool:
+    """Return True when the local protocol file matches the remote copy."""
+    if not os.path.exists(PROTOCOL_FILE):
+        return False
+    with open(PROTOCOL_FILE, "rb") as f:
+        return f.read() == fetch_protocol()
+
+
+def sync_protocol() -> bool:
+    """Download the protocol when the remote copy differs. Returns True if refreshed."""
+    remote = fetch_protocol()
+    local = b""
+    if os.path.exists(PROTOCOL_FILE):
+        with open(PROTOCOL_FILE, "rb") as f:
+            local = f.read()
+    if remote == local:
+        return False
+    with open(PROTOCOL_FILE, "wb") as f:
+        f.write(remote)
+    return True
+
+
+def current_version() -> str:
+    """Read the crate version from Cargo.toml."""
+    with open(os.path.join(PROJECT_ROOT, "Cargo.toml"), "r", encoding="utf-8") as f:
+        for line in f:
+            if line.startswith("version"):
+                return line.split("=", 1)[1].strip().strip('"')
+    return "0.0.0"
 
 def to_camel_case(snake_str):
     components = snake_str.replace('-', '_').split('_')
@@ -213,183 +255,40 @@ def get_rust_type(prop, current_domain, current_struct_name=None, lifetime_keys=
         return f"Option<{base_type}>"
     return base_type
 
-def generate_getter_method(rust_name, r_type, doc_comment):
-    comment = doc_comment if doc_comment else ""
-    if r_type.startswith("Option<Box<") and r_type.endswith(">>"):
-        inner = r_type[11:-2]
-        return f"{comment}    pub fn {rust_name}(&self) -> Option<&{inner}> {{ self.{rust_name}.as_deref() }}"
-    elif r_type.startswith("Box<") and r_type.endswith(">"):
-        inner = r_type[4:-1]
-        return f"{comment}    pub fn {rust_name}(&self) -> &{inner} {{ &self.{rust_name} }}"
-    elif r_type in ["Option<Cow<'a, str>>", "Option<std::borrow::Cow<'a, str>>"]:
-        return f"{comment}    pub fn {rust_name}(&self) -> Option<&str> {{ self.{rust_name}.as_deref() }}"
-    elif r_type in ["Cow<'a, str>", "std::borrow::Cow<'a, str>"]:
-        return f"{comment}    pub fn {rust_name}(&self) -> &str {{ self.{rust_name}.as_ref() }}"
-    elif r_type.startswith("Option<Vec<") and r_type.endswith(">>"):
-        inner = r_type[11:-2]
-        return f"{comment}    pub fn {rust_name}(&self) -> Option<&[{inner}]> {{ self.{rust_name}.as_deref() }}"
-    elif r_type.startswith("Vec<") and r_type.endswith(">"):
-        inner = r_type[4:-1]
-        return f"{comment}    pub fn {rust_name}(&self) -> &[{inner}] {{ &self.{rust_name} }}"
-    elif r_type in ["i64", "u64", "i32", "u32", "f64", "bool", "Option<i64>", "Option<u64>", "Option<i32>", "Option<u32>", "Option<f64>", "Option<bool>"]:
-        return f"{comment}    pub fn {rust_name}(&self) -> {r_type} {{ self.{rust_name} }}"
-    elif r_type.startswith("Option<") and r_type.endswith(">"):
-        inner = r_type[7:-1]
-        return f"{comment}    pub fn {rust_name}(&self) -> Option<&{inner}> {{ self.{rust_name}.as_ref() }}"
-    else:
-        return f"{comment}    pub fn {rust_name}(&self) -> &{r_type} {{ &self.{rust_name} }}"
-
-def is_string_type(t_name, current_domain, string_types):
-    clean = t_name
-    if clean.startswith("Option<"):
-        clean = clean[7:-1]
-    if clean.startswith("Box<"):
-        clean = clean[4:-1]
-    if clean.endswith("<'a>"):
-        clean = clean[:-4]
-    
-    if clean == "Cow<'a, str>" or clean == "std::borrow::Cow<'a, str>":
-        return True
-        
-    if clean.startswith("crate::"):
-        parts = clean.split("::")
-        if len(parts) == 4:
-            key = (parts[2].lower(), parts[3])
-            return key in string_types
-    else:
-        key = (current_domain.lower(), clean)
-        return key in string_types
-    return False
-
-def generate_struct_with_builder(struct_name, props, current_domain, lifetime_keys, string_types):
-    if not props:
-        return f"""#[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub struct {struct_name} {{}}
-"""
-
+def generate_struct_with_builder(struct_name, props, current_domain, lifetime_keys, derives=("CdpBuilder",), cdp_attr=None):
     has_lifetime = (current_domain.lower(), struct_name) in lifetime_keys
     lifetime_suffix = "<'a>" if has_lifetime else ""
-    impl_lifetime = "<'a>" if has_lifetime else ""
-    
+
     fields_def = []
-    builder_fields_def = []
-    builder_args = []
-    builder_inits = []
-    setter_methods = []
-    build_assignments = []
-    getter_methods = []
-    
     for p in props:
         p_name = p["name"]
         rust_name = to_snake_case(p_name)
         r_type = get_rust_type(p, current_domain, struct_name, lifetime_keys)
         is_opt = p.get("optional", False)
-        
+
         doc = format_rustdoc(p.get("description"), 4)
-        
+
         serde_attrs = []
         if is_opt:
             serde_attrs.append('skip_serializing_if = "Option::is_none"')
         if p_name != rust_name:
             serde_attrs.append(f'rename = "{p_name}"')
-        
-        serde_line = ""
-        if serde_attrs:
-            serde_line = f"    #[serde({', '.join(serde_attrs)})]\n"
-        
-        fields_def.append(f"{doc}{serde_line}    {rust_name}: {r_type},")
-        getter_methods.append(generate_getter_method(rust_name, r_type, doc))
-        
-        if is_opt:
-            b_type = r_type
-            builder_fields_def.append(f"    {rust_name}: {b_type},")
-            builder_inits.append(f"            {rust_name}: None,")
-            
-            inner_type = r_type[7:-1]
-            is_string = is_string_type(inner_type, current_domain, string_types)
-            if is_string:
-                arg_type = f"impl Into<{inner_type}>"
-                setter_val = f"{rust_name}.into()"
-            else:
-                arg_type = inner_type
-                setter_val = rust_name
-                
-            setter_doc = format_rustdoc(p.get("description"), 4)
-            setter_methods.append(f"{setter_doc}    pub fn {rust_name}(mut self, {rust_name}: {arg_type}) -> Self {{ self.{rust_name} = Some({setter_val}); self }}")
-            build_assignments.append(f"            {rust_name}: self.{rust_name},")
-        else:
-            b_type = r_type
-            builder_fields_def.append(f"    {rust_name}: {b_type},")
-            
-            is_string = is_string_type(r_type, current_domain, string_types)
-            if is_string:
-                arg_type = f"impl Into<{r_type}>"
-                init_val = f"{rust_name}.into()"
-            else:
-                arg_type = r_type
-                init_val = rust_name
-                
-            builder_args.append(f"{rust_name}: {arg_type}")
-            builder_inits.append(f"            {rust_name}: {init_val},")
-            build_assignments.append(f"            {rust_name}: self.{rust_name},")
-            
+
+        serde_line = f"    #[serde({', '.join(serde_attrs)})]\n" if serde_attrs else ""
+
+        fields_def.append(f"{doc}{serde_line}    pub {rust_name}: {r_type},")
+
+    # Getters/builders come from `CdpBuilder`; command/event glue from
+    # `CdpCommand`/`CdpEvent`. The generator only emits the plain struct.
+    derive_list = ", ".join(("Debug", "Clone", "Serialize", "Deserialize", "Default", *derives))
     body = []
-    
-    body.append("#[derive(Debug, Clone, Serialize, Deserialize, Default)]")
+    body.append(f"#[derive({derive_list})]")
     body.append('#[serde(rename_all = "camelCase")]')
+    if cdp_attr:
+        body.append(cdp_attr)
     body.append(f"pub struct {struct_name}{lifetime_suffix} {{")
     body.append("\n".join(fields_def))
-    body.append("}\n")
-    
-    impl_body = []
-    builder_args_str = ", ".join(builder_args)
-    builder_inits_str = "\n".join(builder_inits)
-    
-    # Generate builder documentation listing parameters
-    builder_doc_lines = ["    /// Creates a builder for this type with the required parameters:"]
-    for p in props:
-        if not p.get("optional", False):
-            desc = p.get("description", "").replace("\n", " ")
-            desc = wrap_bare_urls(desc)
-            desc = escape_html_brackets(desc)
-            desc = escape_markdown_brackets(desc)
-            builder_doc_lines.append(f"    /// * `{to_snake_case(p['name'])}`: {desc}")
-    builder_doc_str = "\n".join(builder_doc_lines) + "\n" if len(builder_doc_lines) > 1 else "    /// Creates a builder for this type.\n"
-    
-    impl_body.append(builder_doc_str + f"    pub fn builder({builder_args_str}) -> {struct_name}Builder{lifetime_suffix} {{")
-    impl_body.append(f"        {struct_name}Builder {{")
-    impl_body.append(builder_inits_str)
-    impl_body.append("        }")
-    impl_body.append("    }")
-    
-    for g in getter_methods:
-        impl_body.append(g)
-        
-    body.append(f"impl{impl_lifetime} {struct_name}{lifetime_suffix} {{")
-    body.append("\n".join(impl_body))
-    body.append("}\n")
-    
-    builder_derive_default = "#[derive(Default)]" if not builder_args else ""
-    body.append(builder_derive_default)
-    body.append(f"pub struct {struct_name}Builder{lifetime_suffix} {{")
-    body.append("\n".join(builder_fields_def))
-    body.append("}\n")
-    
-    builder_impl_body = []
-    for s in setter_methods:
-        builder_impl_body.append(s)
-        
-    build_assign_str = "\n".join(build_assignments)
-    builder_impl_body.append(f"""    pub fn build(self) -> {struct_name}{lifetime_suffix} {{
-        {struct_name} {{
-{build_assign_str}
-        }}
-    }}""")
-    
-    body.append(f"impl{impl_lifetime} {struct_name}Builder{lifetime_suffix} {{")
-    body.append("\n".join(builder_impl_body))
-    body.append("}\n")
-    
+    body.append("}")
     return "\n".join(body)
 
 def generate_cdp_modules(project_name: str):
@@ -405,15 +304,27 @@ def generate_cdp_modules(project_name: str):
     lib_rs_content = [
         "#![allow(non_snake_case)]", "#![allow(unused_imports)]", "#![allow(dead_code)]", "",
         "use serde::{Serialize, Deserialize};", "use serde_json::Value as JsonValue;", "",
+        "pub use browser_protocol_macros::{CdpBuilder, CdpCommand, CdpEvent};", "",
         "/// Trait for CDP commands that associate parameters with a method name and response type.",
         "pub trait CdpCommand<'a>: Serialize {", "    const METHOD: &'static str;", "    type Response: Deserialize<'a>;", "}", "",
+        "/// Marker trait implemented by every typed CDP event.",
+        "pub trait CdpEvent {", "    const METHOD: &'static str;", "}", "",
         "/// A generic CDP command envelope.",
         "#[derive(Serialize)]", "pub struct Command<'a, T: CdpCommand<'a>> {", "    pub id: u64,", "    pub method: &'static str,", "    pub params: &'a T,", "}", "",
         "impl<'a, T: CdpCommand<'a>> Command<'a, T> {", "    pub fn new(id: u64, params: &'a T) -> Self {", "        Self { id, method: T::METHOD, params }", "    }", "}", "",
         "/// A generic CDP response envelope.",
         "#[derive(Deserialize, Debug)]", "pub struct Response<T> {", "    pub id: u64,", "    pub result: T,", "}", "",
         "/// An empty response for commands that don't return anything.",
-        "#[derive(Deserialize, Debug, Clone, Default)]", "pub struct EmptyReturns {}", ""
+        "#[derive(Deserialize, Debug, Clone, Default)]", "pub struct EmptyReturns {}", "",
+        "/// A protocol-level error returned by the browser.",
+        "#[derive(Deserialize, Debug, Clone)]",
+        "pub struct CdpError {", "    pub code: i64,", "    pub message: String,", "    pub data: Option<JsonValue>,", "}", "",
+        "/// An error reply envelope: `{\"id\": N, \"error\": { ... }}`.",
+        "#[derive(Deserialize, Debug, Clone)]",
+        "pub struct ErrorResponse {", "    pub id: u64,", "    pub error: CdpError,", "}", "",
+        "/// A reply that is either a typed result or a protocol error.",
+        "#[derive(Deserialize, Debug)]", "#[serde(untagged)]",
+        "pub enum CdpReply<T> {", "    Ok(Response<T>),", "    Err(ErrorResponse),", "}", ""
     ]
 
     all_domains = [d.get("domain").lower() for d in schema.get("domains", [])]
@@ -456,6 +367,13 @@ def generate_cdp_modules(project_name: str):
                     "kind": "returns",
                     "props": cmd.get("returns")
                 }
+        for ev in domain.get("events", []):
+            e_name = to_camel_case(ev.get("name"))
+            if ev.get("parameters"):
+                all_types[(d_name, e_name)] = {
+                    "kind": "params",
+                    "props": ev.get("parameters")
+                }
 
     # Run fixed-point iteration for lifetimes
     lifetime_keys = set()
@@ -485,45 +403,7 @@ def generate_cdp_modules(project_name: str):
                 changed = True
 
     # ----------------------------------------------------
-    # String Type Alias Resolution Pass
-    # ----------------------------------------------------
-    string_types = set()
-    for stub in ["runtime", "debugger", "heapprofiler", "profiler"]:
-        string_types.add((stub, "RemoteObjectId"))
-        string_types.add((stub, "ScriptId"))
-        string_types.add((stub, "UniqueDebuggerId"))
 
-    changed = True
-    while changed:
-        changed = False
-        for domain in schema.get("domains", []):
-            d_name = domain.get("domain").lower()
-            for t in domain.get("types", []):
-                t_id = t.get("id")
-                safe_t_id = f"Protocol{t_id}" if t_id == "Value" else t_id
-                key = (d_name, safe_t_id)
-                if key in string_types:
-                    continue
-                
-                is_str = False
-                if t.get("type") == "string":
-                    is_str = True
-                elif "$ref" in t:
-                    ref = t["$ref"]
-                    if "." in ref:
-                        ref_domain, ref_name = ref.split(".")
-                        if ref_name == "Value": ref_name = "ProtocolValue"
-                        ref_key = (ref_domain.lower(), ref_name)
-                    else:
-                        ref_name = ref
-                        if ref_name == "Value": ref_name = "ProtocolValue"
-                        ref_key = (d_name, ref_name)
-                    is_str = ref_key in string_types
-                
-                if is_str:
-                    string_types.add(key)
-                    changed = True
-    # ----------------------------------------------------
 
     # Write stub mods
     for stub in ["runtime", "debugger", "heapprofiler", "profiler"]:
@@ -564,7 +444,7 @@ def generate_cdp_modules(project_name: str):
                     mod_body.append(f"    {var},")
                 mod_body.append("}\n")
             elif t.get("type") == "object" and "properties" in t:
-                mod_body.append(generate_struct_with_builder(safe_t_id, t["properties"], d_name, lifetime_keys, string_types))
+                mod_body.append(generate_struct_with_builder(safe_t_id, t["properties"], d_name, lifetime_keys))
             else:
                 r_type = get_rust_type(t, d_name, safe_t_id, lifetime_keys)
                 has_lifetime = (d_name.lower(), safe_t_id) in lifetime_keys
@@ -574,31 +454,32 @@ def generate_cdp_modules(project_name: str):
         for cmd in domain.get("commands", []):
             raw_c_name = cmd.get("name")
             c_name = to_camel_case(raw_c_name)
-            for suffix, key in [("Params", "parameters"), ("Returns", "returns")]:
-                props = cmd.get(key, [])
-                if props:
-                    mod_body.append(format_rustdoc(cmd.get("description"), 0))
-                    mod_body.append(generate_struct_with_builder(f"{c_name}{suffix}", props, d_name, lifetime_keys, string_types))
+            method = f"{d_name}.{raw_c_name}"
 
-            if not cmd.get("parameters"):
-                mod_body.append(generate_struct_with_builder(f"{c_name}Params", [], d_name, lifetime_keys, string_types))
-            
-            # CdpCommand impl
-            has_lifetime_params = (d_name.lower(), f"{c_name}Params") in lifetime_keys
-            lifetime_suffix_params = "<'a>" if has_lifetime_params else ""
-            
-            has_lifetime_returns = (d_name.lower(), f"{c_name}Returns") in lifetime_keys
-            lifetime_suffix_returns = "<'a>" if has_lifetime_returns else ""
-            
-            # The trait CdpCommand<'a> always has a lifetime parameter, so impl must define it
-            mod_body.append(f"impl{lifetime_suffix_params} {c_name}Params{lifetime_suffix_params} {{ pub const METHOD: &'static str = \"{d_name}.{raw_c_name}\"; }}\n")
-            mod_body.append(f"impl<'a> crate::CdpCommand<'a> for {c_name}Params{lifetime_suffix_params} {{")
-            mod_body.append(f"    const METHOD: &'static str = \"{d_name}.{raw_c_name}\";")
             if cmd.get("returns"):
-                mod_body.append(f"    type Response = {c_name}Returns{lifetime_suffix_returns};")
+                returns_lifetime = (d_name.lower(), f"{c_name}Returns") in lifetime_keys
+                response = f"{c_name}Returns" + ("<'a>" if returns_lifetime else "")
+                cdp_attr = f'#[cdp(method = "{method}", response = "{response}")]'
             else:
-                mod_body.append("    type Response = crate::EmptyReturns;")
-            mod_body.append("}\n")
+                cdp_attr = f'#[cdp(method = "{method}")]'
+
+            mod_body.append(format_rustdoc(cmd.get("description"), 0))
+            mod_body.append(generate_struct_with_builder(
+                f"{c_name}Params", cmd.get("parameters", []), d_name, lifetime_keys,
+                derives=("CdpBuilder", "CdpCommand"), cdp_attr=cdp_attr))
+
+            if cmd.get("returns"):
+                mod_body.append(format_rustdoc(cmd.get("description"), 0))
+                mod_body.append(generate_struct_with_builder(
+                    f"{c_name}Returns", cmd.get("returns"), d_name, lifetime_keys))
+
+        for ev in domain.get("events", []):
+            ev_name = to_camel_case(ev.get("name"))
+            method = f"{d_name}.{ev.get('name')}"
+            mod_body.append(format_rustdoc(ev.get("description"), 0))
+            mod_body.append(generate_struct_with_builder(
+                ev_name, ev.get("parameters", []), d_name, lifetime_keys,
+                derives=("CdpBuilder", "CdpEvent"), cdp_attr=f'#[cdp(method = "{method}")]'))
 
         # Handle mod headers (with module description //! before any imports)
         mod_header = []
@@ -610,6 +491,7 @@ def generate_cdp_modules(project_name: str):
             "use serde::{Serialize, Deserialize};",
             "use serde_json::Value as JsonValue;",
             "use std::borrow::Cow;",
+            "use crate::{CdpBuilder, CdpCommand, CdpEvent};",
             "",
             "\n".join(mod_body)
         ]
@@ -692,9 +574,19 @@ def update_cargo_metadata(project_name, version):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--version", type=str, required=True, help="Crate version to bump in Cargo.toml")
+    parser.add_argument("--version", type=str, help="Crate version to set in Cargo.toml (defaults to the current version)")
+    parser.add_argument("--download", action="store_true", help="Download the latest protocol before generating")
+    parser.add_argument("--check", action="store_true", help="Exit 1 if a newer protocol is available (no generation)")
     args = parser.parse_args()
-    
+
+    if args.check:
+        current = protocol_is_current()
+        print("Protocol is up to date." if current else "A newer protocol is available.")
+        sys.exit(0 if current else 1)
+
+    if args.download:
+        print("Downloaded an updated browser_protocol.json." if sync_protocol() else "browser_protocol.json is already up to date.")
+
     project_name = os.path.basename(PROJECT_ROOT)
-    update_cargo_metadata(project_name, args.version)
+    update_cargo_metadata(project_name, args.version or current_version())
     generate_cdp_modules(project_name)

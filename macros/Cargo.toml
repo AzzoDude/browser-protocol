@@ -1,0 +1,18 @@
+[package]
+name = "browser-protocol-macros"
+version = "0.1.5"
+edition = "2021"
+authors = ["AzzoDude"]
+description = "Derive macros for browser-protocol (CDP builder and getter generation)"
+license = "MIT"
+repository = "https://github.com/AzzoDude/browser-protocol"
+keywords = ["cdp", "browser", "protocol", "macros"]
+categories = ["development-tools", "web-programming"]
+
+[lib]
+proc-macro = true
+
+[dependencies]
+proc-macro2 = "1"
+quote = "1"
+syn = { version = "2", features = ["full"] }

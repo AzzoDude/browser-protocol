@@ -17,8 +17,8 @@ Most auto-generated CDP crates output raw, unidiomatic APIs with substantial run
 * Standard `#[serde(rename = "...")]` attributes ensure the serialized JSON wire protocol matches the exact formats required by Chrome.
 
 ### 2. Zero-Copy String Management
-* Utilizes `Cow<'a, str>` instead of allocating heap memory (`String`) for string properties. 
-* String arguments in builders use `impl Into<Cow<'a, str>>`, allowing you to pass static string literals (`&str`) or owned strings without unnecessary heap allocations.
+* Utilizes `Cow<'a, str>` instead of allocating heap memory (`String`) for string properties.
+* String arguments in builders use `impl Into<...>`, allowing you to pass static string literals (`&str`) or owned strings without unnecessary heap allocations.
 
 ### 3. Compile-Time Argument Safety
 * The builder pattern differentiates between **required** and **optional** parameters. Required parameters are passed directly as arguments to the `builder(...)` function, guaranteeing protocol compliance at compile time:
@@ -29,9 +29,13 @@ Most auto-generated CDP crates output raw, unidiomatic APIs with substantial run
       .build();
   ```
 
-### 4. Zero Dependencies & No Async Runtime Lock-in
-* Contains **zero bloated dependencies** (depends only on `serde` and `serde_json`).
-* Does not include a WebSocket client or force a specific async runtime (like `tokio`). This keeps the package extremely lightweight, compile-fast, and compatible with any async runtime or network stack.
+### 4. Proc-Macro Powered, Minimal Boilerplate
+* All getters, builders, command glue, and event glue are synthesized by derives from `browser-protocol-macros`, so the generated source contains only plain struct definitions.
+* This removes roughly **60% of the generated source** compared to hand-emitting builders/getters, and lets the same build also expose **210 typed events**.
+* Runtime dependencies stay tiny: `serde` and `serde_json`.
+
+### 5. No Async Runtime Lock-in
+* Does not include a WebSocket client or force a specific async runtime (like `tokio`). This keeps the package lightweight and compatible with any async runtime or network stack.
 
 ---
 
@@ -41,7 +45,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-browser-protocol = { version = "0.1.4", features = ["full"] }
+browser-protocol = { version = "0.1.5", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 ```
@@ -59,10 +63,10 @@ fn main() {
     let nav = NavigateParams::builder("https://www.rust-lang.org")
         .transition_type(TransitionType::Typed)
         .build();
-    
+
     // 2. Read-only getters
     println!("Navigating to: {}", nav.url()); // prints "https://www.rust-lang.org"
-    
+
     // 3. Serialize to wire protocol payload (skips unset Option fields)
     let payload = serde_json::to_string(&nav).unwrap();
     println!("Payload: {}", payload);
@@ -86,7 +90,7 @@ fn get_accessibility_tree() {
 
     // The trait binds this command to its method name and response type:
     assert_eq!(GetPartialAXTreeParams::METHOD, "Accessibility.getPartialAXTree");
-    
+
     // In your network client:
     // let response_json = websocket.send_command(GetPartialAXTreeParams::METHOD, &params).await;
     // let response: GetPartialAXTreeReturns = serde_json::from_str(&response_json).unwrap();
@@ -95,23 +99,110 @@ fn get_accessibility_tree() {
 
 ---
 
+## 🧬 The Derive Macros
+
+Three derives from `browser-protocol-macros` keep every generated type down to a plain struct declaration.
+
+### `CdpBuilder` — builders and getters
+
+Every generated type is annotated with `#[derive(CdpBuilder)]`. The macro inspects the fields and emits:
+
+* A `builder(...)` constructor where every non-`Option` field is a **required argument** (typed as `impl Into<FieldType>`).
+* Chainable setters for every `Option` field, wrapping the value in `Some`.
+* A `build()` method that moves the accumulated fields into the final struct.
+* Read-only getters whose return type is chosen from the field type:
+  | Field type | Getter return |
+  | --- | --- |
+  | `Cow<'a, str>` / `Option<Cow<'a, str>>` | `&str` / `Option<&str>` |
+  | `Vec<T>` / `Option<Vec<T>>` | `&[T]` / `Option<&[T]>` |
+  | `Box<T>` / `Option<Box<T>>` | `&T` / `Option<&T>` |
+  | numeric / `bool` primitives | the value itself (they are `Copy`) |
+  | any other type `T` | `&T` / `Option<&T>` |
+
+### `CdpCommand` — command glue
+
+A command's parameter struct carries the method name instead of a hand-written impl:
+
+```rust
+#[derive(CdpBuilder, CdpCommand)]
+#[cdp(method = "Page.navigate", response = "NavigateReturns<'a>")]
+pub struct NavigateParams<'a> { /* fields */ }
+```
+
+This generates `NavigateParams::METHOD` and the `impl CdpCommand<'a>` (with `type Response`). Omit `response` and the reply type defaults to `crate::EmptyReturns`.
+
+### `CdpEvent` — typed events
+
+Every event in the schema becomes a typed struct with the same builder + getters:
+
+```rust
+#[derive(CdpBuilder, CdpEvent)]
+#[cdp(method = "Page.frameNavigated")]
+pub struct FrameNavigated<'a> { /* fields */ }
+
+assert_eq!(FrameNavigated::METHOD, "Page.frameNavigated");
+```
+
+The `CdpEvent` trait exposes `METHOD`, so events can be handled generically instead of by matching raw JSON.
+
+### Error-aware replies
+
+`Response<T>` still decodes `{"id", "result"}`. For the failure path, `CdpReply<T>` decodes either shape:
+
+```rust
+match serde_json::from_str::<CdpReply<CaptureScreenshotReturns>>(raw)? {
+    CdpReply::Ok(reply) => save(reply.result.data()),
+    CdpReply::Err(err) => eprintln!("CDP {}: {}", err.error.code, err.error.message),
+}
+```
+
+---
+
 ## 🏗 Code Generation Mechanics
 
-The code is dynamically compiled using a custom Python script that performs advanced schema analysis:
+The code is generated by a single Python script that performs advanced schema analysis:
 
-1. **Fixed-Point Lifetime Propagation Pass**: The generator performs iterative analysis over the CDP types to detect circular type references, nesting, and dependency hierarchies. It automatically determines which types must have a lifetime parameter (`<'a>`) and wraps recursive structures inside `Box` to prevent infinite-size compilation errors.
+1. **Fixed-Point Lifetime Propagation Pass**: The generator performs iterative analysis over the CDP types, command params/returns, and events to detect circular type references, nesting, and dependency hierarchies. It automatically determines which types must have a lifetime parameter (`<'a>`) and wraps recursive structures inside `Box` to prevent infinite-size compilation errors.
 2. **HTML/Markdown Escaping**: Schema documentation from the Chrome DevTools Protocol contains raw markdown and HTML brackets. The generator cleans and escapes these brackets into valid Rustdoc format, keeping compilation entirely warning-free.
-3. **Domain-Specific Feature Flags**: Every CDP domain is represented by a Rust feature flag. You can optimize compile times by only compiling the domains your project needs:
+4. **Domain-Specific Feature Flags**: Every CDP domain is represented by a Rust feature flag. You can optimize compile times by only compiling the domains your project needs:
    ```toml
    # Compile only the page and dom domains
-   browser-protocol = { version = "0.1.4", default-features = false, features = ["page", "dom"] }
+   browser-protocol = { version = "0.1.5", default-features = false, features = ["page", "dom"] }
    ```
 
-### Regenerating the Code
-To regenerate the Rust modules from a local protocol file:
+### Keeping the Protocol Up to Date
+
+Check whether upstream Chrome DevTools has published a newer protocol, then pull it down:
+
 ```bash
-python scripts/generate_rust_code.py --name browser-protocol
+# Exit code 0 = up to date, 1 = newer protocol available
+python scripts/generate_rust_code.py --check
+
+# Download the latest protocol and regenerate everything
+python scripts/generate_rust_code.py --download
 ```
+
+### Regenerating the Code
+
+`--download` is optional; if a local `browser_protocol.json` is already present it will be used as-is. To regenerate modules from the current protocol file:
+
+```bash
+python scripts/generate_rust_code.py --version 0.1.5
+```
+
+---
+
+## 📁 Repository Layout
+
+```
+browser-protocol/          # The crate: generated modules + CdpCommand trait
+  src/<domain>/mod.rs      # One module per CDP domain
+  scripts/
+    generate_rust_code.py  # Schema analysis + code generation
+  macros/                  # browser-protocol-macros: CdpBuilder/CdpCommand/CdpEvent derives
+```
+
+> **Publishing note:** `browser-protocol` depends on `browser-protocol-macros`, so the macros crate must be published to crates.io first.
 
 ---
 

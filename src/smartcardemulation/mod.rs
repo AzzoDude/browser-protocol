@@ -1,6 +1,7 @@
 use serde::{Serialize, Deserialize};
 use serde_json::Value as JsonValue;
 use std::borrow::Cow;
+use crate::{CdpBuilder, CdpCommand, CdpEvent};
 
 /// Indicates the PC/SC error code.
 /// 
@@ -126,154 +127,44 @@ pub enum ConnectionState {
 
 /// Maps to the |SCARD_STATE_*| flags.
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder)]
 #[serde(rename_all = "camelCase")]
 pub struct ReaderStateFlags {
     #[serde(skip_serializing_if = "Option::is_none")]
-    unaware: Option<bool>,
+    pub unaware: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    ignore: Option<bool>,
+    pub ignore: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    changed: Option<bool>,
+    pub changed: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    unknown: Option<bool>,
+    pub unknown: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    unavailable: Option<bool>,
+    pub unavailable: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    empty: Option<bool>,
+    pub empty: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    present: Option<bool>,
+    pub present: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    exclusive: Option<bool>,
+    pub exclusive: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    inuse: Option<bool>,
+    pub inuse: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    mute: Option<bool>,
+    pub mute: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    unpowered: Option<bool>,
+    pub unpowered: Option<bool>,
 }
-
-impl ReaderStateFlags {
-    /// Creates a builder for this type.
-    pub fn builder() -> ReaderStateFlagsBuilder {
-        ReaderStateFlagsBuilder {
-            unaware: None,
-            ignore: None,
-            changed: None,
-            unknown: None,
-            unavailable: None,
-            empty: None,
-            present: None,
-            exclusive: None,
-            inuse: None,
-            mute: None,
-            unpowered: None,
-        }
-    }
-    pub fn unaware(&self) -> Option<bool> { self.unaware }
-    pub fn ignore(&self) -> Option<bool> { self.ignore }
-    pub fn changed(&self) -> Option<bool> { self.changed }
-    pub fn unknown(&self) -> Option<bool> { self.unknown }
-    pub fn unavailable(&self) -> Option<bool> { self.unavailable }
-    pub fn empty(&self) -> Option<bool> { self.empty }
-    pub fn present(&self) -> Option<bool> { self.present }
-    pub fn exclusive(&self) -> Option<bool> { self.exclusive }
-    pub fn inuse(&self) -> Option<bool> { self.inuse }
-    pub fn mute(&self) -> Option<bool> { self.mute }
-    pub fn unpowered(&self) -> Option<bool> { self.unpowered }
-}
-
-#[derive(Default)]
-pub struct ReaderStateFlagsBuilder {
-    unaware: Option<bool>,
-    ignore: Option<bool>,
-    changed: Option<bool>,
-    unknown: Option<bool>,
-    unavailable: Option<bool>,
-    empty: Option<bool>,
-    present: Option<bool>,
-    exclusive: Option<bool>,
-    inuse: Option<bool>,
-    mute: Option<bool>,
-    unpowered: Option<bool>,
-}
-
-impl ReaderStateFlagsBuilder {
-    pub fn unaware(mut self, unaware: bool) -> Self { self.unaware = Some(unaware); self }
-    pub fn ignore(mut self, ignore: bool) -> Self { self.ignore = Some(ignore); self }
-    pub fn changed(mut self, changed: bool) -> Self { self.changed = Some(changed); self }
-    pub fn unknown(mut self, unknown: bool) -> Self { self.unknown = Some(unknown); self }
-    pub fn unavailable(mut self, unavailable: bool) -> Self { self.unavailable = Some(unavailable); self }
-    pub fn empty(mut self, empty: bool) -> Self { self.empty = Some(empty); self }
-    pub fn present(mut self, present: bool) -> Self { self.present = Some(present); self }
-    pub fn exclusive(mut self, exclusive: bool) -> Self { self.exclusive = Some(exclusive); self }
-    pub fn inuse(mut self, inuse: bool) -> Self { self.inuse = Some(inuse); self }
-    pub fn mute(mut self, mute: bool) -> Self { self.mute = Some(mute); self }
-    pub fn unpowered(mut self, unpowered: bool) -> Self { self.unpowered = Some(unpowered); self }
-    pub fn build(self) -> ReaderStateFlags {
-        ReaderStateFlags {
-            unaware: self.unaware,
-            ignore: self.ignore,
-            changed: self.changed,
-            unknown: self.unknown,
-            unavailable: self.unavailable,
-            empty: self.empty,
-            present: self.present,
-            exclusive: self.exclusive,
-            inuse: self.inuse,
-            mute: self.mute,
-            unpowered: self.unpowered,
-        }
-    }
-}
-
 /// Maps to the |SCARD_PROTOCOL_*| flags.
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder)]
 #[serde(rename_all = "camelCase")]
 pub struct ProtocolSet {
     #[serde(skip_serializing_if = "Option::is_none")]
-    t0: Option<bool>,
+    pub t0: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    t1: Option<bool>,
+    pub t1: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    raw: Option<bool>,
+    pub raw: Option<bool>,
 }
-
-impl ProtocolSet {
-    /// Creates a builder for this type.
-    pub fn builder() -> ProtocolSetBuilder {
-        ProtocolSetBuilder {
-            t0: None,
-            t1: None,
-            raw: None,
-        }
-    }
-    pub fn t0(&self) -> Option<bool> { self.t0 }
-    pub fn t1(&self) -> Option<bool> { self.t1 }
-    pub fn raw(&self) -> Option<bool> { self.raw }
-}
-
-#[derive(Default)]
-pub struct ProtocolSetBuilder {
-    t0: Option<bool>,
-    t1: Option<bool>,
-    raw: Option<bool>,
-}
-
-impl ProtocolSetBuilder {
-    pub fn t0(mut self, t0: bool) -> Self { self.t0 = Some(t0); self }
-    pub fn t1(mut self, t1: bool) -> Self { self.t1 = Some(t1); self }
-    pub fn raw(mut self, raw: bool) -> Self { self.raw = Some(raw); self }
-    pub fn build(self) -> ProtocolSet {
-        ProtocolSet {
-            t0: self.t0,
-            t1: self.t1,
-            raw: self.raw,
-        }
-    }
-}
-
 /// Maps to the |SCARD_PROTOCOL_*| values.
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
@@ -288,317 +179,99 @@ pub enum Protocol {
 }
 
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder)]
 #[serde(rename_all = "camelCase")]
 pub struct ReaderStateIn<'a> {
-    reader: Cow<'a, str>,
+    pub reader: Cow<'a, str>,
     #[serde(rename = "currentState")]
-    current_state: ReaderStateFlags,
+    pub current_state: ReaderStateFlags,
     #[serde(rename = "currentInsertionCount")]
-    current_insertion_count: u64,
+    pub current_insertion_count: u64,
 }
 
-impl<'a> ReaderStateIn<'a> {
-    /// Creates a builder for this type with the required parameters:
-    /// * `reader`: 
-    /// * `current_state`: 
-    /// * `current_insertion_count`: 
-    pub fn builder(reader: impl Into<Cow<'a, str>>, current_state: ReaderStateFlags, current_insertion_count: u64) -> ReaderStateInBuilder<'a> {
-        ReaderStateInBuilder {
-            reader: reader.into(),
-            current_state: current_state,
-            current_insertion_count: current_insertion_count,
-        }
-    }
-    pub fn reader(&self) -> &str { self.reader.as_ref() }
-    pub fn current_state(&self) -> &ReaderStateFlags { &self.current_state }
-    pub fn current_insertion_count(&self) -> u64 { self.current_insertion_count }
-}
-
-
-pub struct ReaderStateInBuilder<'a> {
-    reader: Cow<'a, str>,
-    current_state: ReaderStateFlags,
-    current_insertion_count: u64,
-}
-
-impl<'a> ReaderStateInBuilder<'a> {
-    pub fn build(self) -> ReaderStateIn<'a> {
-        ReaderStateIn {
-            reader: self.reader,
-            current_state: self.current_state,
-            current_insertion_count: self.current_insertion_count,
-        }
-    }
-}
-
-
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder)]
 #[serde(rename_all = "camelCase")]
 pub struct ReaderStateOut<'a> {
-    reader: Cow<'a, str>,
+    pub reader: Cow<'a, str>,
     #[serde(rename = "eventState")]
-    event_state: ReaderStateFlags,
+    pub event_state: ReaderStateFlags,
     #[serde(rename = "eventCount")]
-    event_count: u64,
-    atr: Cow<'a, str>,
+    pub event_count: u64,
+    pub atr: Cow<'a, str>,
 }
+/// Enables the |SmartCardEmulation| domain.
 
-impl<'a> ReaderStateOut<'a> {
-    /// Creates a builder for this type with the required parameters:
-    /// * `reader`: 
-    /// * `event_state`: 
-    /// * `event_count`: 
-    /// * `atr`: 
-    pub fn builder(reader: impl Into<Cow<'a, str>>, event_state: ReaderStateFlags, event_count: u64, atr: impl Into<Cow<'a, str>>) -> ReaderStateOutBuilder<'a> {
-        ReaderStateOutBuilder {
-            reader: reader.into(),
-            event_state: event_state,
-            event_count: event_count,
-            atr: atr.into(),
-        }
-    }
-    pub fn reader(&self) -> &str { self.reader.as_ref() }
-    pub fn event_state(&self) -> &ReaderStateFlags { &self.event_state }
-    pub fn event_count(&self) -> u64 { self.event_count }
-    pub fn atr(&self) -> &str { self.atr.as_ref() }
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpCommand)]
+#[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.enable")]
+pub struct EnableParams {
+
 }
+/// Disables the |SmartCardEmulation| domain.
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpCommand)]
+#[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.disable")]
+pub struct DisableParams {
 
-pub struct ReaderStateOutBuilder<'a> {
-    reader: Cow<'a, str>,
-    event_state: ReaderStateFlags,
-    event_count: u64,
-    atr: Cow<'a, str>,
 }
-
-impl<'a> ReaderStateOutBuilder<'a> {
-    pub fn build(self) -> ReaderStateOut<'a> {
-        ReaderStateOut {
-            reader: self.reader,
-            event_state: self.event_state,
-            event_count: self.event_count,
-            atr: self.atr,
-        }
-    }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub struct EnableParams {}
-
-impl EnableParams { pub const METHOD: &'static str = "SmartCardEmulation.enable"; }
-
-impl<'a> crate::CdpCommand<'a> for EnableParams {
-    const METHOD: &'static str = "SmartCardEmulation.enable";
-    type Response = crate::EmptyReturns;
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub struct DisableParams {}
-
-impl DisableParams { pub const METHOD: &'static str = "SmartCardEmulation.disable"; }
-
-impl<'a> crate::CdpCommand<'a> for DisableParams {
-    const METHOD: &'static str = "SmartCardEmulation.disable";
-    type Response = crate::EmptyReturns;
-}
-
 /// Reports the successful result of a |SCardEstablishContext| call.
 /// 
 /// This maps to:
 /// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#gaa1b8970169fd4883a6dc4a8f43f19b67>
 /// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardestablishcontext>
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpCommand)]
 #[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.reportEstablishContextResult")]
 pub struct ReportEstablishContextResultParams<'a> {
     #[serde(rename = "requestId")]
-    request_id: Cow<'a, str>,
+    pub request_id: Cow<'a, str>,
     #[serde(rename = "contextId")]
-    context_id: u64,
+    pub context_id: u64,
 }
-
-impl<'a> ReportEstablishContextResultParams<'a> {
-    /// Creates a builder for this type with the required parameters:
-    /// * `request_id`: 
-    /// * `context_id`: 
-    pub fn builder(request_id: impl Into<Cow<'a, str>>, context_id: u64) -> ReportEstablishContextResultParamsBuilder<'a> {
-        ReportEstablishContextResultParamsBuilder {
-            request_id: request_id.into(),
-            context_id: context_id,
-        }
-    }
-    pub fn request_id(&self) -> &str { self.request_id.as_ref() }
-    pub fn context_id(&self) -> u64 { self.context_id }
-}
-
-
-pub struct ReportEstablishContextResultParamsBuilder<'a> {
-    request_id: Cow<'a, str>,
-    context_id: u64,
-}
-
-impl<'a> ReportEstablishContextResultParamsBuilder<'a> {
-    pub fn build(self) -> ReportEstablishContextResultParams<'a> {
-        ReportEstablishContextResultParams {
-            request_id: self.request_id,
-            context_id: self.context_id,
-        }
-    }
-}
-
-impl<'a> ReportEstablishContextResultParams<'a> { pub const METHOD: &'static str = "SmartCardEmulation.reportEstablishContextResult"; }
-
-impl<'a> crate::CdpCommand<'a> for ReportEstablishContextResultParams<'a> {
-    const METHOD: &'static str = "SmartCardEmulation.reportEstablishContextResult";
-    type Response = crate::EmptyReturns;
-}
-
 /// Reports the successful result of a |SCardReleaseContext| call.
 /// 
 /// This maps to:
 /// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#ga6aabcba7744c5c9419fdd6404f73a934>
 /// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardreleasecontext>
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpCommand)]
 #[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.reportReleaseContextResult")]
 pub struct ReportReleaseContextResultParams<'a> {
     #[serde(rename = "requestId")]
-    request_id: Cow<'a, str>,
+    pub request_id: Cow<'a, str>,
 }
-
-impl<'a> ReportReleaseContextResultParams<'a> {
-    /// Creates a builder for this type with the required parameters:
-    /// * `request_id`: 
-    pub fn builder(request_id: impl Into<Cow<'a, str>>) -> ReportReleaseContextResultParamsBuilder<'a> {
-        ReportReleaseContextResultParamsBuilder {
-            request_id: request_id.into(),
-        }
-    }
-    pub fn request_id(&self) -> &str { self.request_id.as_ref() }
-}
-
-
-pub struct ReportReleaseContextResultParamsBuilder<'a> {
-    request_id: Cow<'a, str>,
-}
-
-impl<'a> ReportReleaseContextResultParamsBuilder<'a> {
-    pub fn build(self) -> ReportReleaseContextResultParams<'a> {
-        ReportReleaseContextResultParams {
-            request_id: self.request_id,
-        }
-    }
-}
-
-impl<'a> ReportReleaseContextResultParams<'a> { pub const METHOD: &'static str = "SmartCardEmulation.reportReleaseContextResult"; }
-
-impl<'a> crate::CdpCommand<'a> for ReportReleaseContextResultParams<'a> {
-    const METHOD: &'static str = "SmartCardEmulation.reportReleaseContextResult";
-    type Response = crate::EmptyReturns;
-}
-
 /// Reports the successful result of a |SCardListReaders| call.
 /// 
 /// This maps to:
 /// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#ga93b07815789b3cf2629d439ecf20f0d9>
 /// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardlistreadersa>
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpCommand)]
 #[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.reportListReadersResult")]
 pub struct ReportListReadersResultParams<'a> {
     #[serde(rename = "requestId")]
-    request_id: Cow<'a, str>,
-    readers: Vec<Cow<'a, str>>,
+    pub request_id: Cow<'a, str>,
+    pub readers: Vec<Cow<'a, str>>,
 }
-
-impl<'a> ReportListReadersResultParams<'a> {
-    /// Creates a builder for this type with the required parameters:
-    /// * `request_id`: 
-    /// * `readers`: 
-    pub fn builder(request_id: impl Into<Cow<'a, str>>, readers: Vec<Cow<'a, str>>) -> ReportListReadersResultParamsBuilder<'a> {
-        ReportListReadersResultParamsBuilder {
-            request_id: request_id.into(),
-            readers: readers,
-        }
-    }
-    pub fn request_id(&self) -> &str { self.request_id.as_ref() }
-    pub fn readers(&self) -> &[Cow<'a, str>] { &self.readers }
-}
-
-
-pub struct ReportListReadersResultParamsBuilder<'a> {
-    request_id: Cow<'a, str>,
-    readers: Vec<Cow<'a, str>>,
-}
-
-impl<'a> ReportListReadersResultParamsBuilder<'a> {
-    pub fn build(self) -> ReportListReadersResultParams<'a> {
-        ReportListReadersResultParams {
-            request_id: self.request_id,
-            readers: self.readers,
-        }
-    }
-}
-
-impl<'a> ReportListReadersResultParams<'a> { pub const METHOD: &'static str = "SmartCardEmulation.reportListReadersResult"; }
-
-impl<'a> crate::CdpCommand<'a> for ReportListReadersResultParams<'a> {
-    const METHOD: &'static str = "SmartCardEmulation.reportListReadersResult";
-    type Response = crate::EmptyReturns;
-}
-
 /// Reports the successful result of a |SCardGetStatusChange| call.
 /// 
 /// This maps to:
 /// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#ga33247d5d1257d59e55647c3bb717db24>
 /// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardgetstatuschangea>
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpCommand)]
 #[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.reportGetStatusChangeResult")]
 pub struct ReportGetStatusChangeResultParams<'a> {
     #[serde(rename = "requestId")]
-    request_id: Cow<'a, str>,
+    pub request_id: Cow<'a, str>,
     #[serde(rename = "readerStates")]
-    reader_states: Vec<ReaderStateOut<'a>>,
+    pub reader_states: Vec<ReaderStateOut<'a>>,
 }
-
-impl<'a> ReportGetStatusChangeResultParams<'a> {
-    /// Creates a builder for this type with the required parameters:
-    /// * `request_id`: 
-    /// * `reader_states`: 
-    pub fn builder(request_id: impl Into<Cow<'a, str>>, reader_states: Vec<ReaderStateOut<'a>>) -> ReportGetStatusChangeResultParamsBuilder<'a> {
-        ReportGetStatusChangeResultParamsBuilder {
-            request_id: request_id.into(),
-            reader_states: reader_states,
-        }
-    }
-    pub fn request_id(&self) -> &str { self.request_id.as_ref() }
-    pub fn reader_states(&self) -> &[ReaderStateOut<'a>] { &self.reader_states }
-}
-
-
-pub struct ReportGetStatusChangeResultParamsBuilder<'a> {
-    request_id: Cow<'a, str>,
-    reader_states: Vec<ReaderStateOut<'a>>,
-}
-
-impl<'a> ReportGetStatusChangeResultParamsBuilder<'a> {
-    pub fn build(self) -> ReportGetStatusChangeResultParams<'a> {
-        ReportGetStatusChangeResultParams {
-            request_id: self.request_id,
-            reader_states: self.reader_states,
-        }
-    }
-}
-
-impl<'a> ReportGetStatusChangeResultParams<'a> { pub const METHOD: &'static str = "SmartCardEmulation.reportGetStatusChangeResult"; }
-
-impl<'a> crate::CdpCommand<'a> for ReportGetStatusChangeResultParams<'a> {
-    const METHOD: &'static str = "SmartCardEmulation.reportGetStatusChangeResult";
-    type Response = crate::EmptyReturns;
-}
-
 /// Reports the result of a |SCardBeginTransaction| call.
 /// On success, this creates a new transaction object.
 /// 
@@ -606,50 +279,14 @@ impl<'a> crate::CdpCommand<'a> for ReportGetStatusChangeResultParams<'a> {
 /// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#gaddb835dce01a0da1d6ca02d33ee7d861>
 /// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardbegintransaction>
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpCommand)]
 #[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.reportBeginTransactionResult")]
 pub struct ReportBeginTransactionResultParams<'a> {
     #[serde(rename = "requestId")]
-    request_id: Cow<'a, str>,
-    handle: i64,
+    pub request_id: Cow<'a, str>,
+    pub handle: i64,
 }
-
-impl<'a> ReportBeginTransactionResultParams<'a> {
-    /// Creates a builder for this type with the required parameters:
-    /// * `request_id`: 
-    /// * `handle`: 
-    pub fn builder(request_id: impl Into<Cow<'a, str>>, handle: i64) -> ReportBeginTransactionResultParamsBuilder<'a> {
-        ReportBeginTransactionResultParamsBuilder {
-            request_id: request_id.into(),
-            handle: handle,
-        }
-    }
-    pub fn request_id(&self) -> &str { self.request_id.as_ref() }
-    pub fn handle(&self) -> i64 { self.handle }
-}
-
-
-pub struct ReportBeginTransactionResultParamsBuilder<'a> {
-    request_id: Cow<'a, str>,
-    handle: i64,
-}
-
-impl<'a> ReportBeginTransactionResultParamsBuilder<'a> {
-    pub fn build(self) -> ReportBeginTransactionResultParams<'a> {
-        ReportBeginTransactionResultParams {
-            request_id: self.request_id,
-            handle: self.handle,
-        }
-    }
-}
-
-impl<'a> ReportBeginTransactionResultParams<'a> { pub const METHOD: &'static str = "SmartCardEmulation.reportBeginTransactionResult"; }
-
-impl<'a> crate::CdpCommand<'a> for ReportBeginTransactionResultParams<'a> {
-    const METHOD: &'static str = "SmartCardEmulation.reportBeginTransactionResult";
-    type Response = crate::EmptyReturns;
-}
-
 /// Reports the successful result of a call that returns only a result code.
 /// Used for: |SCardCancel|, |SCardDisconnect|, |SCardSetAttrib|, |SCardEndTransaction|.
 /// 
@@ -670,101 +307,29 @@ impl<'a> crate::CdpCommand<'a> for ReportBeginTransactionResultParams<'a> {
 /// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#gae8742473b404363e5c587f570d7e2f3b>
 /// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardendtransaction>
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpCommand)]
 #[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.reportPlainResult")]
 pub struct ReportPlainResultParams<'a> {
     #[serde(rename = "requestId")]
-    request_id: Cow<'a, str>,
+    pub request_id: Cow<'a, str>,
 }
-
-impl<'a> ReportPlainResultParams<'a> {
-    /// Creates a builder for this type with the required parameters:
-    /// * `request_id`: 
-    pub fn builder(request_id: impl Into<Cow<'a, str>>) -> ReportPlainResultParamsBuilder<'a> {
-        ReportPlainResultParamsBuilder {
-            request_id: request_id.into(),
-        }
-    }
-    pub fn request_id(&self) -> &str { self.request_id.as_ref() }
-}
-
-
-pub struct ReportPlainResultParamsBuilder<'a> {
-    request_id: Cow<'a, str>,
-}
-
-impl<'a> ReportPlainResultParamsBuilder<'a> {
-    pub fn build(self) -> ReportPlainResultParams<'a> {
-        ReportPlainResultParams {
-            request_id: self.request_id,
-        }
-    }
-}
-
-impl<'a> ReportPlainResultParams<'a> { pub const METHOD: &'static str = "SmartCardEmulation.reportPlainResult"; }
-
-impl<'a> crate::CdpCommand<'a> for ReportPlainResultParams<'a> {
-    const METHOD: &'static str = "SmartCardEmulation.reportPlainResult";
-    type Response = crate::EmptyReturns;
-}
-
 /// Reports the successful result of a |SCardConnect| call.
 /// 
 /// This maps to:
 /// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#ga4e515829752e0a8dbc4d630696a8d6a5>
 /// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardconnecta>
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpCommand)]
 #[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.reportConnectResult")]
 pub struct ReportConnectResultParams<'a> {
     #[serde(rename = "requestId")]
-    request_id: Cow<'a, str>,
-    handle: i64,
+    pub request_id: Cow<'a, str>,
+    pub handle: i64,
     #[serde(skip_serializing_if = "Option::is_none", rename = "activeProtocol")]
-    active_protocol: Option<Protocol>,
+    pub active_protocol: Option<Protocol>,
 }
-
-impl<'a> ReportConnectResultParams<'a> {
-    /// Creates a builder for this type with the required parameters:
-    /// * `request_id`: 
-    /// * `handle`: 
-    pub fn builder(request_id: impl Into<Cow<'a, str>>, handle: i64) -> ReportConnectResultParamsBuilder<'a> {
-        ReportConnectResultParamsBuilder {
-            request_id: request_id.into(),
-            handle: handle,
-            active_protocol: None,
-        }
-    }
-    pub fn request_id(&self) -> &str { self.request_id.as_ref() }
-    pub fn handle(&self) -> i64 { self.handle }
-    pub fn active_protocol(&self) -> Option<&Protocol> { self.active_protocol.as_ref() }
-}
-
-
-pub struct ReportConnectResultParamsBuilder<'a> {
-    request_id: Cow<'a, str>,
-    handle: i64,
-    active_protocol: Option<Protocol>,
-}
-
-impl<'a> ReportConnectResultParamsBuilder<'a> {
-    pub fn active_protocol(mut self, active_protocol: impl Into<Protocol>) -> Self { self.active_protocol = Some(active_protocol.into()); self }
-    pub fn build(self) -> ReportConnectResultParams<'a> {
-        ReportConnectResultParams {
-            request_id: self.request_id,
-            handle: self.handle,
-            active_protocol: self.active_protocol,
-        }
-    }
-}
-
-impl<'a> ReportConnectResultParams<'a> { pub const METHOD: &'static str = "SmartCardEmulation.reportConnectResult"; }
-
-impl<'a> crate::CdpCommand<'a> for ReportConnectResultParams<'a> {
-    const METHOD: &'static str = "SmartCardEmulation.reportConnectResult";
-    type Response = crate::EmptyReturns;
-}
-
 /// Reports the successful result of a call that sends back data on success.
 /// Used for |SCardTransmit|, |SCardControl|, and |SCardGetAttrib|.
 /// 
@@ -781,163 +346,264 @@ impl<'a> crate::CdpCommand<'a> for ReportConnectResultParams<'a> {
 /// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#gaacfec51917255b7a25b94c5104961602>
 /// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardgetattrib>
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpCommand)]
 #[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.reportDataResult")]
 pub struct ReportDataResultParams<'a> {
     #[serde(rename = "requestId")]
-    request_id: Cow<'a, str>,
-    data: Cow<'a, str>,
+    pub request_id: Cow<'a, str>,
+    pub data: Cow<'a, str>,
 }
-
-impl<'a> ReportDataResultParams<'a> {
-    /// Creates a builder for this type with the required parameters:
-    /// * `request_id`: 
-    /// * `data`: 
-    pub fn builder(request_id: impl Into<Cow<'a, str>>, data: impl Into<Cow<'a, str>>) -> ReportDataResultParamsBuilder<'a> {
-        ReportDataResultParamsBuilder {
-            request_id: request_id.into(),
-            data: data.into(),
-        }
-    }
-    pub fn request_id(&self) -> &str { self.request_id.as_ref() }
-    pub fn data(&self) -> &str { self.data.as_ref() }
-}
-
-
-pub struct ReportDataResultParamsBuilder<'a> {
-    request_id: Cow<'a, str>,
-    data: Cow<'a, str>,
-}
-
-impl<'a> ReportDataResultParamsBuilder<'a> {
-    pub fn build(self) -> ReportDataResultParams<'a> {
-        ReportDataResultParams {
-            request_id: self.request_id,
-            data: self.data,
-        }
-    }
-}
-
-impl<'a> ReportDataResultParams<'a> { pub const METHOD: &'static str = "SmartCardEmulation.reportDataResult"; }
-
-impl<'a> crate::CdpCommand<'a> for ReportDataResultParams<'a> {
-    const METHOD: &'static str = "SmartCardEmulation.reportDataResult";
-    type Response = crate::EmptyReturns;
-}
-
 /// Reports the successful result of a |SCardStatus| call.
 /// 
 /// This maps to:
 /// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#gae49c3c894ad7ac12a5b896bde70d0382>
 /// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardstatusa>
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpCommand)]
 #[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.reportStatusResult")]
 pub struct ReportStatusResultParams<'a> {
     #[serde(rename = "requestId")]
-    request_id: Cow<'a, str>,
+    pub request_id: Cow<'a, str>,
     #[serde(rename = "readerName")]
-    reader_name: Cow<'a, str>,
-    state: ConnectionState,
-    atr: Cow<'a, str>,
+    pub reader_name: Cow<'a, str>,
+    pub state: ConnectionState,
+    pub atr: Cow<'a, str>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    protocol: Option<Protocol>,
+    pub protocol: Option<Protocol>,
 }
-
-impl<'a> ReportStatusResultParams<'a> {
-    /// Creates a builder for this type with the required parameters:
-    /// * `request_id`: 
-    /// * `reader_name`: 
-    /// * `state`: 
-    /// * `atr`: 
-    pub fn builder(request_id: impl Into<Cow<'a, str>>, reader_name: impl Into<Cow<'a, str>>, state: impl Into<ConnectionState>, atr: impl Into<Cow<'a, str>>) -> ReportStatusResultParamsBuilder<'a> {
-        ReportStatusResultParamsBuilder {
-            request_id: request_id.into(),
-            reader_name: reader_name.into(),
-            state: state.into(),
-            atr: atr.into(),
-            protocol: None,
-        }
-    }
-    pub fn request_id(&self) -> &str { self.request_id.as_ref() }
-    pub fn reader_name(&self) -> &str { self.reader_name.as_ref() }
-    pub fn state(&self) -> &ConnectionState { &self.state }
-    pub fn atr(&self) -> &str { self.atr.as_ref() }
-    pub fn protocol(&self) -> Option<&Protocol> { self.protocol.as_ref() }
-}
-
-
-pub struct ReportStatusResultParamsBuilder<'a> {
-    request_id: Cow<'a, str>,
-    reader_name: Cow<'a, str>,
-    state: ConnectionState,
-    atr: Cow<'a, str>,
-    protocol: Option<Protocol>,
-}
-
-impl<'a> ReportStatusResultParamsBuilder<'a> {
-    pub fn protocol(mut self, protocol: impl Into<Protocol>) -> Self { self.protocol = Some(protocol.into()); self }
-    pub fn build(self) -> ReportStatusResultParams<'a> {
-        ReportStatusResultParams {
-            request_id: self.request_id,
-            reader_name: self.reader_name,
-            state: self.state,
-            atr: self.atr,
-            protocol: self.protocol,
-        }
-    }
-}
-
-impl<'a> ReportStatusResultParams<'a> { pub const METHOD: &'static str = "SmartCardEmulation.reportStatusResult"; }
-
-impl<'a> crate::CdpCommand<'a> for ReportStatusResultParams<'a> {
-    const METHOD: &'static str = "SmartCardEmulation.reportStatusResult";
-    type Response = crate::EmptyReturns;
-}
-
 /// Reports an error result for the given request.
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpCommand)]
 #[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.reportError")]
 pub struct ReportErrorParams<'a> {
     #[serde(rename = "requestId")]
-    request_id: Cow<'a, str>,
+    pub request_id: Cow<'a, str>,
     #[serde(rename = "resultCode")]
-    result_code: ResultCode,
+    pub result_code: ResultCode,
 }
+/// Fired when |SCardEstablishContext| is called.
+/// 
+/// This maps to:
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#gaa1b8970169fd4883a6dc4a8f43f19b67>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardestablishcontext>
 
-impl<'a> ReportErrorParams<'a> {
-    /// Creates a builder for this type with the required parameters:
-    /// * `request_id`: 
-    /// * `result_code`: 
-    pub fn builder(request_id: impl Into<Cow<'a, str>>, result_code: impl Into<ResultCode>) -> ReportErrorParamsBuilder<'a> {
-        ReportErrorParamsBuilder {
-            request_id: request_id.into(),
-            result_code: result_code.into(),
-        }
-    }
-    pub fn request_id(&self) -> &str { self.request_id.as_ref() }
-    pub fn result_code(&self) -> &ResultCode { &self.result_code }
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpEvent)]
+#[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.establishContextRequested")]
+pub struct EstablishContextRequested<'a> {
+    #[serde(rename = "requestId")]
+    pub request_id: Cow<'a, str>,
 }
+/// Fired when |SCardReleaseContext| is called.
+/// 
+/// This maps to:
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#ga6aabcba7744c5c9419fdd6404f73a934>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardreleasecontext>
 
-
-pub struct ReportErrorParamsBuilder<'a> {
-    request_id: Cow<'a, str>,
-    result_code: ResultCode,
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpEvent)]
+#[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.releaseContextRequested")]
+pub struct ReleaseContextRequested<'a> {
+    #[serde(rename = "requestId")]
+    pub request_id: Cow<'a, str>,
+    #[serde(rename = "contextId")]
+    pub context_id: u64,
 }
+/// Fired when |SCardListReaders| is called.
+/// 
+/// This maps to:
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#ga93b07815789b3cf2629d439ecf20f0d9>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardlistreadersa>
 
-impl<'a> ReportErrorParamsBuilder<'a> {
-    pub fn build(self) -> ReportErrorParams<'a> {
-        ReportErrorParams {
-            request_id: self.request_id,
-            result_code: self.result_code,
-        }
-    }
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpEvent)]
+#[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.listReadersRequested")]
+pub struct ListReadersRequested<'a> {
+    #[serde(rename = "requestId")]
+    pub request_id: Cow<'a, str>,
+    #[serde(rename = "contextId")]
+    pub context_id: u64,
 }
+/// Fired when |SCardGetStatusChange| is called. Timeout is specified in milliseconds.
+/// 
+/// This maps to:
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#ga33247d5d1257d59e55647c3bb717db24>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardgetstatuschangea>
 
-impl<'a> ReportErrorParams<'a> { pub const METHOD: &'static str = "SmartCardEmulation.reportError"; }
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpEvent)]
+#[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.getStatusChangeRequested")]
+pub struct GetStatusChangeRequested<'a> {
+    #[serde(rename = "requestId")]
+    pub request_id: Cow<'a, str>,
+    #[serde(rename = "contextId")]
+    pub context_id: u64,
+    #[serde(rename = "readerStates")]
+    pub reader_states: Vec<ReaderStateIn<'a>>,
+    /// in milliseconds, if absent, it means "infinite"
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub timeout: Option<i64>,
+}
+/// Fired when |SCardCancel| is called.
+/// 
+/// This maps to:
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#gaacbbc0c6d6c0cbbeb4f4debf6fbeeee6>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardcancel>
 
-impl<'a> crate::CdpCommand<'a> for ReportErrorParams<'a> {
-    const METHOD: &'static str = "SmartCardEmulation.reportError";
-    type Response = crate::EmptyReturns;
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpEvent)]
+#[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.cancelRequested")]
+pub struct CancelRequested<'a> {
+    #[serde(rename = "requestId")]
+    pub request_id: Cow<'a, str>,
+    #[serde(rename = "contextId")]
+    pub context_id: u64,
+}
+/// Fired when |SCardConnect| is called.
+/// 
+/// This maps to:
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#ga4e515829752e0a8dbc4d630696a8d6a5>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardconnecta>
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpEvent)]
+#[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.connectRequested")]
+pub struct ConnectRequested<'a> {
+    #[serde(rename = "requestId")]
+    pub request_id: Cow<'a, str>,
+    #[serde(rename = "contextId")]
+    pub context_id: u64,
+    pub reader: Cow<'a, str>,
+    #[serde(rename = "shareMode")]
+    pub share_mode: ShareMode,
+    #[serde(rename = "preferredProtocols")]
+    pub preferred_protocols: ProtocolSet,
+}
+/// Fired when |SCardDisconnect| is called.
+/// 
+/// This maps to:
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#ga4be198045c73ec0deb79e66c0ca1738a>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scarddisconnect>
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpEvent)]
+#[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.disconnectRequested")]
+pub struct DisconnectRequested<'a> {
+    #[serde(rename = "requestId")]
+    pub request_id: Cow<'a, str>,
+    pub handle: i64,
+    pub disposition: Disposition,
+}
+/// Fired when |SCardTransmit| is called.
+/// 
+/// This maps to:
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#ga9a2d77242a271310269065e64633ab99>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardtransmit>
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpEvent)]
+#[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.transmitRequested")]
+pub struct TransmitRequested<'a> {
+    #[serde(rename = "requestId")]
+    pub request_id: Cow<'a, str>,
+    pub handle: i64,
+    pub data: Cow<'a, str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub protocol: Option<Protocol>,
+}
+/// Fired when |SCardControl| is called.
+/// 
+/// This maps to:
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#gac3454d4657110fd7f753b2d3d8f4e32f>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardcontrol>
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpEvent)]
+#[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.controlRequested")]
+pub struct ControlRequested<'a> {
+    #[serde(rename = "requestId")]
+    pub request_id: Cow<'a, str>,
+    pub handle: i64,
+    #[serde(rename = "controlCode")]
+    pub control_code: i64,
+    pub data: Cow<'a, str>,
+}
+/// Fired when |SCardGetAttrib| is called.
+/// 
+/// This maps to:
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#gaacfec51917255b7a25b94c5104961602>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardgetattrib>
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpEvent)]
+#[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.getAttribRequested")]
+pub struct GetAttribRequested<'a> {
+    #[serde(rename = "requestId")]
+    pub request_id: Cow<'a, str>,
+    pub handle: i64,
+    #[serde(rename = "attribId")]
+    pub attrib_id: u64,
+}
+/// Fired when |SCardSetAttrib| is called.
+/// 
+/// This maps to:
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#ga060f0038a4ddfd5dd2b8fadf3c3a2e4f>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardsetattrib>
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpEvent)]
+#[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.setAttribRequested")]
+pub struct SetAttribRequested<'a> {
+    #[serde(rename = "requestId")]
+    pub request_id: Cow<'a, str>,
+    pub handle: i64,
+    #[serde(rename = "attribId")]
+    pub attrib_id: u64,
+    pub data: Cow<'a, str>,
+}
+/// Fired when |SCardStatus| is called.
+/// 
+/// This maps to:
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#gae49c3c894ad7ac12a5b896bde70d0382>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardstatusa>
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpEvent)]
+#[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.statusRequested")]
+pub struct StatusRequested<'a> {
+    #[serde(rename = "requestId")]
+    pub request_id: Cow<'a, str>,
+    pub handle: i64,
+}
+/// Fired when |SCardBeginTransaction| is called.
+/// 
+/// This maps to:
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#gaddb835dce01a0da1d6ca02d33ee7d861>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardbegintransaction>
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpEvent)]
+#[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.beginTransactionRequested")]
+pub struct BeginTransactionRequested<'a> {
+    #[serde(rename = "requestId")]
+    pub request_id: Cow<'a, str>,
+    pub handle: i64,
+}
+/// Fired when |SCardEndTransaction| is called.
+/// 
+/// This maps to:
+/// PC/SC Lite: <https://pcsclite.apdu.fr/api/group__API.html#gae8742473b404363e5c587f570d7e2f3b>
+/// Microsoft: <https://learn.microsoft.com/en-us/windows/win32/api/winscard/nf-winscard-scardendtransaction>
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpEvent)]
+#[serde(rename_all = "camelCase")]
+#[cdp(method = "SmartCardEmulation.endTransactionRequested")]
+pub struct EndTransactionRequested<'a> {
+    #[serde(rename = "requestId")]
+    pub request_id: Cow<'a, str>,
+    pub handle: i64,
+    pub disposition: Disposition,
 }

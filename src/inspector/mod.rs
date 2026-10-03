@@ -1,23 +1,54 @@
 use serde::{Serialize, Deserialize};
 use serde_json::Value as JsonValue;
 use std::borrow::Cow;
+use crate::{CdpBuilder, CdpCommand, CdpEvent};
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub struct DisableParams {}
+/// Disables inspector domain notifications.
 
-impl DisableParams { pub const METHOD: &'static str = "Inspector.disable"; }
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpCommand)]
+#[serde(rename_all = "camelCase")]
+#[cdp(method = "Inspector.disable")]
+pub struct DisableParams {
 
-impl<'a> crate::CdpCommand<'a> for DisableParams {
-    const METHOD: &'static str = "Inspector.disable";
-    type Response = crate::EmptyReturns;
 }
+/// Enables inspector domain notifications.
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub struct EnableParams {}
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpCommand)]
+#[serde(rename_all = "camelCase")]
+#[cdp(method = "Inspector.enable")]
+pub struct EnableParams {
 
-impl EnableParams { pub const METHOD: &'static str = "Inspector.enable"; }
+}
+/// Fired when remote debugging connection is about to be terminated. Contains detach reason.
 
-impl<'a> crate::CdpCommand<'a> for EnableParams {
-    const METHOD: &'static str = "Inspector.enable";
-    type Response = crate::EmptyReturns;
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpEvent)]
+#[serde(rename_all = "camelCase")]
+#[cdp(method = "Inspector.detached")]
+pub struct Detached<'a> {
+    /// The reason why connection has been terminated.
+    pub reason: Cow<'a, str>,
+}
+/// Fired when debugging target has crashed
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpEvent)]
+#[serde(rename_all = "camelCase")]
+#[cdp(method = "Inspector.targetCrashed")]
+pub struct TargetCrashed {
+
+}
+/// Fired when debugging target has reloaded after crash
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpEvent)]
+#[serde(rename_all = "camelCase")]
+#[cdp(method = "Inspector.targetReloadedAfterCrash")]
+pub struct TargetReloadedAfterCrash {
+
+}
+/// Fired on worker targets when main worker script and any imported scripts have been evaluated.
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpEvent)]
+#[serde(rename_all = "camelCase")]
+#[cdp(method = "Inspector.workerScriptLoaded")]
+pub struct WorkerScriptLoaded {
+
 }

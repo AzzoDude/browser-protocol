@@ -5,10 +5,17 @@
 use serde::{Serialize, Deserialize};
 use serde_json::Value as JsonValue;
 
+pub use browser_protocol_macros::{CdpBuilder, CdpCommand, CdpEvent};
+
 /// Trait for CDP commands that associate parameters with a method name and response type.
 pub trait CdpCommand<'a>: Serialize {
     const METHOD: &'static str;
     type Response: Deserialize<'a>;
+}
+
+/// Marker trait implemented by every typed CDP event.
+pub trait CdpEvent {
+    const METHOD: &'static str;
 }
 
 /// A generic CDP command envelope.
@@ -36,6 +43,29 @@ pub struct Response<T> {
 #[derive(Deserialize, Debug, Clone, Default)]
 pub struct EmptyReturns {}
 
+/// A protocol-level error returned by the browser.
+#[derive(Deserialize, Debug, Clone)]
+pub struct CdpError {
+    pub code: i64,
+    pub message: String,
+    pub data: Option<JsonValue>,
+}
+
+/// An error reply envelope: `{"id": N, "error": { ... }}`.
+#[derive(Deserialize, Debug, Clone)]
+pub struct ErrorResponse {
+    pub id: u64,
+    pub error: CdpError,
+}
+
+/// A reply that is either a typed result or a protocol error.
+#[derive(Deserialize, Debug)]
+#[serde(untagged)]
+pub enum CdpReply<T> {
+    Ok(Response<T>),
+    Err(ErrorResponse),
+}
+
 #[cfg(feature = "runtime")]
 pub mod runtime;
 #[cfg(feature = "debugger")]
@@ -46,6 +76,8 @@ pub mod heapprofiler;
 pub mod profiler;
 #[cfg(feature = "accessibility")]
 pub mod accessibility;
+#[cfg(feature = "ads")]
+pub mod ads;
 #[cfg(feature = "animation")]
 pub mod animation;
 #[cfg(feature = "audits")]
@@ -78,6 +110,8 @@ pub mod domstorage;
 pub mod deviceaccess;
 #[cfg(feature = "deviceorientation")]
 pub mod deviceorientation;
+#[cfg(feature = "digitalcredentials")]
+pub mod digitalcredentials;
 #[cfg(feature = "emulation")]
 pub mod emulation;
 #[cfg(feature = "eventbreakpoints")]
@@ -90,6 +124,8 @@ pub mod fedcm;
 pub mod fetch;
 #[cfg(feature = "filesystem")]
 pub mod filesystem;
+#[cfg(feature = "findinpage")]
+pub mod findinpage;
 #[cfg(feature = "headlessexperimental")]
 pub mod headlessexperimental;
 #[cfg(feature = "io")]

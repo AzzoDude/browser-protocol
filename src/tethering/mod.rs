@@ -4,85 +4,35 @@
 use serde::{Serialize, Deserialize};
 use serde_json::Value as JsonValue;
 use std::borrow::Cow;
+use crate::{CdpBuilder, CdpCommand, CdpEvent};
 
 /// Request browser port binding.
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpCommand)]
 #[serde(rename_all = "camelCase")]
+#[cdp(method = "Tethering.bind")]
 pub struct BindParams {
     /// Port number to bind.
-    port: i64,
+    pub port: i64,
 }
-
-impl BindParams {
-    /// Creates a builder for this type with the required parameters:
-    /// * `port`: Port number to bind.
-    pub fn builder(port: i64) -> BindParamsBuilder {
-        BindParamsBuilder {
-            port: port,
-        }
-    }
-    /// Port number to bind.
-    pub fn port(&self) -> i64 { self.port }
-}
-
-
-pub struct BindParamsBuilder {
-    port: i64,
-}
-
-impl BindParamsBuilder {
-    pub fn build(self) -> BindParams {
-        BindParams {
-            port: self.port,
-        }
-    }
-}
-
-impl BindParams { pub const METHOD: &'static str = "Tethering.bind"; }
-
-impl<'a> crate::CdpCommand<'a> for BindParams {
-    const METHOD: &'static str = "Tethering.bind";
-    type Response = crate::EmptyReturns;
-}
-
 /// Request browser port unbinding.
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpCommand)]
 #[serde(rename_all = "camelCase")]
+#[cdp(method = "Tethering.unbind")]
 pub struct UnbindParams {
     /// Port number to unbind.
-    port: i64,
+    pub port: i64,
 }
+/// Informs that port was successfully bound and got a specified connection id.
 
-impl UnbindParams {
-    /// Creates a builder for this type with the required parameters:
-    /// * `port`: Port number to unbind.
-    pub fn builder(port: i64) -> UnbindParamsBuilder {
-        UnbindParamsBuilder {
-            port: port,
-        }
-    }
-    /// Port number to unbind.
-    pub fn port(&self) -> i64 { self.port }
-}
-
-
-pub struct UnbindParamsBuilder {
-    port: i64,
-}
-
-impl UnbindParamsBuilder {
-    pub fn build(self) -> UnbindParams {
-        UnbindParams {
-            port: self.port,
-        }
-    }
-}
-
-impl UnbindParams { pub const METHOD: &'static str = "Tethering.unbind"; }
-
-impl<'a> crate::CdpCommand<'a> for UnbindParams {
-    const METHOD: &'static str = "Tethering.unbind";
-    type Response = crate::EmptyReturns;
+#[derive(Debug, Clone, Serialize, Deserialize, Default, CdpBuilder, CdpEvent)]
+#[serde(rename_all = "camelCase")]
+#[cdp(method = "Tethering.accepted")]
+pub struct Accepted<'a> {
+    /// Port number that was successfully bound.
+    pub port: i64,
+    /// Connection id to be used.
+    #[serde(rename = "connectionId")]
+    pub connection_id: Cow<'a, str>,
 }
